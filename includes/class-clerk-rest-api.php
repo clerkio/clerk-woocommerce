@@ -202,7 +202,11 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 			//Get order products
 			foreach ( $order->get_items() as $item ) {
-				$order_items[] = $item->get_product_id();
+				$order_items[] = array(
+				    'id' => $item->get_product_id(),
+                    'quantity' => $item->get_quantity(),
+                    'price' => ($item->get_subtotal() / $item->get_quantity()),
+                );
 			}
 
 			$order_object = [
