@@ -7,6 +7,9 @@ WC requires at least: 2.6
 WC tested up to: 3.0
 
 == Changelog ==
+= 1.1.0 - 2017-05-17 =
+* Ensure backwards compatibility with WC 2.6
+
 = 1.0.1 - 2017-05-02 =
 * Send product object on order import instead of just product id
 
