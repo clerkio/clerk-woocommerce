@@ -43,6 +43,12 @@ class Clerk_Rest_Api extends WP_REST_Server {
             'methods'  => 'GET',
             'callback' => [ $this, 'customer_endpoint_callback' ],
         ] );
+
+        //Version endpoint
+        register_rest_route( 'clerk', '/version', [
+            'methods'  => 'GET',
+            'callback' => [ $this, 'version_endpoint_callback' ],
+        ] );
     }
 
     /**
@@ -114,7 +120,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
             /** @var WC_Product $product */
             $categories = wp_get_post_terms($product->get_id(), 'product_cat');
 
-            $productsArray[] = [
+            $productArray = [
                 'id'          => $product->get_id(),
                 'name'        => $product->get_title(),
                 'description' => get_post_field('post_content', $product->get_id()),
@@ -126,6 +132,15 @@ class Clerk_Rest_Api extends WP_REST_Server {
                 'sku'         => $product->get_sku(),
                 'on_sale'     => $product->is_on_sale(),
             ];
+
+            $additional_fields = array_filter($this->getAdditionalFields(), 'strlen');
+
+            //Append additional fields
+            foreach ($additional_fields as $field) {
+                $productArray[$field] = $product->get_attribute($field);
+            }
+
+            $productsArray[] = $productArray;
         }
 
         return $productsArray;
@@ -246,6 +261,26 @@ class Clerk_Rest_Api extends WP_REST_Server {
     }
 
     /**
+     * Handle version endpoint
+     *
+     * @param WP_REST_Request $request
+     *
+     * @return WP_REST_Response
+     */
+    public function version_endpoint_callback( WP_REST_Request $request ) {
+        if ( ! $this->validateRequest( $request ) ) {
+            return $this->getUnathorizedResponse();
+        }
+
+        $response = array(
+            'platform' => 'WooCommerce',
+            'version' => reset(get_file_data(CLERK_PLUGIN_FILE, array('version'), 'plugin')),
+        );
+
+        return $response;
+    }
+
+    /**
      * Validate request
      *
      * @param $request
@@ -278,6 +313,21 @@ class Clerk_Rest_Api extends WP_REST_Server {
         $response->set_status( 403 );
 
         return $response;
+    }
+
+    /**
+     * Get additional fields for product export
+     *
+     * @return array
+     */
+    private function getAdditionalFields() {
+        $options = get_option( 'clerk_options' );
+
+        $additional_fields = $options['additional_fields'];
+
+        $fields = explode(',', $additional_fields);
+
+        return $fields;
     }
 }
 

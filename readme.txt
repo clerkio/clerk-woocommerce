@@ -7,6 +7,11 @@ WC requires at least: 2.6
 WC tested up to: 3.0
 
 == Changelog ==
+= 1.2.2 - 2017-05-18 =
+* Add version endpoint to REST API
+* Add support for additional fields
+* Add option to toggle email collection
+
 = 1.2.1 - 2017-05-18 =
 * Cast prices to floats to avoid empty strings when price is 0
 

@@ -63,6 +63,35 @@ class Clerk_Admin_Settings {
 			]
 		);
 
+        //Add data sync section
+        add_settings_section(
+            'clerk_section_datasync',
+            __( 'Data Sync', 'clerk' ),
+            null,
+            'clerk' );
+
+        add_settings_field( 'collect_emails',
+            __( 'Collect Emails', 'clerk' ),
+            [ $this, 'addCheckboxField' ],
+            'clerk',
+            'clerk_section_datasync',
+            [
+                'label_for' => 'collect_emails',
+                'default' => 1
+            ]
+        );
+
+        add_settings_field( 'additional_fields',
+            __( 'Additional Fields', 'clerk' ),
+            [ $this, 'addTextField' ],
+            'clerk',
+            'clerk_section_datasync',
+            [
+                'label_for' => 'additional_fields',
+                'description' => 'A comma separated list of additional fields to sync'
+            ]
+        );
+
 		//Add search section
 		add_settings_section(
 			'clerk_section_search',

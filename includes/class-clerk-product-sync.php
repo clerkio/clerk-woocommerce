@@ -51,21 +51,45 @@ class Clerk_Product_Sync {
 	 * @param WC_Product $product
 	 */
 	private function add_product( WC_Product $product ) {
+        $categories = wp_get_post_terms($product->get_id(), 'product_cat');
+
 		$params = [
 			'id'          => $product->get_id(),
 			'name'        => $product->get_name(),
-			'description' => $product->get_description(),
-			'price'       => $product->get_price(),
-			'list_price'  => $product->get_regular_price(),
+			'description' => get_post_field('post_content', $product->get_id()),
+			'price'       => (float) $product->get_price(),
+			'list_price'  => (float) $product->get_regular_price(),
 			'image'       => wp_get_attachment_url( $product->get_image_id() ),
 			'url'         => $product->get_permalink(),
-			'categories'  => $product->get_category_ids(),
+			'categories'  => wp_list_pluck($categories, 'term_id'),
 			'sku'         => $product->get_sku(),
 			'on_sale'     => $product->is_on_sale(),
 		];
 
+        $additional_fields = array_filter($this->getAdditionalFields(), 'strlen');
+
+        //Append additional fields
+        foreach ($additional_fields as $field) {
+            $params[$field] = $product->get_attribute($field);
+        }
+
 		$this->api->addProduct( $params );
 	}
+
+    /**
+     * Get additional fields for product export
+     *
+     * @return array
+     */
+    private function getAdditionalFields() {
+        $options = get_option( 'clerk_options' );
+
+        $additional_fields = $options['additional_fields'];
+
+        $fields = explode(',', $additional_fields);
+
+        return $fields;
+    }
 }
 
 new Clerk_Product_Sync();

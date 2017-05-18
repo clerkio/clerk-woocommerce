@@ -25,7 +25,8 @@ class Clerk_Visitor_Tracking {
         <script type="text/javascript">
             window.clerkAsyncInit = function () {
                 Clerk.config({
-                    key: '<?php echo $options['public_key']; ?>'
+                    key: '<?php echo $options['public_key']; ?>',
+                    collect_email: <?php echo $options['collect_emails'] ? 'true' : 'false'; ?>
                 });
             };
 
