@@ -21,25 +21,25 @@ class Clerk_Rest_Api extends WP_REST_Server {
      */
     public function add_rest_api_routes() {
         //Product endpoint
-        register_rest_route( 'clerk/resource', '/product', [
+        register_rest_route( 'clerk', '/product', [
             'methods'  => 'GET',
             'callback' => [ $this, 'product_endpoint_callback' ],
         ] );
 
         //Category endpoint
-        register_rest_route( 'clerk/resource', '/category', [
+        register_rest_route( 'clerk', '/category', [
             'methods'  => 'GET',
             'callback' => [ $this, 'category_endpoint_callback' ],
         ] );
 
         //Order endpoint
-        register_rest_route( 'clerk/resource', '/order', [
+        register_rest_route( 'clerk', '/order', [
             'methods'  => 'GET',
             'callback' => [ $this, 'order_endpoint_callback' ],
         ] );
 
         //Customer endpoint
-        register_rest_route( 'clerk/resource', '/customer', [
+        register_rest_route( 'clerk', '/customer', [
             'methods'  => 'GET',
             'callback' => [ $this, 'customer_endpoint_callback' ],
         ] );
