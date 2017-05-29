@@ -59,7 +59,7 @@ class Clerk_Admin_Settings {
 				'label_for' => 'import_url',
                 'description' => 'Use this url to configure an importer from my.clerk.io',
                 'readonly' => true,
-                'value' => get_site_url() . '/wp-json/',
+                'value' => get_site_url(),
 			]
 		);
 
