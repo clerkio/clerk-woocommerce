@@ -107,12 +107,13 @@ class Clerk_Rest_Api extends WP_REST_Server {
         $orderby = $request->get_param( 'orderby' ) ? $request->get_param( 'orderby' ) : 'date';
         $order   = $request->get_param( 'order' ) ? $request->get_param( 'order' ) : 'DESC';
 
-        $products = clerk_get_products( [
+        $products = clerk_get_products( array(
             'limit'   => $limit,
             'page'    => $page,
             'orderby' => $orderby,
             'order'   => $order,
-        ] );
+            'status' => array('publish'),
+        ) );
 
         $productsArray = [];
 
