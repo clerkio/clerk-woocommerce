@@ -7,6 +7,9 @@ WC requires at least: 2.6
 WC tested up to: 3.0
 
 == Changelog ==
+= 1.2.5 - 2017-06-30 =
+* Add 'is_salable' attribute to indicate wheter a product is in stock
+
 = 1.2.4 - 2017-06-15 =
 * Change product API to only send published products
 

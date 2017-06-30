@@ -132,6 +132,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
                 'categories'  => wp_list_pluck($categories, 'term_id'),
                 'sku'         => $product->get_sku(),
                 'on_sale'     => $product->is_on_sale(),
+                'is_salable'  => $product->is_in_stock(),
             ];
 
             $additional_fields = array_filter($this->getAdditionalFields(), 'strlen');
