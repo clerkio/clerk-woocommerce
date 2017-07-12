@@ -7,6 +7,9 @@ WC requires at least: 2.6
 WC tested up to: 3.0
 
 == Changelog ==
+= 1.2.6 - 2017-07-12 =
+* Fix undefined constant in clerk.php
+
 = 1.2.5 - 2017-06-30 =
 * Add 'is_salable' attribute to indicate wheter a product is in stock
 

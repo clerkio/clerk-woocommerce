@@ -3,7 +3,7 @@
  * Plugin Name: Clerk
  * Plugin URI: https://clerk.io/
  * Description: Clerk.io Turns More Browsers Into Buyers
- * Version: 1.2.5
+ * Version: 1.2.6
  * Author: Clerk.io
  * Author URI: https://clerk.io
  *
@@ -22,8 +22,8 @@ if ( ! class_exists( 'Clerk' ) ) {
 			$this->includes();
 			$this->initHooks();
 
-            if ( ! defined( CLERK_PLUGIN_FILE ) ) {
-                define( CLERK_PLUGIN_FILE, __FILE__ );
+            if ( ! defined( 'CLERK_PLUGIN_FILE' ) ) {
+                define( 'CLERK_PLUGIN_FILE', __FILE__ );
             }
 		}
 
