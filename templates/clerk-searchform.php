@@ -15,7 +15,7 @@ $unique_id = esc_attr( uniqid( 'clerk-search-form-' ) );
 <?php
 $options = get_option( 'clerk_options' );
 
-if ( $options['livesearch_enabled'] ) :
+if ( isset($options['livesearch_enabled']) && $options['livesearch_enabled'] ) :
 ?>
 <span
     class="clerk"

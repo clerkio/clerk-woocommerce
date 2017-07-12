@@ -222,7 +222,7 @@ class Clerk_Admin_Settings {
 		?>
         <input type="text" id="<?php echo esc_attr( $args['label_for'] ); ?>"
                name="clerk_options[<?php echo esc_attr( $args['label_for'] ); ?>]"
-               value="<?php echo $value; ?>"<?php if ($args['readonly']): ?> readonly<?php endif; ?>>
+               value="<?php echo $value; ?>"<?php if (isset($args['readonly'])): ?> readonly<?php endif; ?>>
 		<?php
         if ( isset($args['description']) ) :
         ?>
