@@ -216,7 +216,7 @@ class Clerk_Admin_Settings {
 
 		$value = $options[ $args['label_for'] ];
 
-		if ( $args['value'] ) {
+		if ( isset($args['value']) ) {
 		    $value = $args['value'];
         }
 		?>
@@ -224,7 +224,7 @@ class Clerk_Admin_Settings {
                name="clerk_options[<?php echo esc_attr( $args['label_for'] ); ?>]"
                value="<?php echo $value; ?>"<?php if ($args['readonly']): ?> readonly<?php endif; ?>>
 		<?php
-        if ($args['description']) :
+        if ( isset($args['description']) ) :
         ?>
             <p class="description" id="<?php echo $args['label_for']; ?>-description"><?php echo $args['description']; ?></p>
         <?php

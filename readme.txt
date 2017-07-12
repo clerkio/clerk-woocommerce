@@ -7,6 +7,9 @@ WC requires at least: 2.6
 WC tested up to: 3.0
 
 == Changelog ==
+= 1.2.7 - 2017-07-12 =
+* Fix undefined index in class-clerk-admin-settings.php
+
 = 1.2.6 - 2017-07-12 =
 * Fix undefined constant in clerk.php
 
