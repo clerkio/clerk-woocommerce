@@ -161,7 +161,8 @@ class Clerk_Rest_Api extends WP_REST_Server {
         }
 
         $limit = $request->get_param( 'limit' ) ? $request->get_param( 'limit' ) : 0;
-//        $offset = $request->get_param('page') ? $request->get_param('page') - 1 : 0;
+        $page = $request->get_param('page') ? $request->get_param('page') - 1 : 0;
+        $offset = (int) $request->get_param('page') * $limit;
         $orderby = $request->get_param( 'orderby' ) ? $request->get_param( 'orderby' ) : 'date';
         $order   = $request->get_param( 'order' ) ? $request->get_param( 'order' ) : 'DESC';
 
@@ -169,7 +170,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
             'number'     => $limit,
             'orderby'    => $orderby,
             'order'      => $order,
-//            'offset'     => $offset,
+            'offset'     => $offset,
             'hide_empty' => true,
         ];
 
@@ -209,7 +210,13 @@ class Clerk_Rest_Api extends WP_REST_Server {
             return $this->getUnathorizedResponse();
         }
 
-        $orders = wc_get_orders( [] );
+        $limit   = $request->get_param( 'limit' ) ? $request->get_param( 'limit' ) : - 1;
+        $page    = $request->get_param( 'page' ) ? $request->get_param( 'page' ) + 1 : 1;
+
+        $orders = wc_get_orders( [
+            'limit' => $limit,
+            'page' => $page,
+        ] );
 
         $order_array = [];
 

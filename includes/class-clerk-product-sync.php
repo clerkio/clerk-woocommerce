@@ -21,6 +21,10 @@ class Clerk_Product_Sync {
 	}
 
 	public function save_product( $post_id, $post ) {
+	    if (!$post) {
+	        return;
+        }
+
 		if ( ! $product = wc_get_product( $post ) ) {
 			return;
 		}
