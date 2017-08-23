@@ -7,6 +7,10 @@ WC requires at least: 2.6
 WC tested up to: 3.0
 
 == Changelog ==
+= 1.2.9 - 2017-08-23 =
+* Fix bug causing category import to go on forever
+* Fix issue with 3rd party plugins
+
 = 1.2.8 - 2017-07-12 =
 * Remove undefined index in class-clerk-admin-settings.php
 
