@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly
+}
+
 class Clerk_Rest_Api extends WP_REST_Server {
     /**
      * Clerk_Rest_Api constructor.
@@ -215,7 +219,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
         $orders = wc_get_orders( [
             'limit' => $limit,
-            'page' => $page,
+            'offset' => ($page - 1) * $limit,
         ] );
 
         $order_array = [];

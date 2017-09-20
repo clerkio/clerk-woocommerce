@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly
+}
+
 class Clerk_Admin_Settings {
 	/**
 	 * Clerk_Admin_Settings constructor.
@@ -256,18 +260,19 @@ class Clerk_Admin_Settings {
         ]);
     }
 
-	function clerk_options_page() {
+	public function clerk_options_page() {
 		// add top level menu page
 		add_menu_page(
 			'Clerk',
 			'Clerk Options',
 			'manage_options',
 			'clerk',
-			[ $this, 'clerk_options_page_html' ]
+			[ $this, 'clerk_options_page_html' ],
+            plugin_dir_url(CLERK_PLUGIN_FILE) . 'assets/img/clerk.png'
 		);
 	}
 
-	function clerk_options_page_html() {
+	public function clerk_options_page_html() {
 		// check user capabilities
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return;
