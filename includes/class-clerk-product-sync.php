@@ -33,13 +33,24 @@ class Clerk_Product_Sync {
 			return;
 		}
 
-		if ( $product->get_status() === 'publish' ) {
-			//Send product to Clerk
-			$this->add_product( $product );
-		} elseif ( ! $product->get_status() === 'draft' ) {
-			//Remove product
-			$this->remove_product( $product->get_id() );
-		}
+        if (clerk_check_version()) {
+            if ( $product->get_status() === 'publish' ) {
+                //Send product to Clerk
+                $this->add_product( $product );
+            } elseif ( ! $product->get_status() === 'draft' ) {
+                //Remove product
+                $this->remove_product( $product->get_id() );
+            }
+        } else {
+	        //Fix for WooCommerce 2.6
+            if ( $product->post->status === 'publish' ) {
+                //Send product to Clerk
+                $this->add_product( $product );
+            } elseif ( ! $product->post->status === 'draft' ) {
+                //Remove product
+                $this->remove_product( $product->get_id() );
+            }
+        }
 
 	}
 
