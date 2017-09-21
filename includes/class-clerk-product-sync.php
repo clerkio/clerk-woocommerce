@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly
+}
+
 class Clerk_Product_Sync {
 	/** @var Clerk_Api */
 	protected $api;

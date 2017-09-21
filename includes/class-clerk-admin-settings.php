@@ -261,15 +261,71 @@ class Clerk_Admin_Settings {
     }
 
 	public function clerk_options_page() {
-		// add top level menu page
+		//Add top level menu page
 		add_menu_page(
-			'Clerk',
-			'Clerk Options',
+			__('Clerk', 'clerk'),
+			__('Clerk', 'clerk'),
 			'manage_options',
 			'clerk',
 			[ $this, 'clerk_options_page_html' ],
             plugin_dir_url(CLERK_PLUGIN_FILE) . 'assets/img/clerk.png'
 		);
+
+		add_submenu_page('clerk', '', __('Clerk Settings', 'clerk'), 'manage_options', 'clerk', [ $this, 'clerk_options_page_html' ]);
+
+        $options = get_option( 'clerk_options' );
+
+        if ($options && !empty($options['public_key']) && !empty($options['private_key'])) {
+            //Add Dashboard menu
+            add_submenu_page(
+                'clerk',
+                __('Dashboard', 'clerk'),
+                __('Dashboard', 'clerk'),
+                'manage_options',
+                'dashboard',
+                [ $this, 'clerk_dashboard_page_html' ]
+            );
+
+            //Add Search Insights menu
+            add_submenu_page(
+                'clerk',
+                __('Search Insights', 'clerk'),
+                __('Search Insights', 'clerk'),
+                'manage_options',
+                'search-insights',
+                [ $this, 'clerk_search_insights_page_html' ]
+            );
+
+            //Add Recommendations Insights menu
+            add_submenu_page(
+                'clerk',
+                __('Recommendations Insights', 'clerk'),
+                __('Recommendations Insights', 'clerk'),
+                'manage_options',
+                'recommendations-insights',
+                [ $this, 'clerk_recommendations_insights_page_html' ]
+            );
+
+            //Add Email Insights menu
+            add_submenu_page(
+                'clerk',
+                __('Email Insights', 'clerk'),
+                __('Email Insights', 'clerk'),
+                'manage_options',
+                'email-insights',
+                [ $this, 'clerk_email_insights_page_html' ]
+            );
+
+            //Add Audience Insights menu
+            add_submenu_page(
+                'clerk',
+                __('Audience Insights', 'clerk'),
+                __('Audience Insights', 'clerk'),
+                'manage_options',
+                'audience-insights',
+                [ $this, 'clerk_audience_insights_page_html' ]
+            );
+        }
 	}
 
 	public function clerk_options_page_html() {
@@ -306,6 +362,123 @@ class Clerk_Admin_Settings {
         </div>
 		<?php
 	}
+
+    /**
+     * Render Dashboard page
+     */
+    public function clerk_dashboard_page_html()
+    {
+        // check user capabilities
+        if ( ! current_user_can('manage_options')) {
+            return;
+        }
+
+        $url = $this->getEmbedUrl('dashboard');
+        ?>
+        <div class="wrap">
+            <iframe id="clerk-embed" src="<?php echo $url; ?>" frameborder="0" width="100%" height="2400"></iframe>
+        </div>
+        <?php
+    }
+
+    /**
+     * Render Search Insights page
+     */
+    public function clerk_search_insights_page_html()
+    {
+        // check user capabilities
+        if ( ! current_user_can('manage_options')) {
+            return;
+        }
+
+        $url = $this->getEmbedUrl('search');
+        ?>
+        <div class="wrap">
+            <iframe id="clerk-embed" src="<?php echo $url; ?>" frameborder="0" width="100%" height="2400"></iframe>
+        </div>
+        <?php
+    }
+
+    /**
+     * Render Recommendations Insights page
+     */
+    public function clerk_recommendations_insights_page_html()
+    {
+        // check user capabilities
+        if ( ! current_user_can('manage_options')) {
+            return;
+        }
+
+        $url = $this->getEmbedUrl('recommendations');
+        ?>
+        <div class="wrap">
+            <iframe id="clerk-embed" src="<?php echo $url; ?>" frameborder="0" width="100%" height="2400"></iframe>
+        </div>
+        <?php
+    }
+
+    /**
+     * Render Email Insights page
+     */
+    public function clerk_email_insights_page_html()
+    {
+        // check user capabilities
+        if ( ! current_user_can('manage_options')) {
+            return;
+        }
+
+        $url = $this->getEmbedUrl('email');
+        ?>
+        <div class="wrap">
+            <iframe id="clerk-embed" src="<?php echo $url; ?>" frameborder="0" width="100%" height="2400"></iframe>
+        </div>
+        <?php
+    }
+
+    /**
+     * Render Audience Insights page
+     */
+    public function clerk_audience_insights_page_html()
+    {
+        // check user capabilities
+        if ( ! current_user_can('manage_options')) {
+            return;
+        }
+
+        $url = $this->getEmbedUrl('audience');
+        ?>
+        <div class="wrap">
+            <iframe id="clerk-embed" src="<?php echo $url; ?>" frameborder="0" width="100%" height="2400"></iframe>
+        </div>
+        <?php
+    }
+
+    /**
+     * Get first 8 characters of public key
+     *
+     * @param $publicKey
+     * @return string
+     */
+    private function getStorePart($publicKey)
+    {
+        return substr($publicKey, 0, 8);
+    }
+
+    /**
+     * Get embed URL for dashboard type
+     *
+     * @param $string
+     */
+    private function getEmbedUrl($type)
+    {
+        $options = get_option( 'clerk_options' );
+
+        $publicKey = $options['public_key'];
+        $privateKey = $options['private_key'];
+        $storePart = $this->getStorePart($publicKey);
+
+        return sprintf('https://my.clerk.io/#/store/%s/analytics/%s?key=%s&private_key=%s&embed=yes', $storePart, $type, $publicKey, $privateKey);
+    }
 }
 
 new Clerk_Admin_Settings();

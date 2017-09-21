@@ -1,7 +1,9 @@
 <?php
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
+
 $options = get_option( 'clerk_options' );
 $unique_id = esc_attr( uniqid( 'clerk-search-form-' ) );
 ?>

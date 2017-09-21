@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly
+}
+
 class Clerk_Sales_Tracking {
     /**
      * Clerk_Sales_Tracking constructor.

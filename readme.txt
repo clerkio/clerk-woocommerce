@@ -7,6 +7,13 @@ WC requires at least: 2.6
 WC tested up to: 3.0
 
 == Changelog ==
+= 1.3.0 - 2017-09-20 =
+* Add insights dashboards
+
+= 1.2.10 - 2017-09-20 =
+* Add logo to menu
+* Fix order pagination error with WooCommerce 3.1
+
 = 1.2.9 - 2017-08-23 =
 * Fix bug causing category import to go on forever
 * Fix issue with 3rd party plugins

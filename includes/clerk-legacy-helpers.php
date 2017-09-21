@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly
+}
+
 if ( !function_exists( 'clerk_get_products' ) ) {
     function clerk_get_products( $args ) {
         if ( function_exists( 'wc_get_products' ) ) {

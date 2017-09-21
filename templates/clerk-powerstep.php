@@ -1,7 +1,9 @@
 <?php
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
+
 global $woocommerce;
 
 $cart_url = $woocommerce->cart->get_cart_url();
