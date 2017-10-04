@@ -7,6 +7,9 @@ WC requires at least: 2.6
 WC tested up to: 3.0
 
 == Changelog ==
+= 1.3.2 - 2017-10-04 =
+* Add sanity check to order endpoint to avoid division by zero
+
 = 1.3.1 - 2017-09-20 =
 * Fix error with get_status in WooCommerce 2.6
 
