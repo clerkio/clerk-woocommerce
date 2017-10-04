@@ -227,14 +227,21 @@ class Clerk_Rest_Api extends WP_REST_Server {
         foreach ( $orders as $order ) {
             /** @var WC_Order $order */
             $order_items = [];
+            $valid = true;
 
             //Get order products
             foreach ( $order->get_items() as $item ) {
-                $order_items[] = array(
-                    'id' => $item['product_id'],
-                    'quantity' => $item['qty'],
-                    'price' => ($item['line_subtotal'] / $item['qty']),
-                );
+                if ($item['qty'] > 0) {
+                    $order_items[] = array(
+                        'id' => $item['product_id'],
+                        'quantity' => $item['qty'],
+                        'price' => ($item['line_subtotal'] / $item['qty']),
+                    );
+                }
+            }
+
+            if (empty($order_items)) {
+                $valid = false;
             }
 
             $order_object = [
@@ -254,7 +261,9 @@ class Clerk_Rest_Api extends WP_REST_Server {
                 $order_object['customer'] = $order->customer_id;
             }
 
-            $order_array[] = $order_object;
+            if ($valid) {
+                $order_array[] = $order_object;
+            }
         }
 
         return $order_array;
