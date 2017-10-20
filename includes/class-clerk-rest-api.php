@@ -131,7 +131,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
                 'description' => get_post_field('post_content', $product->get_id()),
                 'price'       => (float) $product->get_price(),
                 'list_price'  => (float) $product->get_regular_price(),
-                'image'       => wp_get_attachment_url( $product->get_image_id() ),
+                'image'       => wp_get_attachment_image_src( $product->get_image_id(), 'shop_catalog' )[0],
                 'url'         => $product->get_permalink(),
                 'categories'  => wp_list_pluck($categories, 'term_id'),
                 'sku'         => $product->get_sku(),

@@ -7,6 +7,9 @@ WC requires at least: 2.6
 WC tested up to: 3.0
 
 == Changelog ==
+= 1.3.3 - 2017-10-04 =
+* Make product endpoint use catalog image size from woocommerce
+
 = 1.3.2 - 2017-10-04 =
 * Add sanity check to order endpoint to avoid division by zero
 
