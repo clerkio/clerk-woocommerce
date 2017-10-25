@@ -27,13 +27,13 @@ class Clerk_Powerstep {
 	 */
 	public function redirect_to_powerstep($url) {
 		if ( empty( $_REQUEST['add-to-cart'] ) || ! is_numeric( $_REQUEST['add-to-cart'] ) ) {
-			return;
+			return $url;
 		}
 
 		$options = get_option( 'clerk_options' );
 
 		if ( !$options['powerstep_enabled']) {
-			return;
+			return $url;
 		}
 
 		$product_id = absint( $_REQUEST['add-to-cart'] );
@@ -41,7 +41,7 @@ class Clerk_Powerstep {
 		$adding_to_cart = wc_get_product( $product_id );
 
 		if ( ! $adding_to_cart ) {
-			return;
+			return $url;
 		}
 
 		$url = esc_url( get_page_link( $options['powerstep_page'] ) . '?product_id=' . $product_id ) ;
