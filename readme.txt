@@ -7,6 +7,9 @@ WC requires at least: 2.6
 WC tested up to: 3.0
 
 == Changelog ==
+= 1.3.5 - 2017-11-17 =
+* Add wpml config file as first part of WPML support
+
 = 1.3.4 - 2017-10-25 =
 * Fix bug causing cart url to be overwritten with null
 
