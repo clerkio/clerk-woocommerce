@@ -7,6 +7,9 @@ WC requires at least: 2.6
 WC tested up to: 3.0
 
 == Changelog ==
+= 1.3.6 - 2017-12-07 =
+* Fix error causing first product page to be loaded twice
+
 = 1.3.5 - 2017-11-17 =
 * Add wpml config file as first part of WPML support
 
