@@ -106,8 +106,8 @@ class Clerk_Rest_Api extends WP_REST_Server {
             return $this->getUnathorizedResponse();
         }
 
-        $limit   = $request->get_param( 'limit' ) ? $request->get_param( 'limit' ) : - 1;
-        $page    = $request->get_param( 'page' ) ? $request->get_param( 'page' ) : 1;
+        $limit   = $request->get_param( 'limit' ) ? $request->get_param( 'limit' ) : -1;
+        $page    = ($request->get_param( 'page' ) !== null) ? $request->get_param( 'page' ) + 1 : 1;
         $orderby = $request->get_param( 'orderby' ) ? $request->get_param( 'orderby' ) : 'date';
         $order   = $request->get_param( 'order' ) ? $request->get_param( 'order' ) : 'DESC';
 
