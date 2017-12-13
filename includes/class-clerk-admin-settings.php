@@ -207,6 +207,33 @@ class Clerk_Admin_Settings {
                 'description' => 'A comma separated list of clerk templates to render'
 			]
 		);
+
+        //Add exit intent section
+        add_settings_section(
+            'clerk_section_exit_intent',
+            __( 'Exit Intent Settings', 'clerk' ),
+            null,
+            'clerk' );
+
+        add_settings_field( 'exit_intent_enabled',
+            __( 'Enabled', 'clerk' ),
+            [ $this, 'addCheckboxField' ],
+            'clerk',
+            'clerk_section_exit_intent',
+            [
+                'label_for' => 'exit_intent_enabled',
+            ]
+        );
+
+        add_settings_field( 'exit_intent_template',
+            __( 'Template', 'clerk' ),
+            [ $this, 'addTextField' ],
+            'clerk',
+            'clerk_section_exit_intent',
+            [
+                'label_for' => 'exit_intent_template'
+            ]
+        );
 	}
 
 	/**

@@ -6,7 +6,31 @@ License URI: https://opensource.org/licenses/MIT
 WC requires at least: 2.6
 WC tested up to: 3.0
 
+== Description ==
+Clerk.io is a software that helps your customers buy more from your webshop, through 4 amazing feature:
+
+* Dynamic Product Recommendations, which are based directly on your customers behaviour
+* An Intelligent Search Engine, which ranks products based on what most customers will be likely to buy
+* Automated Email Recommendations, which always shows the right products to each individual customer
+* Customer Segmentation, which lets you find the best possible Audience for any type of marketing.
+
+Clerk.io’s algorithms use your orders to continually updates each feature, so the right products will always be shown
+to each unique customer, based on their behaviour.
+
+When Clerk.io has been setup, it runs 100% automatically, so you can spend your time on other important parts of your business.
+
+With this plugin, you can easily get started with Clerk.io in a matter of minutes.
+
+You can get a 7 day free trial of Clerk.io, by going here:
+https://my.clerk.io/#/signup
+
+Once signed up, simply login to your my.clerk.io backend, which will guide you through the entire WooCommerce setup.
+
+
 == Changelog ==
+= 1.3.7 - 2017-12-13 =
+* Add exit intent
+
 = 1.3.6 - 2017-12-07 =
 * Fix error causing first product page to be loaded twice
 

@@ -3,7 +3,7 @@
  * Plugin Name: Clerk
  * Plugin URI: https://clerk.io/
  * Description: Clerk.io Turns More Browsers Into Buyers
- * Version: 1.3.6
+ * Version: 1.3.7
  * Author: Clerk.io
  * Author URI: https://clerk.io
  *
@@ -41,6 +41,7 @@ if ( ! class_exists( 'Clerk' ) ) {
 			require_once( __DIR__ . '/includes/class-clerk-search.php' );
 			require_once( __DIR__ . '/includes/widgets/class-clerk-widget-search.php' );
 			require_once( __DIR__ . '/includes/class-clerk-powerstep.php');
+            require_once( __DIR__ . '/includes/class-clerk-exit-intent.php' );
 		}
 
 		private function initHooks() {
