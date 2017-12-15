@@ -214,6 +214,12 @@ class Clerk_Rest_Api extends WP_REST_Server {
             return $this->getUnathorizedResponse();
         }
 
+        $options = get_option( 'clerk_options' );
+
+        if ($options['disable_order_synchronization']) {
+            return [];
+        }
+
         $limit   = $request->get_param( 'limit' ) ? $request->get_param( 'limit' ) : - 1;
         $page    = $request->get_param( 'page' ) ? $request->get_param( 'page' ) + 1 : 1;
 

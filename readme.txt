@@ -28,6 +28,9 @@ Once signed up, simply login to your my.clerk.io backend, which will guide you t
 
 
 == Changelog ==
+= 1.3.8 - 2017-12-15 =
+* Add option to disable order synchronization
+
 = 1.3.7 - 2017-12-13 =
 * Add exit intent
 

@@ -81,7 +81,7 @@ class Clerk_Admin_Settings {
             'clerk_section_datasync',
             [
                 'label_for' => 'collect_emails',
-                'default' => 1
+                'default' => 0
             ]
         );
 
@@ -93,6 +93,17 @@ class Clerk_Admin_Settings {
             [
                 'label_for' => 'additional_fields',
                 'description' => 'A comma separated list of additional fields to sync'
+            ]
+        );
+
+        add_settings_field( 'disable_order_synchronization',
+            __( 'Disable Order Synchronization', 'clerk' ),
+            [ $this, 'addCheckboxField' ],
+            'clerk',
+            'clerk_section_datasync',
+            [
+                'label_for' => 'disable_order_synchronization',
+                'default' => 0
             ]
         );
 
