@@ -68,6 +68,13 @@ if ( ! function_exists( 'get_clerk_powerstep' ) ) {
 	}
 }
 
+if ( ! function_exists( 'get_clerk_powerstep_popup' ) ) {
+    function get_clerk_powerstep_popup($product) {
+        return clerk_get_template('clerk-powerstep-popup.php', ['product' => $product]);
+    }
+}
+
+
 if ( ! function_exists( 'get_powerstep_templates' ) ) {
 	function get_powerstep_templates() {
 		$options = get_option( 'clerk_options' );

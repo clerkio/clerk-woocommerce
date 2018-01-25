@@ -253,8 +253,11 @@ class Clerk_Rest_Api extends WP_REST_Server {
             $order_object = [
                 'products' => $order_items,
                 'time'     => strtotime( $order->order_date ),
-                'email'    => $order->billing_email,
             ];
+
+            if ($options['collect_emails']) {
+                $order_object['email'] = $order->billing_email;
+            }
 
             //id is a protected property in 3.0
             if (clerk_check_version()) {

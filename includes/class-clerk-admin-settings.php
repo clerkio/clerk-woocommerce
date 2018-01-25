@@ -198,7 +198,18 @@ class Clerk_Admin_Settings {
 			]
 		);
 
-		add_settings_field( 'powerstep_page',
+        add_settings_field( 'powerstep_type',
+            __( 'Powerstep Type', 'clerk' ),
+            [ $this, 'addPowerstepTypeDropdown' ],
+            'clerk',
+            'clerk_section_powerstep',
+            [
+                'label_for' => 'powerstep_type',
+            ]
+        );
+
+
+        add_settings_field( 'powerstep_page',
 			__( 'Powerstep Page', 'clerk' ),
 			[ $this, 'addPageDropdown' ],
 			'clerk',
@@ -288,6 +299,11 @@ class Clerk_Admin_Settings {
 		<?php
 	}
 
+    /**
+     * Add page dropdown
+     *
+     * @param $args
+     */
 	public function addPageDropdown( $args )
     {
 	    //Get settings value
@@ -298,6 +314,28 @@ class Clerk_Admin_Settings {
         ]);
     }
 
+    /**
+     * Add dropdown for powerstep type
+     *
+     * @param $args
+     */
+    public function addPowerstepTypeDropdown( $args )
+    {
+        //Get settings value
+        $options = get_option( 'clerk_options' );
+        ?>
+        <select id="<?php echo esc_attr( $args['label_for'] ); ?>"
+                name="clerk_options[<?php echo esc_attr( $args['label_for'] ); ?>]">
+            <?php foreach (array(Clerk_Powerstep::TYPE_PAGE, Clerk_Powerstep::TYPE_POPUP) as $type) : ?>
+                <option value="<?php echo $type; ?>"<?php if ($options['powerstep_type'] === $type) : ?>selected<?php endif;?>><?php echo __($type, 'clerk'); ?></option>
+            <?php endforeach; ?>
+        </select>
+        <?php
+    }
+
+    /**
+     * Create options page
+     */
 	public function clerk_options_page() {
 		//Add top level menu page
 		add_menu_page(

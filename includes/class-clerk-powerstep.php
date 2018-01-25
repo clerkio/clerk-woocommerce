@@ -5,6 +5,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 class Clerk_Powerstep {
+    const TYPE_POPUP = 'popup';
+    const TYPE_PAGE = 'page';
+
 	/**
 	 * Clerk_Powerstep constructor.
 	 */
@@ -19,8 +22,10 @@ class Clerk_Powerstep {
 		add_filter('woocommerce_add_to_cart_redirect', [$this, 'redirect_to_powerstep']);
 		add_filter( 'query_vars', [$this, 'add_powerstep_vars'] );
 		add_shortcode( 'clerk-powerstep', [$this, 'handle_shortcode'] );
-		add_action( 'wp_enqueue_scripts', [$this, 'add_powerstep_css'] );
-	}
+		add_action( 'wp_enqueue_scripts', [$this, 'add_powerstep_files'] );
+        add_action( 'wp_ajax_clerk_powerstep', [$this, 'powerstep_ajax'] );
+        add_action( 'wp_ajax_nopriv_clerk_powerstep', [$this, 'powerstep_ajax'] );
+    }
 
 	/**
 	 * If powerstep is enabled, either redirect user to powerstep page or redirect with popup param
@@ -32,7 +37,7 @@ class Clerk_Powerstep {
 
 		$options = get_option( 'clerk_options' );
 
-		if ( !$options['powerstep_enabled']) {
+		if ( !$options['powerstep_enabled'] || $options['powerstep_type'] !== self::TYPE_PAGE) {
 			return $url;
 		}
 
@@ -88,7 +93,7 @@ class Clerk_Powerstep {
 	/**
 	 * Add powerstep css
 	 */
-	public function add_powerstep_css()
+	public function add_powerstep_files()
 	{
 		$options = get_option( 'clerk_options' );
 
@@ -99,7 +104,33 @@ class Clerk_Powerstep {
 		if ( is_page( $options['powerstep_page'] ) ) {
 			wp_enqueue_style( 'clerk_powerstep_css', plugins_url('../assets/css/powerstep.css', __FILE__) );
 		}
+
+        wp_enqueue_script( 'clerk_powerstep_js', plugins_url('../assets/js/powerstep.js', __FILE__), array('jquery') );
+        wp_localize_script( 'clerk_powerstep_js', 'variables',
+            array(
+                'ajax_url' => admin_url( 'admin-ajax.php' ),
+                'type' => $options['powerstep_type'],
+                'powerstep_url' => esc_url( get_page_link( $options['powerstep_page'] ) )
+            )
+        );
 	}
+
+    /**
+     * Get powerstep popup content
+     */
+    public function powerstep_ajax()
+    {
+        $product_id = absint( $_POST['product_id'] );
+
+        $product = wc_get_product( $product_id );
+
+        if ( ! $product ) {
+            return;
+        }
+
+        echo get_clerk_powerstep_popup($product);
+        wp_die();
+    }
 }
 
 new Clerk_Powerstep();

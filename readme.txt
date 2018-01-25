@@ -28,6 +28,10 @@ Once signed up, simply login to your my.clerk.io backend, which will guide you t
 
 
 == Changelog ==
+= 1.4.0 - 2018-01-25 =
+* Add powerstep popup
+* Remove emails from order sync if collect emails is disabled
+
 = 1.3.8 - 2017-12-15 =
 * Add option to disable order synchronization
 
