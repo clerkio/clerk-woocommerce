@@ -146,7 +146,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
                 $productArray[$field] = $product->get_attribute($field);
             }
 
-            $productArray = apply_filters('clerk_product_array', $productArray);
+            $productArray = apply_filters('clerk_product_array', $productArray, $product);
 
             $productsArray[] = $productArray;
         }
