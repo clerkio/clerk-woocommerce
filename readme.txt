@@ -29,6 +29,16 @@ Once signed up, simply login to your my.clerk.io backend, which will guide you t
 
 
 == Changelog ==
+= 1.4.3 - 2018-03-23 =
+* Add filter to modify clerk order and category api response
+* Add sanity check for order api
+
+= 1.4.2 - 2018-03-22 =
+* Add product to filter
+
+= 1.4.1 - 2018-03-22 =
+* Add filter to modify clerk product api response
+
 = 1.4.0 - 2018-01-25 =
 * Add powerstep popup
 * Remove emails from order sync if collect emails is disabled
