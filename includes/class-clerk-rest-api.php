@@ -198,6 +198,8 @@ class Clerk_Rest_Api extends WP_REST_Server {
             $subcategories = get_term_children( $product_category->term_id, 'product_cat' );
             $category['subcategories'] = $subcategories;
 
+            $category = apply_filters('clerk_category_array', $category, $product_category);
+
             $categories[] = $category;
         }
 
@@ -240,11 +242,13 @@ class Clerk_Rest_Api extends WP_REST_Server {
             //Get order products
             foreach ( $order->get_items() as $item ) {
                 if ($item['qty'] > 0) {
-                    $order_items[] = array(
-                        'id' => $item['product_id'],
-                        'quantity' => $item['qty'],
-                        'price' => ($item['line_subtotal'] / $item['qty']),
-                    );
+                    if ($item['line_subtotal'] > 0) {
+                        $order_items[] = array(
+                            'id' => $item['product_id'],
+                            'quantity' => $item['qty'],
+                            'price' => ($item['line_subtotal'] / $item['qty']),
+                        );
+                    }
                 }
             }
 
@@ -273,6 +277,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
             }
 
             if ($valid) {
+                $order_object = apply_filters('clerk_order_array', $order_object, $order);
                 $order_array[] = $order_object;
             }
         }
@@ -317,6 +322,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
      * Validate request
      *
      * @param $request
+     * @return bool
      */
     private function validateRequest( $request ) {
         $options = get_option( 'clerk_options' );

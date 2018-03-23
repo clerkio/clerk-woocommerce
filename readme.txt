@@ -3,6 +3,7 @@ Contributors: clerkio
 Tags: product recommendations, semantic search, customer conversion, customer retention, customer segmentation, webshop personalization, sales optimisation
 License: MIT
 License URI: https://opensource.org/licenses/MIT
+Tested up to: 4.9.4
 WC requires at least: 2.6
 WC tested up to: 3.0
 
