@@ -29,6 +29,10 @@ Once signed up, simply login to your my.clerk.io backend, which will guide you t
 
 
 == Changelog ==
+= 1.5.0 - 2018-07-06 =
+* Add option to toggle content in categories, products and cart
+* Add widget to insert content
+
 = 1.4.3 - 2018-03-23 =
 * Add filter to modify clerk order and category api response
 * Add sanity check for order api
