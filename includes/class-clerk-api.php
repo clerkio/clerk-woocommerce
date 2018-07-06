@@ -8,7 +8,7 @@ class Clerk_Api {
 	/**
 	 * @var string
 	 */
-	protected $baseurl = 'http://api.clerk.io/v2/product/';
+	protected $baseurl = 'http://api.clerk.io/v2/';
 
 	/**
 	 * Remove product
@@ -24,9 +24,14 @@ class Clerk_Api {
 			'products'    => $product_id,
 		];
 
-		$this->get( 'remove', $params );
+		$this->get( 'product/remove', $params );
 	}
 
+    /**
+     * Add product to Clerk
+     *
+     * @param $product_params
+     */
 	public function addProduct( $product_params ) {
 		$options = get_option( 'clerk_options' );
 
@@ -36,18 +41,57 @@ class Clerk_Api {
 			'products'    => [ $product_params ],
 		];
 
-		$this->post( 'add', $params );
+		$this->post( 'product/add', $params );
 	}
 
-	/**
-	 * Perform a GET request
-	 *
-	 * @param string $endpoint
-	 * @param array $params
-	 */
+    /**
+     * Get contents from Clerk
+     *
+     * @return array|WP_Error
+     */
+	public function getContent()
+    {
+        $contents = get_transient('clerk_api_contents');
+
+        if ($contents) {
+            return $contents;
+        }
+
+        $options = get_option( 'clerk_options' );
+
+        $params = [
+            'key'         => $options['public_key'],
+            'private_key' => $options['private_key'],
+        ];
+
+        $request = $this->get( 'client/account/content/list', $params );
+
+        if ( is_wp_error( $request ) ) {
+            return false;
+        }
+
+        $body = wp_remote_retrieve_body( $request );
+        $json = json_decode( $body );
+
+        if ($json->status === 'ok') {
+            set_transient('clerk_api_contents', $json, 14400);
+        }
+
+        return $json;
+    }
+
+    /**
+     * Perform a GET request
+     *
+     * @param string $endpoint
+     * @param array $params
+     * @return array|WP_Error
+     */
 	private function get( $endpoint, $params = [] ) {
-		$url      = $this->baseurl . $endpoint . http_build_query( $params );
+		$url      = $this->baseurl . $endpoint . '?' . http_build_query( $params );
 		$response = wp_safe_remote_get( $url );
+
+		return $response;
 	}
 
 	/**

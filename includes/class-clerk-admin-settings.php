@@ -18,6 +18,7 @@ class Clerk_Admin_Settings {
 	private function initHooks() {
 		add_action( 'admin_init', [ $this, 'settings_init' ] );
 		add_action( 'admin_menu', [ $this, 'clerk_options_page' ] );
+        add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 	}
 
 	/**
@@ -135,7 +136,7 @@ class Clerk_Admin_Settings {
 		);
 
 		add_settings_field( 'search_template',
-			__( 'Template', 'clerk' ),
+			__( 'Content', 'clerk' ),
 			[ $this, 'addTextField' ],
 			'clerk',
 			'clerk_section_search',
@@ -172,7 +173,7 @@ class Clerk_Admin_Settings {
 		);
 
 		add_settings_field( 'livesearch_template',
-			__( 'Template', 'clerk' ),
+			__( 'Content', 'clerk' ),
 			[ $this, 'addTextField' ],
 			'clerk',
 			'clerk_section_livesearch',
@@ -220,7 +221,7 @@ class Clerk_Admin_Settings {
 		);
 
 		add_settings_field( 'powerstep_templates',
-			__( 'Templates', 'clerk' ),
+			__( 'Contents', 'clerk' ),
 			[ $this, 'addTextField' ],
 			'clerk',
 			'clerk_section_powerstep',
@@ -248,12 +249,93 @@ class Clerk_Admin_Settings {
         );
 
         add_settings_field( 'exit_intent_template',
-            __( 'Template', 'clerk' ),
+            __( 'Content', 'clerk' ),
             [ $this, 'addTextField' ],
             'clerk',
             'clerk_section_exit_intent',
             [
                 'label_for' => 'exit_intent_template'
+            ]
+        );
+
+        //Add category section
+        add_settings_section(
+            'clerk_section_category',
+            __( 'Category Settings', 'clerk' ),
+            null,
+            'clerk' );
+
+        add_settings_field( 'category_enabled',
+            __( 'Enabled', 'clerk' ),
+            [ $this, 'addCheckboxField' ],
+            'clerk',
+            'clerk_section_category',
+            [
+                'label_for' => 'category_enabled',
+            ]
+        );
+
+        add_settings_field( 'category_content',
+            __( 'Content', 'clerk' ),
+            [ $this, 'addTextField' ],
+            'clerk',
+            'clerk_section_category',
+            [
+                'label_for' => 'category_content',
+            ]
+        );
+
+        //Add product section
+        add_settings_section(
+            'clerk_section_product',
+            __( 'Product Settings', 'clerk' ),
+            null,
+            'clerk' );
+
+        add_settings_field( 'product_enabled',
+            __( 'Enabled', 'clerk' ),
+            [ $this, 'addCheckboxField' ],
+            'clerk',
+            'clerk_section_product',
+            [
+                'label_for' => 'product_enabled',
+            ]
+        );
+
+        add_settings_field( 'product_content',
+            __( 'Content', 'clerk' ),
+            [ $this, 'addTextField' ],
+            'clerk',
+            'clerk_section_product',
+            [
+                'label_for' => 'product_content',
+            ]
+        );
+
+        //Add cart section
+        add_settings_section(
+            'clerk_section_cart',
+            __( 'Cart Settings', 'clerk' ),
+            null,
+            'clerk' );
+
+        add_settings_field( 'cart_enabled',
+            __( 'Enabled', 'clerk' ),
+            [ $this, 'addCheckboxField' ],
+            'clerk',
+            'clerk_section_cart',
+            [
+                'label_for' => 'cart_enabled',
+            ]
+        );
+
+        add_settings_field( 'cart_content',
+            __( 'Content', 'clerk' ),
+            [ $this, 'addTextField' ],
+            'clerk',
+            'clerk_section_cart',
+            [
+                'label_for' => 'cart_content',
             ]
         );
 	}
@@ -415,6 +497,7 @@ class Clerk_Admin_Settings {
 		// check if the user have submitted the settings
 		// wordpress will add the "settings-updated" $_GET parameter to the url
 		if ( isset( $_GET['settings-updated'] ) ) {
+		    delete_transient('clerk_api_contents');
 			// add settings saved message with the class of "updated"
 			add_settings_error( 'wporg_messages', 'wporg_message', __( 'Settings Saved', 'wporg' ), 'updated' );
 		}

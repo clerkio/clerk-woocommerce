@@ -24,6 +24,12 @@ class Clerk_Visitor_Tracking {
 	 */
 	public function add_tracking() {
 		$options = get_option( 'clerk_options' );
+
+		//Default to false
+        if (!isset($options['collect_emails'])) {
+            $options['collect_emails'] = false;
+        }
+
 		?>
         <!-- Start of Clerk.io E-commerce Personalisation tool - www.clerk.io -->
         <script type="text/javascript">

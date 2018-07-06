@@ -19,6 +19,11 @@ class Clerk_Powerstep {
 	 * Init hooks
 	 */
 	private function initHooks() {
+        $options = get_option( 'clerk_options' );
+
+        // if powerstep disabled, there's no need to init hooks
+        if(!isset($options['powerstep_enabled'])) return false;
+
 		add_filter('woocommerce_add_to_cart_redirect', [$this, 'redirect_to_powerstep']);
 		add_filter( 'query_vars', [$this, 'add_powerstep_vars'] );
 		add_shortcode( 'clerk-powerstep', [$this, 'handle_shortcode'] );
