@@ -1,12 +1,12 @@
 <wpml-config>
-	<admin-texts>
-		<key name="clerk_options">
-			<key name="public_key" />
-			<key name="private_key" />
-			<key name="additional_fields" />
-			<key name="search_template" />
-			<key name="livesearch_template" />
-			<key name="powerstep_template" />
-		</key>
-	</admin-texts>
+    <admin-texts>
+        <key name="clerk_options">
+            <key name="public_key"/>
+            <key name="private_key"/>
+            <key name="additional_fields"/>
+            <key name="search_template"/>
+            <key name="livesearch_template"/>
+            <key name="powerstep_template"/>
+        </key>
+    </admin-texts>
 </wpml-config>

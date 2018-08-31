@@ -1,7 +1,7 @@
 <?php
 
 if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Exit if accessed directly
+	exit; // Exit if accessed directly
 }
 
 class Clerk_Exit_Intent {
@@ -25,13 +25,13 @@ class Clerk_Exit_Intent {
 	public function add_exit_intent() {
 		$options = get_option( 'clerk_options' );
 
-		if ($options['exit_intent_enabled']) :
-        ?>
+		if ( $options['exit_intent_enabled'] ) :
+			?>
             <span class="clerk"
-                  data-template="@<?php echo esc_attr($options['exit_intent_template']); ?>"
+                  data-template="@<?php echo esc_attr( $options['exit_intent_template'] ); ?>"
                   data-exit-intent="true"></span>
-        <?php
-        endif;
+		<?php
+		endif;
 	}
 }
 

@@ -14,7 +14,7 @@ function clerkGetContent(el) {
     categorySelect.hide();
     productSelect.hide();
 
-    $.post(ajaxurl, data, function(response) {
+    $.post(ajaxurl, data, function (response) {
         if (response && response.category) {
             categorySelect.show();
         }

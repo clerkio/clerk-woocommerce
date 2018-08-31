@@ -1,7 +1,7 @@
 <?php
 
 if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Exit if accessed directly
+	exit; // Exit if accessed directly
 }
 
 class Clerk_Product_Sync {
@@ -25,32 +25,32 @@ class Clerk_Product_Sync {
 	}
 
 	public function save_product( $post_id, $post ) {
-	    if (!$post) {
-	        return;
-        }
+		if ( ! $post ) {
+			return;
+		}
 
 		if ( ! $product = wc_get_product( $post ) ) {
 			return;
 		}
 
-        if (clerk_check_version()) {
-            if ( $product->get_status() === 'publish' ) {
-                //Send product to Clerk
-                $this->add_product( $product );
-            } elseif ( ! $product->get_status() === 'draft' ) {
-                //Remove product
-                $this->remove_product( $product->get_id() );
-            }
-        } else {
-	        //Fix for WooCommerce 2.6
-            if ( $product->post->status === 'publish' ) {
-                //Send product to Clerk
-                $this->add_product( $product );
-            } elseif ( ! $product->post->status === 'draft' ) {
-                //Remove product
-                $this->remove_product( $product->get_id() );
-            }
-        }
+		if ( clerk_check_version() ) {
+			if ( $product->get_status() === 'publish' ) {
+				//Send product to Clerk
+				$this->add_product( $product );
+			} elseif ( ! $product->get_status() === 'draft' ) {
+				//Remove product
+				$this->remove_product( $product->get_id() );
+			}
+		} else {
+			//Fix for WooCommerce 2.6
+			if ( $product->post->status === 'publish' ) {
+				//Send product to Clerk
+				$this->add_product( $product );
+			} elseif ( ! $product->post->status === 'draft' ) {
+				//Remove product
+				$this->remove_product( $product->get_id() );
+			}
+		}
 
 	}
 
@@ -70,45 +70,45 @@ class Clerk_Product_Sync {
 	 * @param WC_Product $product
 	 */
 	private function add_product( WC_Product $product ) {
-        $categories = wp_get_post_terms($product->get_id(), 'product_cat');
+		$categories = wp_get_post_terms( $product->get_id(), 'product_cat' );
 
 		$params = [
 			'id'          => $product->get_id(),
 			'name'        => $product->get_name(),
-			'description' => get_post_field('post_content', $product->get_id()),
+			'description' => get_post_field( 'post_content', $product->get_id() ),
 			'price'       => (float) $product->get_price(),
 			'list_price'  => (float) $product->get_regular_price(),
 			'image'       => wp_get_attachment_url( $product->get_image_id() ),
 			'url'         => $product->get_permalink(),
-			'categories'  => wp_list_pluck($categories, 'term_id'),
+			'categories'  => wp_list_pluck( $categories, 'term_id' ),
 			'sku'         => $product->get_sku(),
 			'on_sale'     => $product->is_on_sale(),
 		];
 
-        $additional_fields = array_filter($this->getAdditionalFields(), 'strlen');
+		$additional_fields = array_filter( $this->getAdditionalFields(), 'strlen' );
 
-        //Append additional fields
-        foreach ($additional_fields as $field) {
-            $params[$field] = $product->get_attribute($field);
-        }
+		//Append additional fields
+		foreach ( $additional_fields as $field ) {
+			$params[ $field ] = $product->get_attribute( $field );
+		}
 
 		$this->api->addProduct( $params );
 	}
 
-    /**
-     * Get additional fields for product export
-     *
-     * @return array
-     */
-    private function getAdditionalFields() {
-        $options = get_option( 'clerk_options' );
+	/**
+	 * Get additional fields for product export
+	 *
+	 * @return array
+	 */
+	private function getAdditionalFields() {
+		$options = get_option( 'clerk_options' );
 
-        $additional_fields = $options['additional_fields'];
+		$additional_fields = $options['additional_fields'];
 
-        $fields = explode(',', $additional_fields);
+		$fields = explode( ',', $additional_fields );
 
-        return $fields;
-    }
+		return $fields;
+	}
 }
 
 new Clerk_Product_Sync();

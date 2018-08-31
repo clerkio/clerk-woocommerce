@@ -1,5 +1,5 @@
-jQuery(document).ready(function($) {
-    $("body").on("added_to_cart", function(e, fragments, hash, button) {
+jQuery(document).ready(function ($) {
+    $("body").on("added_to_cart", function (e, fragments, hash, button) {
         //Attempt to get product id from data attribute
         var product_id = $(button).data('product_id');
 
@@ -18,11 +18,11 @@ jQuery(document).ready(function($) {
                 url: variables.ajax_url,
                 method: 'post',
                 data: data,
-                success: function(res) {
+                success: function (res) {
                     $('body').append(res);
                     var popup = Clerk.ui.popup("#clerk_powerstep");
 
-                    $(".clerk_powerstep_close").on("click", function() {
+                    $(".clerk_powerstep_close").on("click", function () {
                         popup.close();
                     });
 
@@ -31,7 +31,7 @@ jQuery(document).ready(function($) {
                     Clerk.renderBlocks(".clerk_powerstep_templates .clerk");
                 }
             });
-            $('body').trigger( 'post-load' );
+            $('body').trigger('post-load');
         }
     });
 });

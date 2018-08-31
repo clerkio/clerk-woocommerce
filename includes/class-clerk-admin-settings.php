@@ -1,7 +1,7 @@
 <?php
 
 if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Exit if accessed directly
+	exit; // Exit if accessed directly
 }
 
 class Clerk_Admin_Settings {
@@ -18,7 +18,7 @@ class Clerk_Admin_Settings {
 	private function initHooks() {
 		add_action( 'admin_init', [ $this, 'settings_init' ] );
 		add_action( 'admin_menu', [ $this, 'clerk_options_page' ] );
-        add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
+		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 	}
 
 	/**
@@ -61,52 +61,52 @@ class Clerk_Admin_Settings {
 			'clerk',
 			'clerk_section_general',
 			[
-				'label_for' => 'import_url',
-                'description' => 'Use this url to configure an importer from my.clerk.io',
-                'readonly' => true,
-                'value' => get_site_url(),
+				'label_for'   => 'import_url',
+				'description' => 'Use this url to configure an importer from my.clerk.io',
+				'readonly'    => true,
+				'value'       => get_site_url(),
 			]
 		);
 
-        //Add data sync section
-        add_settings_section(
-            'clerk_section_datasync',
-            __( 'Data Sync', 'clerk' ),
-            null,
-            'clerk' );
+		//Add data sync section
+		add_settings_section(
+			'clerk_section_datasync',
+			__( 'Data Sync', 'clerk' ),
+			null,
+			'clerk' );
 
-        add_settings_field( 'collect_emails',
-            __( 'Collect Emails', 'clerk' ),
-            [ $this, 'addCheckboxField' ],
-            'clerk',
-            'clerk_section_datasync',
-            [
-                'label_for' => 'collect_emails',
-                'default' => 0
-            ]
-        );
+		add_settings_field( 'collect_emails',
+			__( 'Collect Emails', 'clerk' ),
+			[ $this, 'addCheckboxField' ],
+			'clerk',
+			'clerk_section_datasync',
+			[
+				'label_for' => 'collect_emails',
+				'default'   => 0
+			]
+		);
 
-        add_settings_field( 'additional_fields',
-            __( 'Additional Fields', 'clerk' ),
-            [ $this, 'addTextField' ],
-            'clerk',
-            'clerk_section_datasync',
-            [
-                'label_for' => 'additional_fields',
-                'description' => 'A comma separated list of additional fields to sync'
-            ]
-        );
+		add_settings_field( 'additional_fields',
+			__( 'Additional Fields', 'clerk' ),
+			[ $this, 'addTextField' ],
+			'clerk',
+			'clerk_section_datasync',
+			[
+				'label_for'   => 'additional_fields',
+				'description' => 'A comma separated list of additional fields to sync'
+			]
+		);
 
-        add_settings_field( 'disable_order_synchronization',
-            __( 'Disable Order Synchronization', 'clerk' ),
-            [ $this, 'addCheckboxField' ],
-            'clerk',
-            'clerk_section_datasync',
-            [
-                'label_for' => 'disable_order_synchronization',
-                'default' => 0
-            ]
-        );
+		add_settings_field( 'disable_order_synchronization',
+			__( 'Disable Order Synchronization', 'clerk' ),
+			[ $this, 'addCheckboxField' ],
+			'clerk',
+			'clerk_section_datasync',
+			[
+				'label_for' => 'disable_order_synchronization',
+				'default'   => 0
+			]
+		);
 
 		//Add search section
 		add_settings_section(
@@ -199,18 +199,18 @@ class Clerk_Admin_Settings {
 			]
 		);
 
-        add_settings_field( 'powerstep_type',
-            __( 'Powerstep Type', 'clerk' ),
-            [ $this, 'addPowerstepTypeDropdown' ],
-            'clerk',
-            'clerk_section_powerstep',
-            [
-                'label_for' => 'powerstep_type',
-            ]
-        );
+		add_settings_field( 'powerstep_type',
+			__( 'Powerstep Type', 'clerk' ),
+			[ $this, 'addPowerstepTypeDropdown' ],
+			'clerk',
+			'clerk_section_powerstep',
+			[
+				'label_for' => 'powerstep_type',
+			]
+		);
 
 
-        add_settings_field( 'powerstep_page',
+		add_settings_field( 'powerstep_page',
 			__( 'Powerstep Page', 'clerk' ),
 			[ $this, 'addPageDropdown' ],
 			'clerk',
@@ -226,118 +226,118 @@ class Clerk_Admin_Settings {
 			'clerk',
 			'clerk_section_powerstep',
 			[
-				'label_for' => 'powerstep_templates',
-                'description' => 'A comma separated list of clerk templates to render'
+				'label_for'   => 'powerstep_templates',
+				'description' => 'A comma separated list of clerk templates to render'
 			]
 		);
 
-        //Add exit intent section
-        add_settings_section(
-            'clerk_section_exit_intent',
-            __( 'Exit Intent Settings', 'clerk' ),
-            null,
-            'clerk' );
+		//Add exit intent section
+		add_settings_section(
+			'clerk_section_exit_intent',
+			__( 'Exit Intent Settings', 'clerk' ),
+			null,
+			'clerk' );
 
-        add_settings_field( 'exit_intent_enabled',
-            __( 'Enabled', 'clerk' ),
-            [ $this, 'addCheckboxField' ],
-            'clerk',
-            'clerk_section_exit_intent',
-            [
-                'label_for' => 'exit_intent_enabled',
-            ]
-        );
+		add_settings_field( 'exit_intent_enabled',
+			__( 'Enabled', 'clerk' ),
+			[ $this, 'addCheckboxField' ],
+			'clerk',
+			'clerk_section_exit_intent',
+			[
+				'label_for' => 'exit_intent_enabled',
+			]
+		);
 
-        add_settings_field( 'exit_intent_template',
-            __( 'Content', 'clerk' ),
-            [ $this, 'addTextField' ],
-            'clerk',
-            'clerk_section_exit_intent',
-            [
-                'label_for' => 'exit_intent_template'
-            ]
-        );
+		add_settings_field( 'exit_intent_template',
+			__( 'Content', 'clerk' ),
+			[ $this, 'addTextField' ],
+			'clerk',
+			'clerk_section_exit_intent',
+			[
+				'label_for' => 'exit_intent_template'
+			]
+		);
 
-        //Add category section
-        add_settings_section(
-            'clerk_section_category',
-            __( 'Category Settings', 'clerk' ),
-            null,
-            'clerk' );
+		//Add category section
+		add_settings_section(
+			'clerk_section_category',
+			__( 'Category Settings', 'clerk' ),
+			null,
+			'clerk' );
 
-        add_settings_field( 'category_enabled',
-            __( 'Enabled', 'clerk' ),
-            [ $this, 'addCheckboxField' ],
-            'clerk',
-            'clerk_section_category',
-            [
-                'label_for' => 'category_enabled',
-            ]
-        );
+		add_settings_field( 'category_enabled',
+			__( 'Enabled', 'clerk' ),
+			[ $this, 'addCheckboxField' ],
+			'clerk',
+			'clerk_section_category',
+			[
+				'label_for' => 'category_enabled',
+			]
+		);
 
-        add_settings_field( 'category_content',
-            __( 'Content', 'clerk' ),
-            [ $this, 'addTextField' ],
-            'clerk',
-            'clerk_section_category',
-            [
-                'label_for' => 'category_content',
-            ]
-        );
+		add_settings_field( 'category_content',
+			__( 'Content', 'clerk' ),
+			[ $this, 'addTextField' ],
+			'clerk',
+			'clerk_section_category',
+			[
+				'label_for' => 'category_content',
+			]
+		);
 
-        //Add product section
-        add_settings_section(
-            'clerk_section_product',
-            __( 'Product Settings', 'clerk' ),
-            null,
-            'clerk' );
+		//Add product section
+		add_settings_section(
+			'clerk_section_product',
+			__( 'Product Settings', 'clerk' ),
+			null,
+			'clerk' );
 
-        add_settings_field( 'product_enabled',
-            __( 'Enabled', 'clerk' ),
-            [ $this, 'addCheckboxField' ],
-            'clerk',
-            'clerk_section_product',
-            [
-                'label_for' => 'product_enabled',
-            ]
-        );
+		add_settings_field( 'product_enabled',
+			__( 'Enabled', 'clerk' ),
+			[ $this, 'addCheckboxField' ],
+			'clerk',
+			'clerk_section_product',
+			[
+				'label_for' => 'product_enabled',
+			]
+		);
 
-        add_settings_field( 'product_content',
-            __( 'Content', 'clerk' ),
-            [ $this, 'addTextField' ],
-            'clerk',
-            'clerk_section_product',
-            [
-                'label_for' => 'product_content',
-            ]
-        );
+		add_settings_field( 'product_content',
+			__( 'Content', 'clerk' ),
+			[ $this, 'addTextField' ],
+			'clerk',
+			'clerk_section_product',
+			[
+				'label_for' => 'product_content',
+			]
+		);
 
-        //Add cart section
-        add_settings_section(
-            'clerk_section_cart',
-            __( 'Cart Settings', 'clerk' ),
-            null,
-            'clerk' );
+		//Add cart section
+		add_settings_section(
+			'clerk_section_cart',
+			__( 'Cart Settings', 'clerk' ),
+			null,
+			'clerk' );
 
-        add_settings_field( 'cart_enabled',
-            __( 'Enabled', 'clerk' ),
-            [ $this, 'addCheckboxField' ],
-            'clerk',
-            'clerk_section_cart',
-            [
-                'label_for' => 'cart_enabled',
-            ]
-        );
+		add_settings_field( 'cart_enabled',
+			__( 'Enabled', 'clerk' ),
+			[ $this, 'addCheckboxField' ],
+			'clerk',
+			'clerk_section_cart',
+			[
+				'label_for' => 'cart_enabled',
+			]
+		);
 
-        add_settings_field( 'cart_content',
-            __( 'Content', 'clerk' ),
-            [ $this, 'addTextField' ],
-            'clerk',
-            'clerk_section_cart',
-            [
-                'label_for' => 'cart_content',
-            ]
-        );
+		add_settings_field( 'cart_content',
+			__( 'Content', 'clerk' ),
+			[ $this, 'addTextField' ],
+			'clerk',
+			'clerk_section_cart',
+			[
+				'label_for' => 'cart_content',
+			]
+		);
 	}
 
 	/**
@@ -351,19 +351,20 @@ class Clerk_Admin_Settings {
 
 		$value = $options[ $args['label_for'] ];
 
-		if ( isset($args['value']) ) {
-		    $value = $args['value'];
-        }
+		if ( isset( $args['value'] ) ) {
+			$value = $args['value'];
+		}
 		?>
         <input type="text" id="<?php echo esc_attr( $args['label_for'] ); ?>"
                name="clerk_options[<?php echo esc_attr( $args['label_for'] ); ?>]"
-               value="<?php echo $value; ?>"<?php if (isset($args['readonly'])): ?> readonly<?php endif; ?>>
+               value="<?php echo $value; ?>"<?php if ( isset( $args['readonly'] ) ): ?> readonly<?php endif; ?>>
 		<?php
-        if ( isset($args['description']) ) :
-        ?>
-            <p class="description" id="<?php echo $args['label_for']; ?>-description"><?php echo $args['description']; ?></p>
-        <?php
-        endif;
+		if ( isset( $args['description'] ) ) :
+			?>
+            <p class="description"
+               id="<?php echo $args['label_for']; ?>-description"><?php echo $args['description']; ?></p>
+		<?php
+		endif;
 	}
 
 	/**
@@ -381,109 +382,111 @@ class Clerk_Admin_Settings {
 		<?php
 	}
 
-    /**
-     * Add page dropdown
-     *
-     * @param $args
-     */
-	public function addPageDropdown( $args )
-    {
-	    //Get settings value
-	    $options = get_option( 'clerk_options' );
-	    wp_dropdown_pages([
-            'selected' => $options[$args['label_for']],
-            'name' => sprintf('clerk_options[%s]', $args['label_for'])
-        ]);
-    }
+	/**
+	 * Add page dropdown
+	 *
+	 * @param $args
+	 */
+	public function addPageDropdown( $args ) {
+		//Get settings value
+		$options = get_option( 'clerk_options' );
+		wp_dropdown_pages( [
+			'selected' => $options[ $args['label_for'] ],
+			'name'     => sprintf( 'clerk_options[%s]', $args['label_for'] )
+		] );
+	}
 
-    /**
-     * Add dropdown for powerstep type
-     *
-     * @param $args
-     */
-    public function addPowerstepTypeDropdown( $args )
-    {
-        //Get settings value
-        $options = get_option( 'clerk_options' );
-        ?>
+	/**
+	 * Add dropdown for powerstep type
+	 *
+	 * @param $args
+	 */
+	public function addPowerstepTypeDropdown( $args ) {
+		//Get settings value
+		$options = get_option( 'clerk_options' );
+		?>
         <select id="<?php echo esc_attr( $args['label_for'] ); ?>"
                 name="clerk_options[<?php echo esc_attr( $args['label_for'] ); ?>]">
-            <?php foreach (array(Clerk_Powerstep::TYPE_PAGE, Clerk_Powerstep::TYPE_POPUP) as $type) : ?>
-                <option value="<?php echo $type; ?>"<?php if ($options['powerstep_type'] === $type) : ?>selected<?php endif;?>><?php echo __($type, 'clerk'); ?></option>
-            <?php endforeach; ?>
+			<?php foreach ( array( Clerk_Powerstep::TYPE_PAGE, Clerk_Powerstep::TYPE_POPUP ) as $type ) : ?>
+                <option value="<?php echo $type; ?>"
+				        <?php if ( $options['powerstep_type'] === $type ) : ?>selected<?php endif; ?>><?php echo __( $type, 'clerk' ); ?></option>
+			<?php endforeach; ?>
         </select>
-        <?php
-    }
+		<?php
+	}
 
-    /**
-     * Create options page
-     */
+	/**
+	 * Create options page
+	 */
 	public function clerk_options_page() {
 		//Add top level menu page
 		add_menu_page(
-			__('Clerk', 'clerk'),
-			__('Clerk', 'clerk'),
+			__( 'Clerk', 'clerk' ),
+			__( 'Clerk', 'clerk' ),
 			'manage_options',
 			'clerk',
 			[ $this, 'clerk_options_page_html' ],
-            plugin_dir_url(CLERK_PLUGIN_FILE) . 'assets/img/clerk.png'
+			plugin_dir_url( CLERK_PLUGIN_FILE ) . 'assets/img/clerk.png'
 		);
 
-		add_submenu_page('clerk', '', __('Clerk Settings', 'clerk'), 'manage_options', 'clerk', [ $this, 'clerk_options_page_html' ]);
+		add_submenu_page( 'clerk', '', __( 'Clerk Settings', 'clerk' ), 'manage_options', 'clerk', [
+			$this,
+			'clerk_options_page_html'
+		] );
 
-        $options = get_option( 'clerk_options' );
+		$options = get_option( 'clerk_options' );
 
-        if ($options && !empty($options['public_key']) && !empty($options['private_key'])) {
-            //Add Dashboard menu
-            add_submenu_page(
-                'clerk',
-                __('Dashboard', 'clerk'),
-                __('Dashboard', 'clerk'),
-                'manage_options',
-                'dashboard',
-                [ $this, 'clerk_dashboard_page_html' ]
-            );
+		if ( $options && ! empty( $options['public_key'] ) && ! empty( $options['private_key'] ) ) {
+			//Add Dashboard menu
+			add_submenu_page(
+				'clerk',
+				__( 'Dashboard', 'clerk' ),
+				__( 'Dashboard', 'clerk' ),
+				'manage_options',
+				'dashboard',
+				[ $this, 'clerk_dashboard_page_html' ]
+			);
 
-            //Add Search Insights menu
-            add_submenu_page(
-                'clerk',
-                __('Search Insights', 'clerk'),
-                __('Search Insights', 'clerk'),
-                'manage_options',
-                'search-insights',
-                [ $this, 'clerk_search_insights_page_html' ]
-            );
+			//Add Search Insights menu
+			add_submenu_page(
+				'clerk',
+				__( 'Search Insights', 'clerk' ),
+				__( 'Search Insights', 'clerk' ),
+				'manage_options',
+				'search-insights',
+				[ $this, 'clerk_search_insights_page_html' ]
+			);
 
-            //Add Recommendations Insights menu
-            add_submenu_page(
-                'clerk',
-                __('Recommendations Insights', 'clerk'),
-                __('Recommendations Insights', 'clerk'),
-                'manage_options',
-                'recommendations-insights',
-                [ $this, 'clerk_recommendations_insights_page_html' ]
-            );
+			//Add Recommendations Insights menu
+			add_submenu_page(
+				'clerk',
+				__( 'Recommendations Insights', 'clerk' ),
+				__( 'Recommendations Insights', 'clerk' ),
+				'manage_options',
+				'recommendations-insights',
+				[ $this, 'clerk_recommendations_insights_page_html' ]
+			);
 
-            //Add Email Insights menu
-            add_submenu_page(
-                'clerk',
-                __('Email Insights', 'clerk'),
-                __('Email Insights', 'clerk'),
-                'manage_options',
-                'email-insights',
-                [ $this, 'clerk_email_insights_page_html' ]
-            );
+			//Add Email Insights menu
+			add_submenu_page(
+				'clerk',
+				__( 'Email Insights', 'clerk' ),
+				__( 'Email Insights', 'clerk' ),
+				'manage_options',
+				'email-insights',
+				[ $this, 'clerk_email_insights_page_html' ]
+			);
 
-            //Add Audience Insights menu
-            add_submenu_page(
-                'clerk',
-                __('Audience Insights', 'clerk'),
-                __('Audience Insights', 'clerk'),
-                'manage_options',
-                'audience-insights',
-                [ $this, 'clerk_audience_insights_page_html' ]
-            );
-        }
+			//Add Audience Insights menu
+			add_submenu_page(
+				'clerk',
+				__( 'Audience Insights', 'clerk' ),
+				__( 'Audience Insights', 'clerk' ),
+				'manage_options',
+				'audience-insights',
+				[ $this, 'clerk_audience_insights_page_html' ]
+			);
+		}
 	}
 
 	public function clerk_options_page_html() {
@@ -497,7 +500,7 @@ class Clerk_Admin_Settings {
 		// check if the user have submitted the settings
 		// wordpress will add the "settings-updated" $_GET parameter to the url
 		if ( isset( $_GET['settings-updated'] ) ) {
-		    delete_transient('clerk_api_contents');
+			delete_transient( 'clerk_api_contents' );
 			// add settings saved message with the class of "updated"
 			add_settings_error( 'wporg_messages', 'wporg_message', __( 'Settings Saved', 'wporg' ), 'updated' );
 		}
@@ -522,122 +525,116 @@ class Clerk_Admin_Settings {
 		<?php
 	}
 
-    /**
-     * Render Dashboard page
-     */
-    public function clerk_dashboard_page_html()
-    {
-        // check user capabilities
-        if ( ! current_user_can('manage_options')) {
-            return;
-        }
+	/**
+	 * Render Dashboard page
+	 */
+	public function clerk_dashboard_page_html() {
+		// check user capabilities
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
 
-        $url = $this->getEmbedUrl('dashboard');
-        ?>
+		$url = $this->getEmbedUrl( 'dashboard' );
+		?>
         <div class="wrap">
             <iframe id="clerk-embed" src="<?php echo $url; ?>" frameborder="0" width="100%" height="2400"></iframe>
         </div>
-        <?php
-    }
+		<?php
+	}
 
-    /**
-     * Render Search Insights page
-     */
-    public function clerk_search_insights_page_html()
-    {
-        // check user capabilities
-        if ( ! current_user_can('manage_options')) {
-            return;
-        }
+	/**
+	 * Render Search Insights page
+	 */
+	public function clerk_search_insights_page_html() {
+		// check user capabilities
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
 
-        $url = $this->getEmbedUrl('search');
-        ?>
+		$url = $this->getEmbedUrl( 'search' );
+		?>
         <div class="wrap">
             <iframe id="clerk-embed" src="<?php echo $url; ?>" frameborder="0" width="100%" height="2400"></iframe>
         </div>
-        <?php
-    }
+		<?php
+	}
 
-    /**
-     * Render Recommendations Insights page
-     */
-    public function clerk_recommendations_insights_page_html()
-    {
-        // check user capabilities
-        if ( ! current_user_can('manage_options')) {
-            return;
-        }
+	/**
+	 * Render Recommendations Insights page
+	 */
+	public function clerk_recommendations_insights_page_html() {
+		// check user capabilities
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
 
-        $url = $this->getEmbedUrl('recommendations');
-        ?>
+		$url = $this->getEmbedUrl( 'recommendations' );
+		?>
         <div class="wrap">
             <iframe id="clerk-embed" src="<?php echo $url; ?>" frameborder="0" width="100%" height="2400"></iframe>
         </div>
-        <?php
-    }
+		<?php
+	}
 
-    /**
-     * Render Email Insights page
-     */
-    public function clerk_email_insights_page_html()
-    {
-        // check user capabilities
-        if ( ! current_user_can('manage_options')) {
-            return;
-        }
+	/**
+	 * Render Email Insights page
+	 */
+	public function clerk_email_insights_page_html() {
+		// check user capabilities
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
 
-        $url = $this->getEmbedUrl('email');
-        ?>
+		$url = $this->getEmbedUrl( 'email' );
+		?>
         <div class="wrap">
             <iframe id="clerk-embed" src="<?php echo $url; ?>" frameborder="0" width="100%" height="2400"></iframe>
         </div>
-        <?php
-    }
+		<?php
+	}
 
-    /**
-     * Render Audience Insights page
-     */
-    public function clerk_audience_insights_page_html()
-    {
-        // check user capabilities
-        if ( ! current_user_can('manage_options')) {
-            return;
-        }
+	/**
+	 * Render Audience Insights page
+	 */
+	public function clerk_audience_insights_page_html() {
+		// check user capabilities
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
 
-        $url = $this->getEmbedUrl('audience');
-        ?>
+		$url = $this->getEmbedUrl( 'audience' );
+		?>
         <div class="wrap">
             <iframe id="clerk-embed" src="<?php echo $url; ?>" frameborder="0" width="100%" height="2400"></iframe>
         </div>
-        <?php
-    }
+		<?php
+	}
 
-    /**
-     * Get first 8 characters of public key
-     *
-     * @param $publicKey
-     * @return string
-     */
-    private function getStorePart($publicKey)
-    {
-        return substr($publicKey, 0, 8);
-    }
+	/**
+	 * Get first 8 characters of public key
+	 *
+	 * @param $publicKey
+	 *
+	 * @return string
+	 */
+	private function getStorePart( $publicKey ) {
+		return substr( $publicKey, 0, 8 );
+	}
 
-    /**
-     * Get embed URL for dashboard type
-     *
-     * @param $string
-     */
-    private function getEmbedUrl($type)
-    {
-        $options = get_option( 'clerk_options' );
+	/**
+	 * Get embed URL for dashboard type
+	 *
+	 * @param $string
+	 */
+	private function getEmbedUrl( $type ) {
+		$options = get_option( 'clerk_options' );
 
-        $publicKey = $options['public_key'];
-        $privateKey = $options['private_key'];
-        $storePart = $this->getStorePart($publicKey);
+		$publicKey  = $options['public_key'];
+		$privateKey = $options['private_key'];
+		$storePart  = $this->getStorePart( $publicKey );
 
-        return sprintf('https://my.clerk.io/#/store/%s/analytics/%s?key=%s&private_key=%s&embed=yes', $storePart, $type, $publicKey, $privateKey);
-    }
+		return sprintf( 'https://my.clerk.io/#/store/%s/analytics/%s?key=%s&private_key=%s&embed=yes', $storePart, $type, $publicKey, $privateKey );
+	}
 }
 
 new Clerk_Admin_Settings();

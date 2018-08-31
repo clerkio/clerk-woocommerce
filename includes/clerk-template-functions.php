@@ -48,7 +48,7 @@ function clerk_get_template( $template_name, $args = array(), $tempate_path = ''
 	$template_file = clerk_locate_template( $template_name, $tempate_path, $default_path );
 
 	if ( ! file_exists( $template_file ) ) {
-		_doing_it_wrong( __FUNCTION__, sprintf( __('%s does not exist.', 'clerk'), $template_file ), '1.0.0' );
+		_doing_it_wrong( __FUNCTION__, sprintf( __( '%s does not exist.', 'clerk' ), $template_file ), '1.0.0' );
 
 		return;
 	}
@@ -58,20 +58,20 @@ function clerk_get_template( $template_name, $args = array(), $tempate_path = ''
 
 if ( ! function_exists( 'get_product_search_form' ) ) {
 	function get_clerk_search_form() {
-		return clerk_get_template('clerk-searchform.php');
+		return clerk_get_template( 'clerk-searchform.php' );
 	}
 }
 
 if ( ! function_exists( 'get_clerk_powerstep' ) ) {
-	function get_clerk_powerstep($product) {
-		return clerk_get_template('clerk-powerstep.php', ['product' => $product]);
+	function get_clerk_powerstep( $product ) {
+		return clerk_get_template( 'clerk-powerstep.php', [ 'product' => $product ] );
 	}
 }
 
 if ( ! function_exists( 'get_clerk_powerstep_popup' ) ) {
-    function get_clerk_powerstep_popup($product) {
-        return clerk_get_template('clerk-powerstep-popup.php', ['product' => $product]);
-    }
+	function get_clerk_powerstep_popup( $product ) {
+		return clerk_get_template( 'clerk-powerstep-popup.php', [ 'product' => $product ] );
+	}
 }
 
 
@@ -84,7 +84,7 @@ if ( ! function_exists( 'get_powerstep_templates' ) ) {
 		}
 
 		$templates = explode( ',', $options['powerstep_templates'] );
-		$templates = array_map('trim', $templates);
+		$templates = array_map( 'trim', $templates );
 
 		return $templates;
 	}

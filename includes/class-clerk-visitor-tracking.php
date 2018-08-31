@@ -1,7 +1,7 @@
 <?php
 
 if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Exit if accessed directly
+	exit; // Exit if accessed directly
 }
 
 class Clerk_Visitor_Tracking {
@@ -26,9 +26,9 @@ class Clerk_Visitor_Tracking {
 		$options = get_option( 'clerk_options' );
 
 		//Default to false
-        if (!isset($options['collect_emails'])) {
-            $options['collect_emails'] = false;
-        }
+		if ( ! isset( $options['collect_emails'] ) ) {
+			$options['collect_emails'] = false;
+		}
 
 		?>
         <!-- Start of Clerk.io E-commerce Personalisation tool - www.clerk.io -->

@@ -1,7 +1,7 @@
 <?php
 
 if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Exit if accessed directly
+	exit; // Exit if accessed directly
 }
 
 class Clerk_Search {
@@ -16,8 +16,8 @@ class Clerk_Search {
 	 * Init hooks
 	 */
 	private function initHooks() {
-		add_filter( 'query_vars', [$this, 'add_search_vars'] );
-		add_shortcode( 'clerk-search', [$this, 'handle_shortcode']);
+		add_filter( 'query_vars', [ $this, 'add_search_vars' ] );
+		add_shortcode( 'clerk-search', [ $this, 'handle_shortcode' ] );
 	}
 
 	/**
@@ -35,17 +35,18 @@ class Clerk_Search {
 
 	/**
 	 * Output clerk-search shortcode
+	 *
 	 * @param $atts
 	 */
 	public function handle_shortcode( $atts ) {
 		$options = get_option( 'clerk_options' );
-	?>
-		<span id="clerk-search"
-		      class="clerk"
-		      data-template="@<?php echo esc_attr( strtolower( str_replace(' ', '-', $options['search_template'] ) ) ); ?>"
-		      data-query="<?php echo esc_attr( get_query_var('searchterm') ); ?>">
+		?>
+        <span id="clerk-search"
+              class="clerk"
+              data-template="@<?php echo esc_attr( strtolower( str_replace( ' ', '-', $options['search_template'] ) ) ); ?>"
+              data-query="<?php echo esc_attr( get_query_var( 'searchterm' ) ); ?>">
 		</span>
-	<?php
+		<?php
 	}
 }
 

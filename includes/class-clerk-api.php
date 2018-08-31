@@ -1,7 +1,7 @@
 <?php
 
 if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Exit if accessed directly
+	exit; // Exit if accessed directly
 }
 
 class Clerk_Api {
@@ -27,11 +27,11 @@ class Clerk_Api {
 		$this->get( 'product/remove', $params );
 	}
 
-    /**
-     * Add product to Clerk
-     *
-     * @param $product_params
-     */
+	/**
+	 * Add product to Clerk
+	 *
+	 * @param $product_params
+	 */
 	public function addProduct( $product_params ) {
 		$options = get_option( 'clerk_options' );
 
@@ -44,49 +44,49 @@ class Clerk_Api {
 		$this->post( 'product/add', $params );
 	}
 
-    /**
-     * Get contents from Clerk
-     *
-     * @return array|WP_Error
-     */
-	public function getContent()
-    {
-        $contents = get_transient('clerk_api_contents');
+	/**
+	 * Get contents from Clerk
+	 *
+	 * @return array|WP_Error
+	 */
+	public function getContent() {
+		$contents = get_transient( 'clerk_api_contents' );
 
-        if ($contents) {
-            return $contents;
-        }
+		if ( $contents ) {
+			return $contents;
+		}
 
-        $options = get_option( 'clerk_options' );
+		$options = get_option( 'clerk_options' );
 
-        $params = [
-            'key'         => $options['public_key'],
-            'private_key' => $options['private_key'],
-        ];
+		$params = [
+			'key'         => $options['public_key'],
+			'private_key' => $options['private_key'],
+		];
 
-        $request = $this->get( 'client/account/content/list', $params );
+		$request = $this->get( 'client/account/content/list', $params );
 
-        if ( is_wp_error( $request ) ) {
-            return false;
-        }
+		if ( is_wp_error( $request ) ) {
+			return false;
+		}
 
-        $body = wp_remote_retrieve_body( $request );
-        $json = json_decode( $body );
+		$body = wp_remote_retrieve_body( $request );
+		$json = json_decode( $body );
 
-        if ($json->status === 'ok') {
-            set_transient('clerk_api_contents', $json, 14400);
-        }
+		if ( $json->status === 'ok' ) {
+			set_transient( 'clerk_api_contents', $json, 14400 );
+		}
 
-        return $json;
-    }
+		return $json;
+	}
 
-    /**
-     * Perform a GET request
-     *
-     * @param string $endpoint
-     * @param array $params
-     * @return array|WP_Error
-     */
+	/**
+	 * Perform a GET request
+	 *
+	 * @param string $endpoint
+	 * @param array $params
+	 *
+	 * @return array|WP_Error
+	 */
 	private function get( $endpoint, $params = [] ) {
 		$url      = $this->baseurl . $endpoint . '?' . http_build_query( $params );
 		$response = wp_safe_remote_get( $url );
