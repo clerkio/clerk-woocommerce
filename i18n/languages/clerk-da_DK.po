@@ -8,7 +8,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2018-08-31 16:25+0200\n"
+"PO-Revision-Date: 2018-09-05 11:08+0200\n"
 "Language-Team: \n"
 "X-Generator: Poedit 1.8.7.1\n"
 "Last-Translator: \n"
@@ -218,22 +218,22 @@ msgstr "Shop Videre"
 
 #: templates/clerk-powerstep.php:23 templates/clerk-powerstep.php:24
 msgid "Proceed to Checkout"
-msgstr ""
+msgstr "Fortsæt til Checkud"
 
 #: templates/clerk-searchform.php:12
 msgctxt "label"
 msgid "Search for:"
-msgstr ""
+msgstr "Søg efter:"
 
 #: templates/clerk-searchform.php:13
 msgctxt "placeholder"
 msgid "Search &hellip;"
-msgstr ""
+msgstr "Søg &hellip;"
 
 #: templates/clerk-searchform.php:15
 msgctxt "submit button"
 msgid "Search"
-msgstr ""
+msgstr "Søg"
 
 #: templates/clerk-searchform.php:26
 msgid "Categories"

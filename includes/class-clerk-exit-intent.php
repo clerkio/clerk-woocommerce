@@ -25,7 +25,7 @@ class Clerk_Exit_Intent {
 	public function add_exit_intent() {
 		$options = get_option( 'clerk_options' );
 
-		if ( $options['exit_intent_enabled'] ) :
+		if ( isset( $options['exit_intent_enabled'] ) && $options['exit_intent_enabled'] ) :
 			?>
             <span class="clerk"
                   data-template="@<?php echo esc_attr( $options['exit_intent_template'] ); ?>"

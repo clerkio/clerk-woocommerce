@@ -5,10 +5,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $options = get_option( 'clerk_options' );
 
-if ( $options['product_enabled'] ) :
-	?>
-    <span class="clerk" data-template="@<?php echo $options['product_content']; ?>"
+if ( isset( $options['product_enabled'] ) && $options['product_enabled'] ) :
+    $contents = explode(',', $options['product_content']);
+
+    foreach ($contents as $content) :
+?>
+    <span class="clerk" data-template="@<?php echo $content; ?>"
           data-products="[<?php echo get_the_ID(); ?>]"></span>
 <?php
+    endforeach;
 endif;
 ?>

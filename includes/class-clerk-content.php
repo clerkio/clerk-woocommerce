@@ -17,7 +17,7 @@ class Clerk_Content {
 		$category = get_queried_object();
 		$options  = get_option( 'clerk_options' );
 
-		if ( $options['category_enabled'] ) :
+		if ( isset( $options['category_enabled'] ) && $options['category_enabled'] ) :
 			?>
             <span class="clerk" data-template="@<?php echo $options['category_content']; ?>"
                   data-category="<?php echo $category->term_id; ?>"></span>
@@ -39,7 +39,7 @@ class Clerk_Content {
 			$products[] = $values['product_id'];
 		}
 
-		if ( $options['cart_enabled'] ) :
+		if ( isset( $options['cart_enabled'] ) && $options['cart_enabled'] ) :
 			?>
             <span class="clerk" data-template="@<?php echo $options['cart_content']; ?>"
                   data-products="<?php echo json_encode( $products ); ?>"></span>
@@ -59,7 +59,7 @@ class Clerk_Content {
 		if ( $template_name === 'single-product/related.php' ) {
 			$options = get_option( 'clerk_options' );
 
-			if ( $options['product_enabled'] ) :
+			if ( isset( $options['product_enabled'] ) && $options['product_enabled'] ) :
 				return clerk_locate_template( 'clerk-related-products.php' );
 			endif;
 		}
