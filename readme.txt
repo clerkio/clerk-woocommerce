@@ -29,6 +29,15 @@ Once signed up, simply login to your my.clerk.io backend, which will guide you t
 
 
 == Changelog ==
+= 1.5.2 - 2018-09-21 =
+* Add option to toggle content in categories, products and cart
+* Update danish localization
+* Allow comma separated list of product page contents
+
+= 1.5.1 - 2018-09-03 =
+* Reformat code to follow WP styleguide
+* Add localization
+
 = 1.5.0 - 2018-07-06 =
 * Add option to toggle content in categories, products and cart
 * Add widget to insert content
