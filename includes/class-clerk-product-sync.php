@@ -70,29 +70,60 @@ class Clerk_Product_Sync {
 	 * @param WC_Product $product
 	 */
 	private function add_product( WC_Product $product ) {
-		$categories = wp_get_post_terms( $product->get_id(), 'product_cat' );
+        $categories = wp_get_post_terms($product->get_id(), 'product_cat');
 
-		$params = [
-			'id'          => $product->get_id(),
-			'name'        => $product->get_name(),
-			'description' => get_post_field( 'post_content', $product->get_id() ),
-			'price'       => (float) $product->get_price(),
-			'list_price'  => (float) $product->get_regular_price(),
-			'image'       => wp_get_attachment_url( $product->get_image_id() ),
-			'url'         => $product->get_permalink(),
-			'categories'  => wp_list_pluck( $categories, 'term_id' ),
-			'sku'         => $product->get_sku(),
-			'on_sale'     => $product->is_on_sale(),
-		];
+        $on_sale = $product->is_on_sale();
 
-		$additional_fields = array_filter( $this->getAdditionalFields(), 'strlen' );
+        if ( $product->is_type( 'variable' ) ) {
+            /**
+             * Variable product sync fields
+             * Will sync the lowest price, and set the sale flag if that variant is on sale.
+             */
+            $variation = $product->get_available_variations();
+            $displayPrice = array();
+            $regularPrice = array();
+            foreach ($variation as $v){
+                $vId = $v['variation_id'];
+                $displayPrice[$vId] = $v['display_price'];
+                $regularPrice[$vId] = $v['display_regular_price'];
+            }
+            $lowestDisplayPrice = array_keys($displayPrice, min($displayPrice)); // Find the corresponding product ID
 
-		//Append additional fields
-		foreach ( $additional_fields as $field ) {
-			$params[ $field ] = $product->get_attribute( $field );
-		}
+            $price = $displayPrice[$lowestDisplayPrice[0]]; // Get the lowest price
+            $list_price = $regularPrice[$lowestDisplayPrice[0]]; // Get the corresponding list price (regular price)
 
-		$this->api->addProduct( $params );
+            if($price === $list_price) $on_sale = false; // Remove the sale flag if the cheapest variant is not on sale
+
+        } else {
+            /**
+             * Default single product sync fields
+             */
+            $price      = $product->get_price();
+            $list_price = $product->get_regular_price();
+        }
+
+        $params = [
+            'id'          => $product->get_id(),
+            'name'        => $product->get_name(),
+            'description' => get_post_field('post_content', $product->get_id()),
+            'price'       => (float) $price,
+            'list_price'  => (float) $list_price,
+            'image'       => wp_get_attachment_url( $product->get_image_id() ),
+            'url'         => $product->get_permalink(),
+            'categories'  => wp_list_pluck($categories, 'term_id'),
+            'sku'         => $product->get_sku(),
+            'on_sale'     => $on_sale,
+            'type'        => $product->get_type(),
+        ];
+
+        $additional_fields = array_filter($this->getAdditionalFields(), 'strlen');
+
+        //Append additional fields
+        foreach ($additional_fields as $field) {
+            $params[$field] = $product->get_attribute($field);
+        }
+
+        $this->api->addProduct( $params );
 	}
 
 	/**
