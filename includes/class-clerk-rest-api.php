@@ -344,10 +344,10 @@ class Clerk_Rest_Api extends WP_REST_Server {
 	 */
 	private function getUnathorizedResponse() {
 		$response = new WP_REST_Response( [
-			'code'        => 403,
-			'message'     => 'Invalid keys supplied',
-			'description' => __( 'The supplied public or private key is invalid', 'clerk' ),
-			'how_to_fix'  => __( 'Ensure that the proper keys are set up in the configuration', 'clerk' ),
+			'error' => [
+				'code'    => 403,
+				'message' => __( 'The supplied public or private key is invalid', 'clerk' )
+			]
 		] );
 		$response->set_status( 403 );
 

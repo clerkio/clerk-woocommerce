@@ -47,6 +47,9 @@ if ( ! class_exists( 'Clerk' ) ) {
 			require_once( __DIR__ . '/includes/class-clerk-content.php' );
 		}
 
+		/**
+		 * Set up hooks
+		 */
 		private function initHooks() {
 			//Register widgets
 			add_action( 'widgets_init', function () {
