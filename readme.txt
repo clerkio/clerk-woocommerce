@@ -29,6 +29,11 @@ Once signed up, simply login to your my.clerk.io backend, which will guide you t
 
 
 == Changelog ==
+= 1.5.3 - 2018-10-17 =
+* Add spanish and italian translations
+* Add better support for variable products
+* Change JSON error format
+
 = 1.5.2 - 2018-09-21 =
 * Add option to toggle content in categories, products and cart
 * Update danish localization
