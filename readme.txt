@@ -3,9 +3,9 @@ Contributors: clerkio, audunhus
 Tags: product recommendations, semantic search, customer conversion, customer retention, customer segmentation, webshop personalization, sales optimisation
 License: MIT
 License URI: https://opensource.org/licenses/MIT
-Tested up to: 4.9.4
+Tested up to: 4.9.8
 WC requires at least: 2.6
-WC tested up to: 3.0
+WC tested up to: 3.4.6
 
 == Description ==
 Clerk.io is a software that helps your customers buy more from your webshop, through 4 amazing feature:
@@ -29,6 +29,10 @@ Once signed up, simply login to your my.clerk.io backend, which will guide you t
 
 
 == Changelog ==
+= 1.5.4 - 2018-11-01 =
+* Re add option to disable emails in order sync
+* Fix issue where only refunded orders would get synced
+
 = 1.5.3 - 2018-10-17 =
 * Add spanish and italian translations
 * Add better support for variable products
