@@ -258,7 +258,8 @@ class Clerk_Rest_Api extends WP_REST_Server {
 		$orders = wc_get_orders( [
 			'limit'  => $limit,
 			'offset' => ( $page - 1 ) * $limit,
-			'type'   => 'shop_order_refund'
+			'type'   => 'shop_order',
+			'status' => 'completed'
 		] );
 
 		$order_array = [];
@@ -286,11 +287,15 @@ class Clerk_Rest_Api extends WP_REST_Server {
 			}
 
 			$order_object = [
-				'email'    => $order->billing_email,
 				'products' => $order_items,
 				'time'     => strtotime( $order->order_date ),
 				'class'    => get_class( $order )
 			];
+
+			//Include email if defined
+			if ( $options['collect_emails'] ) {
+				$order_object['email'] = $order->billing_email;
+			}
 
 			//id is a protected property in 3.0
 			if ( clerk_check_version() ) {
