@@ -170,7 +170,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
             ];
 
             //Append additional fields
-            foreach ( $additional_fields as $field ) {
+            foreach ( $this->getAdditionalFields() as $field ) {
                 $productArray[ $field ] = $product->get_attribute( $field );
             }
 
@@ -398,6 +398,10 @@ class Clerk_Rest_Api extends WP_REST_Server {
 		$additional_fields = $options['additional_fields'];
 
 		$fields = explode( ',', $additional_fields );
+
+		if (! is_array($fields)) {
+			return array();
+		}
 
 		return $fields;
 	}

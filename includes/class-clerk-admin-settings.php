@@ -18,7 +18,6 @@ class Clerk_Admin_Settings {
 	private function initHooks() {
 		add_action( 'admin_init', [ $this, 'settings_init' ] );
 		add_action( 'admin_menu', [ $this, 'clerk_options_page' ] );
-		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 	}
 
 	/**
