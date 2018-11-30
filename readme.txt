@@ -29,6 +29,9 @@ Once signed up, simply login to your my.clerk.io backend, which will guide you t
 
 
 == Changelog ==
+= 1.5.6 - 2018-11-30 =
+* Fix syntax error in call to product/remove
+
 = 1.5.5 - 2018-11-21 =
 * Remove legacy hook
 * Fix bug with additional fields
