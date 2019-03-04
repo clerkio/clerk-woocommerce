@@ -25,9 +25,9 @@ class Clerk_Visitor_Tracking {
 	public function add_tracking() {
 		$options = get_option( 'clerk_options' );
 
-		//Default to false
+		//Default to true
 		if ( ! isset( $options['collect_emails'] ) ) {
-			$options['collect_emails'] = false;
+			$options['collect_emails'] = true;
 		}
 
 		?>

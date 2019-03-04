@@ -111,17 +111,21 @@ class Clerk_Rest_Api extends WP_REST_Server {
 		$orderby = $request->get_param( 'orderby' ) ? $request->get_param( 'orderby' ) : 'date';
 		$order   = $request->get_param( 'order' ) ? $request->get_param( 'order' ) : 'DESC';
 
+		$offset = ( $request->get_param( 'page' ) === 0 ) ? 0 : $page * $limit ;
+
 		$products = clerk_get_products( array(
 			'limit'   => $limit,
 			'page'    => $page,
 			'orderby' => $orderby,
 			'order'   => $order,
 			'status'  => array( 'publish' ),
+			'paginate' => true,
+			'offset' => $offset
 		) );
 
 		$productsArray = [];
 
-		foreach ( $products as $product ) {
+		foreach ( $products->products as $product ) {
 			/** @var WC_Product $product */
 			$categories = wp_get_post_terms($product->get_id(), 'product_cat');
 
@@ -141,12 +145,10 @@ class Clerk_Rest_Api extends WP_REST_Server {
                     $regularPrice[$vId] = $v['display_regular_price'];
                 }
                 $lowestDisplayPrice = array_keys($displayPrice, min($displayPrice)); // Find the corresponding product ID
-
                 $price = $displayPrice[$lowestDisplayPrice[0]]; // Get the lowest price
                 $list_price = $regularPrice[$lowestDisplayPrice[0]]; // Get the corresponding list price (regular price)
 
                 if($price === $list_price) $on_sale = false; // Remove the sale flag if the cheapest variant is not on sale
-
             } else {
                 /**
                  * Default single product sync fields

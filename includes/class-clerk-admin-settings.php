@@ -81,7 +81,7 @@ class Clerk_Admin_Settings {
 			'clerk_section_datasync',
 			[
 				'label_for' => 'collect_emails',
-				'default'   => 0
+				'default'   => 1
 			]
 		);
 

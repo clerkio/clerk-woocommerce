@@ -29,6 +29,10 @@ Once signed up, simply login to your my.clerk.io backend, which will guide you t
 
 
 == Changelog ==
+= 1.5.7 - 2019-03-04 =
+* Fix pagination error
+* Set collect emails to on by default
+
 = 1.5.6 - 2018-11-30 =
 * Fix syntax error in call to product/remove
 
