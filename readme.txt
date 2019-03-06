@@ -29,6 +29,9 @@ Once signed up, simply login to your my.clerk.io backend, which will guide you t
 
 
 == Changelog ==
+= 1.5.8 - 2019-03-06 =
+* Fix critical error with pagination logic
+
 = 1.5.7 - 2019-03-04 =
 * Fix pagination error
 * Set collect emails to on by default
