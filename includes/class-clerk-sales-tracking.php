@@ -36,13 +36,21 @@ class Clerk_Sales_Tracking {
 				'price'    => $item['line_subtotal'] / $item['qty'],
 			];
 		}
+
+		$order_array = [
+            'id' => $order_id,
+            'email' => $order->billing_email,
+            'products' => $products,
+        ];
+
+		$order_array = apply_filters( 'clerk_tracking_order_array', $order_array, $order );
 		?>
         <span
                 class="clerk"
                 data-api="log/sale"
-                data-sale="<?php echo $order_id; ?>"
-                data-email="<?php echo $order->billing_email; ?>"
-                data-products='<?php echo json_encode( $products ); ?>'>
+                data-sale="<?php echo $order_array['id']; ?>"
+                data-email="<?php echo $order_array['email']; ?>"
+                data-products='<?php echo json_encode( $order_array['products'] ); ?>'>
         </span>
 		<?php
 	}
