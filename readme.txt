@@ -29,6 +29,12 @@ Once signed up, simply login to your my.clerk.io backend, which will guide you t
 
 
 == Changelog ==
+= 1.5.10 - 2019-03-27 =
+* Remove duplicated filter
+
+= 1.5.9 - 2019-03-26 =
+* Add more filters
+
 = 1.5.8 - 2019-03-06 =
 * Fix critical error with pagination logic
 

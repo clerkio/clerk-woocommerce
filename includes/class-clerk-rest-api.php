@@ -314,8 +314,6 @@ class Clerk_Rest_Api extends WP_REST_Server {
 				$order_object  = apply_filters( 'clerk_order_array', $order_object, $order );
 				$order_array[] = $order_object;
 			}
-
-			$order_array = apply_filters( 'clerk_order_array', $order_array, $order );
 		}
 
 		return $order_array;
