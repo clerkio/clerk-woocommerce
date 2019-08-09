@@ -29,6 +29,9 @@ if ( ! class_exists( 'Clerk' ) ) {
 		}
 
 		private function includes() {
+		    //ClerkLogger
+            require_once( __DIR__ . '/includes\class-clerk-logger.php' );
+
 			//Backend
 			require_once( __DIR__ . '/includes/class-clerk-admin-settings.php' );
 			require_once( __DIR__ . '/includes/class-clerk-product-sync.php' );

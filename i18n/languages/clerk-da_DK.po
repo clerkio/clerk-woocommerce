@@ -8,9 +8,9 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2018-09-05 11:08+0200\n"
+"PO-Revision-Date: 2019-08-09 10:15+0200\n"
 "Language-Team: \n"
-"X-Generator: Poedit 1.8.7.1\n"
+"X-Generator: Poedit 2.2.3\n"
 "Last-Translator: \n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Language: da_DK\n"
@@ -58,6 +58,7 @@ msgstr "Søge Indstillinger"
 #: includes/class-clerk-admin-settings.php:269
 #: includes/class-clerk-admin-settings.php:296
 #: includes/class-clerk-admin-settings.php:323
+#: includes/class-clerk-admin-settings.php:349
 msgid "Enabled"
 msgstr "Slået til"
 
@@ -153,6 +154,10 @@ msgstr ""
 #: includes/class-clerk-admin-settings.php:502
 msgid "Settings Saved"
 msgstr "Indstillinger Gemt"
+
+#: includes/class-clerk-admin-settings.php:344
+msgid "Debug Mode"
+msgstr "Fejlretningstilstand"
 
 #: includes/class-clerk-rest-api.php:351
 msgid "The supplied public or private key is invalid"

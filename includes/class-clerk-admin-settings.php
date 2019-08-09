@@ -337,6 +337,24 @@ class Clerk_Admin_Settings {
 				'label_for' => 'cart_content',
 			]
 		);
+
+        //Add debug section
+        add_settings_section(
+            'clerk_section_debug',
+            __( 'Debug Mode', 'clerk' ),
+            null,
+            'clerk' );
+
+        add_settings_field( 'disable_debug_mode',
+            __( 'Enabled', 'clerk' ),
+            [ $this, 'addCheckboxField' ],
+            'clerk',
+            'disable_debug_mode',
+            [
+                'label_for' => 'disable_debug_mode',
+                'default'   => 1
+            ]
+        );
 	}
 
 	/**

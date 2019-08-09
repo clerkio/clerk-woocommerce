@@ -1,111 +1,152 @@
 <?php
 
-if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly
+if (!defined('ABSPATH')) {
+    exit; // Exit if accessed directly
 }
 
-class Clerk_Api {
-	/**
-	 * @var string
-	 */
-	protected $baseurl = 'http://api.clerk.io/v2/';
+class Clerk_Api
+{
+    /**
+     * @var string
+     */
+    protected $baseurl = 'http://api.clerk.io/v2/';
+    protected $logger;
 
-	/**
-	 * Remove product
-	 *
-	 * @param $product_id
-	 */
-	public function removeProduct( $product_id ) {
-		$options = get_option( 'clerk_options' );
+    /**
+     * Clerk_Api constructor.
+     */
+    public function __construct()
+    {
+        $this->includes();
+        $this->logger = new ClerkLogger();
+    }
 
-		$params = [
-			'key'         => $options['public_key'],
-			'private_key' => $options['private_key'],
-			'products'    => array($product_id),
-		];
+    /**
+     * 
+     */
+    private function includes()
+    {
+        require_once(__DIR__ . '/class-clerk-logger.php');
+    }
 
-		$this->get( 'product/remove', $params );
-	}
+    /**
+     * Remove product
+     *
+     * @param $product_id
+     * @return array
+     */
+    public function removeProduct($product_id)
+    {
 
-	/**
-	 * Add product to Clerk
-	 *
-	 * @param $product_params
-	 */
-	public function addProduct( $product_params ) {
-		$options = get_option( 'clerk_options' );
+        $options = get_option('clerk_options');
 
-		$params = [
-			'key'         => $options['public_key'],
-			'private_key' => $options['private_key'],
-			'products'    => [ $product_params ],
-		];
+        $params = [
+            'key' => $options['public_key'],
+            'private_key' => $options['private_key'],
+            'products' => array($product_id),
+        ];
 
-		$this->post( 'product/add', $params );
-	}
+        $this->get('product/remove', $params);
 
-	/**
-	 * Get contents from Clerk
-	 *
-	 * @return array|WP_Error
-	 */
-	public function getContent() {
-		$contents = get_transient( 'clerk_api_contents' );
+    }
 
-		if ( $contents ) {
-			return $contents;
-		}
+    /**
+     * Add product to Clerk
+     *
+     * @param $product_params
+     * @return array
+     */
+    public function addProduct($product_params)
+    {
 
-		$options = get_option( 'clerk_options' );
+        $options = get_option('clerk_options');
 
-		$params = [
-			'key'         => $options['public_key'],
-			'private_key' => $options['private_key'],
-		];
+        $params = [
+            'key' => $options['public_key'],
+            'private_key' => $options['private_key'],
+            'products' => [$product_params],
+        ];
 
-		$request = $this->get( 'client/account/content/list', $params );
+        $this->post('product/add', $params);
 
-		if ( is_wp_error( $request ) ) {
-			return false;
-		}
+    }
 
-		$body = wp_remote_retrieve_body( $request );
-		$json = json_decode( $body );
+    /**
+     * Get contents from Clerk
+     *
+     * @return array|WP_Error
+     */
+    public function getContent()
+    {
 
-		if ( $json->status === 'ok' ) {
-			set_transient( 'clerk_api_contents', $json, 14400 );
-		}
+        $contents = get_transient('clerk_api_contents');
 
-		return $json;
-	}
+        if ($contents) {
+            return $contents;
+        }
 
-	/**
-	 * Perform a GET request
-	 *
-	 * @param string $endpoint
-	 * @param array $params
-	 *
-	 * @return array|WP_Error
-	 */
-	private function get( $endpoint, $params = [] ) {
-		$url      = $this->baseurl . $endpoint . '?' . http_build_query( $params );
-		$response = wp_safe_remote_get( $url );
+        $options = get_option('clerk_options');
 
-		return $response;
-	}
+        $params = [
+            'key' => $options['public_key'],
+            'private_key' => $options['private_key'],
+        ];
 
-	/**
-	 * Perform a POST request
-	 *
-	 * @param string $endpoint
-	 * @param array $params
-	 */
-	private function post( $endpoint, $params = [] ) {
-		$url = $this->baseurl . $endpoint;
+        $request = $this->get('client/account/content/list', $params);
 
-		$response = wp_safe_remote_post( $url, [
-			'headers' => array( 'Content-Type' => 'application/json; charset=utf-8' ),
-			'body'    => json_encode( $params ),
-		] );
-	}
+        if (is_wp_error($request)) {
+            return false;
+        }
+
+        $body = wp_remote_retrieve_body($request);
+        $json = json_decode($body);
+
+        if ($json->status === 'ok') {
+            set_transient('clerk_api_contents', $json, 14400);
+        }
+
+        return $json;
+    }
+
+    /**
+     * Perform a GET request
+     *
+     * @param string $endpoint
+     * @param array $params
+     *
+     * @return array|WP_Error
+     */
+    private function get($endpoint, $params = [])
+    {
+
+        $url = $this->baseurl . $endpoint . '?' . http_build_query($params);
+        $response = wp_safe_remote_get($url);
+
+        $this->logger->SendLog($response, 'log', ['endpoint' => $endpoint, 'params' => $params]);
+
+        return $response;
+    }
+
+    /**
+     * Perform a POST request
+     *
+     * @param string $endpoint
+     * @param array $params
+     * @return array|WP_Error
+     */
+    private function post($endpoint, $params = [])
+    {
+
+        $url = $this->baseurl . $endpoint;
+
+        $response = wp_safe_remote_post($url, [
+            'headers' => array('Content-Type' => 'application/json; charset=utf-8'),
+            'body' => json_encode($params),
+        ]);
+
+        $this->logger->SendLog($response, 'log', ['endpoint' => $endpoint, 'params' => $params]);
+
+        return $response;
+
+    }
 }

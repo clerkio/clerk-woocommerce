@@ -17,6 +17,7 @@ class Clerk_Product_Sync {
 
 	private function includes() {
 		require_once( __DIR__ . '/class-clerk-api.php' );
+        require_once( __DIR__ . '/class-clerk-logger.php' );
 	}
 
 	private function initHooks() {
@@ -70,6 +71,7 @@ class Clerk_Product_Sync {
 	 * @param WC_Product $product
 	 */
 	private function add_product( WC_Product $product ) {
+
         $categories = wp_get_post_terms($product->get_id(), 'product_cat');
 
         $on_sale = $product->is_on_sale();
@@ -120,10 +122,13 @@ class Clerk_Product_Sync {
 
         //Append additional fields
         foreach ($additional_fields as $field) {
+
             $params[$field] = $product->get_attribute($field);
+
         }
 
-        $this->api->addProduct( $params );
+            $this->api->addProduct( $params );
+
 	}
 
 	/**
