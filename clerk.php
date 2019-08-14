@@ -29,14 +29,12 @@ if ( ! class_exists( 'Clerk' ) ) {
 		}
 
 		private function includes() {
-		    //ClerkLogger
-            require_once( __DIR__ . '/includes\class-clerk-logger.php' );
-
 			//Backend
 			require_once( __DIR__ . '/includes/class-clerk-admin-settings.php' );
 			require_once( __DIR__ . '/includes/class-clerk-product-sync.php' );
 			require_once( __DIR__ . '/includes/class-clerk-rest-api.php' );
 			require_once( __DIR__ . '/includes/clerk-legacy-helpers.php' );
+            require_once( __DIR__ . '/includes/class-clerk-logger.php' );
 
 			//Frontend
 			require_once( __DIR__ . '/includes/clerk-template-functions.php' );

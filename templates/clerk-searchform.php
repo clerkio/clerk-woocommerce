@@ -18,9 +18,9 @@ $unique_id = esc_attr( uniqid( 'clerk-search-form-' ) );
         <input type="submit" class="search-submit" value="<?php echo esc_attr_x( 'Search', 'submit button' ) ?>"/>
     </form>
 <?php
-$options = get_option( 'clerk_options' );
 
 if ( isset( $options['livesearch_enabled'] ) && $options['livesearch_enabled'] ) :
+
 	?>
     <span
             class="clerk"

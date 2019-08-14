@@ -8,6 +8,7 @@ global $woocommerce;
 
 $cart_url     = $woocommerce->cart->get_cart_url();
 $checkout_url = $woocommerce->cart->get_checkout_url();
+
 /** @var WC_Product $product */
 ?>
 <div class="powerstep-success">

@@ -7,17 +7,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Clerk_Product_Sync {
 	/** @var Clerk_Api */
 	protected $api;
+    protected $logger;
 
 	public function __construct() {
 		$this->includes();
 		$this->initHooks();
 
+        require_once( __DIR__ . '/class-clerk-logger.php' );
+
+        $this->logger = new ClerkLogger();
 		$this->api = new Clerk_Api();
 	}
 
 	private function includes() {
 		require_once( __DIR__ . '/class-clerk-api.php' );
-        require_once( __DIR__ . '/class-clerk-logger.php' );
 	}
 
 	private function initHooks() {
@@ -26,32 +29,41 @@ class Clerk_Product_Sync {
 	}
 
 	public function save_product( $post_id, $post ) {
-		if ( ! $post ) {
-			return;
-		}
 
-		if ( ! $product = wc_get_product( $post ) ) {
-			return;
-		}
+        try {
 
-		if ( clerk_check_version() ) {
-			if ( $product->get_status() === 'publish' ) {
-				//Send product to Clerk
-				$this->add_product( $product );
-			} elseif ( ! $product->get_status() === 'draft' ) {
-				//Remove product
-				$this->remove_product( $product->get_id() );
-			}
-		} else {
-			//Fix for WooCommerce 2.6
-			if ( $product->post->status === 'publish' ) {
-				//Send product to Clerk
-				$this->add_product( $product );
-			} elseif ( ! $product->post->status === 'draft' ) {
-				//Remove product
-				$this->remove_product( $product->get_id() );
-			}
-		}
+            if (!$post) {
+                return;
+            }
+
+            if (!$product = wc_get_product($post)) {
+                return;
+            }
+
+            if (clerk_check_version()) {
+                if ($product->get_status() === 'publish') {
+                    //Send product to Clerk
+                    $this->add_product($product);
+                } elseif (!$product->get_status() === 'draft') {
+                    //Remove product
+                    $this->remove_product($product->get_id());
+                }
+            } else {
+                //Fix for WooCommerce 2.6
+                if ($product->post->status === 'publish') {
+                    //Send product to Clerk
+                    $this->add_product($product);
+                } elseif (!$product->post->status === 'draft') {
+                    //Remove product
+                    $this->remove_product($product->get_id());
+                }
+            }
+
+        } catch (Exception $e) {
+
+            $this->logger->error('ERROR save_product', ['error' => $e->getMessage()]);
+
+        }
 
 	}
 
@@ -61,8 +73,17 @@ class Clerk_Product_Sync {
 	 * @param $post_id
 	 */
 	public function remove_product( $post_id ) {
-		//Remove product from Clerk
-		$this->api->removeProduct( $post_id );
+
+        try {
+
+            //Remove product from Clerk
+            $this->api->removeProduct($post_id);
+
+        } catch (Exception $e) {
+
+            $this->logger->error('ERROR remove_product', ['error' => $e->getMessage()]);
+
+        }
 	}
 
 	/**
@@ -72,62 +93,68 @@ class Clerk_Product_Sync {
 	 */
 	private function add_product( WC_Product $product ) {
 
-        $categories = wp_get_post_terms($product->get_id(), 'product_cat');
+        try {
 
-        $on_sale = $product->is_on_sale();
+            $categories = wp_get_post_terms($product->get_id(), 'product_cat');
 
-        if ( $product->is_type( 'variable' ) ) {
-            /**
-             * Variable product sync fields
-             * Will sync the lowest price, and set the sale flag if that variant is on sale.
-             */
-            $variation = $product->get_available_variations();
-            $displayPrice = array();
-            $regularPrice = array();
-            foreach ($variation as $v){
-                $vId = $v['variation_id'];
-                $displayPrice[$vId] = $v['display_price'];
-                $regularPrice[$vId] = $v['display_regular_price'];
+            $on_sale = $product->is_on_sale();
+
+            if ($product->is_type('variable')) {
+                /**
+                 * Variable product sync fields
+                 * Will sync the lowest price, and set the sale flag if that variant is on sale.
+                 */
+                $variation = $product->get_available_variations();
+                $displayPrice = array();
+                $regularPrice = array();
+                foreach ($variation as $v) {
+                    $vId = $v['variation_id'];
+                    $displayPrice[$vId] = $v['display_price'];
+                    $regularPrice[$vId] = $v['display_regular_price'];
+                }
+                $lowestDisplayPrice = array_keys($displayPrice, min($displayPrice)); // Find the corresponding product ID
+
+                $price = $displayPrice[$lowestDisplayPrice[0]]; // Get the lowest price
+                $list_price = $regularPrice[$lowestDisplayPrice[0]]; // Get the corresponding list price (regular price)
+
+                if ($price === $list_price) $on_sale = false; // Remove the sale flag if the cheapest variant is not on sale
+
+            } else {
+                /**
+                 * Default single product sync fields
+                 */
+                $price = $product->get_price();
+                $list_price = $product->get_regular_price();
             }
-            $lowestDisplayPrice = array_keys($displayPrice, min($displayPrice)); // Find the corresponding product ID
 
-            $price = $displayPrice[$lowestDisplayPrice[0]]; // Get the lowest price
-            $list_price = $regularPrice[$lowestDisplayPrice[0]]; // Get the corresponding list price (regular price)
+            $params = [
+                'id' => $product->get_id(),
+                'name' => $product->get_name(),
+                'description' => get_post_field('post_content', $product->get_id()),
+                'price' => (float)$price,
+                'list_price' => (float)$list_price,
+                'image' => wp_get_attachment_url($product->get_image_id()),
+                'url' => $product->get_permalink(),
+                'categories' => wp_list_pluck($categories, 'term_id'),
+                'sku' => $product->get_sku(),
+                'on_sale' => $on_sale,
+                'type' => $product->get_type(),
+            ];
 
-            if($price === $list_price) $on_sale = false; // Remove the sale flag if the cheapest variant is not on sale
+            $additional_fields = array_filter($this->getAdditionalFields(), 'strlen');
 
-        } else {
-            /**
-             * Default single product sync fields
-             */
-            $price      = $product->get_price();
-            $list_price = $product->get_regular_price();
-        }
+            //Append additional fields
+            foreach ($additional_fields as $field) {
+                $params[$field] = $product->get_attribute($field);
+            }
 
-        $params = [
-            'id'          => $product->get_id(),
-            'name'        => $product->get_name(),
-            'description' => get_post_field('post_content', $product->get_id()),
-            'price'       => (float) $price,
-            'list_price'  => (float) $list_price,
-            'image'       => wp_get_attachment_url( $product->get_image_id() ),
-            'url'         => $product->get_permalink(),
-            'categories'  => wp_list_pluck($categories, 'term_id'),
-            'sku'         => $product->get_sku(),
-            'on_sale'     => $on_sale,
-            'type'        => $product->get_type(),
-        ];
+            $this->api->addProduct($params);
 
-        $additional_fields = array_filter($this->getAdditionalFields(), 'strlen');
+        } catch (Exception $e) {
 
-        //Append additional fields
-        foreach ($additional_fields as $field) {
-
-            $params[$field] = $product->get_attribute($field);
+            $this->logger->error('ERROR add_product', ['error' => $e->getMessage()]);
 
         }
-
-            $this->api->addProduct( $params );
 
 	}
 
@@ -137,13 +164,23 @@ class Clerk_Product_Sync {
 	 * @return array
 	 */
 	private function getAdditionalFields() {
-		$options = get_option( 'clerk_options' );
 
-		$additional_fields = $options['additional_fields'];
+        try {
 
-		$fields = explode( ',', $additional_fields );
+            $options = get_option('clerk_options');
 
-		return $fields;
+            $additional_fields = $options['additional_fields'];
+
+            $fields = explode(',', $additional_fields);
+
+            return $fields;
+
+        } catch (Exception $e) {
+
+            $this->logger->error('ERROR getAdditionalFields', ['error' => $e->getMessage()]);
+
+        }
+
 	}
 }
 

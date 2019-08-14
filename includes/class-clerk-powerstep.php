@@ -7,12 +7,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Clerk_Powerstep {
 	const TYPE_POPUP = 'popup';
 	const TYPE_PAGE = 'page';
+    protected $logger;
 
 	/**
 	 * Clerk_Powerstep constructor.
 	 */
 	public function __construct() {
 		$this->initHooks();
+        require_once( __DIR__ . '/class-clerk-logger.php' );
+        $this->logger = new ClerkLogger();
 	}
 
 	/**
@@ -38,27 +41,37 @@ class Clerk_Powerstep {
 	 * If powerstep is enabled, either redirect user to powerstep page or redirect with popup param
 	 */
 	public function redirect_to_powerstep( $url ) {
-		if ( empty( $_REQUEST['add-to-cart'] ) || ! is_numeric( $_REQUEST['add-to-cart'] ) ) {
-			return $url;
-		}
 
-		$options = get_option( 'clerk_options' );
+        try {
 
-		if ( ! $options['powerstep_enabled'] || $options['powerstep_type'] !== self::TYPE_PAGE ) {
-			return $url;
-		}
+            if (empty($_REQUEST['add-to-cart']) || !is_numeric($_REQUEST['add-to-cart'])) {
+                return $url;
+            }
 
-		$product_id = absint( $_REQUEST['add-to-cart'] );
+            $options = get_option('clerk_options');
 
-		$adding_to_cart = wc_get_product( $product_id );
+            if (!$options['powerstep_enabled'] || $options['powerstep_type'] !== self::TYPE_PAGE) {
+                return $url;
+            }
 
-		if ( ! $adding_to_cart ) {
-			return $url;
-		}
+            $product_id = absint($_REQUEST['add-to-cart']);
 
-		$url = esc_url( get_page_link( $options['powerstep_page'] ) . '?product_id=' . $product_id );
+            $adding_to_cart = wc_get_product($product_id);
 
-		return $url;
+            if (!$adding_to_cart) {
+                return $url;
+            }
+
+            $url = esc_url(get_page_link($options['powerstep_page']) . '?product_id=' . $product_id);
+
+            return $url;
+
+        } catch (Exception $e) {
+
+            $this->logger->error('ERROR redirect_to_powerstep', ['error' => $e->getMessage()]);
+
+        }
+
 	}
 
 	/**
@@ -69,10 +82,20 @@ class Clerk_Powerstep {
 	 * @return array
 	 */
 	public function add_powerstep_vars( $vars ) {
-		$vars[] = 'show_powerstep';
-		$vars[] = 'product_id';
 
-		return $vars;
+        try {
+
+            $vars[] = 'show_powerstep';
+            $vars[] = 'product_id';
+
+            return $vars;
+
+        } catch (Exception $e) {
+
+            $this->logger->error('ERROR add_powerstep_vars', ['error' => $e->getMessage()]);
+
+        }
+
 	}
 
 	/**
@@ -81,61 +104,93 @@ class Clerk_Powerstep {
 	 * @param $atts
 	 */
 	public function handle_shortcode( $atts ) {
-		$options = get_option( 'clerk_options' );
 
-		if ( ! $options['powerstep_enabled'] ) {
-			return;
-		}
+        try {
 
-		$product_id = absint( get_query_var( 'product_id' ) );
+            $options = get_option('clerk_options');
 
-		$product = wc_get_product( $product_id );
+            if (!$options['powerstep_enabled']) {
+                return;
+            }
 
-		if ( ! $product ) {
-			return;
-		}
+            $product_id = absint(get_query_var('product_id'));
 
-		return get_clerk_powerstep( $product );
+            $product = wc_get_product($product_id);
+
+            if (!$product) {
+                return;
+            }
+
+            return get_clerk_powerstep($product);
+
+        } catch (Exception $e) {
+
+            $this->logger->error('ERROR handle_shortcode', ['error' => $e->getMessage()]);
+
+        }
+
 	}
 
 	/**
 	 * Add powerstep css
 	 */
 	public function add_powerstep_files() {
-		$options = get_option( 'clerk_options' );
 
-		if ( ! $options['powerstep_enabled'] ) {
-			return;
-		}
+        try {
 
-		if ( is_page( $options['powerstep_page'] ) ) {
-			wp_enqueue_style( 'clerk_powerstep_css', plugins_url( '../assets/css/powerstep.css', __FILE__ ) );
-		}
+            require_once(__DIR__ . '../includes/class-clerk-logger.php');
+            $logger = new ClerkLogger();
+            $options = get_option('clerk_options');
 
-		wp_enqueue_script( 'clerk_powerstep_js', plugins_url( '../assets/js/powerstep.js', __FILE__ ), array( 'jquery' ) );
-		wp_localize_script( 'clerk_powerstep_js', 'variables',
-			array(
-				'ajax_url'      => admin_url( 'admin-ajax.php' ),
-				'type'          => $options['powerstep_type'],
-				'powerstep_url' => esc_url( get_page_link( $options['powerstep_page'] ) )
-			)
-		);
+            if (!$options['powerstep_enabled']) {
+                return;
+            }
+
+            if (is_page($options['powerstep_page'])) {
+                wp_enqueue_style('clerk_powerstep_css', plugins_url('../assets/css/powerstep.css', __FILE__));
+            }
+
+            wp_enqueue_script('clerk_powerstep_js', plugins_url('../assets/js/powerstep.js', __FILE__), array('jquery'));
+            wp_localize_script('clerk_powerstep_js', 'variables',
+                array(
+                    'ajax_url' => admin_url('admin-ajax.php'),
+                    'type' => $options['powerstep_type'],
+                    'powerstep_url' => esc_url(get_page_link($options['powerstep_page']))
+                )
+            );
+
+        } catch (Exception $e) {
+
+            $this->logger->error('ERROR add_powerstep_files', ['error' => $e->getMessage()]);
+
+        }
+
 	}
 
 	/**
 	 * Get powerstep popup content
 	 */
 	public function powerstep_ajax() {
-		$product_id = absint( $_POST['product_id'] );
 
-		$product = wc_get_product( $product_id );
+        try {
 
-		if ( ! $product ) {
-			return;
-		}
+            $product_id = absint($_POST['product_id']);
 
-		echo get_clerk_powerstep_popup( $product );
-		wp_die();
+            $product = wc_get_product($product_id);
+
+            if (!$product) {
+                return;
+            }
+
+            echo get_clerk_powerstep_popup($product);
+            wp_die();
+
+        } catch (Exception $e) {
+
+            $this->logger->error('ERROR powerstep_ajax', ['error' => $e->getMessage()]);
+
+        }
+
 	}
 }
 

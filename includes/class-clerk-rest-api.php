@@ -1,412 +1,555 @@
 <?php
 
-if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly
+if (!defined('ABSPATH')) {
+    exit; // Exit if accessed directly
 }
 
-class Clerk_Rest_Api extends WP_REST_Server {
-	/**
-	 * Clerk_Rest_Api constructor.
-	 */
-	public function __construct() {
-		$this->initHooks();
-	}
+class Clerk_Rest_Api extends WP_REST_Server
+{
+    /**
+     * Clerk_Rest_Api constructor.
+     */
+    protected $logger;
 
-	/**
-	 * Init hooks
-	 */
-	private function initHooks() {
-		add_action( 'rest_api_init', [ $this, 'add_rest_api_routes' ] );
-		add_filter( 'rest_pre_serve_request', [ $this, 'rest_pre_serve_request' ], 10, 3 );
-	}
+    public function __construct()
+    {
+        $this->initHooks();
+        require_once(__DIR__ . '/class-clerk-logger.php');
+        $this->logger = new ClerkLogger();
 
-	/**
-	 * Add REST API routes
-	 */
-	public function add_rest_api_routes() {
-		//Product endpoint
-		register_rest_route( 'clerk', '/product', [
-			'methods'  => 'GET',
-			'callback' => [ $this, 'product_endpoint_callback' ],
-		] );
+    }
 
-		//Category endpoint
-		register_rest_route( 'clerk', '/category', [
-			'methods'  => 'GET',
-			'callback' => [ $this, 'category_endpoint_callback' ],
-		] );
+    /**
+     * Init hooks
+     */
+    private function initHooks()
+    {
+        add_action('rest_api_init', [$this, 'add_rest_api_routes']);
+        add_filter('rest_pre_serve_request', [$this, 'rest_pre_serve_request'], 10, 3);
+    }
 
-		//Order endpoint
-		register_rest_route( 'clerk', '/order', [
-			'methods'  => 'GET',
-			'callback' => [ $this, 'order_endpoint_callback' ],
-		] );
+    public function __ini()
+    {
+        $this->initHooks();
+        $this->logger = new ClerkLogger();
+    }
 
-		//Customer endpoint
-		register_rest_route( 'clerk', '/customer', [
-			'methods'  => 'GET',
-			'callback' => [ $this, 'customer_endpoint_callback' ],
-		] );
+    /**
+     * Add REST API routes
+     */
+    public function add_rest_api_routes()
+    {
+        //Product endpoint
+        register_rest_route('clerk', '/product', [
+            'methods' => 'GET',
+            'callback' => [$this, 'product_endpoint_callback'],
+        ]);
 
-		//Version endpoint
-		register_rest_route( 'clerk', '/version', [
-			'methods'  => 'GET',
-			'callback' => [ $this, 'version_endpoint_callback' ],
-		] );
-	}
+        //Category endpoint
+        register_rest_route('clerk', '/category', [
+            'methods' => 'GET',
+            'callback' => [$this, 'category_endpoint_callback'],
+        ]);
 
-	/**
-	 * Serve request, taking into account the debug parameter
-	 *
-	 * @param $served
-	 * @param $result
-	 * @param $request
-	 *
-	 * @return bool|string
-	 */
-	public function rest_pre_serve_request( $served, $result, $request ) {
-		//Determine if this this is a clerk request
-		if ( $attributes = $request->get_attributes() ) {
-			if ( is_array( $attributes['callback'] ) && $attributes['callback'][0] instanceof $this ) {
-				// Embed links inside the request.
-				$result = $this->response_to_data( $result, isset( $_GET['_embed'] ) );
+        //Order endpoint
+        register_rest_route('clerk', '/order', [
+            'methods' => 'GET',
+            'callback' => [$this, 'order_endpoint_callback'],
+        ]);
 
-				if ( $request->get_param( 'debug' ) && $request->get_param( 'debug' ) == true ) {
-					$result = wp_json_encode( $result, JSON_PRETTY_PRINT );
-				} else {
-					$result = wp_json_encode( $result );
-				}
+        //Customer endpoint
+        register_rest_route('clerk', '/customer', [
+            'methods' => 'GET',
+            'callback' => [$this, 'customer_endpoint_callback'],
+        ]);
 
-				$json_error_message = $this->get_json_last_error();
-				if ( $json_error_message ) {
-					$json_error_obj = new WP_Error( 'rest_encode_error', $json_error_message,
-						array( 'status' => 500 ) );
-					$result         = $this->error_to_response( $json_error_obj );
-					$result         = wp_json_encode( $result->data[0] );
-				}
+        //Version endpoint
+        register_rest_route('clerk', '/version', [
+            'methods' => 'GET',
+            'callback' => [$this, 'version_endpoint_callback'],
+        ]);
 
-				echo $result;
+        //Log endpoint
+        register_rest_route('clerk', '/log', [
+            'methods' => 'GET',
+            'callback' => [$this, 'log_endpoint_callback'],
+        ]);
+    }
 
-				return true;
-			}
-		}
+    /**
+     * Serve request, taking into account the debug parameter
+     *
+     * @param $served
+     * @param $result
+     * @param $request
+     *
+     * @return bool|string
+     */
+    public function rest_pre_serve_request($served, $result, $request)
+    {
 
-		return false;
-	}
+        try {
 
-	/**
-	 * Handle product endpoint
-	 *
-	 * @param WP_REST_Request $request
-	 *
-	 * @return array|WP_REST_Response
-	 */
-	public function product_endpoint_callback( WP_REST_Request $request ) {
-		if ( ! $this->validateRequest( $request ) ) {
-			return $this->getUnathorizedResponse();
-		}
+            //Determine if this this is a clerk request
+            if ($attributes = $request->get_attributes()) {
+                if (is_array($attributes['callback']) && $attributes['callback'][0] instanceof $this) {
+                    // Embed links inside the request.
+                    $result = $this->response_to_data($result, isset($_GET['_embed']));
 
-		$limit   = $request->get_param( 'limit' ) ? $request->get_param( 'limit' ) : - 1;
-		$page    = ( $request->get_param( 'page' ) !== null ) ? $request->get_param( 'page' ) : 0;
-		$orderby = $request->get_param( 'orderby' ) ? $request->get_param( 'orderby' ) : 'date';
-		$order   = $request->get_param( 'order' ) ? $request->get_param( 'order' ) : 'DESC';
+                    if ($request->get_param('debug') && $request->get_param('debug') == true) {
+                        $result = wp_json_encode($result, JSON_PRETTY_PRINT);
+                    } else {
+                        $result = wp_json_encode($result);
+                    }
 
-		$offset = ( $request->get_param( 'page' ) === 0 ) ? 0 : $page * $limit ;
+                    $json_error_message = $this->get_json_last_error();
+                    if ($json_error_message) {
+                        $json_error_obj = new WP_Error('rest_encode_error', $json_error_message,
+                            array('status' => 500));
+                        $result = $this->error_to_response($json_error_obj);
+                        $result = wp_json_encode($result->data[0]);
+                    }
 
-		$products = clerk_get_products( array(
-			'limit'   => $limit,
-			'page'    => $page,
-			'orderby' => $orderby,
-			'order'   => $order,
-			'status'  => array( 'publish' ),
-			'paginate' => true,
-			'offset' => $offset
-		) );
+                    echo $result;
 
-		$productsArray = [];
-
-		foreach ( $products->products as $product ) {
-			/** @var WC_Product $product */
-			$categories = wp_get_post_terms($product->get_id(), 'product_cat');
-
-            $on_sale = $product->is_on_sale();
-
-            if ( $product->is_type( 'variable' ) ) {
-                /**
-                 * Variable product sync fields
-                 * Will sync the lowest price, and set the sale flag if that variant is on sale.
-                 */
-                $variation = $product->get_available_variations();
-                $displayPrice = array();
-                $regularPrice = array();
-                foreach ($variation as $v){
-                    $vId = $v['variation_id'];
-                    $displayPrice[$vId] = $v['display_price'];
-                    $regularPrice[$vId] = $v['display_regular_price'];
+                    return true;
                 }
-                $lowestDisplayPrice = array_keys($displayPrice, min($displayPrice)); // Find the corresponding product ID
-                $price = $displayPrice[$lowestDisplayPrice[0]]; // Get the lowest price
-                $list_price = $regularPrice[$lowestDisplayPrice[0]]; // Get the corresponding list price (regular price)
-
-                if($price === $list_price) $on_sale = false; // Remove the sale flag if the cheapest variant is not on sale
-            } else {
-                /**
-                 * Default single product sync fields
-                 */
-                $price      = $product->get_price();
-                $list_price = $product->get_regular_price();
             }
 
-            $productArray = [
-                'id'          => $product->get_id(),
-                'name'        => $product->get_name(),
-                'description' => get_post_field('post_content', $product->get_id()),
-                'price'       => (float) $price,
-                'list_price'  => (float) $list_price,
-                'image'       => wp_get_attachment_url( $product->get_image_id() ),
-                'url'         => $product->get_permalink(),
-                'categories'  => wp_list_pluck($categories, 'term_id'),
-                'sku'         => $product->get_sku(),
-                'on_sale'     => $on_sale,
-                'type'        => $product->get_type(),
-            ];
+            return false;
 
-            //Append additional fields
-            foreach ( $this->getAdditionalFields() as $field ) {
-                $productArray[ $field ] = $product->get_attribute( $field );
+        } catch (Exception $e) {
+
+            $this->logger->error('ERROR rest_pre_serve_request', ['error' => $e->getMessage()]);
+
+        }
+    }
+
+    /**
+     * Handle product endpoint
+     *
+     * @param WP_REST_Request $request
+     *
+     * @return array|WP_REST_Response
+     */
+    public function product_endpoint_callback(WP_REST_Request $request)
+    {
+
+        try {
+
+            if (!$this->validateRequest($request)) {
+                return $this->getUnathorizedResponse();
             }
 
-            $productArray = apply_filters( 'clerk_product_array', $productArray, $product );
+            $limit = $request->get_param('limit') ? $request->get_param('limit') : -1;
+            $page = ($request->get_param('page') !== null) ? $request->get_param('page') : 0;
+            $orderby = $request->get_param('orderby') ? $request->get_param('orderby') : 'date';
+            $order = $request->get_param('order') ? $request->get_param('order') : 'DESC';
 
-            $productsArray[] = $productArray;
+            $offset = ($request->get_param('page') === 0) ? 0 : $page * $limit;
+
+            $products = clerk_get_products(array(
+                'limit' => $limit,
+                'page' => $page,
+                'orderby' => $orderby,
+                'order' => $order,
+                'status' => array('publish'),
+                'paginate' => true,
+                'offset' => $offset
+            ));
+
+            $FinalProductsArray = [];
+
+            foreach ($products->products as $product) {
+                /** @var WC_Product $product */
+                $categories = wp_get_post_terms($product->get_id(), 'product_cat');
+
+                $on_sale = $product->is_on_sale();
+
+                if ($product->is_type('variable')) {
+                    /**
+                     * Variable product sync fields
+                     * Will sync the lowest price, and set the sale flag if that variant is on sale.
+                     */
+                    $variation = $product->get_available_variations();
+                    $displayPrice = array();
+                    $regularPrice = array();
+                    foreach ($variation as $v) {
+                        $vId = $v['variation_id'];
+                        $displayPrice[$vId] = $v['display_price'];
+                        $regularPrice[$vId] = $v['display_regular_price'];
+                    }
+                    $lowestDisplayPrice = array_keys($displayPrice, min($displayPrice)); // Find the corresponding product ID
+                    $price = $displayPrice[$lowestDisplayPrice[0]]; // Get the lowest price
+                    $list_price = $regularPrice[$lowestDisplayPrice[0]]; // Get the corresponding list price (regular price)
+
+                    if ($price === $list_price) $on_sale = false; // Remove the sale flag if the cheapest variant is not on sale
+                } else {
+                    /**
+                     * Default single product sync fields
+                     */
+                    $price = $product->get_price();
+                    $list_price = $product->get_regular_price();
+                }
+
+                $productArray = [
+                    'id' => $product->get_id(),
+                    'name' => $product->get_name(),
+                    'description' => get_post_field('post_content', $product->get_id()),
+                    'price' => (float)$price,
+                    'list_price' => (float)$list_price,
+                    'image' => wp_get_attachment_url($product->get_image_id()),
+                    'url' => $product->get_permalink(),
+                    'categories' => wp_list_pluck($categories, 'term_id'),
+                    'sku' => $product->get_sku(),
+                    'on_sale' => $on_sale,
+                    'type' => $product->get_type(),
+                ];
+
+                //Append additional fields
+                foreach ($this->getAdditionalFields() as $field) {
+                    $productArray[$field] = $product->get_attribute($field);
+                }
+
+                $productArray = apply_filters('clerk_product_array', $productArray, $product);
+
+                $FinalProductsArray[] = $productArray;
+
+            }
+
+            $this->logger->log('Successfully generated JSON with ' . count($FinalProductsArray) . ' products', ['error' => 'None']);
+
+
+            return $FinalProductsArray;
+
+        } catch (Exception $e) {
+
+            $this->logger->error('ERROR product_endpoint_callback', ['error' => $e->getMessage()]);
+
+        }
+    }
+
+    /**
+     * Validate request
+     *
+     * @param $request
+     *
+     * @return bool
+     */
+    private function validateRequest($request)
+    {
+
+        try {
+
+            $options = get_option('clerk_options');
+
+            $public_key = $request->get_param('key');
+            $private_key = $request->get_param('private_key');
+
+            if ($public_key === $options['public_key'] && $private_key === $options['private_key']) {
+
+                $this->logger->log('Successfully validate API Keys', ['response' => true]);
+
+                return true;
+            }
+
+            $this->logger->warn('Failed to validate API Keys', ['response' => false]);
+
+            return false;
+
+        } catch (Exception $e) {
+
+            $this->logger->error('ERROR validateRequest', ['error' => $e->getMessage()]);
+
         }
 
-        return $productsArray;
-	}
+    }
 
-	/**
-	 * Handle category endpoint
-	 *
-	 * @param WP_REST_Request $request
-	 *
-	 * @return array|WP_REST_Response
-	 */
-	public function category_endpoint_callback( WP_REST_Request $request ) {
-		if ( ! $this->validateRequest( $request ) ) {
-			return $this->getUnathorizedResponse();
-		}
+    /**
+     * Get unathorized response
+     *
+     * @return WP_REST_Response
+     */
+    private function getUnathorizedResponse()
+    {
 
-		$limit   = $request->get_param( 'limit' ) ? $request->get_param( 'limit' ) : 0;
-		$page    = $request->get_param( 'page' ) ? $request->get_param( 'page' ) - 1 : 0;
-		$offset  = (int) $request->get_param( 'page' ) * $limit;
-		$orderby = $request->get_param( 'orderby' ) ? $request->get_param( 'orderby' ) : 'date';
-		$order   = $request->get_param( 'order' ) ? $request->get_param( 'order' ) : 'DESC';
+        try {
 
-		$args = [
-			'number'     => $limit,
-			'orderby'    => $orderby,
-			'order'      => $order,
-			'offset'     => $offset,
-			'hide_empty' => true,
-		];
+            $response = new WP_REST_Response([
+                'error' => [
+                    'code' => 403,
+                    'message' => __('The supplied public or private key is invalid', 'clerk')
+                ]
+            ]);
+            $response->set_status(403);
 
-		$product_categories = get_terms( 'product_cat', $args );
+            $this->logger->log('The supplied public or private key is invalid', ['status' => 403]);
 
-		$categories = [];
+            return $response;
 
-		foreach ( $product_categories as $product_category ) {
-			$category = [
-				'id'   => $product_category->term_id,
-				'name' => $product_category->name,
-				'url'  => get_term_link( $product_category ),
-			];
+        } catch (Exception $e) {
 
-			if ( $product_category->parent > 0 ) {
-				$category['parent'] = $product_category->parent;
-			}
+            $this->logger->error('ERROR getUnathorizedResponse', ['error' => $e->getMessage()]);
 
-			$subcategories             = get_term_children( $product_category->term_id, 'product_cat' );
-			$category['subcategories'] = $subcategories;
+        }
 
-			$category = apply_filters( 'clerk_category_array', $category, $product_category );
+    }
 
-			$categories[] = $category;
-		}
+    /**
+     * Get additional fields for product export
+     *
+     * @return array
+     */
+    private function getAdditionalFields()
+    {
 
-		return $categories;
-	}
+        try {
 
-	/**
-	 * Handle order endpoint
-	 *
-	 * @param WP_REST_Request $request
-	 *
-	 * @return array|WP_REST_Response
-	 */
-	public function order_endpoint_callback( WP_REST_Request $request ) {
-		if ( ! $this->validateRequest( $request ) ) {
-			return $this->getUnathorizedResponse();
-		}
+            $options = get_option('clerk_options');
 
-		$options = get_option( 'clerk_options' );
+            $additional_fields = $options['additional_fields'];
 
-		if ( $options['disable_order_synchronization'] ) {
-			return [];
-		}
+            $fields = explode(',', $additional_fields);
 
-		$limit = $request->get_param( 'limit' ) ? $request->get_param( 'limit' ) : - 1;
-		$page  = $request->get_param( 'page' ) ? $request->get_param( 'page' ) + 1 : 1;
+            if (!is_array($fields)) {
+                return array();
+            }
 
-		$orders = wc_get_orders( [
-			'limit'  => $limit,
-			'offset' => ( $page - 1 ) * $limit,
-			'type'   => 'shop_order',
-			'status' => 'completed'
-		] );
+            return $fields;
 
-		$order_array = [];
+        } catch (Exception $e) {
 
-		foreach ( $orders as $order ) {
-			/** @var WC_Order $order */
-			$order_items = [];
-			$valid       = true;
+            $this->logger->error('ERROR getAdditionalFields', ['error' => $e->getMessage()]);
 
-			//Get order products
-			foreach ( $order->get_items() as $item ) {
-				if ( $item['qty'] > 0 ) {
-					if ( $item['line_subtotal'] > 0 ) {
-						$order_items[] = array(
-							'id'       => $item['product_id'],
-							'quantity' => $item['qty'],
-							'price'    => ( $item['line_subtotal'] / $item['qty'] ),
-						);
-					}
-				}
-			}
+        }
 
-			if ( empty( $order_items ) ) {
-				$valid = false;
-			}
+    }
 
-			$order_object = [
-				'products' => $order_items,
-				'time'     => strtotime( $order->order_date ),
-				'class'    => get_class( $order )
-			];
+    /**
+     * Handle category endpoint
+     *
+     * @param WP_REST_Request $request
+     *
+     * @return array|WP_REST_Response
+     */
+    public function category_endpoint_callback(WP_REST_Request $request)
+    {
 
-			//Include email if defined
-			if ( $options['collect_emails'] ) {
-				$order_object['email'] = $order->billing_email;
-			}
+        try {
 
-			//id is a protected property in 3.0
-			if ( clerk_check_version() ) {
-				$order_object['id'] = $order->get_id();
-			} else {
-				$order_object['id'] = $order->id;
-			}
+            if (!$this->validateRequest($request)) {
+                return $this->getUnathorizedResponse();
+            }
 
-			if ( $order->customer_id > 0 ) {
-				$order_object['customer'] = $order->customer_id;
-			}
+            $limit = $request->get_param('limit') ? $request->get_param('limit') : 0;
+            $page = $request->get_param('page') ? $request->get_param('page') - 1 : 0;
+            $offset = (int)$request->get_param('page') * $limit;
+            $orderby = $request->get_param('orderby') ? $request->get_param('orderby') : 'date';
+            $order = $request->get_param('order') ? $request->get_param('order') : 'DESC';
 
-			if ( $valid ) {
-				$order_object  = apply_filters( 'clerk_order_array', $order_object, $order );
-				$order_array[] = $order_object;
-			}
-		}
+            $args = [
+                'number' => $limit,
+                'orderby' => $orderby,
+                'order' => $order,
+                'offset' => $offset,
+                'hide_empty' => true,
+            ];
 
-		return $order_array;
-	}
+            $product_categories = get_terms('product_cat', $args);
 
-	/**
-	 * Handle customer endpoint
-	 *
-	 * @param WP_REST_Request $request
-	 *
-	 * @return array|WP_REST_Response
-	 */
-	public function customer_endpoint_callback( WP_REST_Request $request ) {
-		if ( ! $this->validateRequest( $request ) ) {
-			return $this->getUnathorizedResponse();
-		}
-	}
+            $categories = [];
 
-	/**
-	 * Handle version endpoint
-	 *
-	 * @param WP_REST_Request $request
-	 *
-	 * @return WP_REST_Response
-	 */
-	public function version_endpoint_callback( WP_REST_Request $request ) {
-		if ( ! $this->validateRequest( $request ) ) {
-			return $this->getUnathorizedResponse();
-		}
+            foreach ($product_categories as $product_category) {
+                $category = [
+                    'id' => $product_category->term_id,
+                    'name' => $product_category->name,
+                    'url' => get_term_link($product_category),
+                ];
 
-		$response = array(
-			'platform' => 'WooCommerce',
-			'version'  => reset( get_file_data( CLERK_PLUGIN_FILE, array( 'version' ), 'plugin' ) ),
-		);
+                if ($product_category->parent > 0) {
+                    $category['parent'] = $product_category->parent;
+                }
 
-		return $response;
-	}
+                $subcategories = get_term_children($product_category->term_id, 'product_cat');
+                $category['subcategories'] = $subcategories;
 
-	/**
-	 * Validate request
-	 *
-	 * @param $request
-	 *
-	 * @return bool
-	 */
-	private function validateRequest( $request ) {
-		$options = get_option( 'clerk_options' );
+                $category = apply_filters('clerk_category_array', $category, $product_category);
 
-		$public_key  = $request->get_param( 'key' );
-		$private_key = $request->get_param( 'private_key' );
+                $categories[] = $category;
+            }
 
-		if ( $public_key === $options['public_key'] && $private_key === $options['private_key'] ) {
-			return true;
-		}
+            $this->logger->log('Successfully generated category JSON with ' . count($categories) . ' categories', ['error' => 'None']);
 
-		return false;
-	}
+        } catch (Exception $e) {
 
-	/**
-	 * Get unathorized response
-	 *
-	 * @return WP_REST_Response
-	 */
-	private function getUnathorizedResponse() {
-		$response = new WP_REST_Response( [
-			'error' => [
-				'code'    => 403,
-				'message' => __( 'The supplied public or private key is invalid', 'clerk' )
-			]
-		] );
-		$response->set_status( 403 );
+            $this->logger->error('ERROR category_endpoint_callback', ['error' => $e->getMessage()]);
 
-		return $response;
-	}
+        }
 
-	/**
-	 * Get additional fields for product export
-	 *
-	 * @return array
-	 */
-	private function getAdditionalFields() {
-		$options = get_option( 'clerk_options' );
+        return $categories;
+    }
 
-		$additional_fields = $options['additional_fields'];
+    /**
+     * Handle order endpoint
+     *
+     * @param WP_REST_Request $request
+     *
+     * @return array|WP_REST_Response
+     */
+    public function order_endpoint_callback(WP_REST_Request $request)
+    {
 
-		$fields = explode( ',', $additional_fields );
+        try {
 
-		if (! is_array($fields)) {
-			return array();
-		}
+            if (!$this->validateRequest($request)) {
+                return $this->getUnathorizedResponse();
+            }
 
-		return $fields;
-	}
+            $options = get_option('clerk_options');
+
+            if ($options['disable_order_synchronization']) {
+                return [];
+            }
+
+            $limit = $request->get_param('limit') ? $request->get_param('limit') : -1;
+            $page = $request->get_param('page') ? $request->get_param('page') + 1 : 1;
+
+            $orders = wc_get_orders([
+                'limit' => $limit,
+                'offset' => ($page - 1) * $limit,
+                'type' => 'shop_order',
+                'status' => 'completed'
+            ]);
+
+            $order_array = [];
+
+            foreach ($orders as $order) {
+                /** @var WC_Order $order */
+                $order_items = [];
+                $valid = true;
+
+                //Get order products
+                foreach ($order->get_items() as $item) {
+                    if ($item['qty'] > 0) {
+                        if ($item['line_subtotal'] > 0) {
+                            $order_items[] = array(
+                                'id' => $item['product_id'],
+                                'quantity' => $item['qty'],
+                                'price' => ($item['line_subtotal'] / $item['qty']),
+                            );
+                        }
+                    }
+                }
+
+                if (empty($order_items)) {
+                    $valid = false;
+                }
+
+                $order_object = [
+                    'products' => $order_items,
+                    'time' => strtotime($order->order_date),
+                    'class' => get_class($order)
+                ];
+
+                //Include email if defined
+                if ($options['collect_emails']) {
+                    $order_object['email'] = $order->billing_email;
+                }
+
+                //id is a protected property in 3.0
+                if (clerk_check_version()) {
+                    $order_object['id'] = $order->get_id();
+                } else {
+                    $order_object['id'] = $order->id;
+                }
+
+                if ($order->customer_id > 0) {
+                    $order_object['customer'] = $order->customer_id;
+                }
+
+                if ($valid) {
+                    $order_object = apply_filters('clerk_order_array', $order_object, $order);
+                    $order_array[] = $order_object;
+                }
+            }
+
+            $this->logger->log('Successfully generated order JSON with ' . count($order_array) . ' orders', ['error' => 'None']);
+
+        } catch (Exception $e) {
+
+            $this->logger->error('ERROR order_endpoint_callback', ['error' => $e->getMessage()]);
+
+        }
+
+        return $order_array;
+    }
+
+    /**
+     * Handle customer endpoint
+     *
+     * @param WP_REST_Request $request
+     *
+     * @return array|WP_REST_Response
+     */
+    public function customer_endpoint_callback(WP_REST_Request $request)
+    {
+
+        try {
+
+            if (!$this->validateRequest($request)) {
+                return $this->getUnathorizedResponse();
+            }
+
+        } catch (Exception $e) {
+
+            $this->logger->error('ERROR customer_endpoint_callback', ['error' => $e->getMessage()]);
+
+        }
+
+    }
+
+    /**
+     * Handle version endpoint
+     *
+     * @param WP_REST_Request $request
+     *
+     * @return WP_REST_Response
+     */
+    public function version_endpoint_callback(WP_REST_Request $request)
+    {
+
+        try {
+
+            if (!$this->validateRequest($request)) {
+                return $this->getUnathorizedResponse();
+            }
+
+            $response = array(
+                'platform' => 'WooCommerce',
+                'version' => reset(get_file_data(CLERK_PLUGIN_FILE, array('version'), 'plugin')),
+            );
+
+            $this->logger->log('Successfully generated Version JSON', ['response' => $response]);
+
+            return json_encode($response);
+
+        } catch (Exception $e) {
+
+            $this->logger->error('ERROR version_endpoint_callback', ['error' => $e->getMessage()]);
+
+        }
+
+    }
+
+    public function log_endpoint_callback(WP_REST_Request $request)
+    {
+
+        $path = plugin_dir_path(__DIR__) . 'clerk_log.log';
+
+        $response = file_get_contents($path);
+
+        return $response;
+    }
 }
 
 new Clerk_Rest_Api();
