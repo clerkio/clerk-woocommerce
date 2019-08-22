@@ -18,8 +18,52 @@ class Clerk_Admin_Settings
         $this->initHooks();
         require_once(__DIR__ . '/class-clerk-logger.php');
         $this->logger = new ClerkLogger();
+        $this->InitializeSettings();
+
+    }
+
+    /**
+     * Add actions
+     */
+    private function initHooks()
+    {
+        add_action('admin_init', [$this, 'settings_init']);
+        add_action('admin_menu', [$this, 'clerk_options_page']);
+    }
+
+    public function InitializeSettings() {
+
         $options = get_option('clerk_options');
 
+        if ($options['log_to'] !== false) {
+
+        } else {
+
+            // The option hasn't been added yet. We'll add it with $autoload set to 'no'.
+            $deprecated = null;
+            $autoload = 'no';
+            add_option($options, ['log_to' => 'Collect'], $deprecated, $autoload);
+        }
+
+        if ($options['log_level'] !== false) {
+
+        } else {
+
+            // The option hasn't been added yet. We'll add it with $autoload set to 'no'.
+            $deprecated = null;
+            $autoload = 'no';
+            add_option($options, ['log_level' => 'Warn'], $deprecated, $autoload);
+        }
+
+        if ($options['log_enabled'] !== false) {
+
+        } else {
+
+            // The option hasn't been added yet. We'll add it with $autoload set to 'no'.
+            $deprecated = null;
+            $autoload = 'no';
+            add_option($options, ['log_enabled' => '1'], $deprecated, $autoload);
+        }
         if (get_option('livesearch_initiated') !== false) {
 
         } else {
@@ -40,46 +84,162 @@ class Clerk_Admin_Settings
             add_option('powerstep_initiated', 0, $deprecated, $autoload);
         }
 
+        if (get_option('search_initiated') !== false) {
+
+        } else {
+
+            // The option hasn't been added yet. We'll add it with $autoload set to 'no'.
+            $deprecated = null;
+            $autoload = 'no';
+            add_option('search_initiated', 0, $deprecated, $autoload);
+        }
+
+        if (get_option('exit_intent_initiated') !== false) {
+
+        } else {
+
+            // The option hasn't been added yet. We'll add it with $autoload set to 'no'.
+            $deprecated = null;
+            $autoload = 'no';
+            add_option('exit_intent_initiated', 0, $deprecated, $autoload);
+        }
+
+        if (get_option('category_initiated') !== false) {
+
+        } else {
+
+            // The option hasn't been added yet. We'll add it with $autoload set to 'no'.
+            $deprecated = null;
+            $autoload = 'no';
+            add_option('category_initiated', 0, $deprecated, $autoload);
+        }
+
+        if (get_option('product_initiated') !== false) {
+
+        } else {
+
+            // The option hasn't been added yet. We'll add it with $autoload set to 'no'.
+            $deprecated = null;
+            $autoload = 'no';
+            add_option('product_initiated', 0, $deprecated, $autoload);
+        }
+
+        if (get_option('cart_initiated') !== false) {
+
+        } else {
+
+            // The option hasn't been added yet. We'll add it with $autoload set to 'no'.
+            $deprecated = null;
+            $autoload = 'no';
+            add_option('cart_initiated', 0, $deprecated, $autoload);
+        }
+
         $livesearch_initiated = get_option('livesearch_initiated');
+        $search_initiated = get_option('search_initiated');
         $powerstep_initiated = get_option('powerstep_initiated');
+        $exit_intent_initiated = get_option('exit_intent_initiated');
+        $category_initiated = get_option('category_initiated');
+        $product_initiated = get_option('product_initiated');
+        $cart_initiated = get_option('cart_initiated');
+
+        if ($options['cart_enabled'] == 1 && !$cart_initiated == 1) {
+
+            update_option('cart_initiated', 1);
+            $this->logger->log('Cart Settings initiated', ['' => '']);
+
+        }
+
+        if (!$options['cart_enabled'] == 1 && $cart_initiated == 1) {
+
+            update_option('cart_initiated', 0);
+            $this->logger->log('Cart Settings uninitiated', ['' => '']);
+
+        }
+
+        if ($options['product_enabled'] == 1 && !$product_initiated == 1) {
+
+            update_option('product_initiated', 1);
+            $this->logger->log('Product Settings initiated', ['' => '']);
+
+        }
+
+        if (!$options['product_enabled'] == 1 && $product_initiated == 1) {
+
+            update_option('product_initiated', 0);
+            $this->logger->log('Product Settings uninitiated', ['' => '']);
+
+        }
+
+        if ($options['category_enabled'] == 1 && !$category_initiated == 1) {
+
+            update_option('category_initiated', 1);
+            $this->logger->log('Category Settings initiated', ['' => '']);
+
+        }
+
+        if (!$options['category_enabled'] == 1 && $category_initiated == 1) {
+
+            update_option('category_initiated', 0);
+            $this->logger->log('Category Settings uninitiated', ['' => '']);
+
+        }
+
+        if ($options['exit_intent_enabled'] == 1 && !$exit_intent_initiated == 1) {
+
+            update_option('exit_intent_initiated', 1);
+            $this->logger->log('Exit Intent initiated', ['' => '']);
+
+        }
+
+        if (!$options['exit_intent_enabled'] == 1 && $exit_intent_initiated == 1) {
+
+            update_option('exit_intent_initiated', 0);
+            $this->logger->log('Exit Intent uninitiated', ['' => '']);
+
+        }
+
+        if ($options['search_enabled'] == 1 && !$search_initiated == 1) {
+
+            update_option('search_initiated', 1);
+            $this->logger->log('Search initiated', ['' => '']);
+
+        }
+
+        if (!$options['search_enabled'] == 1 && $search_initiated == 1) {
+
+            update_option('search_initiated', 0);
+            $this->logger->log('Search uninitiated', ['' => '']);
+
+        }
 
         if ($options['livesearch_enabled'] == 1 && !$livesearch_initiated == 1) {
 
             update_option('livesearch_initiated', 1);
-            $this->logger->log('Live Search initiated', []);
+            $this->logger->log('Live Search initiated', ['' => '']);
 
         }
 
         if (!$options['livesearch_enabled'] == 1 && $livesearch_initiated == 1) {
 
             update_option('livesearch_initiated', 0);
-            $this->logger->log('Live Search uninitiated', []);
+            $this->logger->log('Live Search uninitiated', ['' => '']);
 
         }
 
         if ($options['powerstep_enabled'] == 1 && !$powerstep_initiated == 1) {
 
             update_option('powerstep_initiated', 1);
-            $this->logger->log('Powerstep initiated', []);
+            $this->logger->log('Powerstep initiated', ['' => '']);
 
         }
 
         if (!$options['powerstep_enabled'] == 1 && $powerstep_initiated == 1) {
 
             update_option('powerstep_initiated', 0);
-            $this->logger->log('Powerstep uninitiated', []);
+            $this->logger->log('Powerstep uninitiated', ['' => '']);
 
         }
 
-    }
-
-    /**
-     * Add actions
-     */
-    private function initHooks()
-    {
-        add_action('admin_init', [$this, 'settings_init']);
-        add_action('admin_menu', [$this, 'clerk_options_page']);
     }
 
     /**
@@ -89,6 +249,7 @@ class Clerk_Admin_Settings
     {
         // register a new setting
         register_setting('clerk', 'clerk_options');
+        $options = get_option('clerk_options');
 
         //Add general section
         add_settings_section(
@@ -410,6 +571,17 @@ class Clerk_Admin_Settings
             null,
             'clerk');
 
+        add_settings_field('log_enabled',
+            __('Enabled', 'clerk'),
+            [$this, 'addCheckboxField'],
+            'clerk',
+            'clerk_section_log',
+            [
+                'label_for' => 'log_enabled',
+                'default' => 1
+            ]
+        );
+
         add_settings_field('log_level',
             __('Log Level', 'clerk'),
             [$this, 'addLogLevelDropdown'],
@@ -430,36 +602,27 @@ class Clerk_Admin_Settings
             ]
         );
 
-        add_settings_field('log_warning',
-            __('', 'clerk'),
-            [$this, 'addDebugMessage'],
-            'clerk',
-            'clerk_section_log'
-        );
+        if ($options['log_level'] === 'All') {
 
-        add_settings_field('log_viewer',
-            __('Logger View', 'clerk'),
-            [$this, 'addLoggerView'],
-            'clerk',
-            'clerk_section_log'
-        );
+            add_settings_field('log_warning',
+                __('', 'clerk'),
+                [$this, 'addDebugMessage'],
+                'clerk',
+                'clerk_section_log'
+            );
 
-        add_settings_field('livesearch_initiated',
-            __('', 'clerk'),
-            [$this, ''],
-            'clerk',
-            'clerk_section_log'
+        }
 
-        );
+        if ($options['log_to'] === 'File' && file_exists(plugin_dir_path(__DIR__) . 'clerk_log.log')) {
 
-        add_settings_field('powerstep_initiated',
-            __('', 'clerk'),
-            [$this, ''],
-            'clerk',
-            'clerk_section_log'
+            add_settings_field('log_viewer',
+                __('Logger View', 'clerk'),
+                [$this, 'addLoggerView'],
+                'clerk',
+                'clerk_section_log'
+            );
 
-        );
-
+        }
     }
 
     /**
@@ -470,7 +633,7 @@ class Clerk_Admin_Settings
 
         $options = get_option('clerk_options');
 
-        if ($options['log_level'] === 'all') {
+        if ($options['log_level'] === 'All') {
 
             ?>
             <div class="notice notice-warning">
@@ -490,26 +653,23 @@ class Clerk_Admin_Settings
 
         $options = get_option('clerk_options');
 
-        if ($options['log_level'] === 'all' && file_exists(plugin_dir_path(__DIR__) . 'clerk_log.log')) {
-            ?>
-            <script
+        if ($options['log_to'] == 'File' && file_exists(plugin_dir_path(__DIR__) . 'clerk_log.log')) {
+            echo('<script
                     src="https://code.jquery.com/jquery-3.4.1.min.js"
                     integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
-                    crossorigin="anonymous"></script>
-            <script type="text/javascript">
-                (function () {
-                    $.ajax({
-                        url: "/wp-content/plugins/clerk-woocommerce/clerk_log.log", success: function (data) {
-                            document.getElementById('logger_view').innerHTML = data;
-                            document.getElementById('logger_view').scrollTop = document.getElementById('logger_view').scrollHeight;
-                        }, dataType: "html"
-                    });
-                    setTimeout(arguments.callee, 5000);
-                })();
-            </script>
-            <div id="logger_view"
-                 style="background: black;color: white;padding: 20px; white-space:pre-wrap; overflow: scroll; height: 500px"></div>
-            <?php
+                    crossorigin="anonymous"></script>' .
+                '<script type="text/javascript">' .
+                '(function () {' .
+                '$.ajax({' .
+                'url: "' . plugin_dir_url(__DIR__) . 'clerk_log.log", success: function (data) {' .
+                'document.getElementById("logger_view").innerHTML = data;' .
+                '},' .
+                '});' .
+                'setTimeout(arguments.callee, 5000);' .
+                '})();' .
+                '</script>' .
+                '<div id="logger_view"' .
+                'style="background: black;color: white;padding: 20px; white-space:pre-wrap; overflow: scroll; height: 300px"></div>');
         }
 
     }
@@ -612,7 +772,7 @@ class Clerk_Admin_Settings
         ?>
         <select id="<?php echo esc_attr($args['label_for']); ?>"
                 name="clerk_options[<?php echo esc_attr($args['label_for']); ?>]">
-            <?php foreach (array('error', 'warn', 'all') as $level) : ?>
+            <?php foreach (array('Warn', 'Error', 'All') as $level) : ?>
                 <option value="<?php echo $level; ?>"
                         <?php if ($options['log_level'] === $level) : ?>selected<?php endif; ?>><?php echo __($level, 'clerk'); ?></option>
             <?php endforeach; ?>
@@ -631,7 +791,7 @@ class Clerk_Admin_Settings
         ?>
         <select id="<?php echo esc_attr($args['label_for']); ?>"
                 name="clerk_options[<?php echo esc_attr($args['label_for']); ?>]">
-            <?php foreach (array('Local', 'Collect') as $to) : ?>
+            <?php foreach (array('Collect', 'File') as $to) : ?>
                 <option value="<?php echo $to; ?>"
                         <?php if ($options['log_to'] === $to) : ?>selected<?php endif; ?>><?php echo __($to, 'clerk'); ?></option>
             <?php endforeach; ?>

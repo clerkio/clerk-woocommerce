@@ -35,7 +35,7 @@ class Clerk_Api {
             ];
 
             $this->get('product/remove', $params);
-            $this->logger->log('Removed product ', ['params' => $params['products']]);
+            $this->logger->log('Removed products ', ['params' => $params['products']]);
 
         } catch (Exception $e) {
 
@@ -63,7 +63,7 @@ class Clerk_Api {
             ];
 
             $this->post('product/add', $params);
-            $this->logger->log('Created product ' . $params['products']['name'], ['params' => $params['products']]);
+            $this->logger->log('Created products ' . $params['products']['name'], ['params' => $params['products']]);
 
         } catch (Exception $e) {
 

@@ -283,7 +283,7 @@ class Clerk_Rest_Api extends WP_REST_Server
             ]);
             $response->set_status(403);
 
-            $this->logger->log('The supplied public or private key is invalid', ['status' => 403]);
+            $this->logger->warn('The supplied public or private key is invalid', ['status' => 403]);
 
             return $response;
 
@@ -541,15 +541,6 @@ class Clerk_Rest_Api extends WP_REST_Server
 
     }
 
-    public function log_endpoint_callback(WP_REST_Request $request)
-    {
-
-        $path = plugin_dir_path(__DIR__) . 'clerk_log.log';
-
-        $response = file_get_contents($path);
-
-        return $response;
-    }
 }
 
 new Clerk_Rest_Api();
