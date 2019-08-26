@@ -18,6 +18,7 @@ class Clerk_Admin_Settings
         $this->initHooks();
         require_once(__DIR__ . '/class-clerk-logger.php');
         $this->logger = new ClerkLogger();
+
         $this->InitializeSettings();
 
     }
@@ -29,9 +30,14 @@ class Clerk_Admin_Settings
     {
         add_action('admin_init', [$this, 'settings_init']);
         add_action('admin_menu', [$this, 'clerk_options_page']);
+        wp_enqueue_script('clerk_admin_js', plugins_url('../assets/js/clerk_admin.js', __FILE__), array('jquery-ui-dialog'));
+        wp_enqueue_style('wp-jquery-ui-dialog');
+        wp_enqueue_script('jquery-ui-dialog');
+
     }
 
-    public function InitializeSettings() {
+    public function InitializeSettings()
+    {
 
         $options = get_option('clerk_options');
 
@@ -42,7 +48,7 @@ class Clerk_Admin_Settings
             // The option hasn't been added yet. We'll add it with $autoload set to 'no'.
             $deprecated = null;
             $autoload = 'no';
-            add_option($options, ['log_to' => 'Collect'], $deprecated, $autoload);
+            add_option($options, ['log_to' => 'my.clerk.io'], $deprecated, $autoload);
         }
 
         if ($options['log_level'] !== false) {
@@ -52,7 +58,7 @@ class Clerk_Admin_Settings
             // The option hasn't been added yet. We'll add it with $autoload set to 'no'.
             $deprecated = null;
             $autoload = 'no';
-            add_option($options, ['log_level' => 'Warn'], $deprecated, $autoload);
+            add_option($options, ['log_level' => 'Error + Warn'], $deprecated, $autoload);
         }
 
         if ($options['log_enabled'] !== false) {
@@ -134,6 +140,26 @@ class Clerk_Admin_Settings
             add_option('cart_initiated', 0, $deprecated, $autoload);
         }
 
+        if (get_option('sync_mails_initiated') !== false) {
+
+        } else {
+
+            // The option hasn't been added yet. We'll add it with $autoload set to 'no'.
+            $deprecated = null;
+            $autoload = 'no';
+            add_option('sync_mails_initiated', 0, $deprecated, $autoload);
+        }
+
+        if (get_option('disable_order_sync_initiated') !== false) {
+
+        } else {
+
+            // The option hasn't been added yet. We'll add it with $autoload set to 'no'.
+            $deprecated = null;
+            $autoload = 'no';
+            add_option('disable_order_sync_initiated', 0, $deprecated, $autoload);
+        }
+
         $livesearch_initiated = get_option('livesearch_initiated');
         $search_initiated = get_option('search_initiated');
         $powerstep_initiated = get_option('powerstep_initiated');
@@ -141,6 +167,22 @@ class Clerk_Admin_Settings
         $category_initiated = get_option('category_initiated');
         $product_initiated = get_option('product_initiated');
         $cart_initiated = get_option('cart_initiated');
+        $sync_mails_initiated_initiated = get_option('sync_mails_initiated');
+        $disable_order_sync_initiated_initiated = get_option('disable_order_sync_initiated');
+
+        if ($options['collect_emails'] == 1 && !$sync_mails_initiated_initiated == 1) {
+
+            update_option('sync_mails_initiated', 1);
+            $this->logger->log('Sync Mails initiated', ['' => '']);
+
+        }
+
+        if (!$options['collect_emails'] == 1 && $sync_mails_initiated_initiated == 1) {
+
+            update_option('sync_mails_initiated', 0);
+            $this->logger->log('Sync Mails uninitiated', ['' => '']);
+
+        }
 
         if ($options['cart_enabled'] == 1 && !$cart_initiated == 1) {
 
@@ -153,6 +195,20 @@ class Clerk_Admin_Settings
 
             update_option('cart_initiated', 0);
             $this->logger->log('Cart Settings uninitiated', ['' => '']);
+
+        }
+
+        if ($options['disable_order_synchronization'] == 1 && !$disable_order_sync_initiated_initiated == 1) {
+
+            update_option('disable_order_sync_initiated', 1);
+            $this->logger->log('Disable Order Sync initiated', ['' => '']);
+
+        }
+
+        if (!$options['disable_order_synchronization'] == 1 && $disable_order_sync_initiated_initiated == 1) {
+
+            update_option('disable_order_sync_initiated', 0);
+            $this->logger->log('Disable Order Sync uninitiated', ['' => '']);
 
         }
 
@@ -365,6 +421,26 @@ class Clerk_Admin_Settings
             'clerk_section_search',
             [
                 'label_for' => 'search_template',
+            ]
+        );
+
+        add_settings_field('search_no_results_text',
+            __('No results text', 'clerk'),
+            [$this, 'addTextField'],
+            'clerk',
+            'clerk_section_search',
+            [
+                'label_for' => 'search_no_results_text',
+            ]
+        );
+
+        add_settings_field('search_load_more_button',
+            __('Load more button text', 'clerk'),
+            [$this, 'addTextField'],
+            'clerk',
+            'clerk_section_search',
+            [
+                'label_for' => 'search_load_more_button',
             ]
         );
 
@@ -602,7 +678,7 @@ class Clerk_Admin_Settings
             ]
         );
 
-        if ($options['log_level'] === 'All') {
+        if ($options['log_level'] === 'Error + Warn + Debug Mode') {
 
             add_settings_field('log_warning',
                 __('', 'clerk'),
@@ -633,7 +709,7 @@ class Clerk_Admin_Settings
 
         $options = get_option('clerk_options');
 
-        if ($options['log_level'] === 'All') {
+        if ($options['log_level'] === 'Error + Warn + Debug Mode') {
 
             ?>
             <div class="notice notice-warning">
@@ -651,26 +727,22 @@ class Clerk_Admin_Settings
     public function addLoggerView()
     {
 
-        $options = get_option('clerk_options');
-
-        if ($options['log_to'] == 'File' && file_exists(plugin_dir_path(__DIR__) . 'clerk_log.log')) {
-            echo('<script
+        echo('<script
                     src="https://code.jquery.com/jquery-3.4.1.min.js"
                     integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
                     crossorigin="anonymous"></script>' .
-                '<script type="text/javascript">' .
-                '(function () {' .
-                '$.ajax({' .
-                'url: "' . plugin_dir_url(__DIR__) . 'clerk_log.log", success: function (data) {' .
-                'document.getElementById("logger_view").innerHTML = data;' .
-                '},' .
-                '});' .
-                'setTimeout(arguments.callee, 5000);' .
-                '})();' .
-                '</script>' .
-                '<div id="logger_view"' .
-                'style="background: black;color: white;padding: 20px; white-space:pre-wrap; overflow: scroll; height: 300px"></div>');
-        }
+            '<script type="text/javascript">' .
+            '(function () {' .
+            '$.ajax({' .
+            'url: "' . plugin_dir_url(__DIR__) . 'clerk_log.log", success: function (data) {' .
+            'document.getElementById("logger_view").innerHTML = data;' .
+            '},' .
+            '});' .
+            'setTimeout(arguments.callee, 5000);' .
+            '})();' .
+            '</script>' .
+            '<div id="logger_view"' .
+            'style="background: black;color: white;padding: 20px; white-space:pre-wrap; overflow: scroll; height: 300px"></div>');
 
     }
 
@@ -772,7 +844,7 @@ class Clerk_Admin_Settings
         ?>
         <select id="<?php echo esc_attr($args['label_for']); ?>"
                 name="clerk_options[<?php echo esc_attr($args['label_for']); ?>]">
-            <?php foreach (array('Warn', 'Error', 'All') as $level) : ?>
+            <?php foreach (array('Error + Warn', 'Only Error', 'Error + Warn + Debug Mode') as $level) : ?>
                 <option value="<?php echo $level; ?>"
                         <?php if ($options['log_level'] === $level) : ?>selected<?php endif; ?>><?php echo __($level, 'clerk'); ?></option>
             <?php endforeach; ?>
@@ -785,13 +857,17 @@ class Clerk_Admin_Settings
      */
     public function addLogToDropdown($args)
     {
+
+
+        echo('<div id="clerk-dialog" class="hidden" style="max-width:800px">'.
+            '</div>');
         //Get settings value
         $options = get_option('clerk_options');
         wp_parse_args(get_option('clerk_options'), [$args['label_for'] => $args['default']]);
         ?>
         <select id="<?php echo esc_attr($args['label_for']); ?>"
                 name="clerk_options[<?php echo esc_attr($args['label_for']); ?>]">
-            <?php foreach (array('Collect', 'File') as $to) : ?>
+            <?php foreach (array('my.clerk.io', 'File') as $to) : ?>
                 <option value="<?php echo $to; ?>"
                         <?php if ($options['log_to'] === $to) : ?>selected<?php endif; ?>><?php echo __($to, 'clerk'); ?></option>
             <?php endforeach; ?>

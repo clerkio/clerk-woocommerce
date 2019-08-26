@@ -1,7 +1,7 @@
 <?php
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly.
+    exit; // Exit if accessed directly.
 }
 
 $options   = get_option( 'clerk_options' );
@@ -21,7 +21,7 @@ $unique_id = esc_attr( uniqid( 'clerk-search-form-' ) );
 
 if ( isset( $options['livesearch_enabled'] ) && $options['livesearch_enabled'] ) :
 
-	?>
+    ?>
     <span
             class="clerk"
             data-template="@<?php echo esc_attr( strtolower( str_replace( ' ', '-', $options['livesearch_template'] ) ) ); ?>"

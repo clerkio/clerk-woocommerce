@@ -138,7 +138,7 @@ class Clerk_Powerstep {
 
         try {
 
-            require_once(__DIR__ . '../includes/class-clerk-logger.php');
+            require_once(__DIR__ . '/class-clerk-logger.php');
             $logger = new ClerkLogger();
             $options = get_option('clerk_options');
 

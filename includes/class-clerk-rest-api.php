@@ -217,7 +217,7 @@ class Clerk_Rest_Api extends WP_REST_Server
 
             }
 
-            $this->logger->log('Successfully generated JSON with ' . count($FinalProductsArray) . ' products', ['error' => 'None']);
+            $this->logger->log('Successfully generated JSON with ' . count($FinalProductsArray) . ' products', ['response' => $FinalProductsArray]);
 
 
             return $FinalProductsArray;
@@ -247,8 +247,6 @@ class Clerk_Rest_Api extends WP_REST_Server
             $private_key = $request->get_param('private_key');
 
             if ($public_key === $options['public_key'] && $private_key === $options['private_key']) {
-
-                $this->logger->log('Successfully validate API Keys', ['response' => true]);
 
                 return true;
             }
@@ -378,7 +376,7 @@ class Clerk_Rest_Api extends WP_REST_Server
                 $categories[] = $category;
             }
 
-            $this->logger->log('Successfully generated category JSON with ' . count($categories) . ' categories', ['error' => 'None']);
+            $this->logger->log('Successfully generated category JSON with ' . count($categories) . ' categories', ['response' => $categories]);
 
         } catch (Exception $e) {
 
@@ -473,7 +471,7 @@ class Clerk_Rest_Api extends WP_REST_Server
                 }
             }
 
-            $this->logger->log('Successfully generated order JSON with ' . count($order_array) . ' orders', ['error' => 'None']);
+            $this->logger->log('Successfully generated order JSON with ' . count($order_array) . ' orders', ['response' => $order_array]);
 
         } catch (Exception $e) {
 
