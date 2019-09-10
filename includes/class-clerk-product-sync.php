@@ -12,15 +12,13 @@ class Clerk_Product_Sync {
 	public function __construct() {
 		$this->includes();
 		$this->initHooks();
-
-        require_once( __DIR__ . '/class-clerk-logger.php' );
-
         $this->logger = new ClerkLogger();
 		$this->api = new Clerk_Api();
 	}
 
 	private function includes() {
 		require_once( __DIR__ . '/class-clerk-api.php' );
+		require_once( __DIR__ . '/class-clerk-logger.php' );
 	}
 
 	private function initHooks() {
@@ -30,7 +28,13 @@ class Clerk_Product_Sync {
 
 	public function save_product( $post_id, $post ) {
 
+        $options = get_option('clerk_options');
+
         try {
+
+            if (!isset($options['realtime_updates'])) {
+                return;
+            }
 
             if (!$post) {
                 return;
@@ -133,7 +137,7 @@ class Clerk_Product_Sync {
                 'description' => get_post_field('post_content', $product->get_id()),
                 'price' => (float)$price,
                 'list_price' => (float)$list_price,
-                'image' => wp_get_attachment_url($product->get_image_id()),
+                'image' => wp_get_attachment_image_src($product->get_image_id(),'medium')[0],
                 'url' => $product->get_permalink(),
                 'categories' => wp_list_pluck($categories, 'term_id'),
                 'sku' => $product->get_sku(),

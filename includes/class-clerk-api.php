@@ -31,7 +31,7 @@ class Clerk_Api {
             $params = [
                 'key' => $options['public_key'],
                 'private_key' => $options['private_key'],
-                'products' => array($product_id),
+                'products' => $product_id.',',
             ];
 
             $this->get('product/remove', $params);

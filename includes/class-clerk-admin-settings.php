@@ -9,6 +9,8 @@ class Clerk_Admin_Settings
 
     protected $logger;
 
+    protected $version;
+
     /**
      * Clerk_Admin_Settings constructor.
      */
@@ -18,6 +20,7 @@ class Clerk_Admin_Settings
         $this->initHooks();
         require_once(__DIR__ . '/class-clerk-logger.php');
         $this->logger = new ClerkLogger();
+        $this->version = '1.7.0';
 
         $this->InitializeSettings();
 
@@ -314,6 +317,16 @@ class Clerk_Admin_Settings
             null,
             'clerk');
 
+        add_settings_field('version',
+            __('Extension version', 'clerk'),
+            [$this, 'addVersion'],
+            'clerk',
+            'clerk_section_general',
+            [
+                'label_for' => 'version',
+            ]
+        );
+
         add_settings_field('public_key',
             __('Public Key', 'clerk'),
             [$this, 'addTextField'],
@@ -353,6 +366,28 @@ class Clerk_Admin_Settings
             __('Data Sync', 'clerk'),
             null,
             'clerk');
+
+        add_settings_field('realtime_updates',
+            __('Use Real-time Updates', 'clerk'),
+            [$this, 'addCheckboxField'],
+            'clerk',
+            'clerk_section_datasync',
+            [
+                'label_for' => 'realtime_updates',
+                'default' => 0
+            ]
+        );
+
+        add_settings_field('outofstock_products',
+            __('Include Out Of Stock Products', 'clerk'),
+            [$this, 'addCheckboxField'],
+            'clerk',
+            'clerk_section_datasync',
+            [
+                'label_for' => 'outofstock_products',
+                'default' => 0
+            ]
+        );
 
         add_settings_field('collect_emails',
             __('Collect Emails', 'clerk'),
@@ -700,7 +735,19 @@ class Clerk_Admin_Settings
 
         }
     }
+    /**
+     *
+     */
+    public function addVersion()
+    {
 
+            ?>
+            <span>
+                <p>v. <?php echo $this->version; ?></p>
+            </span>
+            <?php
+
+    }
     /**
      *
      */

@@ -134,6 +134,7 @@ class Clerk_Rest_Api extends WP_REST_Server
      */
     public function product_endpoint_callback(WP_REST_Request $request)
     {
+        $options = get_option('clerk_options');
 
         try {
 
@@ -161,6 +162,18 @@ class Clerk_Rest_Api extends WP_REST_Server
             $FinalProductsArray = [];
 
             foreach ($products->products as $product) {
+
+                //Check include out of stock products
+                if (!isset($options['outofstock_products'])) {
+
+                    if (!$product->stock_status === 'instock') {
+
+                        continue;
+
+                    }
+
+                }
+
                 /** @var WC_Product $product */
                 $categories = wp_get_post_terms($product->get_id(), 'product_cat');
 
@@ -198,7 +211,7 @@ class Clerk_Rest_Api extends WP_REST_Server
                     'description' => get_post_field('post_content', $product->get_id()),
                     'price' => (float)$price,
                     'list_price' => (float)$list_price,
-                    'image' => wp_get_attachment_url($product->get_image_id()),
+                    'image' => wp_get_attachment_image_src($product->get_image_id(),'medium')[0],
                     'url' => $product->get_permalink(),
                     'categories' => wp_list_pluck($categories, 'term_id'),
                     'sku' => $product->get_sku(),
@@ -215,9 +228,10 @@ class Clerk_Rest_Api extends WP_REST_Server
 
                 $FinalProductsArray[] = $productArray;
 
+
             }
 
-            $this->logger->log('Successfully generated JSON with ' . count($FinalProductsArray) . ' products', ['response' => $FinalProductsArray]);
+            $this->logger->log('Successfully generated JSON with ' . count($FinalProductsArray) . ' products', ['error' => 'None']);
 
 
             return $FinalProductsArray;
@@ -376,7 +390,7 @@ class Clerk_Rest_Api extends WP_REST_Server
                 $categories[] = $category;
             }
 
-            $this->logger->log('Successfully generated category JSON with ' . count($categories) . ' categories', ['response' => $categories]);
+            $this->logger->log('Successfully generated category JSON with ' . count($categories) . ' categories', ['error' => 'None']);
 
         } catch (Exception $e) {
 
@@ -411,12 +425,18 @@ class Clerk_Rest_Api extends WP_REST_Server
 
             $limit = $request->get_param('limit') ? $request->get_param('limit') : -1;
             $page = $request->get_param('page') ? $request->get_param('page') + 1 : 1;
+            $start_date = $request->get_param('start_date') ? $request->get_param('start_date') : 'today - 200 years';
+            $end_date = $request->get_param('end_date') ? $request->get_param('end_date') : 'today + 1 day';
 
             $orders = wc_get_orders([
                 'limit' => $limit,
                 'offset' => ($page - 1) * $limit,
                 'type' => 'shop_order',
-                'status' => 'completed'
+                'status' => 'completed',
+                'date_query' => array(
+                    'after' => date('Y-m-d', strtotime($start_date)),
+                    'before' => date('Y-m-d', strtotime($end_date))
+                )
             ]);
 
             $order_array = [];
@@ -471,7 +491,7 @@ class Clerk_Rest_Api extends WP_REST_Server
                 }
             }
 
-            $this->logger->log('Successfully generated order JSON with ' . count($order_array) . ' orders', ['response' => $order_array]);
+            $this->logger->log('Successfully generated order JSON with ' . count($order_array) . ' orders', ['error' => 'None']);
 
         } catch (Exception $e) {
 
