@@ -32,7 +32,7 @@ class Clerk_Product_Sync {
 
         try {
 
-            if (!isset($options['realtime_updates'])) {
+            if (!$options['realtime_updates'] == 1) {
                 return;
             }
 
@@ -79,7 +79,10 @@ class Clerk_Product_Sync {
 	public function remove_product( $post_id ) {
 
         try {
-
+            $options = get_option('clerk_options');
+            if (!$options['realtime_updates'] == 1) {
+                return;
+            }
             //Remove product from Clerk
             $this->api->removeProduct($post_id);
 
@@ -98,7 +101,10 @@ class Clerk_Product_Sync {
 	private function add_product( WC_Product $product ) {
 
         try {
-
+            $options = get_option('clerk_options');
+            if (!$options['realtime_updates'] == 1) {
+                return;
+            }
             $categories = wp_get_post_terms($product->get_id(), 'product_cat');
 
             $on_sale = $product->is_on_sale();

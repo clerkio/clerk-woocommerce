@@ -318,7 +318,7 @@ class Clerk_Admin_Settings
             'clerk');
 
         add_settings_field('version',
-            __('Extension version', 'clerk'),
+            __('Plugin version', 'clerk'),
             [$this, 'addVersion'],
             'clerk',
             'clerk_section_general',
