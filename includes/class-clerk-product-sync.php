@@ -157,7 +157,7 @@ class Clerk_Product_Sync {
             foreach ($additional_fields as $field) {
                 $params[$field] = $product->get_attribute($field);
             }
-
+            $params = apply_filters('clerk_product_sync_array', $params, $product);
             $this->api->addProduct($params);
 
         } catch (Exception $e) {
