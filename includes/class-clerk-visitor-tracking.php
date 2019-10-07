@@ -39,21 +39,17 @@ class Clerk_Visitor_Tracking {
             ?>
             <!-- Start of Clerk.io E-commerce Personalisation tool - www.clerk.io -->
             <script type="text/javascript">
-                window.clerkAsyncInit = function () {
-                    Clerk.config({
-                        key: '<?php echo $options['public_key']; ?>',
-                        collect_email: <?php echo $options['collect_emails'] ? 'true' : 'false'; ?>
-                    });
-                };
+                (function(w,d){
+                    var e=d.createElement('script');e.type='text/javascript';e.async=true;
+                    e.src=(d.location.protocol=='https:'?'https':'http')+'://cdn.clerk.io/clerk.js';
+                    var s=d.getElementsByTagName('script')[0];s.parentNode.insertBefore(e,s);
+                    w.__clerk_q=w.__clerk_q||[];w.Clerk=w.Clerk||function(){w.__clerk_q.push(arguments)};
+                })(window,document);
 
-                (function () {
-                    var e = document.createElement('script');
-                    e.type = 'text/javascript';
-                    e.async = true;
-                    e.src = document.location.protocol + '//api.clerk.io/static/clerk.js';
-                    var s = document.getElementsByTagName('script')[0];
-                    s.parentNode.insertBefore(e, s);
-                })();
+                Clerk('config', {
+                    key: '<?php echo $options['public_key']; ?>',
+                    collect_email: <?php echo $options['collect_emails'] ? 'true' : 'false'; ?>
+                });
             </script>
             <!-- End of Clerk.io E-commerce Personalisation tool - www.clerk.io -->
             <?php
