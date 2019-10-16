@@ -20,7 +20,7 @@ class Clerk_Admin_Settings
         $this->initHooks();
         require_once(__DIR__ . '/class-clerk-logger.php');
         $this->logger = new ClerkLogger();
-        $this->version = '2.0.0';
+        $this->version = '2.0.1';
 
         $this->InitializeSettings();
 
@@ -734,6 +734,13 @@ class Clerk_Admin_Settings
             );
 
         }
+
+        add_settings_field('debug_guide',
+            __('Debug Guide', 'clerk'),
+            [$this, 'addDebugGuide'],
+            'clerk',
+            'clerk_section_log'
+        );
     }
     /**
      *
@@ -762,6 +769,68 @@ class Clerk_Admin_Settings
             <div class="notice notice-warning">
                 <p><?php echo esc_attr('You are in Clerk log level all! This log level should not be enabled in production'); ?></p>
             </div>
+            <?php
+
+        }
+
+    }
+
+    public function addDebugGuide() {
+
+        if (WP_DEBUG) {
+            ?>
+            <hr><p style="color: red;"><strong>Wordpress Debug Mode is enabled</strong></p>
+            <ul>
+            <li style="color: red;">Caching is disabled.</li>
+            <li style="color: red;">Errors will be visible.</li>
+            <li style="color: red;">Clerk logger can catch all errors.</li>
+            <li style="color: red;">Remember to disable it again after use!</li>
+            <li style="color: red;">It's not best practice to have it enabled in production.</li>
+            <li style="color: red;">It's only recommended for at very short period af time for debug use.</li>
+            </ul>
+            <br>
+            <p><strong>Step By Step Guide to disable debug mode</strong></p>
+            <ol>
+            <li>Please disable Wordpress Debug Mode.</li>
+            <li>Keep Clerk Logging enabled.</li>
+            <li>Set the logging level to "Error + Warn".</li>
+            <li>Keep Logging to "my.clerk.io".</li>
+            </ol>
+            <br><p><strong>HOW TO DISABLE DEBUG MODE:</strong></p>
+            <p>Open wp_config.inc.php and usually at line 80 at the bottom of the file you will find</p>
+            <p>define( 'WP_DEBUG', true );</p>
+            <p>change it to:</p>
+            <p>define( 'WP_DEBUG', false );</p>
+            <hr>
+            <?php
+        } else {
+
+            ?>
+            <hr><strong>Wordpress Debug Mode is disabled</strong>
+            <p>When debug mode is disabled, Wordpress hides a lot of errors and making it impossible for Clerk logger to detect and catch these errors.</p>
+            <p>To make it possibel for Clerk logger to catch all errors you have to enable debug mode.</p>
+            <p>Debug is not recommended in production in a longer period of time.</p>
+            <br>
+            <p><strong>When you store is in debug mode</strong></p>
+            <ul>
+                <li>Caching is disabled.</li>
+                <li>Errors will be visible.</li>
+                <li>Clerk logger can catch all errors.</li>
+            </ul>
+            <br><p><strong>Step By Step Guide to enable debug mode</strong></p>
+            <ol>
+                <li>Please enable Wordpress Debug Mode.</li>
+                <li>Enable Clerk Logging.</li>
+                <li>Set the logging level to "Error + Warn + Debug Mode".</li>
+                <li>Set Logging to "my.clerk.io".</li>
+                </ol>
+            <p>Thanks, that will make it a lot easier for our customer support to help you.</p>
+            <br><p><strong>HOW TO ENABLE DEBUG MODE:</strong></p>
+            <p>Open wp_config.inc.php and usually at line 80 at the bottom of the file you will find</p>
+            <p>define( 'WP_DEBUG', false );</p>
+            <p>change it to:</p>
+            <p>define( 'WP_DEBUG', true );</p>
+            <hr>
             <?php
 
         }

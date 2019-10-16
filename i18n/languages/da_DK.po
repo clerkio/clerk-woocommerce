@@ -1,0 +1,265 @@
+# Copyright (C) 2018 Clerk
+# This file is distributed under the same license as the Clerk package.
+msgid ""
+msgstr ""
+"Project-Id-Version: Clerk 1.5.1\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/clerk\n"
+"POT-Creation-Date: 2018-08-31 16:13+0200\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2019-08-09 10:15+0200\n"
+"Language-Team: \n"
+"X-Generator: Poedit 2.2.3\n"
+"Last-Translator: \n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: da_DK\n"
+
+#: includes/class-clerk-admin-settings.php:34
+msgid "General"
+msgstr "Generelt"
+
+#: includes/class-clerk-admin-settings.php:39
+msgid "Public Key"
+msgstr ""
+
+#: includes/class-clerk-admin-settings.php:49
+msgid "Private Key"
+msgstr ""
+
+#: includes/class-clerk-admin-settings.php:59
+msgid "Import URL"
+msgstr ""
+
+#: includes/class-clerk-admin-settings.php:74
+msgid "Data Sync"
+msgstr "Synkronisering"
+
+#: includes/class-clerk-admin-settings.php:79
+msgid "Collect Emails"
+msgstr "Synkroniser Emails"
+
+#: includes/class-clerk-admin-settings.php:90
+msgid "Additional Fields"
+msgstr "Ekstra Felter"
+
+#: includes/class-clerk-admin-settings.php:101
+msgid "Disable Order Synchronization"
+msgstr "Slå Ordre Synkronisering Fra"
+
+#: includes/class-clerk-admin-settings.php:114
+msgid "Search Settings"
+msgstr "Søge Indstillinger"
+
+#: includes/class-clerk-admin-settings.php:119
+#: includes/class-clerk-admin-settings.php:156
+#: includes/class-clerk-admin-settings.php:193
+#: includes/class-clerk-admin-settings.php:242
+#: includes/class-clerk-admin-settings.php:269
+#: includes/class-clerk-admin-settings.php:296
+#: includes/class-clerk-admin-settings.php:323
+#: includes/class-clerk-admin-settings.php:349
+msgid "Enabled"
+msgstr "Slået til"
+
+#: includes/class-clerk-admin-settings.php:129
+msgid "Search Page"
+msgstr "Søgeside"
+
+#: includes/class-clerk-admin-settings.php:139
+#: includes/class-clerk-admin-settings.php:176
+#: includes/class-clerk-admin-settings.php:252
+#: includes/class-clerk-admin-settings.php:279
+#: includes/class-clerk-admin-settings.php:306
+#: includes/class-clerk-admin-settings.php:333
+#: includes/widgets/class-clerk-widget-content.php:78
+msgid "Content"
+msgstr ""
+
+#: includes/class-clerk-admin-settings.php:151
+msgid "Live search Settings"
+msgstr "Live Search Indstillinger"
+
+#: includes/class-clerk-admin-settings.php:166
+msgid "Include Categories"
+msgstr "Vis Kategorier"
+
+#: includes/class-clerk-admin-settings.php:188
+msgid "Powerstep Settings"
+msgstr "Powerstep Indstillinger"
+
+#: includes/class-clerk-admin-settings.php:203
+msgid "Powerstep Type"
+msgstr ""
+
+#: includes/class-clerk-admin-settings.php:214
+msgid "Powerstep Page"
+msgstr "Powestep Side"
+
+#: includes/class-clerk-admin-settings.php:224
+msgid "Contents"
+msgstr ""
+
+#: includes/class-clerk-admin-settings.php:237
+msgid "Exit Intent Settings"
+msgstr "Exit Intent Indstillinger"
+
+#: includes/class-clerk-admin-settings.php:264
+msgid "Category Settings"
+msgstr "Kategori Indstillinger"
+
+#: includes/class-clerk-admin-settings.php:291
+msgid "Product Settings"
+msgstr "Produkt Indstillinger"
+
+#: includes/class-clerk-admin-settings.php:318
+msgid "Cart Settings"
+msgstr "Indkøbskurv Indstillinger"
+
+#. Plugin Name of the plugin/theme
+#: includes/class-clerk-admin-settings.php:424
+#: includes/class-clerk-admin-settings.php:425
+msgid "Clerk"
+msgstr ""
+
+#: includes/class-clerk-admin-settings.php:432
+msgid "Clerk Settings"
+msgstr "Clerk Indstillinger"
+
+#: includes/class-clerk-admin-settings.php:440
+#: includes/class-clerk-admin-settings.php:441
+msgid "Dashboard"
+msgstr ""
+
+#: includes/class-clerk-admin-settings.php:450
+#: includes/class-clerk-admin-settings.php:451
+msgid "Search Insights"
+msgstr ""
+
+#: includes/class-clerk-admin-settings.php:460
+#: includes/class-clerk-admin-settings.php:461
+msgid "Recommendations Insights"
+msgstr ""
+
+#: includes/class-clerk-admin-settings.php:470
+#: includes/class-clerk-admin-settings.php:471
+msgid "Email Insights"
+msgstr ""
+
+#: includes/class-clerk-admin-settings.php:480
+#: includes/class-clerk-admin-settings.php:481
+msgid "Audience Insights"
+msgstr ""
+
+#: includes/class-clerk-admin-settings.php:502
+msgid "Settings Saved"
+msgstr "Indstillinger Gemt"
+
+#: includes/class-clerk-admin-settings.php:344
+msgid "Debug Mode"
+msgstr "Fejlretningstilstand"
+
+#: includes/class-clerk-rest-api.php:351
+msgid "The supplied public or private key is invalid"
+msgstr "Den angivne public eller private key er ugyldig"
+
+#: includes/class-clerk-rest-api.php:352
+msgid "Ensure that the proper keys are set up in the configuration"
+msgstr ""
+
+#: includes/clerk-template-functions.php:51
+msgid "%s does not exist."
+msgstr "%s findes ikke."
+
+#: includes/widgets/class-clerk-widget-content.php:15
+msgid "Clerk content widget"
+msgstr ""
+
+#: includes/widgets/class-clerk-widget-content.php:20
+msgid "Clerk Content"
+msgstr ""
+
+#: includes/widgets/class-clerk-widget-content.php:80
+msgid "Select Content"
+msgstr "Vælg Content"
+
+#: includes/widgets/class-clerk-widget-content.php:88
+msgid "Category"
+msgstr "Kategori"
+
+#: includes/widgets/class-clerk-widget-content.php:100
+msgid "Product"
+msgstr "Produkt"
+
+#: includes/widgets/class-clerk-widget-content.php:107
+msgid "Failed to load content, please ensure that your api keys are correct."
+msgstr "Forbindelse til API fejlede, tjek at dine API nøgler er korrekte."
+
+#: includes/widgets/class-clerk-widget-content.php:279
+msgid "Select Product"
+msgstr "Vælg Produkt"
+
+#: includes/widgets/class-clerk-widget-search.php:10
+msgid "Clerk powered search form"
+msgstr ""
+
+#: includes/widgets/class-clerk-widget-search.php:13
+msgid "Clerk Search"
+msgstr ""
+
+#: templates/clerk-powerstep-popup.php:15 templates/clerk-powerstep.php:16
+msgid "You added %s to your shopping cart."
+msgstr "Du tilføjede %s til din indkøbskurv."
+
+#: templates/clerk-powerstep-popup.php:21
+#: templates/clerk-powerstep-popup.php:22 templates/clerk-powerstep.php:20
+#: templates/clerk-powerstep.php:21
+msgid "Cart"
+msgstr "Gå til Indkøbskurv"
+
+#: templates/clerk-powerstep-popup.php:24
+msgid "Continue Shopping"
+msgstr "Shop Videre"
+
+#: templates/clerk-powerstep.php:23 templates/clerk-powerstep.php:24
+msgid "Proceed to Checkout"
+msgstr "Fortsæt til Checkud"
+
+#: templates/clerk-searchform.php:12
+msgctxt "label"
+msgid "Search for:"
+msgstr "Søg efter:"
+
+#: templates/clerk-searchform.php:13
+msgctxt "placeholder"
+msgid "Search &hellip;"
+msgstr "Søg &hellip;"
+
+#: templates/clerk-searchform.php:15
+msgctxt "submit button"
+msgid "Search"
+msgstr "Søg"
+
+#: templates/clerk-searchform.php:26
+msgid "Categories"
+msgstr "Kategorier"
+
+#: templates/clerk-searchform.php:27
+msgid "Products"
+msgstr "Produkter"
+
+#. Plugin URI of the plugin/theme
+msgid "https://clerk.io/"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid "Clerk.io Turns More Browsers Into Buyers"
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "Clerk.io"
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "https://clerk.io"
+msgstr ""
