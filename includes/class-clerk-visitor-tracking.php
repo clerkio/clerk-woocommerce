@@ -36,6 +36,42 @@ class Clerk_Visitor_Tracking {
                 $options['collect_emails'] = true;
             }
 
+            if (isset($options['lang'])) {
+
+                if ($options['lang'] == 'auto') {
+                    $LangsAuto = [
+                        'da_DK' => 'Danish',
+                        'nl_NL' => 'Dutch',
+                        'en_US' => 'English',
+                        'en_GB' => 'English',
+                        'fi' => 'Finnish',
+                        'fr_FR' => 'French',
+                        'fr_BE' => 'French',
+                        'de_DE' => 'German',
+                        'hu_HU' => 'Hungarian',
+                        'it_IT' => 'Italian',
+                        'nn_NO' => 'Norwegian',
+                        'nb_NO' => 'Norwegian',
+                        'pt_PT' => 'Portuguese',
+                        'pt_BR' => 'Portuguese',
+                        'ro_RO' => 'Romanian',
+                        'ru_RU' => 'Russian',
+                        'ru_UA' => 'Russian',
+                        'es_ES' => 'Spanish',
+                        'sv_SE' => 'Swedish',
+                        'tr_TR' => 'Turkish'
+                    ];
+
+                    $Lang = strtolower($LangsAuto[get_locale()]);
+
+                } else {
+
+                    $Lang = $options['lang'];
+
+                }
+
+            }
+
             ?>
             <!-- Start of Clerk.io E-commerce Personalisation tool - www.clerk.io -->
             <script type="text/javascript">
@@ -48,7 +84,8 @@ class Clerk_Visitor_Tracking {
 
                 Clerk('config', {
                     key: '<?php echo $options['public_key']; ?>',
-                    collect_email: <?php echo $options['collect_emails'] ? 'true' : 'false'; ?>
+                    collect_email: <?php echo $options['collect_emails'] ? 'true' : 'false'; ?>,
+                    language: '<?php echo $Lang; ?>'
                 });
             </script>
             <!-- End of Clerk.io E-commerce Personalisation tool - www.clerk.io -->

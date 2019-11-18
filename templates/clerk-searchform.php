@@ -25,10 +25,19 @@ if ( isset( $options['livesearch_enabled'] ) && $options['livesearch_enabled'] )
     <span
             class="clerk"
             data-template="@<?php echo esc_attr( strtolower( str_replace( ' ', '-', $options['livesearch_template'] ) ) ); ?>"
-            data-live-search-categories="<?php echo (int) $options['livesearch_include_categories']; ?>"
-            data-live-search-categories-title="<?php echo esc_attr( __( 'Categories', 'clerk' ) ); ?>"
-            data-live-search-products-title="<?php echo esc_attr( __( 'Products', 'clerk' ) ); ?>"
-            data-bind-live-search="#clerk-searchfield-<?php echo $unique_id; ?>">
+            data-instant-search-suggestions="<?php echo $options['livesearch_suggestions']; ?>"
+            data-instant-search-categories="<?php echo $options['livesearch_categories']; ?>"
+            data-instant-search-pages="<?php echo $options['livesearch_pages']; ?>"
+            <?php
+
+            if ( isset( $options['livesearch_pages_type'] ) && $options['livesearch_pages_type'] != 'All') :
+
+            ?>
+            data-instant-search-pages-type="<?php echo $options['livesearch_pages_type']; ?>"
+            <?php
+            endif;
+            ?>
+            data-instant-search="#clerk-searchfield-<?php echo $unique_id; ?>">
 </span>
 <?php
 endif;

@@ -45,6 +45,12 @@ class Clerk_Rest_Api extends WP_REST_Server
             'callback' => [$this, 'product_endpoint_callback'],
         ]);
 
+        //Product endpoint
+        register_rest_route('clerk', '/page', [
+            'methods' => 'GET',
+            'callback' => [$this, 'page_endpoint_callback'],
+        ]);
+
         //Category endpoint
         register_rest_route('clerk', '/category', [
             'methods' => 'GET',
@@ -239,6 +245,79 @@ class Clerk_Rest_Api extends WP_REST_Server
         } catch (Exception $e) {
 
             $this->logger->error('ERROR product_endpoint_callback', ['error' => $e->getMessage()]);
+
+        }
+    }
+
+    public function page_endpoint_callback(WP_REST_Request $request)
+    {
+        $options = get_option('clerk_options');
+
+        try {
+
+            if (!$options['include_pages'] == 1) {
+                return [];
+            }
+
+            if (!$this->validateRequest($request)) {
+                return $this->getUnathorizedResponse();
+            }
+
+            $pages = get_pages();
+            $FinalPageArray = [];
+
+            foreach ($pages as $page) {
+
+                if (!empty($page->post_content)) {
+
+                    $page_additional_fields = explode(',',$options['page_additional_fields']);
+
+                    switch ($page->post_type) {
+
+                        case 'post':
+                            $Type = 'Blog Post';
+                            break;
+
+                        case 'page':
+                            $Type = 'CMS Page';
+                            break;
+
+                        default:
+                            $Type = 'CMS Page';
+
+                    }
+
+                    $page_draft = [
+                        'id' => $page->ID,
+                        'type' => $Type,
+                        'url' => $page->guid,
+                        'title' => $page->post_title,
+                        'text' => $page->post_content
+                    ];
+
+                    foreach ($page_additional_fields as $page_additional_field) {
+                        $page_additional_field = str_replace(' ','',$page_additional_field);
+                        if (!empty($page_additional_field)) {
+
+                            $page_draft[$page_additional_field] = $page->{$page_additional_field};
+
+                        }
+
+                    }
+
+                    $FinalPageArray[] = $page_draft;
+
+                }
+
+            }
+
+            $this->logger->log('Successfully generated JSON with ' . count($FinalPageArray) . ' pages', ['error' => 'None']);
+
+            return $FinalPageArray;
+
+        } catch (Exception $e) {
+
+            $this->logger->error('ERROR page_endpoint_callback', ['error' => $e->getMessage()]);
 
         }
     }

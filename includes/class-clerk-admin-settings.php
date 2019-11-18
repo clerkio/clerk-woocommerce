@@ -20,7 +20,7 @@ class Clerk_Admin_Settings
         $this->initHooks();
         require_once(__DIR__ . '/class-clerk-logger.php');
         $this->logger = new ClerkLogger();
-        $this->version = '2.0.1';
+        $this->version = '2.1.0';
 
         $this->InitializeSettings();
 
@@ -347,6 +347,17 @@ class Clerk_Admin_Settings
             ]
         );
 
+        add_settings_field('lang',
+            __('Language', 'clerk'),
+            [$this, 'addLang'],
+            'clerk',
+            'clerk_section_general',
+            [
+                'label_for' => 'lang',
+                'default' => 'auto'
+            ]
+        );
+
         add_settings_field('import_url',
             __('Import URL', 'clerk'),
             [$this, 'addTextField'],
@@ -375,6 +386,28 @@ class Clerk_Admin_Settings
             [
                 'label_for' => 'realtime_updates',
                 'default' => 0
+            ]
+        );
+
+        add_settings_field('include_pages',
+            __('Include Pages', 'clerk'),
+            [$this, 'addCheckboxField'],
+            'clerk',
+            'clerk_section_datasync',
+            [
+                'label_for' => 'include_pages',
+                'default' => 1
+            ]
+        );
+
+        add_settings_field('page_additional_fields',
+            __('Page Additional Fields', 'clerk'),
+            [$this, 'addTextField'],
+            'clerk',
+            'clerk_section_datasync',
+            [
+                'label_for' => 'page_additional_fields',
+                'description' => 'A comma separated list of additional fields for pages to sync'
             ]
         );
 
@@ -504,6 +537,49 @@ class Clerk_Admin_Settings
             'clerk_section_livesearch',
             [
                 'label_for' => 'livesearch_include_categories',
+            ]
+        );
+
+        add_settings_field('livesearch_suggestions',
+            __('Number of Suggestions', 'clerk'),
+            [$this, 'add1_10Dropdown'],
+            'clerk',
+            'clerk_section_livesearch',
+            [
+                'label_for' => 'livesearch_suggestions',
+                'default' => 5
+            ]
+        );
+
+        add_settings_field('livesearch_categories',
+            __('Number of Categories', 'clerk'),
+            [$this, 'add1_10Dropdown'],
+            'clerk',
+            'clerk_section_livesearch',
+            [
+                'label_for' => 'livesearch_categories',
+                'default' => 5
+            ]
+        );
+
+        add_settings_field('livesearch_pages',
+            __('Number of Pages', 'clerk'),
+            [$this, 'add1_10Dropdown'],
+            'clerk',
+            'clerk_section_livesearch',
+            [
+                'label_for' => 'livesearch_pages',
+                'default' => 5
+            ]
+        );
+
+        add_settings_field('livesearch_pages_type',
+            __('Pages Type', 'clerk'),
+            [$this, 'addPagesTypeDropdown'],
+            'clerk',
+            'clerk_section_livesearch',
+            [
+                'label_for' => 'livesearch_pages_type',
             ]
         );
 
@@ -755,6 +831,116 @@ class Clerk_Admin_Settings
             <?php
 
     }
+
+
+
+    public function addPagesTypeDropdown($args)
+    {
+
+        $Types = ['All', 'CMS Page', 'Blog Post'];
+        $options = get_option('clerk_options');
+
+        ?>
+        <select id="<?php echo esc_attr($args['label_for']); ?>"
+                name="clerk_options[<?php echo esc_attr($args['label_for']); ?>]">
+            <?php foreach ($Types as $Type) : ?>
+                <option value="<?php echo $Type; ?>"
+                        <?php if ($options[$args['label_for']] === $Type) : ?>selected<?php endif; ?>><?php echo __($Type, 'clerk'); ?></option>
+            <?php endforeach; ?>
+        </select>
+        <?php
+
+    }
+
+    public function add1_10Dropdown($args)
+    {
+
+        $Numbers = [1,2,3,4,5,6,7,8,9,10];
+        $options = get_option('clerk_options');
+
+        ?>
+        <select id="<?php echo esc_attr($args['label_for']); ?>"
+                name="clerk_options[<?php echo esc_attr($args['label_for']); ?>]">
+            <?php foreach ($Numbers as $Number) : ?>
+                <option value="<?php echo $Number; ?>"
+                        <?php if ($options[$args['label_for']] === $Number) : ?>selected<?php endif; ?>><?php echo __($Number, 'clerk'); ?></option>
+            <?php endforeach; ?>
+        </select>
+        <?php
+
+    }
+
+    public function addLang($args)
+    {
+
+        $LangsAuto = [
+            'da_DK' => 'Danish',
+            'nl_NL' => 'Dutch',
+            'en_US' => 'English',
+            'en_GB' => 'English',
+            'fi' => 'Finnish',
+            'fr_FR' => 'French',
+            'fr_BE' => 'French',
+            'de_DE' => 'German',
+            'hu_HU' => 'Hungarian',
+            'it_IT' => 'Italian',
+            'nn_NO' => 'Norwegian',
+            'nb_NO' => 'Norwegian',
+            'pt_PT' => 'Portuguese',
+            'pt_BR' => 'Portuguese',
+            'ro_RO' => 'Romanian',
+            'ru_RU' => 'Russian',
+            'ru_UA' => 'Russian',
+            'es_ES' => 'Spanish',
+            'sv_SE' => 'Swedish',
+            'tr_TR' => 'Turkish'
+        ];
+
+        if (isset($LangsAuto[get_locale()])) {
+
+            $AutoLang = ['Label' => sprintf( 'Auto (%s)', $LangsAuto[get_locale()]), 'Value' => 'auto'];
+
+        }
+
+        //Get settings value
+        $Langs = [
+                ['Label' => 'Danish','Value' => 'danish'],
+                ['Label' => 'Dutch','Value' => 'dutch'],
+                ['Label' => 'English','Value' => 'english'],
+                ['Label' => 'Finnish','Value' => 'finnish'],
+                ['Label' => 'French','Value' => 'french'],
+                ['Label' => 'German','Value' => 'german'],
+                ['Label' => 'Hungarian','Value' => 'hungarian'],
+                ['Label' => 'Italian','Value' => 'italian'],
+                ['Label' => 'Norwegian','Value' => 'norwegian'],
+                ['Label' => 'Portuguese','Value' => 'portuguese'],
+                ['Label' => 'Romanian','Value' => 'romanian'],
+                ['Label' => 'Russian','Value' => 'russian'],
+                ['Label' => 'Spanish','Value' => 'spanish'],
+                ['Label' => 'Swedish','Value' => 'swedish'],
+                ['Label' => 'Turkish','Value' => 'turkish']
+        ];
+
+        if (isset($AutoLang)) {
+
+            array_unshift($Langs, $AutoLang);
+
+        }
+
+        $options = get_option('clerk_options');
+
+        ?>
+        <select id="<?php echo esc_attr($args['label_for']); ?>"
+                name="clerk_options[<?php echo esc_attr($args['label_for']); ?>]">
+            <?php foreach ($Langs as $Lang) : ?>
+                <option value="<?php echo $Lang['Value']; ?>"
+                        <?php if ($options[$args['label_for']] === $Lang['Value']) : ?>selected<?php endif; ?>><?php echo __($Lang['Label'], 'clerk'); ?></option>
+            <?php endforeach; ?>
+        </select>
+        <?php
+
+    }
+
     /**
      *
      */
