@@ -76,11 +76,7 @@ class Clerk_Search
             <ul id="clerk-search-results"></ul>
             <div id="clerk-search-no-results" style="display: none; margin-left: 3em;"><h2><?php echo $options['search_no_results_text'] ?></h2></div>
 
-            <div style="text-align: center;">
-                <button id="clerk-search-load-more-button"><?php echo $options['search_load_more_button'] ?></button>
-            </div>
-
-            <script type="text/javascript">
+            <script type="text/javascript">F
                 var total_loaded = 0;
 
                 function _clerk_after_load_event(data) {
@@ -89,21 +85,12 @@ class Clerk_Search
                     if (typeof e.data('limit') === "undefined") {
                         e.data('limit', data.response.result.length)
                     }
-                    jQuery('#clerk-search-load-more-button').on('click', function () {
-                        e.data('offset', e.data('offset') + e.data('limit'));
-                        Clerk.renderBlocks('#clerk-search');
-                        jQuery('#clerk-search-load-more-button').off();
-                    });
                     if (total_loaded == 0) {
                         jQuery('#clerk-search-no-results').show();
                     } else {
                         jQuery('#clerk-search-no-results').hide();
                     }
-                    if (total_loaded == data.response.hits) {
-                        jQuery('#clerk-search-load-more-button').hide();
-                    } else {
-                        jQuery('#clerk-search-load-more-button').show();
-                    }
+
                 }
             </script>
             <?php

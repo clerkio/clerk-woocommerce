@@ -20,7 +20,7 @@ class Clerk_Admin_Settings
         $this->initHooks();
         require_once(__DIR__ . '/class-clerk-logger.php');
         $this->logger = new ClerkLogger();
-        $this->version = '2.1.0';
+        $this->version = '2.2.0';
 
         $this->InitializeSettings();
 
@@ -33,7 +33,6 @@ class Clerk_Admin_Settings
     {
         add_action('admin_init', [$this, 'settings_init']);
         add_action('admin_menu', [$this, 'clerk_options_page']);
-        wp_enqueue_script('clerk_admin_js', plugins_url('../assets/js/clerk_admin.js', __FILE__), array('jquery-ui-dialog'));
         wp_enqueue_style('wp-jquery-ui-dialog');
         wp_enqueue_script('jquery-ui-dialog');
 
@@ -583,6 +582,16 @@ class Clerk_Admin_Settings
             ]
         );
 
+        add_settings_field('livesearch_dropdown_position',
+            __('Dropdown Positioning', 'clerk'),
+            [$this, 'addDropdownPosition'],
+            'clerk',
+            'clerk_section_livesearch',
+            [
+                'label_for' => 'livesearch_dropdown_position',
+            ]
+        );
+
         add_settings_field('livesearch_template',
             __('Content', 'clerk'),
             [$this, 'addTextField'],
@@ -800,6 +809,13 @@ class Clerk_Admin_Settings
 
         }
 
+        add_settings_field('extension_warning',
+            __('', 'clerk'),
+            [$this, 'addWarningMessage'],
+            'clerk',
+            'clerk_section_log'
+        );
+
         if ($options['log_to'] === 'File' && file_exists(plugin_dir_path(__DIR__) . 'clerk_log.log')) {
 
             add_settings_field('log_viewer',
@@ -852,10 +868,28 @@ class Clerk_Admin_Settings
 
     }
 
+    public function addDropdownPosition($args)
+    {
+
+        $Positions = ['Left', 'Center', 'Right', 'Below', 'Off'];
+        $options = get_option('clerk_options');
+
+        ?>
+        <select id="<?php echo esc_attr($args['label_for']); ?>"
+                name="clerk_options[<?php echo esc_attr($args['label_for']); ?>]">
+            <?php foreach ($Positions as $Position) : ?>
+                <option value="<?php echo $Position; ?>"
+                        <?php if ($options[$args['label_for']] === $Position) : ?>selected<?php endif; ?>><?php echo __($Position, 'clerk'); ?></option>
+            <?php endforeach; ?>
+        </select>
+        <?php
+
+    }
+
     public function add1_10Dropdown($args)
     {
 
-        $Numbers = [1,2,3,4,5,6,7,8,9,10];
+        $Numbers = ['1','2','3','4','5','6','7','8','9','10'];
         $options = get_option('clerk_options');
 
         ?>
@@ -956,6 +990,33 @@ class Clerk_Admin_Settings
                 <p><?php echo esc_attr('You are in Clerk log level all! This log level should not be enabled in production'); ?></p>
             </div>
             <?php
+
+        }
+
+    }
+
+    public function addWarningMessage()
+    {
+
+        $PluginMapping = [
+            //'Akismet Anti-Spam' => ['Message' => 'This can cause your live search to not work probely.', 'SupportLink' => 'https://clerk.io'],
+            //'Clerk' => ['Message' => 'You have %%PLUGIN%% installed, that can give the clerk extension some problems.', 'SupportLink' => 'https://clerk.io']
+        ];
+
+        $plugins = get_plugins();
+
+        foreach ($plugins as $plugin) {
+
+            if (array_key_exists($plugin['Name'], $PluginMapping)) {
+                ?>
+                <div class="notice notice-warning">
+                    <p><?php echo esc_attr($plugin['Name'].' v' .$plugin['Version'].' is installed.'); ?></p>
+                    <p><?php echo esc_attr(str_replace('%%PLUGIN%%', $plugin['Name'], $PluginMapping[$plugin['Name']]['Message'])); ?></p>
+                    <a href="<?php echo esc_attr($PluginMapping[$plugin['Name']]['SupportLink']) ?>" target="_blank"><p>Read about it here.</p></a>
+                </div>
+                <?php
+
+            }
 
         }
 

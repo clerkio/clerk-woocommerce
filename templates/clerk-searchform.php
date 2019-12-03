@@ -28,6 +28,7 @@ if ( isset( $options['livesearch_enabled'] ) && $options['livesearch_enabled'] )
             data-instant-search-suggestions="<?php echo $options['livesearch_suggestions']; ?>"
             data-instant-search-categories="<?php echo $options['livesearch_categories']; ?>"
             data-instant-search-pages="<?php echo $options['livesearch_pages']; ?>"
+            data-instant-search-positioning="<?php echo strtolower($options['livesearch_dropdown_position']); ?>"
             <?php
 
             if ( isset( $options['livesearch_pages_type'] ) && $options['livesearch_pages_type'] != 'All') :

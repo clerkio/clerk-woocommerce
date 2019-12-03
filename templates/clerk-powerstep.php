@@ -29,11 +29,33 @@ $checkout_url = $woocommerce->cart->get_checkout_url();
     </div>
 </div>
 <div class="powerstep-templates">
-	<?php foreach ( get_powerstep_templates() as $template ) : ?>
+	<?php
+    $Issetdataexclude = false;
+    $dataexcludestring = '';
+    $count = 0;
+    foreach ( get_powerstep_templates() as $template ) :
+        $count++;
+        $id = 'clerk_'.time();
+        ?>
         <span class="clerk"
+              id="<?php echo $id ?>"
+              <?php if($Issetdataexclude) {
+                  echo 'data-exclude-from="'.$dataexcludestring.'"';
+              } ?>
               data-template="@<?php echo esc_attr( $template ); ?>"
               data-products="[<?php echo esc_attr( $product->get_id() ); ?>]"
               data-category="<?php echo esc_attr( reset( $product->get_category_ids() ) ); ?>"
         ></span>
-	<?php endforeach; ?>
+        <?php
+        if ($count == (count(get_powerstep_templates()))-1) {
+
+            $dataexcludestring .= '#'.$id.':limit(4)';
+
+        }else {
+
+            $dataexcludestring .= '#'.$id.':limit(4),';
+
+        }
+        $Issetdataexclude = true;
+	 endforeach; ?>
 </div>
