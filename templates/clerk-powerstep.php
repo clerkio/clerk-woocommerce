@@ -47,13 +47,13 @@ $checkout_url = $woocommerce->cart->get_checkout_url();
               data-category="<?php echo esc_attr( reset( $product->get_category_ids() ) ); ?>"
         ></span>
         <?php
-        if ($count == (count(get_powerstep_templates()))-1) {
+        if ($count == 1) {
 
             $dataexcludestring .= '#'.$id.':limit(4)';
 
         }else {
 
-            $dataexcludestring .= '#'.$id.':limit(4),';
+            $dataexcludestring .= ',#'.$id.':limit(4)';
 
         }
         $Issetdataexclude = true;

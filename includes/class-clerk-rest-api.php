@@ -217,6 +217,12 @@ class Clerk_Rest_Api extends WP_REST_Server
                     $list_price = $product->get_regular_price();
                 }
 
+                if ($product->get_stock_quantity() === 0) {
+
+                    continue;
+
+                }
+
                 $productArray = [
                     'id' => $product->get_id(),
                     'name' => $product->get_name(),
@@ -230,6 +236,12 @@ class Clerk_Rest_Api extends WP_REST_Server
                     'on_sale' => $on_sale,
                     'type' => $product->get_type(),
                 ];
+
+                if (!empty($product->get_stock_quantity())) {
+
+                    $productArray['stock'] = $product->get_stock_quantity();
+
+                }
 
                 //Append additional fields
                 foreach ($this->getAdditionalFields() as $field) {
@@ -429,6 +441,12 @@ class Clerk_Rest_Api extends WP_REST_Server
             $additional_fields = $options['additional_fields'];
 
             $fields = explode(',', $additional_fields);
+
+            foreach ($fields as $key => $field) {
+
+                $fields[$key] = str_replace(' ','', $field);
+
+            }
 
             if (!is_array($fields)) {
                 return array();

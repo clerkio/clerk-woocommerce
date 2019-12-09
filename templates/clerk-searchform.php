@@ -11,7 +11,7 @@ $unique_id = esc_attr( uniqid( 'clerk-search-form-' ) );
           action="<?php echo esc_url( get_page_link( $options['search_page'] ) ); ?>">
         <label>
             <span class="screen-reader-text"><?php echo _x( 'Search for:', 'label' ) ?></span>
-            <input type="search" id="clerk-searchfield-<?php echo $unique_id; ?>" class="search-field"
+            <input type="search" id="clerk-searchfield" class="search-field"
                    placeholder="<?php echo esc_attr_x( 'Search &hellip;', 'placeholder' ) ?>"
                    value="<?php echo get_search_query() ?>" name="searchterm"/>
         </label>
@@ -38,7 +38,7 @@ if ( isset( $options['livesearch_enabled'] ) && $options['livesearch_enabled'] )
             <?php
             endif;
             ?>
-            data-instant-search="#clerk-searchfield-<?php echo $unique_id; ?>">
+            data-instant-search="#clerk-searchfield">
 </span>
 <?php
 endif;

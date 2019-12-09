@@ -84,6 +84,13 @@ if ( ! function_exists( 'get_powerstep_templates' ) ) {
 		}
 
 		$templates = explode( ',', $options['powerstep_templates'] );
+
+		foreach ($templates as $key => $template) {
+
+            $templates[$key] = str_replace(' ','', $template);
+
+        }
+
 		$templates = array_map( 'trim', $templates );
 
 		return $templates;

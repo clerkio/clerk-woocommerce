@@ -20,7 +20,7 @@ class Clerk_Admin_Settings
         $this->initHooks();
         require_once(__DIR__ . '/class-clerk-logger.php');
         $this->logger = new ClerkLogger();
-        $this->version = '2.2.0';
+        $this->version = '2.2.1';
 
         $this->InitializeSettings();
 
@@ -999,8 +999,7 @@ class Clerk_Admin_Settings
     {
 
         $PluginMapping = [
-            //'Akismet Anti-Spam' => ['Message' => 'This can cause your live search to not work probely.', 'SupportLink' => 'https://clerk.io'],
-            //'Clerk' => ['Message' => 'You have %%PLUGIN%% installed, that can give the clerk extension some problems.', 'SupportLink' => 'https://clerk.io']
+            'WPBakery Page Builder' => ['Message' => 'This can cause, that our plugin have problems injecting our code on your shop .', 'SupportLink' => 'https://clerk.io']
         ];
 
         $plugins = get_plugins();
