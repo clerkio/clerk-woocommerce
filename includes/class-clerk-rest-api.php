@@ -217,7 +217,7 @@ class Clerk_Rest_Api extends WP_REST_Server
                     $list_price = $product->get_regular_price();
                 }
 
-                if ($product->get_stock_quantity() === 0) {
+                if (!isset($options['outofstock_products']) && $product->get_stock_quantity() === 0) {
 
                     continue;
 

@@ -20,7 +20,7 @@ class Clerk_Admin_Settings
         $this->initHooks();
         require_once(__DIR__ . '/class-clerk-logger.php');
         $this->logger = new ClerkLogger();
-        $this->version = '2.2.1';
+        $this->version = '2.2.4';
 
         $this->InitializeSettings();
 
@@ -31,6 +31,7 @@ class Clerk_Admin_Settings
      */
     private function initHooks()
     {
+
         add_action('admin_init', [$this, 'settings_init']);
         add_action('admin_menu', [$this, 'clerk_options_page']);
         wp_enqueue_style('wp-jquery-ui-dialog');
@@ -42,6 +43,8 @@ class Clerk_Admin_Settings
     {
 
         $options = get_option('clerk_options');
+
+        $this->ChangeDebugMode(isset($options['debug_guide_change']));
 
         if ($options['log_to'] !== false) {
 
@@ -172,126 +175,126 @@ class Clerk_Admin_Settings
         $sync_mails_initiated_initiated = get_option('sync_mails_initiated');
         $disable_order_sync_initiated_initiated = get_option('disable_order_sync_initiated');
 
-        if ($options['collect_emails'] == 1 && !$sync_mails_initiated_initiated == 1) {
+        if (isset($options['collect_emails']) && !$sync_mails_initiated_initiated == 1) {
 
             update_option('sync_mails_initiated', 1);
             $this->logger->log('Sync Mails initiated', ['' => '']);
 
         }
 
-        if (!$options['collect_emails'] == 1 && $sync_mails_initiated_initiated == 1) {
+        if (!isset($options['collect_emails']) && $sync_mails_initiated_initiated == 1) {
 
             update_option('sync_mails_initiated', 0);
             $this->logger->log('Sync Mails uninitiated', ['' => '']);
 
         }
 
-        if ($options['cart_enabled'] == 1 && !$cart_initiated == 1) {
+        if (isset($options['cart_enabled']) && !$cart_initiated) {
 
             update_option('cart_initiated', 1);
             $this->logger->log('Cart Settings initiated', ['' => '']);
 
         }
 
-        if (!$options['cart_enabled'] == 1 && $cart_initiated == 1) {
+        if (!isset($options['cart_enabled']) && $cart_initiated) {
 
             update_option('cart_initiated', 0);
             $this->logger->log('Cart Settings uninitiated', ['' => '']);
 
         }
 
-        if ($options['disable_order_synchronization'] == 1 && !$disable_order_sync_initiated_initiated == 1) {
+        if (isset($options['disable_order_synchronization']) && !$disable_order_sync_initiated_initiated) {
 
             update_option('disable_order_sync_initiated', 1);
             $this->logger->log('Disable Order Sync initiated', ['' => '']);
 
         }
 
-        if (!$options['disable_order_synchronization'] == 1 && $disable_order_sync_initiated_initiated == 1) {
+        if (!isset($options['disable_order_synchronization']) && $disable_order_sync_initiated_initiated) {
 
             update_option('disable_order_sync_initiated', 0);
             $this->logger->log('Disable Order Sync uninitiated', ['' => '']);
 
         }
 
-        if ($options['product_enabled'] == 1 && !$product_initiated == 1) {
+        if (isset($options['product_enabled']) && !$product_initiated) {
 
             update_option('product_initiated', 1);
             $this->logger->log('Product Settings initiated', ['' => '']);
 
         }
 
-        if (!$options['product_enabled'] == 1 && $product_initiated == 1) {
+        if (!isset($options['product_enabled']) && $product_initiated) {
 
             update_option('product_initiated', 0);
             $this->logger->log('Product Settings uninitiated', ['' => '']);
 
         }
 
-        if ($options['category_enabled'] == 1 && !$category_initiated == 1) {
+        if (isset($options['category_enabled']) && !$category_initiated) {
 
             update_option('category_initiated', 1);
             $this->logger->log('Category Settings initiated', ['' => '']);
 
         }
 
-        if (!$options['category_enabled'] == 1 && $category_initiated == 1) {
+        if (!isset($options['category_enabled']) && $category_initiated) {
 
             update_option('category_initiated', 0);
             $this->logger->log('Category Settings uninitiated', ['' => '']);
 
         }
 
-        if ($options['exit_intent_enabled'] == 1 && !$exit_intent_initiated == 1) {
+        if (isset($options['exit_intent_enabled']) && !$exit_intent_initiated) {
 
             update_option('exit_intent_initiated', 1);
             $this->logger->log('Exit Intent initiated', ['' => '']);
 
         }
 
-        if (!$options['exit_intent_enabled'] == 1 && $exit_intent_initiated == 1) {
+        if (!isset($options['exit_intent_enabled']) && $exit_intent_initiated) {
 
             update_option('exit_intent_initiated', 0);
             $this->logger->log('Exit Intent uninitiated', ['' => '']);
 
         }
 
-        if ($options['search_enabled'] == 1 && !$search_initiated == 1) {
+        if (isset($options['search_enabled']) && !$search_initiated) {
 
             update_option('search_initiated', 1);
             $this->logger->log('Search initiated', ['' => '']);
 
         }
 
-        if (!$options['search_enabled'] == 1 && $search_initiated == 1) {
+        if (!isset($options['search_enabled']) && $search_initiated) {
 
             update_option('search_initiated', 0);
             $this->logger->log('Search uninitiated', ['' => '']);
 
         }
 
-        if ($options['livesearch_enabled'] == 1 && !$livesearch_initiated == 1) {
+        if (isset($options['livesearch_enabled']) && !$livesearch_initiated) {
 
             update_option('livesearch_initiated', 1);
             $this->logger->log('Live Search initiated', ['' => '']);
 
         }
 
-        if (!$options['livesearch_enabled'] == 1 && $livesearch_initiated == 1) {
+        if (!isset($options['livesearch_enabled']) && $livesearch_initiated) {
 
             update_option('livesearch_initiated', 0);
             $this->logger->log('Live Search uninitiated', ['' => '']);
 
         }
 
-        if ($options['powerstep_enabled'] == 1 && !$powerstep_initiated == 1) {
+        if (isset($options['powerstep_enabled']) && !$powerstep_initiated) {
 
             update_option('powerstep_initiated', 1);
             $this->logger->log('Powerstep initiated', ['' => '']);
 
         }
 
-        if (!$options['powerstep_enabled'] == 1 && $powerstep_initiated == 1) {
+        if (!isset($options['powerstep_enabled']) && $powerstep_initiated) {
 
             update_option('powerstep_initiated', 0);
             $this->logger->log('Powerstep uninitiated', ['' => '']);
@@ -305,6 +308,7 @@ class Clerk_Admin_Settings
      */
     public function settings_init()
     {
+
         // register a new setting
         register_setting('clerk', 'clerk_options');
         $options = get_option('clerk_options');
@@ -384,7 +388,7 @@ class Clerk_Admin_Settings
             'clerk_section_datasync',
             [
                 'label_for' => 'realtime_updates',
-                'default' => 0
+                'checked' => 0
             ]
         );
 
@@ -395,7 +399,7 @@ class Clerk_Admin_Settings
             'clerk_section_datasync',
             [
                 'label_for' => 'include_pages',
-                'default' => 1
+                'checked' => 1
             ]
         );
 
@@ -417,7 +421,7 @@ class Clerk_Admin_Settings
             'clerk_section_datasync',
             [
                 'label_for' => 'outofstock_products',
-                'default' => 0
+                'checked' => 0
             ]
         );
 
@@ -428,7 +432,7 @@ class Clerk_Admin_Settings
             'clerk_section_datasync',
             [
                 'label_for' => 'collect_emails',
-                'default' => 1
+                'checked' => 1
             ]
         );
 
@@ -450,7 +454,7 @@ class Clerk_Admin_Settings
             'clerk_section_datasync',
             [
                 'label_for' => 'disable_order_synchronization',
-                'default' => 0
+                'checked' => 0
             ]
         );
 
@@ -468,7 +472,7 @@ class Clerk_Admin_Settings
             'clerk_section_search',
             [
                 'label_for' => 'search_enabled',
-            ]
+                'checked' => 0            ]
         );
 
         add_settings_field('search_page',
@@ -525,7 +529,7 @@ class Clerk_Admin_Settings
             'clerk_section_livesearch',
             [
                 'label_for' => 'livesearch_enabled',
-                'livesearch_initiated' => 0
+                'checked' => 0
             ]
         );
 
@@ -536,6 +540,7 @@ class Clerk_Admin_Settings
             'clerk_section_livesearch',
             [
                 'label_for' => 'livesearch_include_categories',
+                'checked' => 0
             ]
         );
 
@@ -616,7 +621,7 @@ class Clerk_Admin_Settings
             'clerk_section_powerstep',
             [
                 'label_for' => 'powerstep_enabled',
-                'powerstep_initiated' => 0
+                'checked' => 0
             ]
         );
 
@@ -666,6 +671,7 @@ class Clerk_Admin_Settings
             'clerk_section_exit_intent',
             [
                 'label_for' => 'exit_intent_enabled',
+                'checked' => 0
             ]
         );
 
@@ -693,6 +699,7 @@ class Clerk_Admin_Settings
             'clerk_section_category',
             [
                 'label_for' => 'category_enabled',
+                'checked' => 0
             ]
         );
 
@@ -720,6 +727,7 @@ class Clerk_Admin_Settings
             'clerk_section_product',
             [
                 'label_for' => 'product_enabled',
+                'checked' => 0
             ]
         );
 
@@ -747,6 +755,7 @@ class Clerk_Admin_Settings
             'clerk_section_cart',
             [
                 'label_for' => 'cart_enabled',
+                'checked'  => 0
             ]
         );
 
@@ -774,7 +783,7 @@ class Clerk_Admin_Settings
             'clerk_section_log',
             [
                 'label_for' => 'log_enabled',
-                'default' => 1
+                'checked' => 1
             ]
         );
 
@@ -785,6 +794,7 @@ class Clerk_Admin_Settings
             'clerk_section_log',
             [
                 'label_for' => 'log_level',
+                'default' => "Error + Warn"
             ]
         );
 
@@ -795,6 +805,7 @@ class Clerk_Admin_Settings
             'clerk_section_log',
             [
                 'label_for' => 'log_to',
+                'default' => "my.clerk.io"
             ]
         );
 
@@ -833,6 +844,17 @@ class Clerk_Admin_Settings
             'clerk',
             'clerk_section_log'
         );
+
+        add_settings_field('debug_guide_change',
+            __('', 'clerk'),
+            [$this, 'addDebugChange'],
+            'clerk',
+            'clerk_section_log',
+            [
+                'label_for' => 'debug_guide_change',
+                'checked' => 0
+            ]
+        );
     }
     /**
      *
@@ -848,7 +870,25 @@ class Clerk_Admin_Settings
 
     }
 
+    public function addDebugChange($args)
+    {
 
+        //Set defaults
+        if (esc_attr($args['checked']) == 1) {
+
+            wp_parse_args(get_option('plugin_options'), [$args['label_for'] => '']);
+
+        }
+
+        //Get settings value
+        $options = get_option('clerk_options');
+        ?>
+        <input type="checkbox" style="display:none;" id="<?php echo esc_attr($args['label_for']); ?>"
+               name="clerk_options[<?php echo esc_attr($args['label_for']); ?>]"
+               value="1" <?php checked('1', $options[$args['label_for']]); ?>>
+        <?php
+
+    }
 
     public function addPagesTypeDropdown($args)
     {
@@ -1021,6 +1061,53 @@ class Clerk_Admin_Settings
 
     }
 
+    public function find_wp_config_path() {
+        $dir = dirname(__FILE__);
+        do {
+            if( file_exists($dir."/wp-config.php") ) {
+                return $dir;
+            }
+        } while( $dir = realpath("$dir/..") );
+        return null;
+    }
+
+    public function ShowDebugButton() {
+
+        $path = $this->find_wp_config_path();
+
+        if( strpos(file_get_contents($path."/wp-config.php"),"define( 'WP_DEBUG', false );")) {
+
+            return true;
+
+        }elseif(strpos(file_get_contents($path."/wp-config.php"),"define( 'WP_DEBUG', true );")) {
+
+            return true;
+
+        }else {
+
+            return false;
+
+        }
+
+    }
+
+    public function ChangeDebugMode($on) {
+
+        $path = $this->find_wp_config_path();
+
+        if( strpos(file_get_contents($path."/wp-config.php"),"define( 'WP_DEBUG', false );") && $on) {
+            $config_content = file_get_contents($path."/wp-config.php");
+            $config_content = str_replace("define( 'WP_DEBUG', false );", "define( 'WP_DEBUG', true );", $config_content);
+            file_put_contents($path."/wp-config.php", $config_content);
+        }
+        elseif( strpos(file_get_contents($path."/wp-config.php"),"define( 'WP_DEBUG', true );") && !$on) {
+            $config_content = file_get_contents($path."/wp-config.php");
+            $config_content = str_replace("define( 'WP_DEBUG', true );", "define( 'WP_DEBUG', false );", $config_content);
+            file_put_contents($path."/wp-config.php", $config_content);
+        }
+
+    }
+
     public function addDebugGuide() {
 
         if (WP_DEBUG) {
@@ -1047,6 +1134,14 @@ class Clerk_Admin_Settings
             <p>define( 'WP_DEBUG', true );</p>
             <p>change it to:</p>
             <p>define( 'WP_DEBUG', false );</p>
+            <?php
+            if ($this->ShowDebugButton()) {
+            ?>
+                <br><p><strong>OR USE THIS BUTTON:</strong></p>
+                <input type="button" onclick="document.getElementById('debug_guide_change').click();document.getElementById('submit').click();" name="changedebug" id="changedebug" class="button button-primary" value="Disable Debug Mode">
+            <?php
+            }
+            ?>
             <hr>
             <?php
         } else {
@@ -1076,6 +1171,14 @@ class Clerk_Admin_Settings
             <p>define( 'WP_DEBUG', false );</p>
             <p>change it to:</p>
             <p>define( 'WP_DEBUG', true );</p>
+            <?php
+            if ($this->ShowDebugButton()) {
+                ?>
+                <br><p><strong>OR USE THIS BUTTON:</strong></p>
+                <input type="button" onclick="document.getElementById('debug_guide_change').click();document.getElementById('submit').click();" name="changedebug" id="changedebug" class="button button-primary" value="Enable Debug Mode">
+                <?php
+            }
+            ?>
             <hr>
             <?php
 
