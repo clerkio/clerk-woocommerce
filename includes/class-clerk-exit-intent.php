@@ -36,13 +36,22 @@ class Clerk_Exit_Intent
 
             $options = get_option('clerk_options');
 
-            if (isset($options['exit_intent_enabled']) && $options['exit_intent_enabled']) :
-                ?>
-                <span class="clerk"
-                      data-template="@<?php echo esc_attr($options['exit_intent_template']); ?>"
-                      data-exit-intent="true"></span>
-            <?php
-            endif;
+            if (isset($options['exit_intent_enabled']) && $options['exit_intent_enabled']){
+
+                $templates = explode(',',$options['exit_intent_enabled']);
+
+                foreach ($templates as $template) {
+
+                    ?>
+                    <span class="clerk"
+                          data-template="@<?php echo esc_attr(str_replace(' ','',$template)); ?>"
+                          data-exit-intent="true">
+                    </span>
+                    <?php
+
+                }
+
+            }
 
         } catch (Exception $e) {
 

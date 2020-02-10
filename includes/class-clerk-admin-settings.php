@@ -20,7 +20,7 @@ class Clerk_Admin_Settings
         $this->initHooks();
         require_once(__DIR__ . '/class-clerk-logger.php');
         $this->logger = new ClerkLogger();
-        $this->version = '2.2.4';
+        $this->version = '2.2.5';
 
         $this->InitializeSettings();
 
@@ -607,6 +607,49 @@ class Clerk_Admin_Settings
             ]
         );
 
+
+
+
+        //Add faceted navigation
+        add_settings_section(
+            'clerk_faceted_navigation',
+            __('Faceted Navigation', 'clerk'),
+            null,
+            'clerk');
+
+        add_settings_field('faceted_navigation_enabled',
+            __('Enabled', 'clerk'),
+            [$this, 'addCheckboxField'],
+            'clerk',
+            'clerk_faceted_navigation',
+            [
+                'label_for' => 'faceted_navigation_enabled',
+                'checked' => 0
+            ]
+        );
+
+        add_settings_field('faceted_navigation_custom',
+            __('Add Custom Attribute', 'clerk'),
+            [$this, 'addFildAndButton'],
+            'clerk',
+            'clerk_faceted_navigation',
+            [
+                'label_for' => 'faceted_navigation_custom'
+            ]
+        );
+
+        add_settings_field('faceted_navigation',
+            __('Facet Attributes', 'clerk'),
+            [$this, 'getAttributes'],
+            'clerk',
+            'clerk_faceted_navigation',
+            [
+                'label_for' => 'faceted_navigation'
+            ]
+        );
+
+
+
         //Add powerstep section
         add_settings_section(
             'clerk_section_powerstep',
@@ -867,6 +910,399 @@ class Clerk_Admin_Settings
                 <p>v. <?php echo $this->version; ?></p>
             </span>
             <?php
+
+    }
+
+    public function addFildAndButton() {
+        ?>
+        <input class="text-box single-line" id="faceted_navigation_custom"
+            name="faceted_navigation_custom" style="display: inline-block;" type="text"
+            value="">
+            <a type="button" onclick="add_facet()" title="Add" class="button button-primary">
+            Add
+            </a>
+        <?php
+    }
+
+    public function getAttributes($args) {
+
+        $_continue = true;
+        $offset = 0;
+        $page = 0;
+
+        $exclude_attributes = ['sku','list_price','description','url','image','type','id','name'];
+        $DynamicAttributes = [];
+
+        while ($_continue) {
+
+            $check = true;
+
+            $options = get_option('clerk_options');
+            $public_key = $options['public_key'];
+
+            $limit = 10;
+            $orderby = 'date';
+            $order = 'DESC';
+
+            $products = clerk_get_products(array(
+                'limit' => $limit,
+                'orderby' => $orderby,
+                'order' => $order,
+                'status' => array('publish'),
+                'paginate' => true,
+                'offset' => $offset
+            ));
+
+            foreach ($products as $product) {
+
+                if ($check) {
+                    $Endpoint = 'http://api.clerk.io/v2/product/attributes';
+
+                    $data_string = json_encode([
+                        'key' => $public_key,
+                        'products' => [536]]);
+
+                    $curl = curl_init();
+
+                    curl_setopt($curl, CURLOPT_URL, $Endpoint);
+                    curl_setopt($curl, CURLOPT_POST, true);
+                    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+                    curl_setopt($curl, CURLOPT_POSTFIELDS, $data_string);
+
+                    $response = json_decode(curl_exec($curl));
+
+                    if (isset($response[0])) {
+
+                        $check = false;
+
+                    }
+                }
+
+            }
+
+            if (isset($response[0])) {
+
+                foreach ($response[0] as $attribute => $value) {
+
+                    if (!in_array($attribute, $exclude_attributes)) {
+
+                        if (!empty($attribute)) {
+
+                            $DynamicAttributes[$attribute] = $attribute;
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+            if (count($DynamicAttributes) != 0 && $offset >= 10) {
+
+                $_continue = false;
+
+            }
+
+            $offset += 10;
+        }
+
+        $AttributesCorCompare = [];
+        $NewDynamicAttributes = [];
+
+        $savedAttributes = json_decode($options['faceted_navigation']);
+
+        if (count($savedAttributes) > 0) {
+
+            foreach ($savedAttributes as $Attribute) {
+
+                $AttributesCorCompare[] = $Attribute->attribute;
+
+            }
+
+        }
+
+        foreach ($DynamicAttributes as $DynamicAttribute) {
+
+            if (in_array($DynamicAttribute, $AttributesCorCompare)) {
+
+
+
+            }else {
+
+                $NewDynamicAttributes[] = $DynamicAttribute;
+
+            }
+
+        }
+        //$NewDynamicAttributes[] = 'Test';
+        if (count($NewDynamicAttributes) > 0) {
+            $commacounter = 0;
+            $attribute_text = 'attributes';
+
+
+            if (count($NewDynamicAttributes) === 1) {
+
+
+				$attribute_text = 'attribute';
+
+
+            }
+
+            ?>
+                <div class="alert info">
+                    <span class="closebtn">×</span>
+                    <strong><?php echo count($NewDynamicAttributes) ?></strong> new <?php echo $attribute_text ?>
+
+                    <?php
+                        foreach ($NewDynamicAttributes as $Attribute) {
+                            $commacounter++;
+                            ?>
+                                <strong><?php echo $Attribute ?></strong><?php if ($commacounter < count($NewDynamicAttributes)) { echo ', '; } else {echo ' detected.';} ?>
+                            <?php
+                        }
+                    ?>
+
+                </div>
+            <?php
+        }
+
+        if (count($NewDynamicAttributes) > 0 || count($savedAttributes) > 0) {
+
+            ?>
+                <table>
+
+                <tbody id="facets_content">
+                <th>Attribute</th>
+                <th>Title</th>
+                <th>Position</th>
+                <th>Show</th>
+            <?php
+
+        }
+
+        if (count($savedAttributes) > 0) {
+
+            $count = 0;
+            foreach ($savedAttributes as $Attribute) {
+
+                $count++;
+                $checked = '';
+                if ($Attribute->checked) {
+
+                    $checked = 'checked';
+
+                }
+
+                echo '
+
+                <tr id="facets_lines">
+
+                    <td><input type="text" id="facets_facet" value="' . $Attribute->attribute . '" readonly></td>
+                    <td><input type="text" id="facets_title" value="' . $Attribute->title . '"></td>
+                    <td><input type="text" id="facets_position" value="' . $Attribute->position . '"></td>
+                    <td><input id="faceted_enabled" type="checkbox" '.$checked.'></td>
+                    
+                </tr>
+                ';
+
+            }
+        }
+
+            if (count($NewDynamicAttributes) > 0) {
+
+                foreach ($NewDynamicAttributes as $Attribute) {
+
+                    $count++;
+
+                    echo '
+
+                    <tr id="facets_lines">
+
+                        <td><input type="text" id="facets_facet" value="' . $Attribute . '" readonly></td>
+                        <td><input type="text" id="facets_title" value=""></td>
+                        <td><input type="text" id="facets_position" value="' . $count . '"></td>
+                        <td><input id="faceted_enabled" type="checkbox"></td>
+                        
+                    </tr>
+                    ';
+
+                }
+            }
+
+        if (count($NewDynamicAttributes) > 0 || count($savedAttributes) > 0) {
+
+
+            ?>
+
+            <input name="clerk_options[<?php echo esc_attr($args['label_for']); ?>]" id="faceted_navigation" type="hidden">
+            </tbody>
+            </table>
+            <script
+                    src="https://code.jquery.com/jquery-3.4.1.min.js"
+                    integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+                    crossorigin="anonymous"></script>
+
+            <script>
+                $('.wrap form').submit(function() {
+
+                    CollectAttributes();
+
+                });
+                function remove_facet_line(data_value) {
+
+                    $("[data="+data_value+"]").remove();
+
+                }
+                function add_facet() {
+
+                    if ($("#facets_content #facets_lines").length === 0) {
+                        $('#facets_content').html('');
+                    }
+
+                    var linescount = $('#facets_content #facets_lines').length;
+
+                    facets_lines = document.createElement("tr");
+                    facets_lines.setAttribute("id", "facets_lines");
+                    facets_lines.setAttribute("data", $('#faceted_navigation_custom').val());
+
+                    facet_td = document.createElement("td");
+
+                    facet = document.createElement("input");
+                    facet.setAttribute("id", "facets_facet");
+                    facet.setAttribute("type", "text");
+                    facet.setAttribute("value", $('#faceted_navigation_custom').val());
+                    facet.setAttribute("readonly", '');
+
+                    title_td = document.createElement("td");
+                    title = document.createElement("input");
+                    title.setAttribute("id", "facets_title");
+                    title.setAttribute("type", "text");
+                    title.setAttribute("value", '');
+
+
+                    position_td = document.createElement("td");
+                    position = document.createElement("input");
+                    position.setAttribute("id", "facets_position");
+                    position.setAttribute("type", "text");
+                    position.setAttribute("value", linescount + 1);
+
+                    checkbox_td = document.createElement("td");
+
+                    checkbox = document.createElement("input");
+                    checkbox.setAttribute("type", "checkbox");
+                    checkbox.setAttribute("id", "faceted_enabled");
+                    checkbox.setAttribute("value", "1");
+
+
+                    remove = document.createElement("a");
+                    remove.setAttribute("class", "close");
+                    remove.setAttribute("onclick", 'remove_facet_line("'+$("#faceted_navigation_custom").val()+'");');
+
+                    facet_td.append(facet)
+                    facets_lines.append(facet_td);
+                    title_td.append(title);
+                    facets_lines.append(title_td);
+                    position_td.append(position);
+                    facets_lines.append(position_td);
+                    checkbox_td.append(checkbox);
+                    checkbox_td.append(remove);
+                    facets_lines.append(checkbox_td);
+
+                    $('#facets_content').append(facets_lines);
+
+                    $('#faceted_navigation_custom').val('')
+
+                }
+
+
+                function CollectAttributes() {
+
+                    Attributes = [];
+
+                    count = 0;
+                    countFacets = $('input[id^=facets_facet]').length;
+
+                    while ((count+1) <= countFacets) {
+
+                        var data = {
+
+                            attribute: $('input[id^=facets_facet]:eq(' + count + ')').val(),
+                            title: $('input[id^=facets_title]:eq(' + count + ')').val(),
+                            position: $('input[id^=facets_position]:eq(' + count + ')').val(),
+                            checked: $('input[id^=faceted_enabled]:eq(' + count + ')').is(':checked')
+
+                        };
+
+                        Attributes.push(data);
+
+                        count = count + 1;
+
+                    }
+
+                    $('#faceted_navigation').val(JSON.stringify(Attributes));
+                    console.log($('#faceted_navigation').val());
+
+                }
+                $(".closebtn").click(function () {
+                    $(".alert").remove();
+                });
+            </script>
+            <style>
+                .alert.info {
+                    background-color:
+                            #2196F3;
+                    border-radius: 6px;
+                }
+                .alert {
+                    padding: 20px;
+                    background-color: #f44336;
+                    color:
+                            white;
+                    opacity: 0.83;
+                    transition: opacity 0.6s;
+                    margin-bottom: 15px;
+                }
+                .closebtn {
+                    padding-left: 15px;
+                    color:
+                            white;
+                    font-weight: bold;
+                    float: right;
+                    font-size: 20px;
+                    line-height: 18px;
+                    cursor: pointer;
+                    transition: 0.3s;
+                }
+
+                .close {
+                    position: absolute;
+                    width: 32px;
+                    height: 32px;
+                    opacity: 0.4;
+                }
+                .close:hover {
+                    opacity: 1;
+                }
+                .close:before, .close:after {
+                    position: absolute;
+                    left: 15px;
+                    content: ' ';
+                    height: 20px;
+                    width: 2px;
+                    background-color: #f44336;
+                }
+                .close:before {
+                    transform: rotate(45deg);
+                }
+                .close:after {
+                    transform: rotate(-45deg);
+                }
+            </style>
+
+        <?php
+
+        }
 
     }
 

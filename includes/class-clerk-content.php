@@ -60,12 +60,21 @@ class Clerk_Content
                 $products[] = $values['product_id'];
             }
 
-            if (isset($options['cart_enabled']) && $options['cart_enabled']) :
-                ?>
-                <span class="clerk" data-template="@<?php echo $options['cart_content']; ?>"
-                      data-products="<?php echo json_encode($products); ?>"></span>
-            <?php
-            endif;
+            if (isset($options['cart_enabled']) && $options['cart_enabled']) {
+
+                $templates = explode(',',$options['cart_content']);
+
+                foreach ($templates as $template) {
+
+                    ?>
+                    <span class="clerk" data-template="@<?php echo str_replace(' ', '', $template); ?>"
+                          data-products="<?php echo json_encode($products); ?>">
+                    </span>
+                    <?php
+
+                }
+
+            }
 
         } catch (Exception $e) {
 

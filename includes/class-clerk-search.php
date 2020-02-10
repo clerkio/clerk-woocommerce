@@ -59,6 +59,40 @@ class Clerk_Search
     public function handle_shortcode($atts)
     {
 
+        $facets_attributes = '[';
+        $facets_titles = '{';
+        $Attributes = [];
+
+        $options = get_option('clerk_options');
+
+        if ($options['faceted_navigation_enabled']) {
+
+            $Attributes = json_decode($options['faceted_navigation']);
+            $count = 0;
+            foreach ($Attributes as $key => $Attribute) {
+                $count++;
+
+                if ($Attribute->checked) {
+                    if ($count == count($Attributes)) {
+
+                        $facets_attributes .= '"' . $Attribute->attribute . '"';
+                        $facets_titles .= '"' . $Attribute->attribute . '": "' . $Attribute->title . '"';
+
+                    } else {
+
+                        $facets_attributes .= '"' . $Attribute->attribute . '", ';
+                        $facets_titles .= '"' . $Attribute->attribute . '": "' . $Attribute->title . '",';
+                    }
+
+                }
+
+            }
+
+        }
+
+        $facets_attributes .= ']\'';
+        $facets_titles .= '}\'';
+
         try {
 
             $options = get_option('clerk_options');
@@ -70,13 +104,44 @@ class Clerk_Search
                   data-offset="0"
                   data-target="#clerk-search-results"
                   data-after-render="_clerk_after_load_event"
+                  <?php
+                  if (count($Attributes) > 0) {
+
+                      echo 'data-facets-target="#clerk-search-filters"';
+                      echo "data-facets-attributes='".$facets_attributes;
+                      echo "data-facets-titles='".$facets_titles;
+
+                  }
+
+                  ?>
                   data-query="<?php echo esc_attr(get_query_var('searchterm')); ?>">
 		    </span>
+            <?php
+            if (count($Attributes) > 0) {
 
-            <ul id="clerk-search-results"></ul>
+                echo '<div style="display: flex;">';
+                echo  '<div style="width: 30%; margin-top: 75px;" id="clerk-search-filters"></div>';
+
+
+            }
+
+            ?>
+
+            <ul style="width: 100%;" id="clerk-search-results"></ul>
+
+            <?php
+
+            if (count($Attributes) > 0) {
+
+                echo ' </div>';
+
+            }
+
+            ?>
+            </div>
             <div id="clerk-search-no-results" style="display: none; margin-left: 3em;"><h2><?php echo $options['search_no_results_text'] ?></h2></div>
 
-            <script type="text/javascript">F
+            <script type="text/javascript">
                 var total_loaded = 0;
 
                 function _clerk_after_load_event(data) {

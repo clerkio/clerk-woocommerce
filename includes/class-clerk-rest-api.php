@@ -245,7 +245,12 @@ class Clerk_Rest_Api extends WP_REST_Server
 
                 //Append additional fields
                 foreach ($this->getAdditionalFields() as $field) {
-                    $productArray[$field] = $product->get_attribute($field);
+                    if ($product->get_attribute($field)) {
+
+                        $productArray[$field] = str_replace(' ','',explode(',',$product->get_attribute($field)));
+
+                    }
+
                 }
 
                 $productArray = apply_filters('clerk_product_array', $productArray, $product);
