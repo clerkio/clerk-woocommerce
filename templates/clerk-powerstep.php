@@ -35,7 +35,7 @@ $checkout_url = $woocommerce->cart->get_checkout_url();
     $count = 0;
     foreach ( get_powerstep_templates() as $template ) :
         $count++;
-        $id = 'clerk_'.time();
+        $id = 'clerk_'.time().$count;
         ?>
         <span class="clerk"
               id="<?php echo $id ?>"
