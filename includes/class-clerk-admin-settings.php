@@ -926,6 +926,8 @@ class Clerk_Admin_Settings
 
     public function getAttributes($args) {
 
+
+
         $_continue = true;
         $offset = 0;
         $page = 0;
@@ -933,62 +935,67 @@ class Clerk_Admin_Settings
         $exclude_attributes = ['sku','list_price','description','url','image','type','id','name'];
         $DynamicAttributes = [];
 
-        while ($_continue) {
+        $options = get_option('clerk_options');
+        $public_key = $options['public_key'];
 
-            $check = true;
+        if (!empty(str_replace(' ','', $public_key))) {
 
-            $options = get_option('clerk_options');
-            $public_key = $options['public_key'];
+            while ($_continue) {
 
-            $limit = 10;
-            $orderby = 'date';
-            $order = 'DESC';
+                $check = true;
 
-            $products = clerk_get_products(array(
-                'limit' => $limit,
-                'orderby' => $orderby,
-                'order' => $order,
-                'status' => array('publish'),
-                'paginate' => true,
-                'offset' => $offset
-            ));
 
-            foreach ($products as $product) {
+                $limit = 10;
+                $orderby = 'date';
+                $order = 'DESC';
 
-                if ($check) {
-                    $Endpoint = 'http://api.clerk.io/v2/product/attributes';
+                $products = clerk_get_products(array(
+                    'limit' => $limit,
+                    'orderby' => $orderby,
+                    'order' => $order,
+                    'status' => array('publish'),
+                    'paginate' => true,
+                    'offset' => $offset
+                ));
 
-                    $data_string = json_encode([
-                        'key' => $public_key,
-                        'products' => [536]]);
+                foreach ($products as $product) {
 
-                    $curl = curl_init();
+                    if ($check) {
+                        $Endpoint = 'http://api.clerk.io/v2/product/attributes';
 
-                    curl_setopt($curl, CURLOPT_URL, $Endpoint);
-                    curl_setopt($curl, CURLOPT_POST, true);
-                    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-                    curl_setopt($curl, CURLOPT_POSTFIELDS, $data_string);
+                        $data_string = json_encode([
+                            'key' => $public_key,
+                            'products' => [536]]);
 
-                    $response = json_decode(curl_exec($curl));
+                        $curl = curl_init();
 
-                    if (isset($response[0])) {
+                        curl_setopt($curl, CURLOPT_URL, $Endpoint);
+                        curl_setopt($curl, CURLOPT_POST, true);
+                        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+                        curl_setopt($curl, CURLOPT_POSTFIELDS, $data_string);
 
-                        $check = false;
+                        $response = json_decode(curl_exec($curl));
 
+                        if (isset($response[0])) {
+
+                            $check = false;
+
+                        }
                     }
+
                 }
 
-            }
+                if (isset($response[0])) {
 
-            if (isset($response[0])) {
+                    foreach ($response[0] as $attribute => $value) {
 
-                foreach ($response[0] as $attribute => $value) {
+                        if (!in_array($attribute, $exclude_attributes)) {
 
-                    if (!in_array($attribute, $exclude_attributes)) {
+                            if (!empty($attribute)) {
 
-                        if (!empty($attribute)) {
+                                $DynamicAttributes[$attribute] = $attribute;
 
-                            $DynamicAttributes[$attribute] = $attribute;
+                            }
 
                         }
 
@@ -996,126 +1003,127 @@ class Clerk_Admin_Settings
 
                 }
 
+                if (count($DynamicAttributes) != 0 && $offset >= 10) {
+
+                    $_continue = false;
+
+                }
+
+                $offset += 10;
             }
 
-            if (count($DynamicAttributes) != 0 && $offset >= 10) {
+            $AttributesCorCompare = [];
+            $NewDynamicAttributes = [];
 
-                $_continue = false;
+            $savedAttributes = json_decode($options['faceted_navigation']);
 
-            }
+            if (count($savedAttributes) > 0) {
 
-            $offset += 10;
-        }
+                foreach ($savedAttributes as $Attribute) {
 
-        $AttributesCorCompare = [];
-        $NewDynamicAttributes = [];
+                    $AttributesCorCompare[] = $Attribute->attribute;
 
-        $savedAttributes = json_decode($options['faceted_navigation']);
-
-        if (count($savedAttributes) > 0) {
-
-            foreach ($savedAttributes as $Attribute) {
-
-                $AttributesCorCompare[] = $Attribute->attribute;
-
-            }
-
-        }
-
-        foreach ($DynamicAttributes as $DynamicAttribute) {
-
-            if (in_array($DynamicAttribute, $AttributesCorCompare)) {
-
-
-
-            }else {
-
-                $NewDynamicAttributes[] = $DynamicAttribute;
+                }
 
             }
 
-        }
-        //$NewDynamicAttributes[] = 'Test';
-        if (count($NewDynamicAttributes) > 0) {
-            $commacounter = 0;
-            $attribute_text = 'attributes';
+            foreach ($DynamicAttributes as $DynamicAttribute) {
+
+                if (in_array($DynamicAttribute, $AttributesCorCompare)) {
 
 
-            if (count($NewDynamicAttributes) === 1) {
+                } else {
 
+                    $NewDynamicAttributes[] = $DynamicAttribute;
 
-				$attribute_text = 'attribute';
-
+                }
 
             }
+            //$NewDynamicAttributes[] = 'Test';
+            if (count($NewDynamicAttributes) > 0) {
+                $commacounter = 0;
+                $attribute_text = 'attributes';
 
-            ?>
+
+                if (count($NewDynamicAttributes) === 1) {
+
+
+                    $attribute_text = 'attribute';
+
+
+                }
+
+                ?>
                 <div class="alert info">
                     <span class="closebtn">×</span>
                     <strong><?php echo count($NewDynamicAttributes) ?></strong> new <?php echo $attribute_text ?>
 
                     <?php
-                        foreach ($NewDynamicAttributes as $Attribute) {
-                            $commacounter++;
-                            ?>
-                                <strong><?php echo $Attribute ?></strong><?php if ($commacounter < count($NewDynamicAttributes)) { echo ', '; } else {echo ' detected.';} ?>
-                            <?php
-                        }
+                    foreach ($NewDynamicAttributes as $Attribute) {
+                        $commacounter++;
+                        ?>
+                        <strong><?php echo $Attribute ?></strong><?php if ($commacounter < count($NewDynamicAttributes)) {
+                            echo ', ';
+                        } else {
+                            echo ' detected.';
+                        } ?>
+                        <?php
+                    }
                     ?>
 
                 </div>
-            <?php
-        }
+                <?php
+            }
 
         if (count($NewDynamicAttributes) > 0 || count($savedAttributes) > 0) {
 
             ?>
-                <table>
+            <table>
 
                 <tbody id="facets_content">
                 <th>Attribute</th>
                 <th>Title</th>
                 <th>Position</th>
                 <th>Show</th>
-            <?php
-
-        }
-
-        if (count($savedAttributes) > 0) {
-
-            $count = 0;
-            foreach ($savedAttributes as $Attribute) {
-
-                $count++;
-                $checked = '';
-                if ($Attribute->checked) {
-
-                    $checked = 'checked';
+                <?php
 
                 }
 
-                echo '
+                if (count($savedAttributes) > 0) {
+
+                    $count = 0;
+                    foreach ($savedAttributes as $Attribute) {
+
+                        $count++;
+                        $checked = '';
+                        if ($Attribute->checked) {
+
+                            $checked = 'checked';
+
+                        }
+
+                        echo '
 
                 <tr id="facets_lines">
 
                     <td><input type="text" id="facets_facet" value="' . $Attribute->attribute . '" readonly></td>
                     <td><input type="text" id="facets_title" value="' . $Attribute->title . '"></td>
                     <td><input type="text" id="facets_position" value="' . $Attribute->position . '"></td>
-                    <td><input id="faceted_enabled" type="checkbox" '.$checked.'></td>
+                    <td><input id="faceted_enabled" type="checkbox" ' . $checked . '></td>
                     
                 </tr>
                 ';
 
-            }
-        }
+                    }
+                }
 
-            if (count($NewDynamicAttributes) > 0) {
+                if (count($NewDynamicAttributes) > 0) {
 
-                foreach ($NewDynamicAttributes as $Attribute) {
+                    foreach ($NewDynamicAttributes as $Attribute) {
 
-                    $count++;
+                        $count++;
 
-                    echo '
+                        echo '
 
                     <tr id="facets_lines">
 
@@ -1127,16 +1135,17 @@ class Clerk_Admin_Settings
                     </tr>
                     ';
 
+                    }
                 }
-            }
 
-        if (count($NewDynamicAttributes) > 0 || count($savedAttributes) > 0) {
+                if (count($NewDynamicAttributes) > 0 || count($savedAttributes) > 0) {
 
 
-            ?>
+                ?>
 
-            <input name="clerk_options[<?php echo esc_attr($args['label_for']); ?>]" id="faceted_navigation" type="hidden">
-            </tbody>
+                <input name="clerk_options[<?php echo esc_attr($args['label_for']); ?>]" id="faceted_navigation"
+                       type="hidden">
+                </tbody>
             </table>
             <script
                     src="https://code.jquery.com/jquery-3.4.1.min.js"
@@ -1144,16 +1153,18 @@ class Clerk_Admin_Settings
                     crossorigin="anonymous"></script>
 
             <script>
-                $('.wrap form').submit(function() {
+                $('.wrap form').submit(function () {
 
                     CollectAttributes();
 
                 });
+
                 function remove_facet_line(data_value) {
 
-                    $("[data="+data_value+"]").remove();
+                    $("[data=" + data_value + "]").remove();
 
                 }
+
                 function add_facet() {
 
                     if ($("#facets_content #facets_lines").length === 0) {
@@ -1197,7 +1208,7 @@ class Clerk_Admin_Settings
 
                     remove = document.createElement("a");
                     remove.setAttribute("class", "close");
-                    remove.setAttribute("onclick", 'remove_facet_line("'+$("#faceted_navigation_custom").val()+'");');
+                    remove.setAttribute("onclick", 'remove_facet_line("' + $("#faceted_navigation_custom").val() + '");');
 
                     facet_td.append(facet)
                     facets_lines.append(facet_td);
@@ -1223,7 +1234,7 @@ class Clerk_Admin_Settings
                     count = 0;
                     countFacets = $('input[id^=facets_facet]').length;
 
-                    while ((count+1) <= countFacets) {
+                    while ((count + 1) <= countFacets) {
 
                         var data = {
 
@@ -1244,29 +1255,29 @@ class Clerk_Admin_Settings
                     console.log($('#faceted_navigation').val());
 
                 }
+
                 $(".closebtn").click(function () {
                     $(".alert").remove();
                 });
             </script>
             <style>
                 .alert.info {
-                    background-color:
-                            #2196F3;
+                    background-color: #2196F3;
                     border-radius: 6px;
                 }
+
                 .alert {
                     padding: 20px;
                     background-color: #f44336;
-                    color:
-                            white;
+                    color: white;
                     opacity: 0.83;
                     transition: opacity 0.6s;
                     margin-bottom: 15px;
                 }
+
                 .closebtn {
                     padding-left: 15px;
-                    color:
-                            white;
+                    color: white;
                     font-weight: bold;
                     float: right;
                     font-size: 20px;
@@ -1281,9 +1292,11 @@ class Clerk_Admin_Settings
                     height: 32px;
                     opacity: 0.4;
                 }
+
                 .close:hover {
                     opacity: 1;
                 }
+
                 .close:before, .close:after {
                     position: absolute;
                     left: 15px;
@@ -1292,15 +1305,19 @@ class Clerk_Admin_Settings
                     width: 2px;
                     background-color: #f44336;
                 }
+
                 .close:before {
                     transform: rotate(45deg);
                 }
+
                 .close:after {
                     transform: rotate(-45deg);
                 }
             </style>
 
-        <?php
+            <?php
+
+        }
 
         }
 
