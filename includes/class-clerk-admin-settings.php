@@ -1010,6 +1010,10 @@ class Clerk_Admin_Settings
 
                     $_continue = false;
 
+                } elseif ($offset == 30) {
+
+                    $_continue = false;
+
                 }
 
                 $offset += 10;
