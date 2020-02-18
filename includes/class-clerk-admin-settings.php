@@ -905,22 +905,22 @@ class Clerk_Admin_Settings
     public function addVersion()
     {
 
-            ?>
-            <span>
+        ?>
+        <span>
                 <p>v. <?php echo $this->version; ?></p>
             </span>
-            <?php
+        <?php
 
     }
 
     public function addFildAndButton() {
         ?>
         <input class="text-box single-line" id="faceted_navigation_custom"
-            name="faceted_navigation_custom" style="display: inline-block;" type="text"
-            value="">
-            <a type="button" onclick="add_facet()" title="Add" class="button button-primary">
+               name="faceted_navigation_custom" style="display: inline-block;" type="text"
+               value="">
+        <a type="button" onclick="add_facet()" title="Add" class="button button-primary">
             Add
-            </a>
+        </a>
         <?php
     }
 
@@ -958,14 +958,17 @@ class Clerk_Admin_Settings
                     'offset' => $offset
                 ));
 
-                foreach ($products as $product) {
+                foreach ($products->products as $product) {
 
                     if ($check) {
+
+                        $id = $product->get_id();
+
                         $Endpoint = 'http://api.clerk.io/v2/product/attributes';
 
                         $data_string = json_encode([
                             'key' => $public_key,
-                            'products' => [536]]);
+                            'products' => [$id]]);
 
                         $curl = curl_init();
 
@@ -1015,7 +1018,15 @@ class Clerk_Admin_Settings
             $AttributesCorCompare = [];
             $NewDynamicAttributes = [];
 
-            $savedAttributes = json_decode($options['faceted_navigation']);
+            if (!empty($options['faceted_navigation'])) {
+
+                $savedAttributes = json_decode($options['faceted_navigation']);
+
+            } else {
+
+                $savedAttributes = [];
+
+            }
 
             if (count($savedAttributes) > 0) {
 
@@ -1431,21 +1442,21 @@ class Clerk_Admin_Settings
 
         //Get settings value
         $Langs = [
-                ['Label' => 'Danish','Value' => 'danish'],
-                ['Label' => 'Dutch','Value' => 'dutch'],
-                ['Label' => 'English','Value' => 'english'],
-                ['Label' => 'Finnish','Value' => 'finnish'],
-                ['Label' => 'French','Value' => 'french'],
-                ['Label' => 'German','Value' => 'german'],
-                ['Label' => 'Hungarian','Value' => 'hungarian'],
-                ['Label' => 'Italian','Value' => 'italian'],
-                ['Label' => 'Norwegian','Value' => 'norwegian'],
-                ['Label' => 'Portuguese','Value' => 'portuguese'],
-                ['Label' => 'Romanian','Value' => 'romanian'],
-                ['Label' => 'Russian','Value' => 'russian'],
-                ['Label' => 'Spanish','Value' => 'spanish'],
-                ['Label' => 'Swedish','Value' => 'swedish'],
-                ['Label' => 'Turkish','Value' => 'turkish']
+            ['Label' => 'Danish','Value' => 'danish'],
+            ['Label' => 'Dutch','Value' => 'dutch'],
+            ['Label' => 'English','Value' => 'english'],
+            ['Label' => 'Finnish','Value' => 'finnish'],
+            ['Label' => 'French','Value' => 'french'],
+            ['Label' => 'German','Value' => 'german'],
+            ['Label' => 'Hungarian','Value' => 'hungarian'],
+            ['Label' => 'Italian','Value' => 'italian'],
+            ['Label' => 'Norwegian','Value' => 'norwegian'],
+            ['Label' => 'Portuguese','Value' => 'portuguese'],
+            ['Label' => 'Romanian','Value' => 'romanian'],
+            ['Label' => 'Russian','Value' => 'russian'],
+            ['Label' => 'Spanish','Value' => 'spanish'],
+            ['Label' => 'Swedish','Value' => 'swedish'],
+            ['Label' => 'Turkish','Value' => 'turkish']
         ];
 
         if (isset($AutoLang)) {
@@ -1567,20 +1578,20 @@ class Clerk_Admin_Settings
             ?>
             <hr><p style="color: red;"><strong>Wordpress Debug Mode is enabled</strong></p>
             <ul>
-            <li style="color: red;">Caching is disabled.</li>
-            <li style="color: red;">Errors will be visible.</li>
-            <li style="color: red;">Clerk logger can catch all errors.</li>
-            <li style="color: red;">Remember to disable it again after use!</li>
-            <li style="color: red;">It's not best practice to have it enabled in production.</li>
-            <li style="color: red;">It's only recommended for at very short period af time for debug use.</li>
+                <li style="color: red;">Caching is disabled.</li>
+                <li style="color: red;">Errors will be visible.</li>
+                <li style="color: red;">Clerk logger can catch all errors.</li>
+                <li style="color: red;">Remember to disable it again after use!</li>
+                <li style="color: red;">It's not best practice to have it enabled in production.</li>
+                <li style="color: red;">It's only recommended for at very short period af time for debug use.</li>
             </ul>
             <br>
             <p><strong>Step By Step Guide to disable debug mode</strong></p>
             <ol>
-            <li>Please disable Wordpress Debug Mode.</li>
-            <li>Keep Clerk Logging enabled.</li>
-            <li>Set the logging level to "Error + Warn".</li>
-            <li>Keep Logging to "my.clerk.io".</li>
+                <li>Please disable Wordpress Debug Mode.</li>
+                <li>Keep Clerk Logging enabled.</li>
+                <li>Set the logging level to "Error + Warn".</li>
+                <li>Keep Logging to "my.clerk.io".</li>
             </ol>
             <br><p><strong>HOW TO DISABLE DEBUG MODE:</strong></p>
             <p>Open wp_config.inc.php and usually at line 80 at the bottom of the file you will find</p>
@@ -1589,10 +1600,10 @@ class Clerk_Admin_Settings
             <p>define( 'WP_DEBUG', false );</p>
             <?php
             if ($this->ShowDebugButton()) {
-            ?>
+                ?>
                 <br><p><strong>OR USE THIS BUTTON:</strong></p>
                 <input type="button" onclick="document.getElementById('debug_guide_change').click();document.getElementById('submit').click();" name="changedebug" id="changedebug" class="button button-primary" value="Disable Debug Mode">
-            <?php
+                <?php
             }
             ?>
             <hr>
@@ -1617,7 +1628,7 @@ class Clerk_Admin_Settings
                 <li>Enable Clerk Logging.</li>
                 <li>Set the logging level to "Error + Warn + Debug Mode".</li>
                 <li>Set Logging to "my.clerk.io".</li>
-                </ol>
+            </ol>
             <p>Thanks, that will make it a lot easier for our customer support to help you.</p>
             <br><p><strong>HOW TO ENABLE DEBUG MODE:</strong></p>
             <p>Open wp_config.inc.php and usually at line 80 at the bottom of the file you will find</p>
