@@ -34,9 +34,18 @@ class Clerk_Admin_Settings
 
         add_action('admin_init', [$this, 'settings_init']);
         add_action('admin_menu', [$this, 'clerk_options_page']);
+        add_action('admin_enqueue_scripts', [$this, 'enqueue']);
+
+    }
+
+    public function enqueue( $hook )
+    {
+        if ( 'toplevel_page_clerk' != $hook ) {
+            return;
+        }
+
         wp_enqueue_script('jquery-ui-dialog');
         wp_enqueue_style('wp-jquery-ui-dialog');
-
     }
 
     public function InitializeSettings()
@@ -1125,7 +1134,7 @@ class Clerk_Admin_Settings
                     <td><input type="text" id="facets_title" value="' . $Attribute->title . '"></td>
                     <td><input type="text" id="facets_position" value="' . $Attribute->position . '"></td>
                     <td><input id="faceted_enabled" type="checkbox" ' . $checked . '></td>
-                    
+
                 </tr>
                 ';
 
@@ -1146,7 +1155,7 @@ class Clerk_Admin_Settings
                         <td><input type="text" id="facets_title" value=""></td>
                         <td><input type="text" id="facets_position" value="' . $count . '"></td>
                         <td><input id="faceted_enabled" type="checkbox"></td>
-                        
+
                     </tr>
                     ';
 
