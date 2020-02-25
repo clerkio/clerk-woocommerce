@@ -197,13 +197,23 @@ class Clerk_Rest_Api extends WP_REST_Server
                      * Will sync the lowest price, and set the sale flag if that variant is on sale.
                      */
                     $variation = $product->get_available_variations();
+                    $stock_quantity = 0;
                     $displayPrice = array();
                     $regularPrice = array();
                     foreach ($variation as $v) {
                         $vId = $v['variation_id'];
                         $displayPrice[$vId] = $v['display_price'];
                         $regularPrice[$vId] = $v['display_regular_price'];
+                        $variation_obj = new WC_Product_variation($v['variation_id']);
+                        $stock_quantity += $variation_obj->get_stock_quantity();
                     }
+
+                    if (!isset($displayPrice[0])) {
+
+                        continue;
+
+                    }
+
                     $lowestDisplayPrice = array_keys($displayPrice, min($displayPrice)); // Find the corresponding product ID
                     $price = $displayPrice[$lowestDisplayPrice[0]]; // Get the lowest price
                     $list_price = $regularPrice[$lowestDisplayPrice[0]]; // Get the corresponding list price (regular price)
@@ -240,6 +250,10 @@ class Clerk_Rest_Api extends WP_REST_Server
                 if (!empty($product->get_stock_quantity())) {
 
                     $productArray['stock'] = $product->get_stock_quantity();
+
+                }elseif (isset($stock_quantity)) {
+
+                    $productArray['stock'] = $stock_quantity;
 
                 }
 
