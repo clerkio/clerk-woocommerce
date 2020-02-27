@@ -277,7 +277,7 @@ class Clerk_Rest_Api extends WP_REST_Server
                             $productArray[strtolower($this->clerk_friendly_attributes($field))] = $attrubutefield;
 
                         }
-                        
+
                     }
 
                 }
@@ -299,6 +299,14 @@ class Clerk_Rest_Api extends WP_REST_Server
             $this->logger->error('ERROR product_endpoint_callback', ['error' => $e->getMessage()]);
 
         }
+    }
+
+    function clerk_friendly_attributes($attribute) {
+        $attribute = strtolower($attribute);
+        $attribute=str_replace('æ','ae',$attribute);
+        $attribute=str_replace('ø','oe',$attribute);
+        $attribute=str_replace('å','aa',$attribute);
+        return urlencode($attribute);
     }
 
     public function page_endpoint_callback(WP_REST_Request $request)
