@@ -259,10 +259,25 @@ class Clerk_Rest_Api extends WP_REST_Server
 
                 //Append additional fields
                 foreach ($this->getAdditionalFields() as $field) {
+
                     if ($product->get_attribute($field)) {
 
-                        $productArray[$field] = str_replace(' ','',explode(',',$product->get_attribute($field)));
+                        $productArray[$this->clerk_friendly_attributes($field)] = str_replace(' ','',explode(',',$product->get_attribute($field)));
 
+                    }elseif (get_post_meta( $product->get_id(), $field, true )) {
+
+                        $productArray[$this->clerk_friendly_attributes($field)] = get_post_meta( $product->get_id(), $field, true );
+
+                    }elseif (wp_get_post_terms( $product->get_id(), strtolower($field), array('fields'=> 'names'))) {
+
+                        $attrubutefield = wp_get_post_terms( $product->get_id(), strtolower($field), array('fields'=> 'names'));
+
+                        if (!array_key_exists('errors', $attrubutefield )) {
+
+                            $productArray[strtolower($this->clerk_friendly_attributes($field))] = $attrubutefield;
+
+                        }
+                        
                     }
 
                 }
