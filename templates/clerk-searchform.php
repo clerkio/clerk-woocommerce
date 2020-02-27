@@ -37,8 +37,16 @@ if ( isset( $options['livesearch_enabled'] ) && $options['livesearch_enabled'] )
             data-instant-search-pages-type="<?php echo $options['livesearch_pages_type']; ?>"
             <?php
             endif;
+            if (isset( $options['livesearch_field_selector'] )) :
             ?>
-            data-instant-search="#clerk-searchfield">
+            data-instant-search="<?php echo $options['livesearch_field_selector']; ?>">
+            <?php
+            else:
+                ?>
+                data-instant-search="#clerk-searchfield">
+            <?php
+            endif;
+            ?>
 </span>
 <?php
 endif;

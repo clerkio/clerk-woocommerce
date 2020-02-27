@@ -597,6 +597,17 @@ class Clerk_Admin_Settings
             ]
         );
 
+        add_settings_field('livesearch_field_selector',
+            __('Live Search Input Selector', 'clerk'),
+            [$this, 'addTextField'],
+            'clerk',
+            'clerk_section_livesearch',
+            [
+                'label_for' => 'livesearch_field_selector',
+                'default' => '#clerk-searchfield'
+            ]
+        );
+
         add_settings_field('livesearch_template',
             __('Content', 'clerk'),
             [$this, 'addTextField'],
