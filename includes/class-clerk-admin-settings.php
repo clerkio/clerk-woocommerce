@@ -604,7 +604,7 @@ class Clerk_Admin_Settings
             'clerk_section_livesearch',
             [
                 'label_for' => 'livesearch_field_selector',
-                'default' => '#clerk-searchfield'
+                'default' => '.search-field'
             ]
         );
 
@@ -617,8 +617,6 @@ class Clerk_Admin_Settings
                 'label_for' => 'livesearch_template',
             ]
         );
-
-
 
 
         //Add faceted navigation
@@ -658,8 +656,6 @@ class Clerk_Admin_Settings
                 'label_for' => 'faceted_navigation'
             ]
         );
-
-
 
         //Add powerstep section
         add_settings_section(
@@ -990,7 +986,7 @@ class Clerk_Admin_Settings
 
                         $response = json_decode(curl_exec($curl));
 
-                        if (isset($response[0])) {
+                        if (is_array($response) && $response[0]) {
 
                             $check = false;
 
@@ -999,7 +995,7 @@ class Clerk_Admin_Settings
 
                 }
 
-                if (isset($response[0])) {
+                if (is_array($response) && $response[0]) {
 
                     foreach ($response[0] as $attribute => $value) {
 
@@ -1065,7 +1061,7 @@ class Clerk_Admin_Settings
                 }
 
             }
-            //$NewDynamicAttributes[] = 'Test';
+
             if (count($NewDynamicAttributes) > 0) {
                 $commacounter = 0;
                 $attribute_text = 'attributes';

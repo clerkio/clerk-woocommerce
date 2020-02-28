@@ -91,6 +91,61 @@ class Clerk_Visitor_Tracking {
             <!-- End of Clerk.io E-commerce Personalisation tool - www.clerk.io -->
             <?php
 
+            if ( isset( $options['livesearch_enabled'] ) && $options['livesearch_enabled'] ) :
+
+                ?>
+                <span
+                        class="clerk"
+                        data-template="@<?php echo esc_attr( strtolower( str_replace( ' ', '-', $options['livesearch_template'] ) ) ); ?>"
+                        data-instant-search-suggestions="<?php echo $options['livesearch_suggestions']; ?>"
+                        data-instant-search-categories="<?php echo $options['livesearch_categories']; ?>"
+                        data-instant-search-pages="<?php echo $options['livesearch_pages']; ?>"
+                        data-instant-search-positioning="<?php echo strtolower($options['livesearch_dropdown_position']); ?>"
+                        <?php
+
+                        if ( isset( $options['livesearch_pages_type'] ) && $options['livesearch_pages_type'] != 'All') :
+
+                            ?>
+                            data-instant-search-pages-type="<?php echo $options['livesearch_pages_type']; ?>"
+                        <?php
+                        endif;
+                        if (isset( $options['livesearch_field_selector'] )) :
+                        ?>
+                        data-instant-search="<?php echo $options['livesearch_field_selector']; ?>">
+                        <?php
+                        else:
+                            ?>
+                            data-instant-search=".search-field">
+                        <?php
+                        endif;
+                        ?>
+                </span>
+
+                <script
+                        src="https://code.jquery.com/jquery-3.4.1.min.js"
+                        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+                        crossorigin="anonymous"></script>
+                <script type="text/javascript">
+
+                    $( document ).ready(function() {
+                        $('[role="search"]').each(function (){
+                            $(this).attr('action', '<?php echo esc_url( get_page_link( $options['search_page'] ) ); ?>');
+                        });
+
+                        $('input[name="post_type"][value="product"]').each(function (){
+                            $(this).remove();
+                        });
+
+                        $("<?php echo $options['livesearch_field_selector']; ?>").each(function() {
+                            $(this).attr('name', 'searchterm');
+                            $(this).attr('value', '<?php echo get_search_query() ?>');
+                        });
+                    });
+
+                </script>
+            <?php
+            endif;
+
         } catch (Exception $e) {
 
             $this->logger->error('ERROR add_tracking', ['error' => $e->getMessage()]);
