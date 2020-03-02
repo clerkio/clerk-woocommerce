@@ -42,7 +42,7 @@ class ClerkLogger
         $this->Key = $this->options['public_key'];
         $this->Date = new DateTime();
         $this->Time = $this->Date->getTimestamp();
-        header('User-Agent: ClerkExtensionBot WooCommerce/v' .get_bloginfo('version'). ' Clerk/v2.2.7 PHP/v'.phpversion());
+        header('User-Agent: ClerkExtensionBot WooCommerce/v' .get_bloginfo('version'). ' Clerk/v3.0.0 PHP/v'.phpversion());
 
     }
 
