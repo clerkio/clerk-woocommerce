@@ -1,31 +1,31 @@
 <?php
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly
+    exit; // Exit if accessed directly
 }
 
 class Clerk_Visitor_Tracking {
-	/**
-	 * Clerk_Visitor_Tracking constructor.
-	 */
+    /**
+     * Clerk_Visitor_Tracking constructor.
+     */
     protected $logger;
-	public function __construct() {
-		$this->initHooks();
+    public function __construct() {
+        $this->initHooks();
         require_once(__DIR__ . '/class-clerk-logger.php');
         $this->logger = new ClerkLogger();
-	}
+    }
 
-	/**
-	 * Init hooks
-	 */
-	private function initHooks() {
-		add_action( 'wp_footer', [ $this, 'add_tracking' ] );
-	}
+    /**
+     * Init hooks
+     */
+    private function initHooks() {
+        add_action( 'wp_footer', [ $this, 'add_tracking' ] );
+    }
 
-	/**
-	 * Include tracking
-	 */
-	public function add_tracking() {
+    /**
+     * Include tracking
+     */
+    public function add_tracking() {
 
         try {
 
@@ -120,31 +120,47 @@ class Clerk_Visitor_Tracking {
                         endif;
                         ?>
                 </span>
+            <?php
+            endif;
 
-                <script
-                        src="https://code.jquery.com/jquery-3.4.1.min.js"
-                        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
-                        crossorigin="anonymous"></script>
+            if ( isset( $options['search_enabled'] ) && $options['search_enabled'] ) :
+
+                ?>
                 <script type="text/javascript">
-
                     $( document ).ready(function() {
-                        $('[role="search"]').each(function (){
-                            $(this).attr('action', '<?php echo esc_url( get_page_link( $options['search_page'] ) ); ?>');
-                        });
 
-                        $('input[name="post_type"][value="product"]').each(function (){
-                            $(this).remove();
-                        });
+                        ClerkSearchPage = function(){
 
-                        $("<?php echo $options['livesearch_field_selector']; ?>").each(function() {
-                            $(this).attr('name', 'searchterm');
-                            $(this).attr('value', '<?php echo get_search_query() ?>');
-                        });
+                            $("<?php echo $options['livesearch_field_selector']; ?>").each(function() {
+                                $(this).attr('name', 'searchterm');
+                                $(this).attr('value', '<?php echo get_search_query() ?>');
+                            });
+                            $("<?php echo $options['livesearch_form_selector']; ?>").each(function (){
+                                $(this).attr('action', '<?php echo esc_url( get_page_link( $options['search_page'] ) ); ?>');
+                            });
+
+                            $('input[name="post_type"][value="product"]').each(function (){
+                                $(this).remove();
+                            });
+
+                        };
+
+                        if(window.jQuery) $( document ).ready(function() { ClerkSearchPage()  });
+                        else{
+                            var script = document.createElement('script');
+                            document.head.appendChild(script);
+                            script.type = 'text/javascript';
+                            script.src = "https://code.jquery.com/jquery-3.4.1.min.js";
+                            script.integrity = "sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=";
+                            script.crossorigin = "anonymous";
+
+                            script.onload = ClerkSearchPage;
+                        }
                     });
-
                 </script>
             <?php
             endif;
+
 
         } catch (Exception $e) {
 
@@ -152,7 +168,7 @@ class Clerk_Visitor_Tracking {
 
         }
 
-	}
+    }
 }
 
 new Clerk_Visitor_Tracking();

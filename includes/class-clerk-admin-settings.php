@@ -608,6 +608,17 @@ class Clerk_Admin_Settings
             ]
         );
 
+        add_settings_field('livesearch_form_selector',
+            __('Live Search Form Selector', 'clerk'),
+            [$this, 'addTextField'],
+            'clerk',
+            'clerk_section_livesearch',
+            [
+                'label_for' => 'livesearch_form_selector',
+                'default' => '[role="search"]'
+            ]
+        );
+
         add_settings_field('livesearch_template',
             __('Content', 'clerk'),
             [$this, 'addTextField'],
@@ -1274,7 +1285,6 @@ class Clerk_Admin_Settings
                     }
 
                     $('#faceted_navigation').val(JSON.stringify(Attributes));
-                    console.log($('#faceted_navigation').val());
 
                 }
 
