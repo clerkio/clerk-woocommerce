@@ -260,6 +260,12 @@ class Clerk_Rest_Api extends WP_REST_Server
                 //Append additional fields
                 foreach ($this->getAdditionalFields() as $field) {
 
+                    if ($field == '') {
+
+                        continue;
+
+                    }
+
                     if ($product->get_attribute($field)) {
 
                         $productArray[$this->clerk_friendly_attributes($field)] = str_replace(' ','',explode(',',$product->get_attribute($field)));
