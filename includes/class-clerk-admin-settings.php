@@ -20,7 +20,7 @@ class Clerk_Admin_Settings
         $this->initHooks();
         require_once(__DIR__ . '/class-clerk-logger.php');
         $this->logger = new ClerkLogger();
-        $this->version = '3.0.0';
+        $this->version = '3.1.0';
 
         $this->InitializeSettings();
 
@@ -34,6 +34,12 @@ class Clerk_Admin_Settings
 
         add_action('admin_init', [$this, 'settings_init']);
         add_action('admin_menu', [$this, 'clerk_options_page']);
+        add_action('admin_menu', [$this, 'loadJqueryUI']);
+
+    }
+
+    public function loadJqueryUI() {
+
         wp_enqueue_script('jquery-ui-dialog');
         wp_enqueue_style('wp-jquery-ui-dialog');
 
@@ -65,15 +71,16 @@ class Clerk_Admin_Settings
             $autoload = 'no';
             add_option($options, ['log_level' => 'Error + Warn'], $deprecated, $autoload);
         }
+        if (isset($options['log_enabled'])) {
+            if ($options['log_enabled'] !== false) {
 
-        if ($options['log_enabled'] !== false) {
+            } else {
 
-        } else {
-
-            // The option hasn't been added yet. We'll add it with $autoload set to 'no'.
-            $deprecated = null;
-            $autoload = 'no';
-            add_option($options, ['log_enabled' => '1'], $deprecated, $autoload);
+                // The option hasn't been added yet. We'll add it with $autoload set to 'no'.
+                $deprecated = null;
+                $autoload = 'no';
+                add_option($options, ['log_enabled' => '1'], $deprecated, $autoload);
+            }
         }
         if (get_option('livesearch_initiated') !== false) {
 
@@ -371,6 +378,35 @@ class Clerk_Admin_Settings
                 'description' => 'Use this url to configure an importer from my.clerk.io',
                 'readonly' => true,
                 'value' => get_site_url(),
+            ]
+        );
+
+        //Add Customer sync section
+        add_settings_section(
+            'clerk_section_customer_sync',
+            __('Customer Sync', 'clerk'),
+            null,
+            'clerk');
+
+        add_settings_field('customer_sync_enabled',
+            __('Enabled', 'clerk'),
+            [$this, 'addCheckboxField'],
+            'clerk',
+            'clerk_section_customer_sync',
+            [
+                'label_for' => 'customer_sync_enabled',
+                'checked' => 0
+            ]
+        );
+
+        add_settings_field('customer_sync_customer_fields',
+            __('Extra Customer Fields', 'clerk'),
+            [$this, 'addTextField'],
+            'clerk',
+            'clerk_section_customer_sync',
+            [
+                'label_for' => 'customer_sync_customer_fields',
+                'description' => 'A comma separated list of additional fields for customer to sync'
             ]
         );
 
@@ -997,16 +1033,17 @@ class Clerk_Admin_Settings
 
                         $response = json_decode(curl_exec($curl));
 
-                        if (is_array($response) && $response[0]) {
+                        if (isset($response[0]) &&is_array($response) && $response[0]) {
 
                             $check = false;
 
                         }
+
                     }
 
                 }
 
-                if (is_array($response) && $response[0]) {
+                if (isset($response[0]) && is_array($response) && $response[0]) {
 
                     foreach ($response[0] as $attribute => $value) {
 
@@ -1706,12 +1743,21 @@ class Clerk_Admin_Settings
         //Get settings value
         $options = get_option('clerk_options');
 
-        $value = $options[$args['label_for']];
+        if (isset($options[$args['label_for']])) {
+
+            $value = $options[$args['label_for']];
+
+        }else {
+
+            $value = '';
+
+        }
 
         if (isset($args['value'])) {
             $value = $args['value'];
         }
         ?>
+
         <input type="text" id="<?php echo esc_attr($args['label_for']); ?>"
                name="clerk_options[<?php echo esc_attr($args['label_for']); ?>]"
                value="<?php echo $value; ?>"<?php if (isset($args['readonly'])): ?> readonly<?php endif; ?>>
@@ -1740,10 +1786,20 @@ class Clerk_Admin_Settings
 
         //Get settings value
         $options = get_option('clerk_options');
+        if (isset($options[$args['label_for']])) {
+
+            $value = $options[$args['label_for']];
+
+        }else {
+
+            $value = 0;
+
+        }
+
         ?>
         <input type="checkbox" id="<?php echo esc_attr($args['label_for']); ?>"
                name="clerk_options[<?php echo esc_attr($args['label_for']); ?>]"
-               value="1" <?php checked('1', $options[$args['label_for']]); ?>>
+               value="1" <?php checked('1',  $value ); ?>>
         <?php
     }
 
