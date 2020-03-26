@@ -42,7 +42,6 @@ class ClerkLogger
         $this->Key = $this->options['public_key'];
         $this->Date = new DateTime();
         $this->Time = $this->Date->getTimestamp();
-        header('User-Agent: ClerkExtensionBot WooCommerce/v' .get_bloginfo('version'). ' Clerk/v3.0.0 PHP/v'.phpversion());
 
     }
 
@@ -75,7 +74,7 @@ class ClerkLogger
 
         $Type = 'log';
 
-        if ($this->options['log_enabled'] !== '1') {
+        if (isset($this->options['log_enabled']) && $this->options['log_enabled'] !== '1') {
 
 
         } else {
@@ -102,6 +101,9 @@ class ClerkLogger
                     curl_setopt($curl, CURLOPT_POST, true);
                     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
                     curl_setopt($curl, CURLOPT_POSTFIELDS, $data_string);
+                    curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+                        'User-Agent: ClerkExtensionBot WooCommerce/v' .get_bloginfo('version'). ' Clerk/v3.1.0 PHP/v'.phpversion()
+                    ));
 
                     $response = json_decode(curl_exec($curl));
 
@@ -151,7 +153,7 @@ class ClerkLogger
 
         $Type = 'error';
 
-        if ($this->options['log_enabled'] !== '1') {
+        if (isset($this->options['log_enabled']) && $this->options['log_enabled'] !== '1') {
 
 
         } else {
@@ -175,6 +177,9 @@ class ClerkLogger
                 curl_setopt($curl, CURLOPT_POST, true);
                 curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
                 curl_setopt($curl, CURLOPT_POSTFIELDS, $data_string);
+                curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+                    'User-Agent: ClerkExtensionBot WooCommerce/v' .get_bloginfo('version'). ' Clerk/v3.1.0 PHP/v'.phpversion()
+                ));
 
                 $response = json_decode(curl_exec($curl));
 
@@ -223,7 +228,7 @@ class ClerkLogger
 
         $Type = 'warn';
 
-        if ($this->options['log_enabled'] !== '1') {
+        if (isset($this->options['log_enabled']) && $this->options['log_enabled'] !== '1') {
 
 
         } else {
@@ -252,6 +257,9 @@ class ClerkLogger
                     curl_setopt($curl, CURLOPT_POST, true);
                     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
                     curl_setopt($curl, CURLOPT_POSTFIELDS, $data_string);
+                    curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+                        'User-Agent: ClerkExtensionBot WooCommerce/v' .get_bloginfo('version'). ' Clerk/v3.1.0 PHP/v'.phpversion()
+                    ));
 
                     $response = json_decode(curl_exec($curl));
 
