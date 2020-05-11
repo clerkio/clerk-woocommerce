@@ -30,11 +30,13 @@ class Clerk_Powerstep {
 		}
 
 		add_filter( 'woocommerce_add_to_cart_redirect', [ $this, 'redirect_to_powerstep' ] );
+        add_filter( 'template_redirect', [ $this, 'redirect_to_powerstep_no_ajax' ] );
 		add_filter( 'query_vars', [ $this, 'add_powerstep_vars' ] );
 		add_shortcode( 'clerk-powerstep', [ $this, 'handle_shortcode' ] );
 		add_action( 'wp_enqueue_scripts', [ $this, 'add_powerstep_files' ] );
 		add_action( 'wp_ajax_clerk_powerstep', [ $this, 'powerstep_ajax' ] );
 		add_action( 'wp_ajax_nopriv_clerk_powerstep', [ $this, 'powerstep_ajax' ] );
+
 	}
 
 	/**
@@ -73,6 +75,52 @@ class Clerk_Powerstep {
         }
 
 	}
+
+    public function redirect_to_powerstep_no_ajax( $url ) {
+
+        try {
+
+            if (empty($_REQUEST['add-to-cart']) || !is_numeric($_REQUEST['add-to-cart'])) {
+                return $url;
+            }
+
+            $options = get_option('clerk_options');
+
+            $product_id = absint($_REQUEST['add-to-cart']);
+
+            if (!$options['powerstep_enabled'] || $options['powerstep_type'] !== self::TYPE_PAGE) {
+
+                if (!isset($_GET['clerk_powerstep'])) {
+
+                    $actual_link = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+                    $_url = str_replace('add-to-cart='.$product_id,'',$actual_link) . '?clerk_powerstep=true&product_id=' . $product_id;
+
+                    header('Location: ' . $_url);
+                }
+                else {
+
+                    return $url;
+
+                }
+            }
+
+            $adding_to_cart = wc_get_product($product_id);
+
+            if (!$adding_to_cart) {
+                return $url;
+            }
+
+            $url = esc_url(get_page_link($options['powerstep_page']) . '?product_id=' . $product_id);
+
+            return $url;
+
+        } catch (Exception $e) {
+
+            $this->logger->error('ERROR redirect_to_powerstep_no_ajax', ['error' => $e->getMessage()]);
+
+        }
+
+    }
 
 	/**
 	 * Add query var for searchterm
@@ -138,8 +186,6 @@ class Clerk_Powerstep {
 
         try {
 
-            require_once(__DIR__ . '/class-clerk-logger.php');
-            $logger = new ClerkLogger();
             $options = get_option('clerk_options');
 
             if (!$options['powerstep_enabled']) {

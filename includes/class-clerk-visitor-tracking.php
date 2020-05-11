@@ -127,7 +127,7 @@ class Clerk_Visitor_Tracking {
 
                 ?>
                 <script type="text/javascript">
-                    $( document ).ready(function() {
+                    jQuery(document).ready(function ($) {
 
                         ClerkSearchPage = function(){
 
@@ -145,18 +145,10 @@ class Clerk_Visitor_Tracking {
 
                         };
 
-                        if(window.jQuery) $( document ).ready(function() { ClerkSearchPage()  });
-                        else{
-                            var script = document.createElement('script');
-                            document.head.appendChild(script);
-                            script.type = 'text/javascript';
-                            script.src = "https://code.jquery.com/jquery-3.4.1.min.js";
-                            script.integrity = "sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=";
-                            script.crossorigin = "anonymous";
+                        ClerkSearchPage();
 
-                            script.onload = ClerkSearchPage;
-                        }
                     });
+
                 </script>
             <?php
             endif;

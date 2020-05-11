@@ -67,25 +67,34 @@ class Clerk_Search
 
         if ($options['faceted_navigation_enabled']) {
 
-            $Attributes = json_decode($options['faceted_navigation']);
+            $_Attributes = json_decode($options['faceted_navigation']);
             $count = 0;
-            foreach ($Attributes as $key => $Attribute) {
-                $count++;
 
-                if ($Attribute->checked) {
-                    if ($count == count($Attributes)) {
+            foreach ($_Attributes as $key => $_Attribute) {
 
-                        $facets_attributes .= '"' . $Attribute->attribute . '"';
-                        $facets_titles .= '"' . $Attribute->attribute . '": "' . $Attribute->title . '"';
+                if ($_Attribute->checked) {
 
-                    } else {
-
-                        $facets_attributes .= '"' . $Attribute->attribute . '", ';
-                        $facets_titles .= '"' . $Attribute->attribute . '": "' . $Attribute->title . '",';
-                    }
+                    array_push($Attributes, $_Attribute);
 
                 }
 
+            }
+
+            foreach ($Attributes as $key => $Attribute) {
+
+                $count++;
+
+                if ($count == count($Attributes)) {
+
+                    $facets_attributes .= '"' . $Attribute->attribute . '"';
+                    $facets_titles .= '"' . $Attribute->attribute . '": "' . $Attribute->title . '"';
+
+                } else {
+
+                    $facets_attributes .= '"' . $Attribute->attribute . '", ';
+                    $facets_titles .= '"' . $Attribute->attribute . '": "' . $Attribute->title . '",';
+
+                }
             }
 
         }
@@ -145,11 +154,15 @@ class Clerk_Search
                 var total_loaded = 0;
 
                 function _clerk_after_load_event(data) {
+
                     total_loaded += data.response.result.length;
+
                     var e = jQuery('#clerk-search');
+
                     if (typeof e.data('limit') === "undefined") {
                         e.data('limit', data.response.result.length)
                     }
+
                     if (total_loaded == 0) {
                         jQuery('#clerk-search-no-results').show();
                     } else {

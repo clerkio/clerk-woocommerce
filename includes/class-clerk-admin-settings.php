@@ -20,7 +20,7 @@ class Clerk_Admin_Settings
         $this->initHooks();
         require_once(__DIR__ . '/class-clerk-logger.php');
         $this->logger = new ClerkLogger();
-        $this->version = '3.1.0';
+        $this->version = '3.2.0';
 
         $this->InitializeSettings();
 
@@ -49,8 +49,6 @@ class Clerk_Admin_Settings
     {
 
         $options = get_option('clerk_options');
-
-        $this->ChangeDebugMode(isset($options['debug_guide_change']));
 
         if ($options['log_to'] !== false) {
 
@@ -1018,20 +1016,18 @@ class Clerk_Admin_Settings
 
                         $id = $product->get_id();
 
-                        $Endpoint = 'http://api.clerk.io/v2/product/attributes';
+                        $Endpoint = 'https://api.clerk.io/v2/product/attributes';
 
                         $data_string = json_encode([
                             'key' => $public_key,
                             'products' => [$id]]);
 
-                        $curl = curl_init();
+                        $_args = array(
+                            'body'        => $data_string,
+                            'method'      => 'POST',
+                        );
 
-                        curl_setopt($curl, CURLOPT_URL, $Endpoint);
-                        curl_setopt($curl, CURLOPT_POST, true);
-                        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-                        curl_setopt($curl, CURLOPT_POSTFIELDS, $data_string);
-
-                        $response = json_decode(curl_exec($curl));
+                        $response = wp_remote_request( $Endpoint, $_args )['body'];
 
                         if (isset($response[0]) &&is_array($response) && $response[0]) {
 
@@ -1188,7 +1184,7 @@ class Clerk_Admin_Settings
                 }
 
                 if (count($NewDynamicAttributes) > 0) {
-
+                    $count = 0;
                     foreach ($NewDynamicAttributes as $Attribute) {
 
                         $count++;
@@ -1217,13 +1213,8 @@ class Clerk_Admin_Settings
                        type="hidden">
                 </tbody>
             </table>
-            <script
-                    src="https://code.jquery.com/jquery-3.4.1.min.js"
-                    integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
-                    crossorigin="anonymous"></script>
-
             <script>
-                $('.wrap form').submit(function () {
+                jQuery('.wrap form').submit(function () {
 
                     CollectAttributes();
 
@@ -1231,28 +1222,28 @@ class Clerk_Admin_Settings
 
                 function remove_facet_line(data_value) {
 
-                    $("[data=" + data_value + "]").remove();
+                    jQuery("[data=" + data_value + "]").remove();
 
                 }
 
                 function add_facet() {
 
-                    if ($("#facets_content #facets_lines").length === 0) {
-                        $('#facets_content').html('');
+                    if (jQuery("#facets_content #facets_lines").length === 0) {
+                        jQuery('#facets_content').html('');
                     }
 
-                    var linescount = $('#facets_content #facets_lines').length;
+                    var linescount = jQuery('#facets_content #facets_lines').length;
 
                     facets_lines = document.createElement("tr");
                     facets_lines.setAttribute("id", "facets_lines");
-                    facets_lines.setAttribute("data", $('#faceted_navigation_custom').val());
+                    facets_lines.setAttribute("data", jQuery('#faceted_navigation_custom').val());
 
                     facet_td = document.createElement("td");
 
                     facet = document.createElement("input");
                     facet.setAttribute("id", "facets_facet");
                     facet.setAttribute("type", "text");
-                    facet.setAttribute("value", $('#faceted_navigation_custom').val());
+                    facet.setAttribute("value", jQuery('#faceted_navigation_custom').val());
                     facet.setAttribute("readonly", '');
 
                     title_td = document.createElement("td");
@@ -1278,7 +1269,7 @@ class Clerk_Admin_Settings
 
                     remove = document.createElement("a");
                     remove.setAttribute("class", "close");
-                    remove.setAttribute("onclick", 'remove_facet_line("' + $("#faceted_navigation_custom").val() + '");');
+                    remove.setAttribute("onclick", 'remove_facet_line("' + jQuery("#faceted_navigation_custom").val() + '");');
 
                     facet_td.append(facet)
                     facets_lines.append(facet_td);
@@ -1290,9 +1281,9 @@ class Clerk_Admin_Settings
                     checkbox_td.append(remove);
                     facets_lines.append(checkbox_td);
 
-                    $('#facets_content').append(facets_lines);
+                    jQuery('#facets_content').append(facets_lines);
 
-                    $('#faceted_navigation_custom').val('')
+                    jQuery('#faceted_navigation_custom').val('')
 
                 }
 
@@ -1302,16 +1293,16 @@ class Clerk_Admin_Settings
                     Attributes = [];
 
                     count = 0;
-                    countFacets = $('input[id^=facets_facet]').length;
+                    countFacets = jQuery('input[id^=facets_facet]').length;
 
                     while ((count + 1) <= countFacets) {
 
                         var data = {
 
-                            attribute: $('input[id^=facets_facet]:eq(' + count + ')').val(),
-                            title: $('input[id^=facets_title]:eq(' + count + ')').val(),
-                            position: $('input[id^=facets_position]:eq(' + count + ')').val(),
-                            checked: $('input[id^=faceted_enabled]:eq(' + count + ')').is(':checked')
+                            attribute: jQuery('input[id^=facets_facet]:eq(' + count + ')').val(),
+                            title: jQuery('input[id^=facets_title]:eq(' + count + ')').val(),
+                            position: jQuery('input[id^=facets_position]:eq(' + count + ')').val(),
+                            checked: jQuery('input[id^=faceted_enabled]:eq(' + count + ')').is(':checked')
 
                         };
 
@@ -1321,12 +1312,12 @@ class Clerk_Admin_Settings
 
                     }
 
-                    $('#faceted_navigation').val(JSON.stringify(Attributes));
+                    jQuery('#faceted_navigation').val(JSON.stringify(Attributes));
 
                 }
 
-                $(".closebtn").click(function () {
-                    $(".alert").remove();
+                jQuery(".closebtn").click(function () {
+                    jQuery(".alert").remove();
                 });
             </script>
             <style>
@@ -1583,53 +1574,6 @@ class Clerk_Admin_Settings
 
     }
 
-    public function find_wp_config_path() {
-        $dir = dirname(__FILE__);
-        do {
-            if( file_exists($dir."/wp-config.php") ) {
-                return $dir;
-            }
-        } while( $dir = realpath("$dir/..") );
-        return null;
-    }
-
-    public function ShowDebugButton() {
-
-        $path = $this->find_wp_config_path();
-
-        if( strpos(file_get_contents($path."/wp-config.php"),"define( 'WP_DEBUG', false );")) {
-
-            return true;
-
-        }elseif(strpos(file_get_contents($path."/wp-config.php"),"define( 'WP_DEBUG', true );")) {
-
-            return true;
-
-        }else {
-
-            return false;
-
-        }
-
-    }
-
-    public function ChangeDebugMode($on) {
-
-        $path = $this->find_wp_config_path();
-
-        if( strpos(file_get_contents($path."/wp-config.php"),"define( 'WP_DEBUG', false );") && $on) {
-            $config_content = file_get_contents($path."/wp-config.php");
-            $config_content = str_replace("define( 'WP_DEBUG', false );", "define( 'WP_DEBUG', true );", $config_content);
-            file_put_contents($path."/wp-config.php", $config_content);
-        }
-        elseif( strpos(file_get_contents($path."/wp-config.php"),"define( 'WP_DEBUG', true );") && !$on) {
-            $config_content = file_get_contents($path."/wp-config.php");
-            $config_content = str_replace("define( 'WP_DEBUG', true );", "define( 'WP_DEBUG', false );", $config_content);
-            file_put_contents($path."/wp-config.php", $config_content);
-        }
-
-    }
-
     public function addDebugGuide() {
 
         if (WP_DEBUG) {
@@ -1656,14 +1600,6 @@ class Clerk_Admin_Settings
             <p>define( 'WP_DEBUG', true );</p>
             <p>change it to:</p>
             <p>define( 'WP_DEBUG', false );</p>
-            <?php
-            if ($this->ShowDebugButton()) {
-                ?>
-                <br><p><strong>OR USE THIS BUTTON:</strong></p>
-                <input type="button" onclick="document.getElementById('debug_guide_change').click();document.getElementById('submit').click();" name="changedebug" id="changedebug" class="button button-primary" value="Disable Debug Mode">
-                <?php
-            }
-            ?>
             <hr>
             <?php
         } else {
@@ -1693,14 +1629,6 @@ class Clerk_Admin_Settings
             <p>define( 'WP_DEBUG', false );</p>
             <p>change it to:</p>
             <p>define( 'WP_DEBUG', true );</p>
-            <?php
-            if ($this->ShowDebugButton()) {
-                ?>
-                <br><p><strong>OR USE THIS BUTTON:</strong></p>
-                <input type="button" onclick="document.getElementById('debug_guide_change').click();document.getElementById('submit').click();" name="changedebug" id="changedebug" class="button button-primary" value="Enable Debug Mode">
-                <?php
-            }
-            ?>
             <hr>
             <?php
 
@@ -1714,11 +1642,7 @@ class Clerk_Admin_Settings
     public function addLoggerView()
     {
 
-        echo('<script
-                    src="https://code.jquery.com/jquery-3.4.1.min.js"
-                    integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
-                    crossorigin="anonymous"></script>' .
-            '<script type="text/javascript">' .
+        echo('<script type="text/javascript">' .
             '(function () {' .
             '$.ajax({' .
             'url: "' . plugin_dir_url(__DIR__) . 'clerk_log.log", success: function (data) {' .
@@ -1901,59 +1825,6 @@ class Clerk_Admin_Settings
             'clerk_options_page_html'
         ]);
 
-        $options = get_option('clerk_options');
-
-        if ($options && !empty($options['public_key']) && !empty($options['private_key'])) {
-            //Add Dashboard menu
-            add_submenu_page(
-                'clerk',
-                __('Dashboard', 'clerk'),
-                __('Dashboard', 'clerk'),
-                'manage_options',
-                'dashboard',
-                [$this, 'clerk_dashboard_page_html']
-            );
-
-            //Add Search Insights menu
-            add_submenu_page(
-                'clerk',
-                __('Search Insights', 'clerk'),
-                __('Search Insights', 'clerk'),
-                'manage_options',
-                'search-insights',
-                [$this, 'clerk_search_insights_page_html']
-            );
-
-            //Add Recommendations Insights menu
-            add_submenu_page(
-                'clerk',
-                __('Recommendations Insights', 'clerk'),
-                __('Recommendations Insights', 'clerk'),
-                'manage_options',
-                'recommendations-insights',
-                [$this, 'clerk_recommendations_insights_page_html']
-            );
-
-            //Add Email Insights menu
-            add_submenu_page(
-                'clerk',
-                __('Email Insights', 'clerk'),
-                __('Email Insights', 'clerk'),
-                'manage_options',
-                'email-insights',
-                [$this, 'clerk_email_insights_page_html']
-            );
-
-            //Add Audience Insights menu
-            add_submenu_page(
-                'clerk',
-                __('Audience Insights', 'clerk'),
-                __('Audience Insights', 'clerk'),
-                'manage_options',
-                'audience-insights',
-                [$this, 'clerk_audience_insights_page_html']
-            );
-        }
     }
 
     public function clerk_options_page_html()
@@ -1994,24 +1865,6 @@ class Clerk_Admin_Settings
     }
 
     /**
-     * Render Dashboard page
-     */
-    public function clerk_dashboard_page_html()
-    {
-        // check user capabilities
-        if (!current_user_can('manage_options')) {
-            return;
-        }
-
-        $url = $this->getEmbedUrl('dashboard');
-        ?>
-        <div class="wrap">
-            <iframe id="clerk-embed" src="<?php echo $url; ?>" frameborder="0" width="100%" height="2400"></iframe>
-        </div>
-        <?php
-    }
-
-    /**
      * @param $type
      * @return string
      */
@@ -2038,77 +1891,6 @@ class Clerk_Admin_Settings
         return substr($publicKey, 0, 8);
     }
 
-    /**
-     * Render Search Insights page
-     */
-    public function clerk_search_insights_page_html()
-    {
-        // check user capabilities
-        if (!current_user_can('manage_options')) {
-            return;
-        }
-
-        $url = $this->getEmbedUrl('search');
-        ?>
-        <div class="wrap">
-            <iframe id="clerk-embed" src="<?php echo $url; ?>" frameborder="0" width="100%" height="2400"></iframe>
-        </div>
-        <?php
-    }
-
-    /**
-     * Render Recommendations Insights page
-     */
-    public function clerk_recommendations_insights_page_html()
-    {
-        // check user capabilities
-        if (!current_user_can('manage_options')) {
-            return;
-        }
-
-        $url = $this->getEmbedUrl('recommendations');
-        ?>
-        <div class="wrap">
-            <iframe id="clerk-embed" src="<?php echo $url; ?>" frameborder="0" width="100%" height="2400"></iframe>
-        </div>
-        <?php
-    }
-
-    /**
-     * Render Email Insights page
-     */
-    public function clerk_email_insights_page_html()
-    {
-        // check user capabilities
-        if (!current_user_can('manage_options')) {
-            return;
-        }
-
-        $url = $this->getEmbedUrl('email');
-        ?>
-        <div class="wrap">
-            <iframe id="clerk-embed" src="<?php echo $url; ?>" frameborder="0" width="100%" height="2400"></iframe>
-        </div>
-        <?php
-    }
-
-    /**
-     * Render Audience Insights page
-     */
-    public function clerk_audience_insights_page_html()
-    {
-        // check user capabilities
-        if (!current_user_can('manage_options')) {
-            return;
-        }
-
-        $url = $this->getEmbedUrl('audience');
-        ?>
-        <div class="wrap">
-            <iframe id="clerk-embed" src="<?php echo $url; ?>" frameborder="0" width="100%" height="2400"></iframe>
-        </div>
-        <?php
-    }
 }
 
 new Clerk_Admin_Settings();

@@ -3,9 +3,9 @@ Contributors: clerkio, audunhus
 Tags: product recommendations, semantic search, customer conversion, customer retention, customer segmentation, webshop personalization, sales optimisation
 License: MIT
 License URI: https://opensource.org/licenses/MIT
-Tested up to: 4.9.8
+Tested up to: 5.4.1
 WC requires at least: 2.6
-WC tested up to: 3.4.6
+WC tested up to: 4.1.0
 
 == Description ==
 Clerk.io is a software that helps your customers buy more from your webshop, through 4 amazing feature:
@@ -29,6 +29,97 @@ Once signed up, simply login to your my.clerk.io backend, which will guide you t
 
 
 == Changelog ==
+= 3.2.0 - 2020-05-11 =
+* Using HTTP API insted of CURL
+* Removed Dashboard iframes
+* Include WP jquery Libraries.
+* Removed De / Activate Debug Mode button.
+* Fixed Powerstep and extended the feture to work on all shop not use ajax add to cart also.
+* Fixed Faced Search Bug.
+* Added all_images for product export so all images are at desposible in Clerk.io
+
+
+= 3.1.0 - 2020-03-26 =
+* Removed Header info from wrong places.
+* Rebuild the stock sorting system.
+* Fixed SEO Yost no name product attribute.
+* Removed all warnings caused by the plug-in.
+* Added Customer API Endpoint.
+* Updated Changelog.
+
+= 3.0.0 - 2020-03-02 =
+* Added stock calculation for variable products.
+* Improved/Extended the additional fields system.
+* Added Clerk friendly attributes converter.
+* Added much better/easy way of implement Clerk Live Search and Clerk Search Page.
+
+= 2.2.7 - 2020-02-18 =
+* Fixed Facet Settings Bug.
+
+= 2.2.6 - 2020-02-14 =
+* Fixed powerstep multi slider bug.
+* Fixed scripts enqueued warning bug.
+
+= 2.2.5 - 2020-02-10 =
+* Added facet on search page.
+* Added multi content all over.
+
+= 2.2.4 - 2020-01-13 =
+* Added button for disabling and enabling wordpress debug mode.
+
+= 2.2.3 - 2019-12-19 =
+* Added empty clerk_log.log in release by default.
+
+= 2.2.1 - 2019-12-09 =
+* Fixed comma bug in powerstep recomendations.
+* Added Stock as default product attribute
+* Removed the searchfield id generator, now it's just clerk_searchfield
+* Support for spaces in comma seperated lists.
+* Added out of stock support for shop's using WooCommerce build in stock tracking.
+* Added WPBakery Page Builder in the warning system.
+
+= 2.2.0 - 2019-12-03 =
+* Removed unused clerk_admin.js file.
+* Added instant search dropdown position setting.
+* Added notification warning system that detects if any plugin's is installed that interfair with our extension
+  and giving the customer a warning, small description and linking to a support article that can help them to fix the problem.
+* Fixed setting dropdown number bug.
+* Added custom User-Agent header on all API call to clerk.io.
+* Added Version API endpoint tells Clerk.io what system version, Clerk extension version and PHP version the shop is using.
+* Added Plugin API endpoint tells Clerk.io what extensions that is installed on the shop, so our customer service have the much info as possible for helping our customers.
+* Fixed Pages endpoint bug, prevent the shop to send pages with data that not is up to Clerk.io requerments.
+* Removed Load more button from search page it's now controlled from the design's in my.clerk.io.
+* Fixed exclude bug on multiple recommendations in powerstep pop-up and page.
+
+= 2.1.0 - 2019-11-19 =
+* Support for Pages.
+* Language support for clerk.js v2.
+* Added settings for numbers of pages, categories and products to show in live search.
+
+= 2.0.1 - 2019-10-16 =
+* Added debug guide to plugin backend.
+* Change lang filenames for translation plugin support.
+
+= 2.0.0 - 2019-10-07 =
+* ###THIS UPDATE REQUIRE NEW DESIGN TEMPLATES IN MY.CLERK.IO ###
+* Deprecated Clerk.js v1 and added Clerk.js v2.
+
+= 1.7.1 - 2019-10-04 =
+* Added support for additional fields in real time updates
+
+= 1.7.0 - 2019-09-16 =
+* Toggle real time updates.
+* Toggle out of stock products.
+* Order range support for clerk importer.
+* Fixed issue with real time updates.
+* Better default image size (300x300).
+* Added plugin sersion number in settings.
+
+= 1.6.0 - 2019-08-26 =
+* Support for Clerk Logger.
+* Load more script added.
+* Support for load more script.
+
 = 1.5.10 - 2019-03-27 =
 * Remove duplicated filter
 

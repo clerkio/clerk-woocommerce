@@ -263,6 +263,18 @@ class Clerk_Rest_Api extends WP_REST_Server
                     'type' => $product->get_type(),
                 ];
 
+                $productArray['all_images'] = [];
+
+                foreach (get_intermediate_image_sizes() as $key => $image_size) {
+
+                    if (!in_array(wp_get_attachment_image_src($product->get_image_id(),$image_size)[0], $productArray['all_images'])) {
+
+                        array_push($productArray['all_images'] , wp_get_attachment_image_src($product->get_image_id(), $image_size)[0]);
+
+                    }
+
+                }
+
                 if (!empty($product->get_stock_quantity())) {
 
                     $productArray['stock'] = $product->get_stock_quantity();

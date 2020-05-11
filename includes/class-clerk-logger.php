@@ -95,25 +95,19 @@ class ClerkLogger
                         'message' => $Message,
                         'metadata' => $Metadata]);
 
-                    $curl = curl_init();
+                    $args = array(
+                        'body'        => $data_string,
+                        'method'      => 'POST',
+                        'headers'     => array('User-Agent' => 'ClerkExtensionBot WooCommerce/v' .get_bloginfo('version'). ' Clerk/v3.2.0 PHP/v'.phpversion())
+                    );
 
-                    curl_setopt($curl, CURLOPT_URL, $Endpoint);
-                    curl_setopt($curl, CURLOPT_POST, true);
-                    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-                    curl_setopt($curl, CURLOPT_POSTFIELDS, $data_string);
-                    curl_setopt($curl, CURLOPT_HTTPHEADER, array(
-                        'User-Agent: ClerkExtensionBot WooCommerce/v' .get_bloginfo('version'). ' Clerk/v3.1.0 PHP/v'.phpversion()
-                    ));
+                    $response = json_decode(wp_remote_request( $Endpoint, $args )['body']);
 
-                    $response = json_decode(curl_exec($curl));
-
-                    if ($response->status == 'error') {
+                    if ($response->status != 'ok') {
 
                         $this->LogToFile($Message,$Metadata);
 
                     }
-
-                    curl_close($curl);
 
                 } elseif ($this->options['log_to'] == 'File') {
 
@@ -160,7 +154,7 @@ class ClerkLogger
 
             if ($this->options['log_to'] == 'my.clerk.io') {
 
-                $Endpoint = 'api.clerk.io/v2/log/debug';
+                $Endpoint = 'https://api.clerk.io/v2/log/debug';
 
                 $data_string = json_encode([
                     'debug' => '1',
@@ -171,25 +165,19 @@ class ClerkLogger
                     'message' => $Message,
                     'metadata' => $Metadata]);
 
-                $curl = curl_init();
+                $args = array(
+                    'body'        => $data_string,
+                    'method'      => 'POST',
+                    'headers'     => array('User-Agent' => 'ClerkExtensionBot WooCommerce/v' .get_bloginfo('version'). ' Clerk/v3.2.0 PHP/v'.phpversion())
+                );
 
-                curl_setopt($curl, CURLOPT_URL, $Endpoint);
-                curl_setopt($curl, CURLOPT_POST, true);
-                curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($curl, CURLOPT_POSTFIELDS, $data_string);
-                curl_setopt($curl, CURLOPT_HTTPHEADER, array(
-                    'User-Agent: ClerkExtensionBot WooCommerce/v' .get_bloginfo('version'). ' Clerk/v3.1.0 PHP/v'.phpversion()
-                ));
+                $response = json_decode(wp_remote_request( $Endpoint, $args )['body']);
 
-                $response = json_decode(curl_exec($curl));
-
-                if ($response->status == 'error') {
+                if ($response->status != 'ok') {
 
                     $this->LogToFile($Message,$Metadata);
 
                 }
-
-                curl_close($curl);
 
             } elseif ($this->options['log_to'] == 'File') {
 
@@ -251,25 +239,19 @@ class ClerkLogger
                         'message' => $Message,
                         'metadata' => $Metadata]);
 
-                    $curl = curl_init();
+                    $args = array(
+                        'body'        => $data_string,
+                        'method'      => 'POST',
+                        'headers'     => array('User-Agent' => 'ClerkExtensionBot WooCommerce/v' .get_bloginfo('version'). ' Clerk/v3.2.0 PHP/v'.phpversion())
+                    );
 
-                    curl_setopt($curl, CURLOPT_URL, $Endpoint);
-                    curl_setopt($curl, CURLOPT_POST, true);
-                    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-                    curl_setopt($curl, CURLOPT_POSTFIELDS, $data_string);
-                    curl_setopt($curl, CURLOPT_HTTPHEADER, array(
-                        'User-Agent: ClerkExtensionBot WooCommerce/v' .get_bloginfo('version'). ' Clerk/v3.1.0 PHP/v'.phpversion()
-                    ));
+                    $response = json_decode(wp_remote_request( $Endpoint, $args )['body']);
 
-                    $response = json_decode(curl_exec($curl));
-
-                    if ($response->status == 'error') {
+                    if ($response->status != 'ok') {
 
                         $this->LogToFile($Message,$Metadata);
 
                     }
-
-                    curl_close($curl);
 
                 } elseif ($this->options['log_to'] == 'File') {
 
