@@ -29,6 +29,13 @@ Once signed up, simply login to your my.clerk.io backend, which will guide you t
 
 
 == Changelog ==
+= 3.3.0 - 2020-06-25 =
+* Fixed Facet Search bug.
+* Fixed Facet Search position bug.
+* Fixed pagination for products sync endpoint.
+* Removed log to file only supports log to my.clerk.io.
+
+
 = 3.2.0 - 2020-05-11 =
 * Using HTTP API insted of CURL
 * Removed Dashboard iframes
