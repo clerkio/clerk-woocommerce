@@ -20,7 +20,7 @@ class Clerk_Admin_Settings
         $this->initHooks();
         require_once(__DIR__ . '/class-clerk-logger.php');
         $this->logger = new ClerkLogger();
-        $this->version = '3.2.0';
+        $this->version = '3.3.0';
 
         $this->InitializeSettings();
 
@@ -922,17 +922,6 @@ class Clerk_Admin_Settings
             'clerk_section_log'
         );
 
-        if ($options['log_to'] === 'File' && file_exists(plugin_dir_path(__DIR__) . 'clerk_log.log')) {
-
-            add_settings_field('log_viewer',
-                __('Logger View', 'clerk'),
-                [$this, 'addLoggerView'],
-                'clerk',
-                'clerk_section_log'
-            );
-
-        }
-
         add_settings_field('debug_guide',
             __('Debug Guide', 'clerk'),
             [$this, 'addDebugGuide'],
@@ -976,9 +965,11 @@ class Clerk_Admin_Settings
         <?php
     }
 
+    function isJSON($string){
+        return is_string($string) && is_array(json_decode($string, true)) && (json_last_error() == JSON_ERROR_NONE) ? true : false;
+    }
+
     public function getAttributes($args) {
-
-
 
         $_continue = true;
         $offset = 0;
@@ -1027,7 +1018,17 @@ class Clerk_Admin_Settings
                             'method'      => 'POST',
                         );
 
-                        $response = wp_remote_request( $Endpoint, $_args )['body'];
+                        $response = wp_remote_request( $Endpoint, $_args );
+
+                        if ($this->isJSON($response)) {
+
+                            $response = json_decode($response)['body'];
+
+                        }else {
+
+                            $response = $response['body'];
+
+                        }
 
                         if (isset($response[0]) &&is_array($response) && $response[0]) {
 
@@ -1797,7 +1798,7 @@ class Clerk_Admin_Settings
         ?>
         <select id="<?php echo esc_attr($args['label_for']); ?>"
                 name="clerk_options[<?php echo esc_attr($args['label_for']); ?>]">
-            <?php foreach (array('my.clerk.io', 'File') as $to) : ?>
+            <?php foreach (array('my.clerk.io') as $to) : ?>
                 <option value="<?php echo $to; ?>"
                         <?php if ($options['log_to'] === $to) : ?>selected<?php endif; ?>><?php echo __($to, 'clerk'); ?></option>
             <?php endforeach; ?>

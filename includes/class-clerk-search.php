@@ -80,7 +80,15 @@ class Clerk_Search
 
             }
 
-            foreach ($Attributes as $key => $Attribute) {
+            $Sorted_Attributes = [];
+
+            foreach ($Attributes as $key => $Sorted_Attribute) {
+
+                $Sorted_Attributes[$Sorted_Attribute->position] = $Sorted_Attribute;
+
+            }
+
+            foreach ($Sorted_Attributes as $key => $Attribute) {
 
                 $count++;
 

@@ -156,8 +156,8 @@ class Clerk_Rest_Api extends WP_REST_Server
 
             $limit = $request->get_param('limit') ? $request->get_param('limit') : -1;
             $page = ($request->get_param('page') !== null) ? $request->get_param('page') : 0;
-            $orderby = $request->get_param('orderby') ? $request->get_param('orderby') : 'date';
-            $order = $request->get_param('order') ? $request->get_param('order') : 'DESC';
+            $orderby = $request->get_param('orderby') ? $request->get_param('orderby') : 'product_id';
+            $order = $request->get_param('order') ? $request->get_param('order') : 'ASC';
 
             $offset = ($request->get_param('page') === 0) ? 0 : $page * $limit;
 

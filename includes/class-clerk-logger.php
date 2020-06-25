@@ -76,7 +76,6 @@ class ClerkLogger
 
         if (isset($this->options['log_enabled']) && $this->options['log_enabled'] !== '1') {
 
-
         } else {
 
             if ($this->options['log_level'] !== 'Error + Warn + Debug Mode') {
@@ -85,7 +84,7 @@ class ClerkLogger
 
                 if ($this->options['log_to'] == 'my.clerk.io') {
 
-                    $Endpoint = 'api.clerk.io/v2/log/debug';
+                    $Endpoint = 'https://api.clerk.io/v2/log/debug';
 
                     $data_string = json_encode([
                         'key' =>$this->Key,
@@ -98,20 +97,10 @@ class ClerkLogger
                     $args = array(
                         'body'        => $data_string,
                         'method'      => 'POST',
-                        'headers'     => array('User-Agent' => 'ClerkExtensionBot WooCommerce/v' .get_bloginfo('version'). ' Clerk/v3.2.0 PHP/v'.phpversion())
+                        'headers'     => array('User-Agent' => 'ClerkExtensionBot WooCommerce/v' .get_bloginfo('version'). ' Clerk/v3.3.0 PHP/v'.phpversion())
                     );
 
-                    $response = json_decode(wp_remote_request( $Endpoint, $args )['body']);
-
-                    if ($response->status != 'ok') {
-
-                        $this->LogToFile($Message,$Metadata);
-
-                    }
-
-                } elseif ($this->options['log_to'] == 'File') {
-
-                    $this->LogToFile($Message,$Metadata);
+                    wp_remote_request( $Endpoint, $args );
 
                 }
             }
@@ -166,22 +155,12 @@ class ClerkLogger
                     'metadata' => $Metadata]);
 
                 $args = array(
-                    'body'        => $data_string,
-                    'method'      => 'POST',
-                    'headers'     => array('User-Agent' => 'ClerkExtensionBot WooCommerce/v' .get_bloginfo('version'). ' Clerk/v3.2.0 PHP/v'.phpversion())
+                    'body' => $data_string,
+                    'method' => 'POST',
+                    'headers' => array('User-Agent' => 'ClerkExtensionBot WooCommerce/v' . get_bloginfo('version') . ' Clerk/v3.3.0 PHP/v' . phpversion())
                 );
 
-                $response = json_decode(wp_remote_request( $Endpoint, $args )['body']);
-
-                if ($response->status != 'ok') {
-
-                    $this->LogToFile($Message,$Metadata);
-
-                }
-
-            } elseif ($this->options['log_to'] == 'File') {
-
-                $this->LogToFile($Message,$Metadata);
+                wp_remote_request($Endpoint, $args);
 
             }
         }
@@ -228,7 +207,7 @@ class ClerkLogger
 
                 if ($this->options['log_to'] == 'my.clerk.io') {
 
-                    $Endpoint = 'api.clerk.io/v2/log/debug';
+                    $Endpoint = 'https://api.clerk.io/v2/log/debug';
 
                     $data_string = json_encode([
                         'debug' => '1',
@@ -242,36 +221,14 @@ class ClerkLogger
                     $args = array(
                         'body'        => $data_string,
                         'method'      => 'POST',
-                        'headers'     => array('User-Agent' => 'ClerkExtensionBot WooCommerce/v' .get_bloginfo('version'). ' Clerk/v3.2.0 PHP/v'.phpversion())
+                        'headers'     => array('User-Agent' => 'ClerkExtensionBot WooCommerce/v' .get_bloginfo('version'). ' Clerk/v3.3.0 PHP/v'.phpversion())
                     );
 
-                    $response = json_decode(wp_remote_request( $Endpoint, $args )['body']);
-
-                    if ($response->status != 'ok') {
-
-                        $this->LogToFile($Message,$Metadata);
-
-                    }
-
-                } elseif ($this->options['log_to'] == 'File') {
-
-                    $this->LogToFile($Message,$Metadata);
+                    wp_remote_request( $Endpoint, $args );
 
                 }
             }
         }
-    }
-
-    public function LogToFile($Message,$Metadata)
-    {
-
-        $log = $this->Date->format('Y-m-d H:i:s') . ' MESSAGE: ' . $Message . ' METADATA: ' . json_encode($Metadata) . PHP_EOL .
-            '-------------------------' . PHP_EOL;
-        $path = plugin_dir_path(__DIR__) . 'clerk_log.log';
-
-        fopen($path, "a+");
-        file_put_contents($path, $log, FILE_APPEND);
-
     }
 
 }
