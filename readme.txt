@@ -29,6 +29,9 @@ Once signed up, simply login to your my.clerk.io backend, which will guide you t
 
 
 == Changelog ==
+= 3.3.1 - 2020-07-01 =
+* Better handling of facet search settings.
+
 = 3.3.0 - 2020-06-25 =
 * Fixed Facet Search bug.
 * Fixed Facet Search position bug.
