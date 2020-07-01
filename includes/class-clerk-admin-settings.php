@@ -1020,9 +1020,9 @@ class Clerk_Admin_Settings
 
                         $response = wp_remote_request( $Endpoint, $_args );
 
-                        if ($this->isJSON($response)) {
+                        if ($this->isJSON($response['body'])) {
 
-                            $response = json_decode($response)['body'];
+                            $response = json_decode($response['body']);
 
                         }else {
 
@@ -1030,9 +1030,15 @@ class Clerk_Admin_Settings
 
                         }
 
-                        if (isset($response[0]) &&is_array($response) && $response[0]) {
+                        if (is_array($response)) {
 
                             $check = false;
+
+                        }
+
+                        if (isset($response[0]) && is_array($response)) {
+
+                            $response = $response[0];
 
                         }
 
@@ -1040,9 +1046,9 @@ class Clerk_Admin_Settings
 
                 }
 
-                if (isset($response[0]) && is_array($response) && $response[0]) {
+                if (isset($response)) {
 
-                    foreach ($response[0] as $attribute => $value) {
+                    foreach ($response as $attribute => $value) {
 
                         if (!in_array($attribute, $exclude_attributes)) {
 
