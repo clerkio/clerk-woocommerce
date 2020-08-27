@@ -32,7 +32,7 @@ class Clerk_Product_Sync {
 
         try {
 
-            if (!$options['realtime_updates'] == 1) {
+            if (!in_array('realtime_updates', $options)) {
                 return;
             }
 

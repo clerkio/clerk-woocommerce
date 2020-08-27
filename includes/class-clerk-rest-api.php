@@ -349,7 +349,7 @@ class Clerk_Rest_Api extends WP_REST_Server
 
         try {
 
-            if (!$options['include_pages'] == 1) {
+            if (!in_array('include_pages', $options)) {
                 return [];
             }
 
@@ -428,7 +428,7 @@ class Clerk_Rest_Api extends WP_REST_Server
 
         try {
 
-            if (!$options['customer_sync_enabled'] == 1) {
+            if (!in_array('customer_sync_enabled', $options)) {
                 return [];
             }
 
@@ -681,7 +681,7 @@ class Clerk_Rest_Api extends WP_REST_Server
 
             $options = get_option('clerk_options');
 
-            if ($options['disable_order_synchronization']) {
+            if (in_array('disable_order_synchronization', $options) && $options['disable_order_synchronization']) {
                 return [];
             }
 
@@ -732,7 +732,7 @@ class Clerk_Rest_Api extends WP_REST_Server
                 ];
 
                 //Include email if defined
-                if ($options['collect_emails']) {
+                if (in_array('collect_emails', $options) && $options['collect_emails']) {
                     $order_object['email'] = $order->billing_email;
                 }
 
