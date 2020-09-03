@@ -441,7 +441,7 @@ class Clerk_Rest_Api extends WP_REST_Server
 
             $FinalCustomerArray = [];
 
-            if (isset($options['customer_sync_customer_fields'])) {
+            if ($options['customer_sync_customer_fields'] != null && $options['customer_sync_customer_fields']) {
 
                 $customer_additional_fields = explode(',', str_replace(' ', '', $options['customer_sync_customer_fields']));
 
@@ -681,7 +681,7 @@ class Clerk_Rest_Api extends WP_REST_Server
 
             $options = get_option('clerk_options');
 
-            if (isset($options['disable_order_synchronization']) && $options['disable_order_synchronization']) {
+            if ($options['disable_order_synchronization'] !== null && $options['disable_order_synchronization']) {
                 return [];
             }
 
@@ -732,7 +732,7 @@ class Clerk_Rest_Api extends WP_REST_Server
                 ];
 
                 //Include email if defined
-                if (isset($options['collect_emails']) && $options['collect_emails']) {
+                if ($options['collect_emails'] !== null && $options['collect_emails']) {
                     $order_object['email'] = $order->billing_email;
                 }
 

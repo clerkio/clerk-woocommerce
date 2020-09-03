@@ -65,7 +65,7 @@ class Clerk_Search
 
         $options = get_option('clerk_options');
 
-        if (isset('faceted_navigation_enabled', $options) && $options['faceted_navigation_enabled']) {
+        if ($options['faceted_navigation_enabled'] !== null && $options['faceted_navigation_enabled']) {
 
             $_Attributes = json_decode($options['faceted_navigation']);
             $count = 0;
