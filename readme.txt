@@ -29,6 +29,9 @@ Once signed up, simply login to your my.clerk.io backend, which will guide you t
 
 
 == Changelog ==
+= 3.3.3 - 2020-09-03 =
+* Fixed some more default settings errors.
+
 = 3.3.2 - 2020-08-27 =
 * Fixed some default settings errors.
 

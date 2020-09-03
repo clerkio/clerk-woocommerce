@@ -681,7 +681,7 @@ class Clerk_Rest_Api extends WP_REST_Server
 
             $options = get_option('clerk_options');
 
-            if (in_array('disable_order_synchronization', $options) && $options['disable_order_synchronization']) {
+            if (isset($options['disable_order_synchronization']) && $options['disable_order_synchronization']) {
                 return [];
             }
 
@@ -732,7 +732,7 @@ class Clerk_Rest_Api extends WP_REST_Server
                 ];
 
                 //Include email if defined
-                if (in_array('collect_emails', $options) && $options['collect_emails']) {
+                if (isset($options['collect_emails']) && $options['collect_emails']) {
                     $order_object['email'] = $order->billing_email;
                 }
 
