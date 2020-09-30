@@ -748,7 +748,8 @@ class Clerk_Admin_Settings
             'clerk_section_powerstep',
             [
                 'label_for' => 'powerstep_templates',
-                'description' => 'A comma separated list of clerk templates to render'
+                'description' => 'A comma separated list of clerk templates to render',
+                'value' => 'power-step-others-also-bought,power-step-visitor-complementary,power-step-popular,power-step-popular-on-sale',
             ]
         );
 
@@ -776,7 +777,8 @@ class Clerk_Admin_Settings
             'clerk',
             'clerk_section_exit_intent',
             [
-                'label_for' => 'exit_intent_template'
+                'label_for' => 'exit_intent_template',
+                'value' => 'exit_intent'
             ]
         );
 
@@ -805,6 +807,7 @@ class Clerk_Admin_Settings
             'clerk_section_category',
             [
                 'label_for' => 'category_content',
+                'value' => 'category-page-popular'
             ]
         );
 
@@ -833,6 +836,7 @@ class Clerk_Admin_Settings
             'clerk_section_product',
             [
                 'label_for' => 'product_content',
+                'value' => 'product-page-alternatives,product-page-others-also-bought'
             ]
         );
 
@@ -861,6 +865,7 @@ class Clerk_Admin_Settings
             'clerk_section_cart',
             [
                 'label_for' => 'cart_content',
+                'value' => 'cart-others-also-bought',
             ]
         );
 
@@ -1680,12 +1685,17 @@ class Clerk_Admin_Settings
 
         }else {
 
-            $value = '';
+            if (isset($args['value'])) {
 
-        }
+                $value = $args['value'];
 
-        if (isset($args['value'])) {
-            $value = $args['value'];
+            }
+            else {
+
+                $value = '';
+
+            }
+
         }
         ?>
 
