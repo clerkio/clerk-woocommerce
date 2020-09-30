@@ -32,6 +32,7 @@ Once signed up, simply login to your my.clerk.io backend, which will guide you t
 = 3.3.4 - 2020-09-30 =
 * Fixed content comma list bug.
 * Fixed exit intent content bug.
+* Added default recommendation contents.
 
 = 3.3.3 - 2020-09-03 =
 * Fixed some more default settings errors.
