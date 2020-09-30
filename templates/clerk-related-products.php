@@ -10,7 +10,7 @@ if ( isset( $options['product_enabled'] ) && $options['product_enabled'] ) :
 
     foreach ($contents as $content) :
 ?>
-    <span class="clerk" data-template="@<?php echo $content; ?>"
+    <span class="clerk" data-template="@<?php echo str_replace(' ','', $content); ?>"
           data-products="[<?php echo get_the_ID(); ?>]"></span>
 <?php
     endforeach;

@@ -38,7 +38,7 @@ class Clerk_Exit_Intent
 
             if (isset($options['exit_intent_enabled']) && $options['exit_intent_enabled']){
 
-                $templates = explode(',',$options['exit_intent_enabled']);
+                $templates = explode(',',$options['exit_intent_template']);
 
                 foreach ($templates as $template) {
 

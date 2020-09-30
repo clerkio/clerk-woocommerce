@@ -28,10 +28,18 @@ class Clerk_Content
             $options = get_option('clerk_options');
 
             if (isset($options['category_enabled']) && $options['category_enabled']) :
-                ?>
-                <span class="clerk" data-template="@<?php echo $options['category_content']; ?>"
-                      data-category="<?php echo $category->term_id; ?>"></span>
-            <?php
+                
+                $templates = explode(',',$options['category_content']);
+
+                foreach ($templates as $template) {
+
+                    ?>
+
+                    <span class="clerk" data-template="@<?php echo str_replace(' ', '', $template); ?>"
+                          data-category="<?php echo $category->term_id; ?>"></span>
+                          
+                    <?php
+                }
             endif;
 
         } catch (Exception $e) {
