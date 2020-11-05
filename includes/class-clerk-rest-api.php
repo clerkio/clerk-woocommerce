@@ -261,6 +261,7 @@ class Clerk_Rest_Api extends WP_REST_Server
                     'sku' => $product->get_sku(),
                     'on_sale' => $on_sale,
                     'type' => $product->get_type(),
+                    'created_at' => strtotime($product->get_date_created())
                 ];
 
                 $productArray['all_images'] = [];

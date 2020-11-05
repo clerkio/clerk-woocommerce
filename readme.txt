@@ -29,6 +29,9 @@ Once signed up, simply login to your my.clerk.io backend, which will guide you t
 
 
 == Changelog ==
+= 3.3.5 - 2020-11-05 =
+* Added created_at as default product attribute.
+
 = 3.3.4 - 2020-09-30 =
 * Fixed content comma list bug.
 * Fixed exit intent content bug.

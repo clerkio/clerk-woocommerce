@@ -97,7 +97,7 @@ class ClerkLogger
                     $args = array(
                         'body'        => $data_string,
                         'method'      => 'POST',
-                        'headers'     => array('User-Agent' => 'ClerkExtensionBot WooCommerce/v' .get_bloginfo('version'). ' Clerk/v3.3.4 PHP/v'.phpversion())
+                        'headers'     => array('User-Agent' => 'ClerkExtensionBot WooCommerce/v' .get_bloginfo('version'). ' Clerk/v3.3.5 PHP/v'.phpversion())
                     );
 
                     wp_remote_request( $Endpoint, $args );
@@ -157,7 +157,7 @@ class ClerkLogger
                 $args = array(
                     'body' => $data_string,
                     'method' => 'POST',
-                    'headers' => array('User-Agent' => 'ClerkExtensionBot WooCommerce/v' . get_bloginfo('version') . ' Clerk/v3.3.4 PHP/v' . phpversion())
+                    'headers' => array('User-Agent' => 'ClerkExtensionBot WooCommerce/v' . get_bloginfo('version') . ' Clerk/v3.3.5 PHP/v' . phpversion())
                 );
 
                 wp_remote_request($Endpoint, $args);
@@ -221,7 +221,7 @@ class ClerkLogger
                     $args = array(
                         'body'        => $data_string,
                         'method'      => 'POST',
-                        'headers'     => array('User-Agent' => 'ClerkExtensionBot WooCommerce/v' .get_bloginfo('version'). ' Clerk/v3.3.4 PHP/v'.phpversion())
+                        'headers'     => array('User-Agent' => 'ClerkExtensionBot WooCommerce/v' .get_bloginfo('version'). ' Clerk/v3.3.5 PHP/v'.phpversion())
                     );
 
                     wp_remote_request( $Endpoint, $args );
