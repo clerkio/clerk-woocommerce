@@ -20,7 +20,7 @@ class Clerk_Admin_Settings
         $this->initHooks();
         require_once(__DIR__ . '/class-clerk-logger.php');
         $this->logger = new ClerkLogger();
-        $this->version = '3.3.5';
+        $this->version = '3.3.6';
 
         $this->InitializeSettings();
 
@@ -1006,49 +1006,51 @@ class Clerk_Admin_Settings
                     'offset' => $offset
                 ));
 
-                foreach ($products->products as $product) {
+                if (in_array('products', $products)) {
 
-                    if ($check) {
+                    foreach ($products->products as $product) {
 
-                        $id = $product->get_id();
+                        if ($check) {
 
-                        $Endpoint = 'https://api.clerk.io/v2/product/attributes';
+                            $id = $product->get_id();
 
-                        $data_string = json_encode([
-                            'key' => $public_key,
-                            'products' => [$id]]);
+                            $Endpoint = 'https://api.clerk.io/v2/product/attributes';
 
-                        $_args = array(
-                            'body'        => $data_string,
-                            'method'      => 'POST',
-                        );
+                            $data_string = json_encode([
+                                'key' => $public_key,
+                                'products' => [$id]]);
 
-                        $response = wp_remote_request( $Endpoint, $_args );
+                            $_args = array(
+                                'body'        => $data_string,
+                                'method'      => 'POST',
+                            );
 
-                        if ($this->isJSON($response['body'])) {
+                            $response = wp_remote_request( $Endpoint, $_args );
 
-                            $response = json_decode($response['body']);
+                            if ($this->isJSON($response['body'])) {
 
-                        }else {
+                                $response = json_decode($response['body']);
 
-                            $response = $response['body'];
+                            }else {
 
-                        }
+                                $response = $response['body'];
 
-                        if (is_array($response)) {
+                            }
 
-                            $check = false;
+                            if (is_array($response)) {
 
-                        }
+                                $check = false;
 
-                        if (isset($response[0]) && is_array($response)) {
+                            }
 
-                            $response = $response[0];
+                            if (is_array($response) && isset($response[0])) {
 
+                                $response = $response[0];
+
+                            }
                         }
 
                     }
-
                 }
 
                 if (isset($response)) {

@@ -29,6 +29,9 @@ Once signed up, simply login to your my.clerk.io backend, which will guide you t
 
 
 == Changelog ==
+= 3.3.6 - 2020-12-03 =
+* Fixed facets settings edge case bug.
+
 = 3.3.5 - 2020-11-05 =
 * Added created_at as default product attribute.
 
