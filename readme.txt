@@ -29,6 +29,9 @@ Once signed up, simply login to your my.clerk.io backend, which will guide you t
 
 
 == Changelog ==
+= 3.4.0 - 2020-01-05 =
+* Support For Clerk Basket Tracking.
+
 = 3.3.6 - 2020-12-03 =
 * Fixed facets settings edge case bug.
 

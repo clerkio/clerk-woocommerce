@@ -20,7 +20,7 @@ class Clerk_Admin_Settings
         $this->initHooks();
         require_once(__DIR__ . '/class-clerk-logger.php');
         $this->logger = new ClerkLogger();
-        $this->version = '3.3.6';
+        $this->version = '3.4.0';
 
         $this->InitializeSettings();
 
@@ -466,6 +466,17 @@ class Clerk_Admin_Settings
             'clerk_section_datasync',
             [
                 'label_for' => 'collect_emails',
+                'checked' => 1
+            ]
+        );
+
+        add_settings_field('collect_baskets',
+            __('Collect Baskets', 'clerk'),
+            [$this, 'addCheckboxField'],
+            'clerk',
+            'clerk_section_datasync',
+            [
+                'label_for' => 'collect_baskets',
                 'checked' => 1
             ]
         );
@@ -1006,7 +1017,7 @@ class Clerk_Admin_Settings
                     'offset' => $offset
                 ));
 
-                if (in_array('products', $products)) {
+                if (is_array($products) && in_array('products', $products)) {
 
                     foreach ($products->products as $product) {
 
