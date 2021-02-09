@@ -29,6 +29,9 @@ Once signed up, simply login to your my.clerk.io backend, which will guide you t
 
 
 == Changelog ==
+= 3.5.0 - 2020-02-09 =
+* Fixed Page Sync Bug.
+
 = 3.4.0 - 2020-01-05 =
 * Support For Clerk Basket Tracking.
 

@@ -350,7 +350,7 @@ class Clerk_Rest_Api extends WP_REST_Server
 
         try {
 
-            if (!in_array('include_pages', $options)) {
+            if (!isset($options['include_pages'])) {
                 return [];
             }
 
