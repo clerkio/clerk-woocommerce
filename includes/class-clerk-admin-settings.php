@@ -20,7 +20,7 @@ class Clerk_Admin_Settings
         $this->initHooks();
         require_once(__DIR__ . '/class-clerk-logger.php');
         $this->logger = new ClerkLogger();
-        $this->version = '3.5.0';
+        $this->version = '3.5.1';
 
         $this->InitializeSettings();
 
@@ -1017,9 +1017,13 @@ class Clerk_Admin_Settings
                     'offset' => $offset
                 ));
 
-                if (is_array($products) && in_array('products', $products)) {
+                if (!is_array($products)) {
+                    $products = (array)$products;
+                }
 
-                    foreach ($products->products as $product) {
+                if (is_array($products) && array_key_exists('products', $products)) {
+
+                    foreach ($products['products'] as $product) {
 
                         if ($check) {
 
@@ -1166,8 +1170,6 @@ class Clerk_Admin_Settings
                 <?php
             }
 
-        if (count($NewDynamicAttributes) > 0 || count($savedAttributes) > 0) {
-
             ?>
             <table>
 
@@ -1229,9 +1231,6 @@ class Clerk_Admin_Settings
                     }
                 }
 
-                if (count($NewDynamicAttributes) > 0 || count($savedAttributes) > 0) {
-
-
                 ?>
 
                 <input name="clerk_options[<?php echo esc_attr($args['label_for']); ?>]" id="faceted_navigation"
@@ -1252,11 +1251,6 @@ class Clerk_Admin_Settings
                 }
 
                 function add_facet() {
-
-                    if (jQuery("#facets_content #facets_lines").length === 0) {
-                        jQuery('#facets_content').html('');
-                    }
-
                     var linescount = jQuery('#facets_content #facets_lines').length;
 
                     facets_lines = document.createElement("tr");
@@ -1401,10 +1395,6 @@ class Clerk_Admin_Settings
             </style>
 
             <?php
-
-        }
-
-        }
 
     }
 

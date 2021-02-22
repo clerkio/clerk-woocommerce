@@ -29,6 +29,9 @@ Once signed up, simply login to your my.clerk.io backend, which will guide you t
 
 
 == Changelog ==
+= 3.5.1 - 2020-02-22 =
+* Fixed Facet settings bug for som WP versions.
+
 = 3.5.0 - 2020-02-09 =
 * Fixed Page Sync Bug.
 
