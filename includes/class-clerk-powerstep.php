@@ -1,48 +1,48 @@
 <?php
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly
+    exit; // Exit if accessed directly
 }
 
 class Clerk_Powerstep {
-	const TYPE_POPUP = 'popup';
-	const TYPE_PAGE = 'page';
+    const TYPE_POPUP = 'popup';
+    const TYPE_PAGE = 'page';
     protected $logger;
 
-	/**
-	 * Clerk_Powerstep constructor.
-	 */
-	public function __construct() {
-		$this->initHooks();
+    /**
+     * Clerk_Powerstep constructor.
+     */
+    public function __construct() {
+        $this->initHooks();
         require_once( __DIR__ . '/class-clerk-logger.php' );
         $this->logger = new ClerkLogger();
-	}
+    }
 
-	/**
-	 * Init hooks
-	 */
-	private function initHooks() {
-		$options = get_option( 'clerk_options' );
+    /**
+     * Init hooks
+     */
+    private function initHooks() {
+        $options = get_option( 'clerk_options' );
 
-		// if powerstep disabled, there's no need to init hooks
-		if ( ! isset( $options['powerstep_enabled'] ) ) {
-			return false;
-		}
+        // if powerstep disabled, there's no need to init hooks
+        if ( ! isset( $options['powerstep_enabled'] ) ) {
+            return false;
+        }
 
-		add_filter( 'woocommerce_add_to_cart_redirect', [ $this, 'redirect_to_powerstep' ] );
+        add_filter( 'woocommerce_add_to_cart_redirect', [ $this, 'redirect_to_powerstep' ] );
         add_filter( 'template_redirect', [ $this, 'redirect_to_powerstep_no_ajax' ] );
-		add_filter( 'query_vars', [ $this, 'add_powerstep_vars' ] );
-		add_shortcode( 'clerk-powerstep', [ $this, 'handle_shortcode' ] );
-		add_action( 'wp_enqueue_scripts', [ $this, 'add_powerstep_files' ] );
-		add_action( 'wp_ajax_clerk_powerstep', [ $this, 'powerstep_ajax' ] );
-		add_action( 'wp_ajax_nopriv_clerk_powerstep', [ $this, 'powerstep_ajax' ] );
+        add_filter( 'query_vars', [ $this, 'add_powerstep_vars' ] );
+        add_shortcode( 'clerk-powerstep', [ $this, 'handle_shortcode' ] );
+        add_action( 'wp_enqueue_scripts', [ $this, 'add_powerstep_files' ] );
+        add_action( 'wp_ajax_clerk_powerstep', [ $this, 'powerstep_ajax' ] );
+        add_action( 'wp_ajax_nopriv_clerk_powerstep', [ $this, 'powerstep_ajax' ] );
 
-	}
+    }
 
-	/**
-	 * If powerstep is enabled, either redirect user to powerstep page or redirect with popup param
-	 */
-	public function redirect_to_powerstep( $url ) {
+    /**
+     * If powerstep is enabled, either redirect user to powerstep page or redirect with popup param
+     */
+    public function redirect_to_powerstep( $url ) {
 
         try {
 
@@ -74,7 +74,7 @@ class Clerk_Powerstep {
 
         }
 
-	}
+    }
 
     public function redirect_to_powerstep_no_ajax( $url ) {
 
@@ -91,16 +91,14 @@ class Clerk_Powerstep {
             if (!$options['powerstep_enabled'] || $options['powerstep_type'] !== self::TYPE_PAGE) {
 
                 if (!isset($_GET['clerk_powerstep'])) {
-
                     $actual_link = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
-                    $_url = str_replace('add-to-cart='.$product_id,'',$actual_link) . '?clerk_powerstep=true&product_id=' . $product_id;
-
+                    $_url = str_replace('?add-to-cart='.$product_id,'',$actual_link) . '?clerk_powerstep=true&product_id=' . $product_id;
                     header('Location: ' . $_url);
-                }
-                else {
-
                     return $url;
 
+                }
+                else {
+                    return $url;
                 }
             }
 
@@ -112,7 +110,7 @@ class Clerk_Powerstep {
 
             $url = esc_url(get_page_link($options['powerstep_page']) . '?product_id=' . $product_id);
 
-            return $url;
+            header('Location: ' . $url);
 
         } catch (Exception $e) {
 
@@ -122,14 +120,14 @@ class Clerk_Powerstep {
 
     }
 
-	/**
-	 * Add query var for searchterm
-	 *
-	 * @param $vars
-	 *
-	 * @return array
-	 */
-	public function add_powerstep_vars( $vars ) {
+    /**
+     * Add query var for searchterm
+     *
+     * @param $vars
+     *
+     * @return array
+     */
+    public function add_powerstep_vars( $vars ) {
 
         try {
 
@@ -144,14 +142,14 @@ class Clerk_Powerstep {
 
         }
 
-	}
+    }
 
-	/**
-	 * Output clerk-powerstep shortcode
-	 *
-	 * @param $atts
-	 */
-	public function handle_shortcode( $atts ) {
+    /**
+     * Output clerk-powerstep shortcode
+     *
+     * @param $atts
+     */
+    public function handle_shortcode( $atts ) {
 
         try {
 
@@ -177,12 +175,12 @@ class Clerk_Powerstep {
 
         }
 
-	}
+    }
 
-	/**
-	 * Add powerstep css
-	 */
-	public function add_powerstep_files() {
+    /**
+     * Add powerstep css
+     */
+    public function add_powerstep_files() {
 
         try {
 
@@ -211,12 +209,12 @@ class Clerk_Powerstep {
 
         }
 
-	}
+    }
 
-	/**
-	 * Get powerstep popup content
-	 */
-	public function powerstep_ajax() {
+    /**
+     * Get powerstep popup content
+     */
+    public function powerstep_ajax() {
 
         try {
 
@@ -237,7 +235,7 @@ class Clerk_Powerstep {
 
         }
 
-	}
+    }
 }
 
 new Clerk_Powerstep();

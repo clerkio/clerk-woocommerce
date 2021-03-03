@@ -29,13 +29,16 @@ Once signed up, simply login to your my.clerk.io backend, which will guide you t
 
 
 == Changelog ==
-= 3.5.1 - 2020-02-22 =
+= 3.5.2 - 2021-03-02 =
+* Fixed Page Powerstep won't show.
+
+= 3.5.1 - 2021-02-22 =
 * Fixed Facet settings bug for som WP versions.
 
-= 3.5.0 - 2020-02-09 =
+= 3.5.0 - 2021-02-09 =
 * Fixed Page Sync Bug.
 
-= 3.4.0 - 2020-01-05 =
+= 3.4.0 - 2021-01-05 =
 * Support For Clerk Basket Tracking.
 
 = 3.3.6 - 2020-12-03 =
