@@ -21,6 +21,11 @@ class Clerk_Basket {
 	 */
 	private function initHooks() {
 
+        $options = get_option('clerk_options');
+        if (!$options['collect_baskets']) {
+            return;
+        }
+
 		add_filter( 'woocommerce_add_to_cart_redirect', [ $this, 'update_basket' ] );
         add_filter( 'template_redirect', [ $this, 'update_basket' ] );
 
@@ -34,9 +39,6 @@ class Clerk_Basket {
         try {
 
             $options = get_option('clerk_options');
-            if (!$options['collect_baskets']) {
-                return;
-            }
 
             global $current_user;
             global $woocommerce;
