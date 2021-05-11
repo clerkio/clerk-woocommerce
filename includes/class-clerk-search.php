@@ -113,15 +113,25 @@ class Clerk_Search
         try {
 
             $options = get_option('clerk_options');
+            $default_attributes = [
+                'class' => 'clerk',
+                'data-template' => sprintf('@%1$s', esc_attr(strtolower(str_replace(' ', '-', $options['search_template'])))),
+                'data-limit' => 40,
+                'data-offset' => 0,
+                'data-target' => '#clerk-search-results',
+                'data-after-render' => '_clerk_after_load_event',
+                'data-query' => get_query_var('searchterm')
+            ];
+            $search_attributes = apply_filters('clerk_search_attributes', $default_attributes);
+
             ?>
             <span id="clerk-search"
-                  class="clerk"
-                  data-template="@<?php echo esc_attr(strtolower(str_replace(' ', '-', $options['search_template']))); ?>"
-                  data-limit="40"
-                  data-offset="0"
-                  data-target="#clerk-search-results"
-                  data-after-render="_clerk_after_load_event"
                   <?php
+                  if (!empty($search_attributes)) {
+                      foreach($search_attributes as $attribute=>$value) {
+                          printf('%1$s="%2$s"', esc_attr($attribute), esc_attr($value));
+                      }
+                  }
                   if (count($Attributes) > 0) {
 
                       echo 'data-facets-target="#clerk-search-filters"';
@@ -131,7 +141,7 @@ class Clerk_Search
                   }
 
                   ?>
-                  data-query="<?php echo esc_attr(get_query_var('searchterm')); ?>">
+                  >
 		    </span>
             <?php
             if (count($Attributes) > 0) {
