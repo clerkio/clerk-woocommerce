@@ -358,7 +358,7 @@ class Clerk_Rest_Api extends WP_REST_Server
                 return $this->getUnathorizedResponse();
             }
 
-            $pages = apply_filters( 'clerkio_get_pages', get_pages() );
+            $pages = apply_filters( 'clerk_get_pages', get_pages() );
             $FinalPageArray = [];
 
             foreach ($pages as $page) {
@@ -406,11 +406,13 @@ class Clerk_Rest_Api extends WP_REST_Server
 
                     }
 
-                    $FinalPageArray[] = apply_filters( 'clerkio_final_pages_out', $page_draft );
+                    $FinalPageArray[] = $page_draft;
 
                 }
 
             }
+            
+            $FinalPageArray[] = apply_filters( 'clerk_final_pages', $FinalPageArray );
 
             $this->logger->log('Successfully generated JSON with ' . count($FinalPageArray) . ' pages', ['error' => 'None']);
             header('User-Agent: ClerkExtensionBot WooCommerce/v' .get_bloginfo('version'). ' Clerk/v'.get_file_data(CLERK_PLUGIN_FILE, array('version'), 'plugin')[0]. ' PHP/v'.phpversion());
