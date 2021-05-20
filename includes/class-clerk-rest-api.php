@@ -358,7 +358,7 @@ class Clerk_Rest_Api extends WP_REST_Server
                 return $this->getUnathorizedResponse();
             }
 
-            $pages = get_pages();
+            $pages = apply_filters( 'clerkio_get_pages', get_pages() );
             $FinalPageArray = [];
 
             foreach ($pages as $page) {
@@ -406,7 +406,7 @@ class Clerk_Rest_Api extends WP_REST_Server
 
                     }
 
-                    $FinalPageArray[] = $page_draft;
+                    $FinalPageArray[] = apply_filters( 'clerkio_final_pages_out', $page_draft );
 
                 }
 
