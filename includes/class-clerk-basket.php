@@ -82,7 +82,7 @@ class Clerk_Basket {
 
                 } else {
 
-                    echo "<script type='text/javascript'>(function(){
+                    echo "<script>(function(){
                                         (function(w,d){
                                             var e=d.createElement('script');e.type='text/javascript';e.async=true;
                                             e.src=(d.location.protocol=='https:'?'https':'http')+'://cdn.clerk.io/clerk.js';
@@ -93,11 +93,9 @@ class Clerk_Basket {
 
                                     Clerk('config', {
                                         key: '".$options['public_key']."',
-
                                     });
 
                                     Clerk('cart', 'set', [".implode(',', $_product_ids)."]);
-
                                     </script>";
                 }
             }
