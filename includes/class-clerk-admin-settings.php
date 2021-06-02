@@ -995,9 +995,9 @@ class Clerk_Admin_Settings
         $DynamicAttributes = [];
 
         $options = get_option('clerk_options');
-        $public_key = $options['public_key'];
+        if ($options != false) {
 
-        if (!empty(str_replace(' ','', $public_key))) {
+            $public_key = $options['public_key'];
 
             while ($_continue) {
 
@@ -1395,6 +1395,7 @@ class Clerk_Admin_Settings
             </style>
 
             <?php
+        
 
     }
 
@@ -1657,7 +1658,7 @@ class Clerk_Admin_Settings
     public function addLoggerView()
     {
 
-        echo('<script type="text/javascript">' .
+        echo('<script>' .
             '(function () {' .
             '$.ajax({' .
             'url: "' . plugin_dir_url(__DIR__) . 'clerk_log.log", success: function (data) {' .

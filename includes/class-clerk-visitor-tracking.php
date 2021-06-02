@@ -74,7 +74,7 @@ class Clerk_Visitor_Tracking {
 
             ?>
             <!-- Start of Clerk.io E-commerce Personalisation tool - www.clerk.io -->
-            <script type="text/javascript">
+            <script>
                 (function(w,d){
                     var e=d.createElement('script');e.type='text/javascript';e.async=true;
                     e.src=(d.location.protocol=='https:'?'https':'http')+'://cdn.clerk.io/clerk.js';
@@ -126,9 +126,8 @@ class Clerk_Visitor_Tracking {
             if ( isset( $options['search_enabled'] ) && $options['search_enabled'] ) :
 
                 ?>
-                <script type="text/javascript">
+                <script>
                     jQuery(document).ready(function ($) {
-
                         ClerkSearchPage = function(){
 
                             $("<?php echo $options['livesearch_field_selector']; ?>").each(function() {
@@ -146,9 +145,7 @@ class Clerk_Visitor_Tracking {
                         };
 
                         ClerkSearchPage();
-
                     });
-
                 </script>
             <?php
             endif;
