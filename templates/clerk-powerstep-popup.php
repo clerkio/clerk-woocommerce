@@ -23,7 +23,7 @@ $checkout_url = $woocommerce->cart->get_checkout_url();
                 type="button" title="<?php echo __( 'Cart' ) ?>">
             <span><?php echo __( 'Cart', 'clerk' ) ?></span>
         </button>
-        <button class="action clerk_powerstep_button clerk-powerstep-close"><?php echo __( 'Continue Shopping' ); ?></button>
+        <button class="action clerk_powerstep_button clerk-powerstep-close"><?php echo esc_html( __( 'Continue Shopping', 'clerk' ) ); ?></button>
     </div>
     <div class="clerk_powerstep_templates">
         <?php
