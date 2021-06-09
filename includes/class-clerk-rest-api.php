@@ -4,32 +4,28 @@ if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly
 }
 
-class Clerk_Rest_Api extends WP_REST_Server
-{
+class Clerk_Rest_Api extends WP_REST_Server {
+
     /**
      * Clerk_Rest_Api constructor.
      */
     protected $logger;
 
-    public function __construct()
-    {
+    public function __construct() {
         $this->initHooks();
         require_once(__DIR__ . '/class-clerk-logger.php');
         $this->logger = new ClerkLogger();
-
     }
 
     /**
      * Init hooks
      */
-    private function initHooks()
-    {
+    private function initHooks() {
         add_action('rest_api_init', [$this, 'add_rest_api_routes']);
         add_filter('rest_pre_serve_request', [$this, 'rest_pre_serve_request'], 10, 3);
     }
 
-    public function __ini()
-    {
+    public function __ini() {
         $this->initHooks();
         $this->logger = new ClerkLogger();
     }
@@ -37,8 +33,7 @@ class Clerk_Rest_Api extends WP_REST_Server
     /**
      * Add REST API routes
      */
-    public function add_rest_api_routes()
-    {
+    public function add_rest_api_routes() {
         //Product endpoint
         register_rest_route('clerk', '/product', [
             'methods' => 'GET',
@@ -97,8 +92,7 @@ class Clerk_Rest_Api extends WP_REST_Server
      *
      * @return bool|string
      */
-    public function rest_pre_serve_request($served, $result, $request)
-    {
+    public function rest_pre_serve_request($served, $result, $request) {
 
         try {
 
@@ -116,8 +110,7 @@ class Clerk_Rest_Api extends WP_REST_Server
 
                     $json_error_message = $this->get_json_last_error();
                     if ($json_error_message) {
-                        $json_error_obj = new WP_Error('rest_encode_error', $json_error_message,
-                            array('status' => 500));
+                        $json_error_obj = new WP_Error('rest_encode_error', $json_error_message, array('status' => 500));
                         $result = $this->error_to_response($json_error_obj);
                         $result = wp_json_encode($result->data[0]);
                     }
@@ -129,11 +122,9 @@ class Clerk_Rest_Api extends WP_REST_Server
             }
 
             return false;
-
         } catch (Exception $e) {
 
             $this->logger->error('ERROR rest_pre_serve_request', ['error' => $e->getMessage()]);
-
         }
     }
 
@@ -144,8 +135,7 @@ class Clerk_Rest_Api extends WP_REST_Server
      *
      * @return array|WP_REST_Response
      */
-    public function product_endpoint_callback(WP_REST_Request $request)
-    {
+    public function product_endpoint_callback(WP_REST_Request $request) {
         $options = get_option('clerk_options');
 
         try {
@@ -181,9 +171,7 @@ class Clerk_Rest_Api extends WP_REST_Server
                     if (!$product->stock_status === 'instock') {
 
                         continue;
-
                     }
-
                 }
 
                 /** @var WC_Product $product */
@@ -196,7 +184,6 @@ class Clerk_Rest_Api extends WP_REST_Server
                      * Variable product sync fields
                      * Will sync the lowest price, and set the sale flag if that variant is on sale.
                      */
-
                     $variation = $product->get_available_variations();
                     $stock_quantity = 0;
                     $displayPrice = array();
@@ -212,14 +199,14 @@ class Clerk_Rest_Api extends WP_REST_Server
                     if (empty($displayPrice)) {
 
                         continue;
-
                     }
 
                     $lowestDisplayPrice = array_keys($displayPrice, min($displayPrice)); // Find the corresponding product ID
                     $price = $displayPrice[$lowestDisplayPrice[0]]; // Get the lowest price
                     $list_price = $regularPrice[$lowestDisplayPrice[0]]; // Get the corresponding list price (regular price)
 
-                    if ($price === $list_price) $on_sale = false; // Remove the sale flag if the cheapest variant is not on sale
+                    if ($price === $list_price)
+                        $on_sale = false; // Remove the sale flag if the cheapest variant is not on sale
                 } else {
                     /**
                      * Default single product sync fields
@@ -233,29 +220,25 @@ class Clerk_Rest_Api extends WP_REST_Server
                     if (isset($stock_quantity) && $stock_quantity === 0) {
 
                         continue;
-
-                    }elseif(!isset($stock_quantity)) {
-
-                        continue;
-
-                    }elseif(!$product->is_in_stock()) {
+                    } elseif (!isset($stock_quantity)) {
 
                         continue;
+                    } elseif (!$product->is_in_stock()) {
 
+                        continue;
                     }
-                } elseif (! $product->managing_stock() && ! $product->is_in_stock() && !isset($options['outofstock_products'])) {
+                } elseif (!$product->managing_stock() && !$product->is_in_stock() && !isset($options['outofstock_products'])) {
 
                     continue;
-
                 }
 
                 $productArray = [
                     'id' => $product->get_id(),
                     'name' => $product->get_name(),
                     'description' => get_post_field('post_content', $product->get_id()),
-                    'price' => (float)$price,
-                    'list_price' => (float)$list_price,
-                    'image' => wp_get_attachment_image_src($product->get_image_id(),'medium')[0],
+                    'price' => (float) $price,
+                    'list_price' => (float) $list_price,
+                    'image' => wp_get_attachment_image_src($product->get_image_id(), 'medium')[0],
                     'url' => $product->get_permalink(),
                     'categories' => wp_list_pluck($categories, 'term_id'),
                     'sku' => $product->get_sku(),
@@ -268,22 +251,18 @@ class Clerk_Rest_Api extends WP_REST_Server
 
                 foreach (get_intermediate_image_sizes() as $key => $image_size) {
 
-                    if (!in_array(wp_get_attachment_image_src($product->get_image_id(),$image_size)[0], $productArray['all_images'])) {
+                    if (!in_array(wp_get_attachment_image_src($product->get_image_id(), $image_size)[0], $productArray['all_images'])) {
 
-                        array_push($productArray['all_images'] , wp_get_attachment_image_src($product->get_image_id(), $image_size)[0]);
-
+                        array_push($productArray['all_images'], wp_get_attachment_image_src($product->get_image_id(), $image_size)[0]);
                     }
-
                 }
 
                 if (!empty($product->get_stock_quantity())) {
 
                     $productArray['stock'] = $product->get_stock_quantity();
-
-                }elseif (isset($stock_quantity)) {
+                } elseif (isset($stock_quantity)) {
 
                     $productArray['stock'] = $stock_quantity;
-
                 }
 
                 //Append additional fields
@@ -292,60 +271,49 @@ class Clerk_Rest_Api extends WP_REST_Server
                     if ($field == '') {
 
                         continue;
-
                     }
 
                     if ($product->get_attribute($field)) {
 
-                        $productArray[$this->clerk_friendly_attributes($field)] = str_replace(' ','',explode(',',$product->get_attribute($field)));
+                        $productArray[$this->clerk_friendly_attributes($field)] = str_replace(' ', '', explode(',', $product->get_attribute($field)));
+                    } elseif (get_post_meta($product->get_id(), $field, true)) {
 
-                    }elseif (get_post_meta( $product->get_id(), $field, true )) {
+                        $productArray[$this->clerk_friendly_attributes($field)] = get_post_meta($product->get_id(), $field, true);
+                    } elseif (wp_get_post_terms($product->get_id(), strtolower($field), array('fields' => 'names'))) {
 
-                        $productArray[$this->clerk_friendly_attributes($field)] = get_post_meta( $product->get_id(), $field, true );
+                        $attrubutefield = wp_get_post_terms($product->get_id(), strtolower($field), array('fields' => 'names'));
 
-                    }elseif (wp_get_post_terms( $product->get_id(), strtolower($field), array('fields'=> 'names'))) {
-
-                        $attrubutefield = wp_get_post_terms( $product->get_id(), strtolower($field), array('fields'=> 'names'));
-
-                        if (!array_key_exists('errors', $attrubutefield )) {
+                        if (!array_key_exists('errors', $attrubutefield)) {
 
                             $productArray[strtolower($this->clerk_friendly_attributes($field))] = $attrubutefield;
-
                         }
-
                     }
-
                 }
 
                 $productArray = apply_filters('clerk_product_array', $productArray, $product);
 
                 $FinalProductsArray[] = $productArray;
-
-
             }
 
             $this->logger->log('Successfully generated JSON with ' . count($FinalProductsArray) . ' products', ['error' => 'None']);
 
-            header('User-Agent: ClerkExtensionBot WooCommerce/v' .get_bloginfo('version'). ' Clerk/v'.get_file_data(CLERK_PLUGIN_FILE, array('version'), 'plugin')[0]. ' PHP/v'.phpversion());
+            header('User-Agent: ClerkExtensionBot WooCommerce/v' . get_bloginfo('version') . ' Clerk/v' . get_file_data(CLERK_PLUGIN_FILE, array('version'), 'plugin')[0] . ' PHP/v' . phpversion());
             return $FinalProductsArray;
-
         } catch (Exception $e) {
 
             $this->logger->error('ERROR product_endpoint_callback', ['error' => $e->getMessage()]);
-
         }
     }
 
     function clerk_friendly_attributes($attribute) {
         $attribute = strtolower($attribute);
-        $attribute=str_replace('æ','ae',$attribute);
-        $attribute=str_replace('ø','oe',$attribute);
-        $attribute=str_replace('å','aa',$attribute);
+        $attribute = str_replace('æ', 'ae', $attribute);
+        $attribute = str_replace('ø', 'oe', $attribute);
+        $attribute = str_replace('å', 'aa', $attribute);
         return urlencode($attribute);
     }
 
-    public function page_endpoint_callback(WP_REST_Request $request)
-    {
+    public function page_endpoint_callback(WP_REST_Request $request) {
         $options = get_option('clerk_options');
 
         try {
@@ -365,7 +333,7 @@ class Clerk_Rest_Api extends WP_REST_Server
 
                 if (!empty($page->post_content)) {
 
-                    $page_additional_fields = explode(',',$options['page_additional_fields']);
+                    $page_additional_fields = explode(',', $options['page_additional_fields']);
 
                     switch ($page->post_type) {
 
@@ -379,7 +347,6 @@ class Clerk_Rest_Api extends WP_REST_Server
 
                         default:
                             $Type = 'CMS Page';
-
                     }
 
                     $page_draft = [
@@ -393,38 +360,30 @@ class Clerk_Rest_Api extends WP_REST_Server
                     if (!$this->ValidatePage($page_draft)) {
 
                         continue;
-
                     }
 
                     foreach ($page_additional_fields as $page_additional_field) {
-                        $page_additional_field = str_replace(' ','',$page_additional_field);
+                        $page_additional_field = str_replace(' ', '', $page_additional_field);
                         if (!empty($page_additional_field)) {
 
                             $page_draft[$page_additional_field] = $page->{$page_additional_field};
-
                         }
-
                     }
 
                     $FinalPageArray[] = $page_draft;
-
                 }
-
             }
 
             $this->logger->log('Successfully generated JSON with ' . count($FinalPageArray) . ' pages', ['error' => 'None']);
-            header('User-Agent: ClerkExtensionBot WooCommerce/v' .get_bloginfo('version'). ' Clerk/v'.get_file_data(CLERK_PLUGIN_FILE, array('version'), 'plugin')[0]. ' PHP/v'.phpversion());
+            header('User-Agent: ClerkExtensionBot WooCommerce/v' . get_bloginfo('version') . ' Clerk/v' . get_file_data(CLERK_PLUGIN_FILE, array('version'), 'plugin')[0] . ' PHP/v' . phpversion());
             return $FinalPageArray;
-
         } catch (Exception $e) {
 
             $this->logger->error('ERROR page_endpoint_callback', ['error' => $e->getMessage()]);
-
         }
     }
 
-    public function customer_endpoint_callback(WP_REST_Request $request)
-    {
+    public function customer_endpoint_callback(WP_REST_Request $request) {
         $options = get_option('clerk_options');
 
         try {
@@ -445,11 +404,9 @@ class Clerk_Rest_Api extends WP_REST_Server
             if ($options['customer_sync_customer_fields'] != null && $options['customer_sync_customer_fields']) {
 
                 $customer_additional_fields = explode(',', str_replace(' ', '', $options['customer_sync_customer_fields']));
-
             } else {
 
                 $customer_additional_fields = [];
-
             }
 
             foreach ($customer_ids as $customer_id) {
@@ -464,23 +421,22 @@ class Clerk_Rest_Api extends WP_REST_Server
                     if (isset($customer->data->{$customer_additional_field})) {
 
                         $_customer[$customer_additional_field] = $customer->data->{$customer_additional_field};
-
                     }
-
                 }
-
+                if (is_plugin_active('newsletter/plugin.php')) {
+                    $statusquery = "SELECT status FROM " . $wpdb->prefix . "newsletter where wp_user_id ='" . $_customer['id'] . "'";
+                    $customer_status = $wpdb->get_var($statusquery);
+                    $_customer['subscribed'] = ($customer_status == 'C') ? TRUE : FALSE;
+                } 
                 $FinalCustomerArray[] = $_customer;
-
             }
 
             $this->logger->log('Successfully generated JSON with ' . count($FinalCustomerArray) . ' customers', ['error' => 'None']);
-            header('User-Agent: ClerkExtensionBot WooCommerce/v' .get_bloginfo('version'). ' Clerk/v'.get_file_data(CLERK_PLUGIN_FILE, array('version'), 'plugin')[0]. ' PHP/v'.phpversion());
+            header('User-Agent: ClerkExtensionBot WooCommerce/v' . get_bloginfo('version') . ' Clerk/v' . get_file_data(CLERK_PLUGIN_FILE, array('version'), 'plugin')[0] . ' PHP/v' . phpversion());
             return $FinalCustomerArray;
-
         } catch (Exception $e) {
 
             $this->logger->error('ERROR customer_endpoint_callback', ['error' => $e->getMessage()]);
-
         }
     }
 
@@ -491,13 +447,10 @@ class Clerk_Rest_Api extends WP_REST_Server
             if (empty($content)) {
 
                 return false;
-
             }
-
         }
 
         return true;
-
     }
 
     /**
@@ -507,8 +460,7 @@ class Clerk_Rest_Api extends WP_REST_Server
      *
      * @return bool
      */
-    private function validateRequest($request)
-    {
+    private function validateRequest($request) {
 
         try {
 
@@ -525,13 +477,10 @@ class Clerk_Rest_Api extends WP_REST_Server
             $this->logger->warn('Failed to validate API Keys', ['response' => false]);
 
             return false;
-
         } catch (Exception $e) {
 
             $this->logger->error('ERROR validateRequest', ['error' => $e->getMessage()]);
-
         }
-
     }
 
     /**
@@ -539,8 +488,7 @@ class Clerk_Rest_Api extends WP_REST_Server
      *
      * @return WP_REST_Response
      */
-    private function getUnathorizedResponse()
-    {
+    private function getUnathorizedResponse() {
 
         try {
 
@@ -555,13 +503,10 @@ class Clerk_Rest_Api extends WP_REST_Server
             $this->logger->warn('The supplied public or private key is invalid', ['status' => 403]);
 
             return $response;
-
         } catch (Exception $e) {
 
             $this->logger->error('ERROR getUnathorizedResponse', ['error' => $e->getMessage()]);
-
         }
-
     }
 
     /**
@@ -569,8 +514,7 @@ class Clerk_Rest_Api extends WP_REST_Server
      *
      * @return array
      */
-    private function getAdditionalFields()
-    {
+    private function getAdditionalFields() {
 
         try {
 
@@ -582,8 +526,7 @@ class Clerk_Rest_Api extends WP_REST_Server
 
             foreach ($fields as $key => $field) {
 
-                $fields[$key] = str_replace(' ','', $field);
-
+                $fields[$key] = str_replace(' ', '', $field);
             }
 
             if (!is_array($fields)) {
@@ -591,13 +534,10 @@ class Clerk_Rest_Api extends WP_REST_Server
             }
 
             return $fields;
-
         } catch (Exception $e) {
 
             $this->logger->error('ERROR getAdditionalFields', ['error' => $e->getMessage()]);
-
         }
-
     }
 
     /**
@@ -607,8 +547,7 @@ class Clerk_Rest_Api extends WP_REST_Server
      *
      * @return array|WP_REST_Response
      */
-    public function category_endpoint_callback(WP_REST_Request $request)
-    {
+    public function category_endpoint_callback(WP_REST_Request $request) {
 
         try {
 
@@ -618,7 +557,7 @@ class Clerk_Rest_Api extends WP_REST_Server
 
             $limit = $request->get_param('limit') ? $request->get_param('limit') : 0;
             $page = $request->get_param('page') ? $request->get_param('page') - 1 : 0;
-            $offset = (int)$request->get_param('page') * $limit;
+            $offset = (int) $request->get_param('page') * $limit;
             $orderby = $request->get_param('orderby') ? $request->get_param('orderby') : 'date';
             $order = $request->get_param('order') ? $request->get_param('order') : 'DESC';
 
@@ -654,13 +593,11 @@ class Clerk_Rest_Api extends WP_REST_Server
             }
 
             $this->logger->log('Successfully generated category JSON with ' . count($categories) . ' categories', ['error' => 'None']);
-
         } catch (Exception $e) {
 
             $this->logger->error('ERROR category_endpoint_callback', ['error' => $e->getMessage()]);
-
         }
-        header('User-Agent: ClerkExtensionBot WooCommerce/v' .get_bloginfo('version'). ' Clerk/v'.get_file_data(CLERK_PLUGIN_FILE, array('version'), 'plugin')[0]. ' PHP/v'.phpversion());
+        header('User-Agent: ClerkExtensionBot WooCommerce/v' . get_bloginfo('version') . ' Clerk/v' . get_file_data(CLERK_PLUGIN_FILE, array('version'), 'plugin')[0] . ' PHP/v' . phpversion());
         return $categories;
     }
 
@@ -671,8 +608,7 @@ class Clerk_Rest_Api extends WP_REST_Server
      *
      * @return array|WP_REST_Response
      */
-    public function order_endpoint_callback(WP_REST_Request $request)
-    {
+    public function order_endpoint_callback(WP_REST_Request $request) {
 
         try {
 
@@ -755,13 +691,11 @@ class Clerk_Rest_Api extends WP_REST_Server
             }
 
             $this->logger->log('Successfully generated order JSON with ' . count($order_array) . ' orders', ['error' => 'None']);
-
         } catch (Exception $e) {
 
             $this->logger->error('ERROR order_endpoint_callback', ['error' => $e->getMessage()]);
-
         }
-        header('User-Agent: ClerkExtensionBot WooCommerce/v' .get_bloginfo('version'). ' Clerk/v'.get_file_data(CLERK_PLUGIN_FILE, array('version'), 'plugin')[0]. ' PHP/v'.phpversion());
+        header('User-Agent: ClerkExtensionBot WooCommerce/v' . get_bloginfo('version') . ' Clerk/v' . get_file_data(CLERK_PLUGIN_FILE, array('version'), 'plugin')[0] . ' PHP/v' . phpversion());
         return $order_array;
     }
 
@@ -772,8 +706,7 @@ class Clerk_Rest_Api extends WP_REST_Server
      *
      * @return WP_REST_Response
      */
-    public function version_endpoint_callback(WP_REST_Request $request)
-    {
+    public function version_endpoint_callback(WP_REST_Request $request) {
 
         try {
 
@@ -781,28 +714,24 @@ class Clerk_Rest_Api extends WP_REST_Server
                 return $this->getUnathorizedResponse();
             }
 
-            $response =  new WP_REST_Response([
+            $response = new WP_REST_Response([
                 'platform' => 'WooCommerce',
                 'platform_version' => get_bloginfo('version'),
                 'clerk_version' => get_file_data(CLERK_PLUGIN_FILE, array('version'), 'plugin')[0],
                 'php_version' => phpversion()
             ]);
-            $response->header( 'User-Agent', 'ClerkExtensionBot WooCommerce/v' .get_bloginfo('version'). ' Clerk/v'.get_file_data(CLERK_PLUGIN_FILE, array('version'), 'plugin')[0]. ' PHP/v'.phpversion() );
+            $response->header('User-Agent', 'ClerkExtensionBot WooCommerce/v' . get_bloginfo('version') . ' Clerk/v' . get_file_data(CLERK_PLUGIN_FILE, array('version'), 'plugin')[0] . ' PHP/v' . phpversion());
 
             $this->logger->log('Successfully generated Version JSON', ['response' => $response]);
 
             return $response;
-
         } catch (Exception $e) {
 
             $this->logger->error('ERROR version_endpoint_callback', ['error' => $e->getMessage()]);
-
         }
-
     }
 
-    public function plugin_endpoint_callback(WP_REST_Request $request)
-    {
+    public function plugin_endpoint_callback(WP_REST_Request $request) {
 
         try {
 
@@ -814,19 +743,16 @@ class Clerk_Rest_Api extends WP_REST_Server
 
 
 
-            $response =  new WP_REST_Response($plugins);
-            $response->header( 'User-Agent', 'ClerkExtensionBot WooCommerce/v' .get_bloginfo('version'). ' Clerk/v'.get_file_data(CLERK_PLUGIN_FILE, array('version'), 'plugin')[0]. ' PHP/v'.phpversion() );
+            $response = new WP_REST_Response($plugins);
+            $response->header('User-Agent', 'ClerkExtensionBot WooCommerce/v' . get_bloginfo('version') . ' Clerk/v' . get_file_data(CLERK_PLUGIN_FILE, array('version'), 'plugin')[0] . ' PHP/v' . phpversion());
 
             $this->logger->log('Successfully generated Plugin JSON', ['response' => $response]);
 
             return $response;
-
         } catch (Exception $e) {
 
             $this->logger->error('ERROR plugin_endpoint_callback', ['error' => $e->getMessage()]);
-
         }
-
     }
 
 }
