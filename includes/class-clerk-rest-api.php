@@ -468,7 +468,11 @@ class Clerk_Rest_Api extends WP_REST_Server
                     }
 
                 }
-
+                if (is_plugin_active('newsletter/plugin.php')) {
+                    $statusquery = "SELECT status FROM " . $wpdb->prefix . "newsletter where wp_user_id ='" . $_customer['id'] . "'";
+                    $customer_status = $wpdb->get_var($statusquery);
+                    $_customer['subscribed'] = ($customer_status == 'C') ? TRUE : FALSE;
+                } 
                 $FinalCustomerArray[] = $_customer;
 
             }
