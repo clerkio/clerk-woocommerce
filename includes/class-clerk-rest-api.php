@@ -429,7 +429,7 @@ class Clerk_Rest_Api extends WP_REST_Server
 
         try {
 
-            if (!in_array('customer_sync_enabled', $options)) {
+            if (!$options['customer_sync_enabled']) {
                 return [];
             }
 
