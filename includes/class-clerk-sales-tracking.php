@@ -61,7 +61,13 @@ class Clerk_Sales_Tracking
                     data-sale="<?php echo $order_array['id']; ?>"
                     data-email="<?php echo $order_array['email']; ?>"
                     data-products='<?php echo json_encode($order_array['products']); ?>'>
-        </span>
+            </span>
+            <script type="text/javascript">
+            (function () {
+                var clerk_no_productids = [];
+                Clerk('cart', 'set', clerk_no_productids);
+            })();
+            </script>
             <?php
 
         } catch (Exception $e) {

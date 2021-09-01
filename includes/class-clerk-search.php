@@ -80,13 +80,23 @@ class Clerk_Search
 
             }
 
-            $Sorted_Attributes = [];
+           
+            /**
+             * Changed to use usort instead to fix sorting bug 22-07-2021 KKY
+             * 
+             * foreach ($Attributes as $key => $Sorted_Attribute) {
+             * 
+             *      $Sorted_Attributes[$Sorted_Attribute->position] = $Sorted_Attribute;
+             * 
+             * }
+             * 
+             */
+                
+            $Sorted_Attributes = $Attributes;
 
-            foreach ($Attributes as $key => $Sorted_Attribute) {
-
-                $Sorted_Attributes[$Sorted_Attribute->position] = $Sorted_Attribute;
-
-            }
+            usort($Sorted_Attributes, function($a, $b) {
+                return $a->position <=> $b->position;
+            });
 
             foreach ($Sorted_Attributes as $key => $Attribute) {
 
@@ -104,7 +114,7 @@ class Clerk_Search
 
                 }
             }
-
+           
         }
 
         $facets_attributes .= ']\'';
@@ -155,6 +165,7 @@ class Clerk_Search
             }
 
             ?>
+            </div>
             <div id="clerk-search-no-results" style="display: none; margin-left: 3em;"><h2><?php echo $options['search_no_results_text'] ?></h2></div>
 
             <script type="text/javascript">

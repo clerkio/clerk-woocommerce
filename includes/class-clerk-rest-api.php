@@ -349,15 +349,74 @@ class Clerk_Rest_Api extends WP_REST_Server
         $options = get_option('clerk_options');
 
         try {
-
+        
             if (!isset($options['include_pages'])) {
                 return [];
             }
+
 
             if (!$this->validateRequest($request)) {
                 return $this->getUnathorizedResponse();
             }
 
+            $pages = get_posts([
+            'post_type' => 'post',
+            'post_status' => 'publish',
+            'numberposts' => -1
+            ]);
+            $FinalPostArray = [];
+
+            foreach ($pages as $page) {
+
+                if (!empty($page->post_content)) {
+
+                    $page_additional_fields = explode(',',$options['page_additional_fields']);
+
+                    switch ($page->post_type) {
+
+                        case 'post':
+                            $Type = 'Blog Post';
+                            break;
+
+                        case 'page':
+                            $Type = 'CMS Page';
+                            break;
+
+                        default:
+                            $Type = 'CMS Page';
+
+                    }
+
+                    $page_draft = [
+                        'id' => $page->ID,
+                        'type' => strtolower($Type),
+                        'url' => $page->guid,
+                        'title' => $page->post_title,
+                        'text' => $page->post_content,
+                        'image' => get_the_post_thumbnail_url($page->ID)
+                    ];
+
+                    if (!$this->ValidatePage($page_draft)) {
+
+                        continue;
+
+                    }
+
+                    foreach ($page_additional_fields as $page_additional_field) {
+                        $page_additional_field = str_replace(' ','',$page_additional_field);
+                        if (!empty($page_additional_field)) {
+
+                            $page_draft[$page_additional_field] = $page->{$page_additional_field};
+
+                        }
+
+                    }
+
+                    $FinalPostArray[] = $page_draft;
+
+                }
+
+            }
             $pages = get_pages();
             $FinalPageArray = [];
 
@@ -387,7 +446,8 @@ class Clerk_Rest_Api extends WP_REST_Server
                         'type' => strtolower($Type),
                         'url' => $page->guid,
                         'title' => $page->post_title,
-                        'text' => $page->post_content
+                        'text' => $page->post_content,
+                        'image' => get_the_post_thumbnail_url($page->ID)
                     ];
 
                     if (!$this->ValidatePage($page_draft)) {
@@ -411,10 +471,10 @@ class Clerk_Rest_Api extends WP_REST_Server
                 }
 
             }
-
-            $this->logger->log('Successfully generated JSON with ' . count($FinalPageArray) . ' pages', ['error' => 'None']);
+            $FinalContentArray = array_merge($FinalPageArray, $FinalPostArray);
+            $this->logger->log('Successfully generated JSON with ' . count($FinalContentArray) . ' pages', ['error' => 'None']);
             header('User-Agent: ClerkExtensionBot WooCommerce/v' .get_bloginfo('version'). ' Clerk/v'.get_file_data(CLERK_PLUGIN_FILE, array('version'), 'plugin')[0]. ' PHP/v'.phpversion());
-            return $FinalPageArray;
+            return $FinalContentArray;
 
         } catch (Exception $e) {
 
@@ -486,9 +546,10 @@ class Clerk_Rest_Api extends WP_REST_Server
 
     public function ValidatePage($Page) {
 
+        $required_fields = ['title','text','type','id'];
         foreach ($Page as $key => $content) {
 
-            if (empty($content)) {
+            if (empty($content) && in_array($key, $required_fields) ) {
 
                 return false;
 

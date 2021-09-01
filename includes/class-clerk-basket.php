@@ -62,6 +62,7 @@ class Clerk_Basket {
                 }
             }
 
+
             if (count($_product_ids) > 0) {
 
                 if (!empty($email)) {
@@ -81,24 +82,8 @@ class Clerk_Basket {
                     wp_remote_request( $Endpoint, $args );                
 
                 } else {
-
-                    echo "<script type='text/javascript'>(function(){
-                                        (function(w,d){
-                                            var e=d.createElement('script');e.type='text/javascript';e.async=true;
-                                            e.src=(d.location.protocol=='https:'?'https':'http')+'://cdn.clerk.io/clerk.js';
-                                            var s=d.getElementsByTagName('script')[0];s.parentNode.insertBefore(e,s);
-                                            w.__clerk_q=w.__clerk_q||[];w.Clerk=w.Clerk|| function(){ w.__clerk_q.push(arguments) };
-                                        })(window,document);
-                                    })();
-
-                                    Clerk('config', {
-                                        key: '".$options['public_key']."',
-
-                                    });
-
-                                    Clerk('cart', 'set', [".implode(',', $_product_ids)."]);
-
-                                    </script>";
+                    
+                          
                 }
             }
 
