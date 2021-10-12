@@ -789,7 +789,7 @@ class Clerk_Rest_Api extends WP_REST_Server
 
                 $order_object = [
                     'products' => $order_items,
-                    'time' => strtotime($order->order_date),
+                    'time' => strtotime(gmdate('Y-m-d H:i:s', $order->get_date_created()->getOffsetTimestamp())),
                     'class' => get_class($order)
                 ];
 
