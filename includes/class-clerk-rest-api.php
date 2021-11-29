@@ -137,7 +137,7 @@ class Clerk_Rest_Api extends WP_REST_Server
         }
     }
 
-    /**
+ /**
      * Handle product endpoint
      *
      * @param WP_REST_Request $request
@@ -220,7 +220,9 @@ class Clerk_Rest_Api extends WP_REST_Server
                     $list_price = $regularPrice[$lowestDisplayPrice[0]]; // Get the corresponding list price (regular price)
 
                     if ($price === $list_price) $on_sale = false; // Remove the sale flag if the cheapest variant is not on sale
+
                 } else {
+
                     /**
                      * Default single product sync fields
                      */
@@ -295,21 +297,189 @@ class Clerk_Rest_Api extends WP_REST_Server
 
                     }
 
-                    if ($product->get_attribute($field)) {
+                    if ($product->get_attribute($field) || isset($product->$field)) {
+                        if(!isset( $productArray[$this->clerk_friendly_attributes($field)])){
+                            $productArray[$this->clerk_friendly_attributes($field)] = str_replace(' ','',explode(',',$product->get_attribute($field)));
+                        }
 
-                        $productArray[$this->clerk_friendly_attributes($field)] = str_replace(' ','',explode(',',$product->get_attribute($field)));
+                         // 21-10-2021 KKY - Additional Fields for Configurable and Grouped Products - additional fields
+
+                        if ($product->is_type('variable')) {
+                            $variations = $product->get_available_variations();
+                            $child_atributes = array();
+                            foreach ($variations as $v) {
+                                $collectinfo = "";
+                                $variation_obj = new WC_Product_variation($v['variation_id']);
+                                $atribute = str_replace(' ','',explode(',',$variation_obj->get_attribute($field)));
+
+                                if(is_array($atribute)){
+                                    $collectinfo = $atribute[0];
+                                }else{
+                                    $collectinfo = $atribute;
+                                }
+
+                                if($collectinfo == '' && isset($variation_obj->get_data()[$field])){
+                                    $collectinfo = $variation_obj->get_data()[$field];
+                                }
+
+                                $child_atributes[] = $collectinfo;
+                            }
+
+                            $productArray['child_'. $this->clerk_friendly_attributes($field) .'s'] = $child_atributes;
+                        }
+
+                        if ($product->is_type('grouped')) {
+                            $childproductids = $product->get_children();
+                            $child_atributes = array();
+                            foreach ($childproductids as $childID) {
+                                $collectinfo = "";
+                                $childproduct = wc_get_product($childID);
+                                $atribute = str_replace(' ','',explode(',',$childproduct->get_attribute($field)));
+
+                                if(is_array($atribute)){
+                                    $collectinfo = $atribute[0];
+                                }else{
+                                    $collectinfo = $atribute;
+                                }
+
+                                if($collectinfo == '' && isset($childproduct->$field)){
+                                    $collectinfo = $childproduct->$field;
+                                }
+
+                                $child_atributes[] = $collectinfo;
+                            }
+
+                            $productArray['child_'. $this->clerk_friendly_attributes($field) .'s'] = $child_atributes;
+                        }
+
+                        // 21-10-2021 KKY - Additional Fields for Configurable and Grouped Products - additional fields
 
                     }elseif (get_post_meta( $product->get_id(), $field, true )) {
 
                         $productArray[$this->clerk_friendly_attributes($field)] = get_post_meta( $product->get_id(), $field, true );
 
+                         // 21-10-2021 KKY - Additional Fields for Configurable and Grouped Products - additional fields
+
+                         if ($product->is_type('variable')) {
+                            $variations = $product->get_available_variations();
+                            $child_atributes = array();
+
+                            foreach ($variations as $v) {
+                                $collectinfo = "";
+                                $variation_obj = new WC_Product_variation($v['variation_id']);
+
+                                $atribute = get_post_meta( $variation_obj->get_id(), $field, true );
+
+                                if(is_array($atribute)){
+                                    $collectinfo = $atribute[0];
+                                }else{
+                                    $collectinfo = $atribute;
+                                }
+
+                                if($collectinfo == '' && isset($variation_obj->get_data()[$field])){
+                                    $collectinfo = $variation_obj->get_data()[$field];
+                                }
+
+                                $child_atributes[] = $collectinfo;
+
+                            }
+
+                            $productArray['child_'. $this->clerk_friendly_attributes($field) .'s'] = $child_atributes;
+                        }
+
+                        if ($product->is_type('grouped')) {
+                            $childproductids = $product->get_children();
+                            $child_atributes = array();
+
+                            foreach ($childproductids as $childID) {
+                                $collectinfo = "";
+                                $childproduct = wc_get_product($childID);
+                                $atribute = get_post_meta( $childproduct->get_id(), $field, true );
+
+                                if(is_array($atribute)){
+                                    $collectinfo = $atribute[0];
+                                }else{
+                                    $collectinfo = $atribute;
+                                }
+
+                                if($collectinfo == '' && isset($childproduct->$field)){
+                                    $collectinfo = $childproduct->$field;
+                                }
+
+                                $child_atributes[] = $collectinfo;
+
+                            }
+
+                            $productArray['child_'. $this->clerk_friendly_attributes($field) .'s'] = $child_atributes;
+                        }
+
+                        // 21-10-2021 KKY - Additional Fields for Configurable and Grouped Products - additional fields
+
                     }elseif (wp_get_post_terms( $product->get_id(), strtolower($field), array('fields'=> 'names'))) {
 
                         $attrubutefield = wp_get_post_terms( $product->get_id(), strtolower($field), array('fields'=> 'names'));
 
-                        if (!array_key_exists('errors', $attrubutefield )) {
+                        if (!property_exists($attrubutefield, 'errors')) {
 
                             $productArray[strtolower($this->clerk_friendly_attributes($field))] = $attrubutefield;
+
+                            // 21-10-2021 KKY - Additional Fields for Configurable and Grouped Products - additional fields
+
+                            if ($product->is_type('variable')) {
+                                $variations = $product->get_available_variations();
+                                $child_atributes = array();
+
+                                foreach ($variations as $v) {
+                                    $collectinfo = "";
+                                    $variation_obj = new WC_Product_variation($v['variation_id']);
+
+                                    $attrubutefield = wp_get_post_terms( $variation_obj->get_id(), strtolower($field), array('fields'=> 'names'));
+
+                                    if (!property_exists($attrubutefield , 'errors')) {
+
+                                        $atribute = $attrubutefield;
+
+                                        if(is_array($atribute)){
+                                            $collectinfo = $atribute[0];
+                                        }else{
+                                            $collectinfo = $atribute;
+                                        }
+
+                                        if($collectinfo == '' && isset($variation_obj->get_data()[$field])){
+                                            $collectinfo = $variation_obj->get_data()[$field];
+                                        }
+
+                                        $child_atributes[] = $collectinfo;
+
+                                    }
+                                }
+
+                                $productArray['child_'. strtolower($this->clerk_friendly_attributes($field)) .'s'] = $child_atributes;
+                            }
+
+                            if ($product->is_type('grouped')) {
+                                $childproductids = $product->get_children();
+                                $child_atributes = array();
+                                foreach ($childproductids as $childID) {
+                                    $collectinfo = "";
+                                    $childproduct = wc_get_product($childID);
+                                    $attrubutefield = wp_get_post_terms( $childproduct->get_id(), strtolower($field), array('fields'=> 'names'));
+                                    $atribute = $attrubutefield;
+
+                                    if(is_array($atribute)){
+                                        $collectinfo = $atribute[0];
+                                    }else{
+                                        $collectinfo = $atribute;
+                                    }
+
+                                    if($collectinfo == '' && isset($childproduct->$field)){
+                                        $collectinfo = $childproduct->$field;
+                                    }
+
+                                    $child_atributes[] = $collectinfo;
+                                }
+                                $productArray['child_'. strtolower($this->clerk_friendly_attributes($field)) .'s'] = $child_atributes;
+                            }
 
                         }
 
@@ -320,7 +490,6 @@ class Clerk_Rest_Api extends WP_REST_Server
                 $productArray = apply_filters('clerk_product_array', $productArray, $product);
 
                 $FinalProductsArray[] = $productArray;
-
 
             }
 
@@ -358,6 +527,50 @@ class Clerk_Rest_Api extends WP_REST_Server
                 return $this->getUnathorizedResponse();
             }
 
+            //Get all posts regardless of custom types, can be named anything from blog, post, weaboo, since people can create their own
+            //Same operations as for normal pages apply, fields are named the same
+            $pages = get_posts([
+            'post_status' => 'publish',
+            'numberposts' => -1
+            ]);
+            $FinalPostArray = [];
+
+            foreach ($pages as $page) {
+
+                if (!empty($page->post_content)) {
+
+                    $page_additional_fields = explode(',',$options['page_additional_fields']);
+
+                    //Changed type output to be a direct print since the page type is sometimes used by clients with custom types to categorise them in searches, etc. Useful to have in raw form.
+                    $page_draft = [
+                        'id' => $page->ID,
+                        'type' => $page->post_type,
+                        'url' => $page->guid,
+                        'title' => $page->post_title,
+                        'text' => $page->post_content
+                    ];
+
+                    if (!$this->ValidatePage($page_draft)) {
+
+                        continue;
+
+                    }
+
+                    foreach ($page_additional_fields as $page_additional_field) {
+                        $page_additional_field = str_replace(' ','',$page_additional_field);
+                        if (!empty($page_additional_field)) {
+
+                            $page_draft[$page_additional_field] = $page->{$page_additional_field};
+
+                        }
+
+                    }
+
+                    $FinalPostArray[] = $page_draft;
+
+                }
+
+            }
             $pages = get_pages();
             $FinalPageArray = [];
 
@@ -366,25 +579,10 @@ class Clerk_Rest_Api extends WP_REST_Server
                 if (!empty($page->post_content)) {
 
                     $page_additional_fields = explode(',',$options['page_additional_fields']);
-
-                    switch ($page->post_type) {
-
-                        case 'post':
-                            $Type = 'Blog Post';
-                            break;
-
-                        case 'page':
-                            $Type = 'CMS Page';
-                            break;
-
-                        default:
-                            $Type = 'CMS Page';
-
-                    }
-
+                    //Changed type output to be a direct print since the page type is sometimes used by clients with custom types to categorise them in searches, etc. Useful to have in raw form.
                     $page_draft = [
                         'id' => $page->ID,
-                        'type' => strtolower($Type),
+                        'type' => $page->post_type,
                         'url' => $page->guid,
                         'title' => $page->post_title,
                         'text' => $page->post_content
@@ -411,10 +609,11 @@ class Clerk_Rest_Api extends WP_REST_Server
                 }
 
             }
-
-            $this->logger->log('Successfully generated JSON with ' . count($FinalPageArray) . ' pages', ['error' => 'None']);
+            //Merge Pages and Posts into 1 array
+            $FinalContentArray = array_merge($FinalPageArray, $FinalPostArray);
+            $this->logger->log('Successfully generated JSON with ' . count($FinalContentArray) . ' pages', ['error' => 'None']);
             header('User-Agent: ClerkExtensionBot WooCommerce/v' .get_bloginfo('version'). ' Clerk/v'.get_file_data(CLERK_PLUGIN_FILE, array('version'), 'plugin')[0]. ' PHP/v'.phpversion());
-            return $FinalPageArray;
+            return $FinalContentArray;
 
         } catch (Exception $e) {
 
@@ -682,7 +881,7 @@ class Clerk_Rest_Api extends WP_REST_Server
 
             $options = get_option('clerk_options');
 
-            if ($options['disable_order_synchronization'] !== null && $options['disable_order_synchronization']) {
+            if (isset($options['disable_order_synchronization']) && $options['disable_order_synchronization'] !== null && $options['disable_order_synchronization']) {
                 return [];
             }
 

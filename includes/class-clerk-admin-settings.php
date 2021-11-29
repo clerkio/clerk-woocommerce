@@ -20,7 +20,7 @@ class Clerk_Admin_Settings
         $this->initHooks();
         require_once(__DIR__ . '/class-clerk-logger.php');
         $this->logger = new ClerkLogger();
-        $this->version = '3.5.3';
+        $this->version = '3.6.0';
 
         $this->InitializeSettings();
 
@@ -530,6 +530,51 @@ class Clerk_Admin_Settings
             ]
         );
 
+        add_settings_field('search_include_categories',
+            __('Include Categories', 'clerk'),
+            [$this, 'addCheckboxField'],
+            'clerk',
+            'clerk_section_search',
+            [
+                'label_for' => 'search_include_categories',
+                'checked' => 0
+            ]
+        );
+
+    
+
+        add_settings_field('search_categories',
+            __('Number of Categories', 'clerk'),
+            [$this, 'add1_10Dropdown'],
+            'clerk',
+            'clerk_section_search',
+            [
+                'label_for' => 'search_categories',
+                'default' => 5
+            ]
+        );
+
+        add_settings_field('search_pages',
+            __('Number of Pages', 'clerk'),
+            [$this, 'add1_10Dropdown'],
+            'clerk',
+            'clerk_section_search',
+            [
+                'label_for' => 'search_pages',
+                'default' => 5
+            ]
+        );
+
+        add_settings_field('search_pages_type',
+            __('Pages Type', 'clerk'),
+            [$this, 'addPagesTypeDropdown'],
+            'clerk',
+            'clerk_section_search',
+            [
+                'label_for' => 'search_pages_type',
+            ]
+        );
+
         add_settings_field('search_template',
             __('Content', 'clerk'),
             [$this, 'addTextField'],
@@ -710,6 +755,16 @@ class Clerk_Admin_Settings
             'clerk_faceted_navigation',
             [
                 'label_for' => 'faceted_navigation'
+            ]
+        );
+
+        add_settings_field('faceted_navigation_design',
+            __('Design', 'clerk'),
+            [$this, 'addTextField'],
+            'clerk',
+            'clerk_faceted_navigation',
+            [
+                'label_for' => 'faceted_navigation_design',
             ]
         );
 

@@ -67,6 +67,13 @@ class Clerk_Search
 
         if ($options['faceted_navigation_enabled'] !== null && $options['faceted_navigation_enabled']) {
 
+            $facets_design =  $options['faceted_navigation_design'];
+
+            $search_include_categories =  $options['search_include_categories'];
+            $search_categories =  $options['search_categories'];
+            $search_pages =  $options['search_pages'];
+            $search_pages_type =  $options['search_pages_type'];
+
             $_Attributes = json_decode($options['faceted_navigation']);
             $count = 0;
 
@@ -80,13 +87,23 @@ class Clerk_Search
 
             }
 
-            $Sorted_Attributes = [];
+           
+            /**
+             * Changed to use usort instead to fix sorting bug 22-07-2021 KKY
+             * 
+             * foreach ($Attributes as $key => $Sorted_Attribute) {
+             * 
+             *      $Sorted_Attributes[$Sorted_Attribute->position] = $Sorted_Attribute;
+             * 
+             * }
+             * 
+             */
+                
+            $Sorted_Attributes = $Attributes;
 
-            foreach ($Attributes as $key => $Sorted_Attribute) {
-
-                $Sorted_Attributes[$Sorted_Attribute->position] = $Sorted_Attribute;
-
-            }
+            usort($Sorted_Attributes, function($a, $b) {
+                return $a->position <=> $b->position;
+            });
 
             foreach ($Sorted_Attributes as $key => $Attribute) {
 
@@ -104,7 +121,7 @@ class Clerk_Search
 
                 }
             }
-
+           
         }
 
         $facets_attributes .= ']\'';
@@ -127,8 +144,17 @@ class Clerk_Search
                       echo 'data-facets-target="#clerk-search-filters"';
                       echo "data-facets-attributes='".$facets_attributes;
                       echo "data-facets-titles='".$facets_titles;
+                      echo "data-facets-design='".$facets_design ."'";
 
                   }
+
+                  if ($search_include_categories) {
+
+                    echo "data-search-categories='".$search_categories."'";
+                    echo "data-search-pages='".$search_pages."'";
+                    echo "data-search-pages-type='".$search_pages_type."'";
+
+                }
 
                   ?>
                   data-query="<?php echo esc_attr(get_query_var('searchterm')); ?>">
@@ -155,6 +181,7 @@ class Clerk_Search
             }
 
             ?>
+            </div>
             <div id="clerk-search-no-results" style="display: none; margin-left: 3em;"><h2><?php echo $options['search_no_results_text'] ?></h2></div>
 
             <script type="text/javascript">

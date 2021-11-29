@@ -29,6 +29,11 @@ Once signed up, simply login to your my.clerk.io backend, which will guide you t
 
 
 == Changelog ==
+= 3.6.0 - 2021-11-29 =
+* Added categories and pages to search page.
+* Added facets design.
+* Added group and configurable product data handling.
+
 = 3.5.3 - 2021-03-19 =
 * Fixed Collect Basket issue for some edge cases.
 
