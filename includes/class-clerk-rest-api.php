@@ -518,10 +518,11 @@ class Clerk_Rest_Api extends WP_REST_Server
         $options = get_option('clerk_options');
 
         try {
-
+        
             if (!isset($options['include_pages'])) {
                 return [];
             }
+
 
             if (!$this->validateRequest($request)) {
                 return $this->getUnathorizedResponse();
@@ -585,7 +586,8 @@ class Clerk_Rest_Api extends WP_REST_Server
                         'type' => $page->post_type,
                         'url' => $page->guid,
                         'title' => $page->post_title,
-                        'text' => $page->post_content
+                        'text' => $page->post_content,
+                        'image' => get_the_post_thumbnail_url($page->ID)
                     ];
 
                     if (!$this->ValidatePage($page_draft)) {
@@ -685,9 +687,10 @@ class Clerk_Rest_Api extends WP_REST_Server
 
     public function ValidatePage($Page) {
 
+        $required_fields = ['title','text','type','id'];
         foreach ($Page as $key => $content) {
 
-            if (empty($content)) {
+            if (empty($content) && in_array($key, $required_fields) ) {
 
                 return false;
 

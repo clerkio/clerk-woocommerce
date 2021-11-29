@@ -34,6 +34,10 @@ Once signed up, simply login to your my.clerk.io backend, which will guide you t
 * Added facets design.
 * Added group and configurable product data handling.
 
+= 3.5.4 - 2021-08-31 =
+* Improved Collect Basket functionality.
+* Fixed page endpoint.
+
 = 3.5.3 - 2021-03-19 =
 * Fixed Collect Basket issue for some edge cases.
 
