@@ -49,7 +49,7 @@ class Clerk_Sales_Tracking
 
             $order_array = [
                 'id' => $order_id,
-                'email' => $order->billing_email,
+                'email' => $order->get_billing_email(),
                 'products' => $products,
             ];
 
