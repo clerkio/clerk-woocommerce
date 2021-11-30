@@ -936,7 +936,7 @@ class Clerk_Rest_Api extends WP_REST_Server
 
                 //Include email if defined
                 if ($options['collect_emails'] !== null && $options['collect_emails']) {
-                    $order_object['email'] = $order->billing_email;
+                    $order_object['email'] = $order->get_billing_email();
                 }
 
                 //id is a protected property in 3.0
