@@ -175,6 +175,9 @@ class Clerk_Rest_Api extends WP_REST_Server
 
             foreach ($products->products as $product) {
 
+                // clearing stock_quantity
+                $stock_quantity = null;
+
                 //Check include out of stock products
                 if (!isset($options['outofstock_products'])) {
 
@@ -285,6 +288,10 @@ class Clerk_Rest_Api extends WP_REST_Server
                 }elseif (isset($stock_quantity)) {
 
                     $productArray['stock'] = $stock_quantity;
+
+                } else {
+
+                    $productArray['stock'] = $product->get_stock_quantity();
 
                 }
 

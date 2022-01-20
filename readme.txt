@@ -29,6 +29,9 @@ Once signed up, simply login to your my.clerk.io backend, which will guide you t
 
 
 == Changelog ==
+= 3.6.1 - 2022-01-20 =
+* Fixed wrong product stock bug.
+
 = 3.6.0 - 2021-11-29 =
 * Added categories and pages to search page.
 * Added facets design.
