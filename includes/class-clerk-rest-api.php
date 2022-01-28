@@ -300,6 +300,9 @@ class Clerk_Rest_Api extends WP_REST_Server
                         $productArray[$this->clerk_friendly_attributes($field)] = preg_replace('!\s+!', ' ',explode(',',$product->get_attribute($field)));
 
                     }elseif (get_post_meta( $product->get_id(), $field, true )) {
+                        if(is_numeric(get_post_meta($product->get_id(), $field, true)) && !empty(get_term(get_post_meta($product->get_id(), $field, true))->name)){  
+                            $productArray[$this->clerk_friendly_attributes($field)] =  get_term(get_post_meta($product->get_id(), $field, true))->name;
+                         }else
 
                         $productArray[$this->clerk_friendly_attributes($field)] = get_post_meta( $product->get_id(), $field, true );
 
