@@ -39,7 +39,9 @@ class ClerkLogger
 
         $this->options = get_option('clerk_options');
         $this->Platform = 'Wordpress';
-        $this->Key = $this->options['public_key'];
+        if( !empty($this->options) ) {
+            $this->Key = $this->options['public_key'];
+        }
         $this->Date = new DateTime();
         $this->Time = $this->Date->getTimestamp();
 

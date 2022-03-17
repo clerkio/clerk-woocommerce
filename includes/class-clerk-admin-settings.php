@@ -50,7 +50,7 @@ class Clerk_Admin_Settings
 
         $options = get_option('clerk_options');
 
-        if ($options['log_to'] !== false) {
+        if ( isset( $options['log_to'] ) && $options['log_to'] !== false) {
 
         } else {
 
@@ -60,7 +60,7 @@ class Clerk_Admin_Settings
             add_option($options, ['log_to' => 'my.clerk.io'], $deprecated, $autoload);
         }
 
-        if ($options['log_level'] !== false) {
+        if ( isset( $options['log_level'] ) && $options['log_level'] !== false) {
 
         } else {
 
@@ -975,7 +975,7 @@ class Clerk_Admin_Settings
             ]
         );
 
-        if ($options['log_level'] === 'Error + Warn + Debug Mode') {
+        if ( isset( $options['log_level'] ) && ($options['log_level'] === 'Error + Warn + Debug Mode')) {
 
             add_settings_field('log_warning',
                 __('', 'clerk'),
@@ -1045,12 +1045,18 @@ class Clerk_Admin_Settings
         $_continue = true;
         $offset = 0;
         $page = 0;
+        $public_key = '';
 
         $exclude_attributes = ['sku','list_price','description','url','image','type','id','name'];
         $DynamicAttributes = [];
+        $savedAttributes   = [];
+        $NewDynamicAttributes = [];
 
         $options = get_option('clerk_options');
-        $public_key = $options['public_key'];
+
+        if( !empty( $options['public_key'] )) {
+            $public_key = $options['public_key'];
+        }
 
         if (!empty(str_replace(' ','', $public_key))) {
 
@@ -1237,7 +1243,7 @@ class Clerk_Admin_Settings
 
                 }
 
-                if (count($savedAttributes) > 0) {
+                if (is_countable($savedAttributes)) {
 
                     $count = 0;
                     foreach ($savedAttributes as $Attribute) {
@@ -1265,7 +1271,7 @@ class Clerk_Admin_Settings
                     }
                 }
 
-                if (count($NewDynamicAttributes) > 0) {
+                if (is_countable($NewDynamicAttributes)) {
                     $count = 0;
                     foreach ($NewDynamicAttributes as $Attribute) {
 
@@ -1465,10 +1471,11 @@ class Clerk_Admin_Settings
 
         //Get settings value
         $options = get_option('clerk_options');
+        $labelFor = (!empty($options[$args['label_for']])) ? $options[$args['label_for']] : '';
         ?>
         <input type="checkbox" style="display:none;" id="<?php echo esc_attr($args['label_for']); ?>"
                name="clerk_options[<?php echo esc_attr($args['label_for']); ?>]"
-               value="1" <?php checked('1', $options[$args['label_for']]); ?>>
+               value="1" <?php checked('1', $labelFor); ?>>
         <?php
 
     }
@@ -1484,7 +1491,7 @@ class Clerk_Admin_Settings
                 name="clerk_options[<?php echo esc_attr($args['label_for']); ?>]">
             <?php foreach ($Types as $Type) : ?>
                 <option value="<?php echo $Type; ?>"
-                        <?php if ($options[$args['label_for']] === $Type) : ?>selected<?php endif; ?>><?php echo __($Type, 'clerk'); ?></option>
+                        <?php if (isset($options[$args['label_for']]) && ($options[$args['label_for']] === $Type)) : ?>selected<?php endif; ?>><?php echo __($Type, 'clerk'); ?></option>
             <?php endforeach; ?>
         </select>
         <?php
@@ -1502,7 +1509,7 @@ class Clerk_Admin_Settings
                 name="clerk_options[<?php echo esc_attr($args['label_for']); ?>]">
             <?php foreach ($Positions as $Position) : ?>
                 <option value="<?php echo $Position; ?>"
-                        <?php if ($options[$args['label_for']] === $Position) : ?>selected<?php endif; ?>><?php echo __($Position, 'clerk'); ?></option>
+                        <?php if (isset($options[$args['label_for']]) && ($options[$args['label_for']] === $Position)) : ?>selected<?php endif; ?>><?php echo __($Position, 'clerk'); ?></option>
             <?php endforeach; ?>
         </select>
         <?php
@@ -1520,7 +1527,7 @@ class Clerk_Admin_Settings
                 name="clerk_options[<?php echo esc_attr($args['label_for']); ?>]">
             <?php foreach ($Numbers as $Number) : ?>
                 <option value="<?php echo $Number; ?>"
-                        <?php if ($options[$args['label_for']] === $Number) : ?>selected<?php endif; ?>><?php echo __($Number, 'clerk'); ?></option>
+                        <?php if (isset($options[$args['label_for']]) && ($options[$args['label_for']] === $Number)) : ?>selected<?php endif; ?>><?php echo __($Number, 'clerk'); ?></option>
             <?php endforeach; ?>
         </select>
         <?php
@@ -1591,7 +1598,7 @@ class Clerk_Admin_Settings
                 name="clerk_options[<?php echo esc_attr($args['label_for']); ?>]">
             <?php foreach ($Langs as $Lang) : ?>
                 <option value="<?php echo $Lang['Value']; ?>"
-                        <?php if ($options[$args['label_for']] === $Lang['Value']) : ?>selected<?php endif; ?>><?php echo __($Lang['Label'], 'clerk'); ?></option>
+                        <?php if (isset($options[$args['label_for']]) && ($options[$args['label_for']] === $Lang['Value'])) : ?>selected<?php endif; ?>><?php echo __($Lang['Label'], 'clerk'); ?></option>
             <?php endforeach; ?>
         </select>
         <?php
@@ -1812,7 +1819,7 @@ class Clerk_Admin_Settings
         //Get settings value
         $options = get_option('clerk_options');
         wp_dropdown_pages([
-            'selected' => $options[$args['label_for']],
+            'selected' => (!empty($options[$args['label_for']])) ? $options[$args['label_for']] : '',
             'name' => sprintf('clerk_options[%s]', $args['label_for'])
         ]);
     }
@@ -1831,7 +1838,7 @@ class Clerk_Admin_Settings
                 name="clerk_options[<?php echo esc_attr($args['label_for']); ?>]">
             <?php foreach (array(Clerk_Powerstep::TYPE_PAGE, Clerk_Powerstep::TYPE_POPUP) as $type) : ?>
                 <option value="<?php echo $type; ?>"
-                        <?php if ($options['powerstep_type'] === $type) : ?>selected<?php endif; ?>><?php echo __($type, 'clerk'); ?></option>
+                        <?php if (isset($options['powerstep_type']) && ($options['powerstep_type'] === $type)) : ?>selected<?php endif; ?>><?php echo __($type, 'clerk'); ?></option>
             <?php endforeach; ?>
         </select>
         <?php
@@ -1851,7 +1858,7 @@ class Clerk_Admin_Settings
                 name="clerk_options[<?php echo esc_attr($args['label_for']); ?>]">
             <?php foreach (array('Error + Warn', 'Only Error', 'Error + Warn + Debug Mode') as $level) : ?>
                 <option value="<?php echo $level; ?>"
-                        <?php if ($options['log_level'] === $level) : ?>selected<?php endif; ?>><?php echo __($level, 'clerk'); ?></option>
+                        <?php if (isset($options['log_level']) && ($options['log_level'] === $level)) : ?>selected<?php endif; ?>><?php echo __($level, 'clerk'); ?></option>
             <?php endforeach; ?>
         </select>
         <?php
@@ -1874,7 +1881,7 @@ class Clerk_Admin_Settings
                 name="clerk_options[<?php echo esc_attr($args['label_for']); ?>]">
             <?php foreach (array('my.clerk.io') as $to) : ?>
                 <option value="<?php echo $to; ?>"
-                        <?php if ($options['log_to'] === $to) : ?>selected<?php endif; ?>><?php echo __($to, 'clerk'); ?></option>
+                        <?php if (isset($options['log_to']) && ($options['log_to'] === $to)) : ?>selected<?php endif; ?>><?php echo __($to, 'clerk'); ?></option>
             <?php endforeach; ?>
         </select>
         <?php
