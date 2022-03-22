@@ -311,7 +311,7 @@ class Clerk_Product_Sync {
 
                   }elseif (get_post_meta( $product->get_id(), $field, true )) {
 
-                      $productArray[$this->clerk_friendly_attributes($field)] = get_post_meta( $product->get_id(), $field, true );
+                      $productArray[str_replace('-','_',$this->clerk_friendly_attributes($field))] = get_post_meta( $product->get_id(), $field, true );
 
                        // 21-10-2021 KKY - Additional Fields for Configurable and Grouped Products - additional fields
 
