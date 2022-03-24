@@ -181,7 +181,7 @@ class Clerk_Rest_Api extends WP_REST_Server
                 //Check include out of stock products
                 if (!isset($options['outofstock_products'])) {
 
-                    if (!$product->stock_status === 'instock') {
+                    if (!$product->get_stock_status() === 'instock') {
 
                         continue;
 
@@ -953,8 +953,8 @@ class Clerk_Rest_Api extends WP_REST_Server
                     $order_object['id'] = $order->id;
                 }
 
-                if ($order->customer_id > 0) {
-                    $order_object['customer'] = $order->customer_id;
+                if ($order->get_customer_id() > 0) {
+                    $order_object['customer'] = $order->get_customer_id();
                 }
 
                 if ($valid) {
