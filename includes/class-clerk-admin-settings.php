@@ -1471,7 +1471,7 @@ class Clerk_Admin_Settings
 
         //Get settings value
         $options = get_option('clerk_options');
-        $labelFor = (!empty($options[$args['label_for']])) ? $options[$args['label_for']] : '';
+        $labelFor = (isset($options[$args['label_for']])) ? $options[$args['label_for']] : 0;
         ?>
         <input type="checkbox" style="display:none;" id="<?php echo esc_attr($args['label_for']); ?>"
                name="clerk_options[<?php echo esc_attr($args['label_for']); ?>]"
