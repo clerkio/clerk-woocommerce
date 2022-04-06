@@ -637,13 +637,16 @@ class Clerk_Rest_Api extends WP_REST_Server
 
         try {
 
-            if (!in_array('customer_sync_enabled', $options)) {
+            $continue = array_key_exists('customer_sync_enabled', $options);
+
+            if (!$continue) {
                 return [];
             }
 
             if (!$this->validateRequest($request)) {
                 return $this->getUnathorizedResponse();
             }
+            
             global $wpdb;
             $customer_ids = $wpdb->get_col("SELECT DISTINCT meta_value  FROM $wpdb->postmeta
              WHERE meta_key = '_customer_user' AND meta_value > 0");
