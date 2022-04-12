@@ -76,7 +76,7 @@ class Clerk_Widget_Content extends WP_Widget {
 		if ( $contents->status === 'ok' ) {
 			?>
             <p>
-                <label for="<?php echo $this->get_field_id( 'content' ); ?>"><?php echo __( 'Content', 'clerk' ); ?></label>
+                <label for="<?php echo $this->get_field_id( 'content' ); ?>"><?php echo esc_html__( 'Content', 'clerk' ); ?></label>
                 <select name="<?php echo $this->get_field_name( 'content' ); ?>"
                         id="<?php echo $this->get_field_id( 'content' ); ?>" onchange="clerkGetContent(this)">
                     <option value=""><?php _e( 'Select Content', 'clerk' ); ?></option>
@@ -90,7 +90,7 @@ class Clerk_Widget_Content extends WP_Widget {
                 </select>
             </p>
             <p <?php if ( $instance['category'] == 0 ) : ?>style="display:none;"<?php endif; ?> data-clerk-category>
-                <label for="<?php echo $this->get_field_id( 'category' ); ?>"><?php echo __( 'Category', 'clerk' ); ?></label>
+                <label for="<?php echo $this->get_field_id( 'category' ); ?>"><?php echo esc_html__( 'Category', 'clerk' ); ?></label>
 				<?php
 				echo wc_product_dropdown_categories( array(
 					'name'        => $this->get_field_name( 'category' ),
@@ -102,14 +102,14 @@ class Clerk_Widget_Content extends WP_Widget {
 				?>
             </p>
             <p <?php if ( $instance['product'] == 0 ) : ?>style="display:none;"<?php endif; ?> data-clerk-product>
-                <label for="<?php echo $this->get_field_id( 'product' ); ?>"><?php echo __( 'Product', 'clerk' ); ?></label>
+                <label for="<?php echo $this->get_field_id( 'product' ); ?>"><?php echo esc_html__( 'Product', 'clerk' ); ?></label>
 				<?php echo $this->getProductDropdown( $instance ); ?>
             </p>
 			<?php
 		} else {
 			?>
             <p>
-				<?php echo __( 'Failed to load content, please ensure that your api keys are correct.', 'clerk' ); ?>
+				<?php echo esc_html__( 'Failed to load content, please ensure that your api keys are correct.', 'clerk' ); ?>
             </p>
 			<?php
 		}
@@ -279,7 +279,7 @@ class Clerk_Widget_Content extends WP_Widget {
 	public function getProductDropdown( $instance ) {
 		$html = '<select name="' . $this->get_field_name( 'product' ) . '" id="' . $this->get_field_id( 'content' ) . '">';
 
-		$html .= '<option value="0">' . __( 'Select Product', 'clerk' ) . '</option>';
+		$html .= '<option value="0">' . esc_html__( 'Select Product', 'clerk' ) . '</option>';
 
 		$products = clerk_get_products( array(
 			'status' => array( 'publish' ),
