@@ -20,10 +20,10 @@ $checkout_url = $woocommerce->cart->get_checkout_url();
     </div>
     <div class="clerk_powerstep_clear actions">
         <button class="action powerstep-cart" onclick="location.href = '<?php echo esc_attr( $cart_url ) ?>';"
-                type="button" title="<?php echo __( 'Cart' ) ?>">
+                type="button" title="<?php echo __( 'Cart', 'clerk' ) ?>">
             <span><?php echo __( 'Cart', 'clerk' ) ?></span>
         </button>
-        <button class="action clerk_powerstep_button clerk-powerstep-close"><?php echo __( 'Continue Shopping' ); ?></button>
+        <button class="action clerk_powerstep_button clerk-powerstep-close"><?php echo __( 'Continue Shopping', 'clerk' ); ?></button>
     </div>
     <div class="clerk_powerstep_templates">
         <?php

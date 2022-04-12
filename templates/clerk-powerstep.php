@@ -19,12 +19,12 @@ $checkout_url = $woocommerce->cart->get_checkout_url();
     <div class="powerstep-actions">
         <br>
         <button class="action powerstep-cart" onclick="location.href = '<?php echo esc_attr( $cart_url ) ?>';"
-                type="button" title="<?php echo __( 'Cart' ) ?>">
+                type="button" title="<?php echo __( 'Cart', 'clerk' ) ?>">
             <span><?php echo __( 'Cart', 'clerk' ) ?></span>
         </button>
         <button class="action" onclick="location.href = '<?php echo esc_attr( $checkout_url ); ?>';" type="button"
-                title="<?php echo __( 'Proceed to Checkout' ); ?>">
-            <span><?php echo __( 'Proceed to Checkout' ); ?></span>
+                title="<?php echo __( 'Proceed to Checkout', 'clerk' ); ?>">
+            <span><?php echo __( 'Proceed to Checkout', 'clerk' ); ?></span>
         </button>
     </div>
 </div>
