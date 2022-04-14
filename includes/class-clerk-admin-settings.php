@@ -1719,7 +1719,7 @@ class Clerk_Admin_Settings
     public function addLoggerView()
     {
 
-        echo('<script type="text/javascript">' .
+        echo('<script>' .
             '(function () {' .
             '$.ajax({' .
             'url: "' . plugin_dir_url(__DIR__) . 'clerk_log.log", success: function (data) {' .

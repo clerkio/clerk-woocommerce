@@ -184,7 +184,7 @@ class Clerk_Search
             </div>
             <div id="clerk-search-no-results" style="display: none; margin-left: 3em;"><h2><?php echo $options['search_no_results_text'] ?></h2></div>
 
-            <script type="text/javascript">
+            <script>
                 var total_loaded = 0;
 
                 function _clerk_after_load_event(data) {

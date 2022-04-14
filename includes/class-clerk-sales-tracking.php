@@ -62,7 +62,7 @@ class Clerk_Sales_Tracking
                     data-email="<?php echo $order_array['email']; ?>"
                     data-products='<?php echo json_encode($order_array['products']); ?>'>
             </span>
-            <script type="text/javascript">
+            <script>
             (function () {
                 var clerk_no_productids = [];
                 Clerk('cart', 'set', clerk_no_productids);
