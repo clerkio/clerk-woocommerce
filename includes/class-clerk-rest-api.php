@@ -43,48 +43,56 @@ class Clerk_Rest_Api extends WP_REST_Server
         register_rest_route('clerk', '/product', [
             'methods' => 'GET',
             'callback' => [$this, 'product_endpoint_callback'],
+            'permission_callback' => '__return_true',
         ]);
 
         //Product endpoint
         register_rest_route('clerk', '/page', [
             'methods' => 'GET',
             'callback' => [$this, 'page_endpoint_callback'],
+            'permission_callback' => '__return_true',
         ]);
 
         //Category endpoint
         register_rest_route('clerk', '/category', [
             'methods' => 'GET',
             'callback' => [$this, 'category_endpoint_callback'],
+            'permission_callback' => '__return_true',
         ]);
 
         //Order endpoint
         register_rest_route('clerk', '/order', [
             'methods' => 'GET',
             'callback' => [$this, 'order_endpoint_callback'],
+            'permission_callback' => '__return_true',
         ]);
 
         //Customer endpoint
         register_rest_route('clerk', '/customer', [
             'methods' => 'GET',
             'callback' => [$this, 'customer_endpoint_callback'],
+            'permission_callback' => '__return_true',
         ]);
 
         //Version endpoint
         register_rest_route('clerk', '/version', [
             'methods' => 'GET',
             'callback' => [$this, 'version_endpoint_callback'],
+            'permission_callback' => '__return_true',
         ]);
 
         //Version endpoint
         register_rest_route('clerk', '/plugin', [
             'methods' => 'GET',
             'callback' => [$this, 'plugin_endpoint_callback'],
+            'permission_callback' => '__return_true',
         ]);
 
         //Log endpoint
         register_rest_route('clerk', '/log', [
             'methods' => 'GET',
             'callback' => [$this, 'log_endpoint_callback'],
+            'permission_callback' => '__return_true',
         ]);
     }
 
