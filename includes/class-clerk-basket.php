@@ -22,7 +22,7 @@ class Clerk_Basket {
 	private function initHooks() {
 
         $options = get_option('clerk_options');
-        if ( isset( $options['collect_baskets'] ) && !$options['collect_baskets'] ) {
+        if ( !isset($options['collect_baskets']) ) {
             return;
         }
 
