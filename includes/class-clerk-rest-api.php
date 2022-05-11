@@ -549,6 +549,9 @@ class Clerk_Rest_Api extends WP_REST_Server
             'post_status' => 'publish',
             'numberposts' => -1
             ]);
+
+            $pages = apply_filters( 'clerk_get_posts', $pages );
+            
             $FinalPostArray = [];
 
             foreach ($pages as $page) {
@@ -587,7 +590,8 @@ class Clerk_Rest_Api extends WP_REST_Server
                 }
 
             }
-            $pages = get_pages();
+            $pages = apply_filters( 'clerk_get_pages', get_pages() );
+
             $FinalPageArray = [];
 
             foreach ($pages as $page) {
@@ -621,7 +625,7 @@ class Clerk_Rest_Api extends WP_REST_Server
 
                     }
 
-                    $FinalPageArray[] = $page_draft;
+                    $FinalPageArray[] = apply_filters('clerk_page_array', $page_draft, $page);
 
                 }
 
@@ -688,7 +692,7 @@ class Clerk_Rest_Api extends WP_REST_Server
 
                 }
 
-                $FinalCustomerArray[] = $_customer;
+                $FinalCustomerArray[] = apply_filters('clerk_customer_array', $_customer, $customer_id);
 
             }
 
