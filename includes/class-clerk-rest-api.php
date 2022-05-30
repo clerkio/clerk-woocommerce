@@ -643,6 +643,169 @@ class Clerk_Rest_Api extends WP_REST_Server
         }
     }
 
+    public function getconfig_endpoint_callback(WP_REST_Request $request)
+    {
+        $options = get_option('clerk_options'); // Array
+        
+        try {
+
+            if (!$this->validateRequest($request)) {
+                return $this->getUnathorizedResponse();
+            }
+            
+            $settings = [];
+
+            foreach ($options as $key => $value) {
+
+                // Do not include public & private key
+                if($key != "public_key" and $key !="private_key") {
+
+                    $settings[$key] = $value;
+
+                }
+
+            }
+
+            $this->logger->log('Successfully generated category JSON with ' . count($settings) . ' settings', ['error' => 'None']);
+
+            header('User-Agent: ClerkExtensionBot WooCommerce/v' .get_bloginfo('version'). ' Clerk/v'.get_file_data(CLERK_PLUGIN_FILE, array('version'), 'plugin')[0]. ' PHP/v'.phpversion());
+            return $settings;
+
+        } catch (Exception $e) {
+
+            $this->logger->error('ERROR getconfig_endpoint_callback', ['error' => $e->getMessage()]);
+
+        }
+    }
+
+    public function setconfig_endpoint_callback(WP_REST_Request $request)
+    {
+        
+        $options = get_option('clerk_options'); // Array of all values of settings
+
+        try {
+            
+            if (!$this->validateRequest($request)) {
+                return $this->getUnathorizedResponse();
+            }
+
+            $body = $request->get_body(); // JSON blob string without public_key & private_key
+
+            $bodyArray = [];
+            $settings = [];
+            $updateArray = [];
+
+            // Array with all Clerk setttings attributes beside without public_key & private_key
+            $settingsArguments = ["lang", 
+                                  "import_url",
+                                  "customer_sync_enabled",
+                                  "customer_sync_customer_fields",
+                                  "realtime_updates",
+                                  "include_pages",
+                                  "page_additional_fields",
+                                  "outofstock_products",
+                                  "collect_emails",
+                                  "collect_baskets",
+                                  "additional_fields",
+                                  "search_enabled",
+                                  "search_page",
+                                  "search_include_categories",
+                                  "search_categories",
+                                  "search_pages",
+                                  "search_pages_type",
+                                  "search_template",
+                                  "search_no_results_text",
+                                  "search_load_more_button",
+                                  "livesearch_enabled",
+                                  "livesearch_include_categories",
+                                  "livesearch_suggestions",
+                                  "livesearch_pages",
+                                  "livesearch_pages_type",
+                                  "livesearch_dropdown_position",
+                                  "livesearch_field_selector",
+                                  "livesearch_form_selector",
+                                  "livesearch_template",
+                                  "faceted_navigation_enabled",
+                                  "faceted_navigation",
+                                  "powerstep_enabled",
+                                  "powerstep_type",
+                                  "powerstep_page",
+                                  "powerstep_templates",
+                                  "exit_intent_template",
+                                  "category_content",
+                                  "product_content",
+                                  "cart_enabled",
+                                  "cart_content",
+                                  "log_to",
+                                  "faceted_navigation_design",
+                                  "livesearch_categories",
+                                  "log_level"];
+
+            if($body) {
+
+                $bodyArray = json_decode($body, true); // Array of body request Raw input json data
+
+                // Check if the recent json decoded value is a JSON type
+                if (json_last_error() === JSON_ERROR_NONE) {
+
+                    // We will find the settings names that has not been send with the body request and add them to an array
+                    // so we can send the origin name values to the database as well
+
+                    $arrDiff = array_diff_key($options, $bodyArray); // Array: Compare the keys of two arrays, and return the differences           
+
+                    // Add the arguments not in the body to the settings array
+                    foreach ($arrDiff as $key => $value) {
+
+                        if($key != "public_key" and $key !="private_key") {
+
+                            $settings[$key] = $value;
+
+                        }
+
+                    }
+                    
+                    // Add the arguments from the request body data to the settings array
+                    foreach ($bodyArray as $key => $value) {
+
+                        // Check if attributes from body data is a Clerk setting attribute
+                        if (in_array($key, $settingsArguments)) {
+
+                            $settings[$key] = $value;
+
+                        }
+
+                    }
+
+                    // Final updated settings array
+                    $updateArray = $settings;
+
+                    // Add public_key & private_key before updating options
+                    $updateArray['public_key']  = $options['public_key'];
+                    $updateArray['private_key'] = $options['private_key'];
+
+                    // Update the database with the all new and old Clerk settings inclusive public_key & private_key
+                    update_option('clerk_options', $updateArray);
+
+                    $this->logger->log('Clerk options', ['' => '']);
+
+                }
+
+            }
+
+            $this->logger->log('Successfully generated category JSON with ' . count($settings) . ' settings', ['error' => 'None']);
+
+            header('User-Agent: ClerkExtensionBot WooCommerce/v' .get_bloginfo('version'). ' Clerk/v'.get_file_data(CLERK_PLUGIN_FILE, array('version'), 'plugin')[0]. ' PHP/v'.phpversion());
+           
+            // Return Clerk settings without public_key & private_key
+            return $settings;            
+
+        } catch (Exception $e) {
+
+            $this->logger->error('ERROR setconfig_endpoint_callback', ['error' => $e->getMessage()]);
+
+        }
+    }
+
     public function customer_endpoint_callback(WP_REST_Request $request)
     {
         $options = get_option('clerk_options');
