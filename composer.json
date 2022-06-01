@@ -1,0 +1,20 @@
+{
+  "name": "clerkio/woocommerce",
+  "description": "Clerk.io Turns More Browsers Into Buyers",
+  "version": "3.6.2",
+  "keywords": ["WordPress"],
+  "authors": [
+    {
+      "name": "Wissam Maarouf",
+      "email": "wim@clerk.io"
+    }
+  ],
+  "type": "wordpress-plugin",
+  "license":"GNU GPL",
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://wpackagist.org"
+    }
+  ]
+}
