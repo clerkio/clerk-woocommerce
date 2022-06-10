@@ -314,7 +314,7 @@ class Clerk_Rest_Api extends WP_REST_Server
 
                     if ($product->get_attribute($field) || isset($product->$field)) {
                         if(!isset( $productArray[$this->clerk_friendly_attributes($field)])){
-                            $productArray[$this->clerk_friendly_attributes($field)] = str_replace(' ','',explode(',',$product->get_attribute($field)));
+                            $productArray[str_replace('-','_',$this->clerk_friendly_attributes($field))] = str_replace(' ','',explode(',',$product->get_attribute($field)));
                         }
 
                          // 21-10-2021 KKY - Additional Fields for Configurable and Grouped Products - additional fields
@@ -364,7 +364,7 @@ class Clerk_Rest_Api extends WP_REST_Server
                                 $child_atributes[] = $collectinfo;
                             }
 
-                            $productArray['child_'. $this->clerk_friendly_attributes($field) .'s'] = $child_atributes;
+                            $productArray['child_'. str_replace('-','_',$this->clerk_friendly_attributes($field)) .'s'] = $child_atributes;
                         }
 
                         // 21-10-2021 KKY - Additional Fields for Configurable and Grouped Products - additional fields
@@ -399,7 +399,7 @@ class Clerk_Rest_Api extends WP_REST_Server
 
                             }
 
-                            $productArray['child_'. $this->clerk_friendly_attributes($field) .'s'] = $child_atributes;
+                            $productArray['child_'. str_replace('-','_',$this->clerk_friendly_attributes($field)) .'s'] = $child_atributes;
                         }
 
                         if ($product->is_type('grouped')) {
@@ -425,7 +425,7 @@ class Clerk_Rest_Api extends WP_REST_Server
 
                             }
 
-                            $productArray['child_'. $this->clerk_friendly_attributes($field) .'s'] = $child_atributes;
+                            $productArray['child_'. str_replace('-','_',$this->clerk_friendly_attributes($field)) .'s'] = $child_atributes;
                         }
 
                         // 21-10-2021 KKY - Additional Fields for Configurable and Grouped Products - additional fields
@@ -469,7 +469,7 @@ class Clerk_Rest_Api extends WP_REST_Server
                                     }
                                 }
 
-                                $productArray['child_'. strtolower($this->clerk_friendly_attributes($field)) .'s'] = $child_atributes;
+                                $productArray['child_'. strtolower(str_replace('-','_',$this->clerk_friendly_attributes($field))) .'s'] = $child_atributes;
                             }
 
                             if ($product->is_type('grouped')) {
@@ -493,7 +493,7 @@ class Clerk_Rest_Api extends WP_REST_Server
 
                                     $child_atributes[] = $collectinfo;
                                 }
-                                $productArray['child_'. strtolower($this->clerk_friendly_attributes($field)) .'s'] = $child_atributes;
+                                $productArray['child_'. strtolower(str_replace('-','_',$this->clerk_friendly_attributes($field))) .'s'] = $child_atributes;
                             }
 
                         }
