@@ -162,9 +162,8 @@ class Clerk_Search
             <?php
             if (count($Attributes) > 0) {
 
-                echo '<div style="display: flex;">';
-                echo  '<div style="width: 30%; margin-top: 75px;" id="clerk-search-filters"></div>';
-
+                echo '<div id="clerk-search-page-wrap" style="display: flex;">';
+                echo '<div id="clerk-search-filters"></div>';
 
             }
 
