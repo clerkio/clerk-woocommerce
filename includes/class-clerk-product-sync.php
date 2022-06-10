@@ -22,11 +22,11 @@ class Clerk_Product_Sync {
 	}
 
 	private function initHooks() {
-		add_action( 'save_post_product', [ $this, 'save_product' ], 10, 2 );
+		add_action( 'save_post', [ $this, 'save_product' ], 10, 3 );
 		add_action( 'before_delete_post', [ $this, 'remove_product' ] );
 	}
 
-	public function save_product( $post_id, $post ) {
+	public function save_product( $post_id, $post, $update ) {
 
         $options = get_option('clerk_options');
 
@@ -133,7 +133,6 @@ class Clerk_Product_Sync {
             if (!$options['realtime_updates'] == 1) {
                 return;
             }
-            $categories = wp_get_post_terms($product->get_id(), 'product_cat');
 
               /** @var WC_Product $product */
               $categories = wp_get_post_terms($product->get_id(), 'product_cat');
