@@ -36,20 +36,26 @@ class Clerk_Sales_Tracking
             $order = wc_get_order($order_id);
 
             $products = [];
-            $items = $order->get_items();
-
-            //Iterate products, adding to products array
-            foreach ($items as $item) {
+            $items = $order->get_items();            //Iterate products, adding to products array
+            foreach ($items as $item_id => $item) {
+                ## Option: Including or excluding Taxes
+                $inc_tax = true; 
+                ## Option: Round at item level (or not)
+                $round   = false; // Not rounded at item level ("true"  for rounding at item level)
+                $item_line_total     = $order->get_line_total( $item, $inc_tax, $round ); // Get line total - discounted
+                $item_quantity  = $item->get_quantity();
+                $product = $item->get_product();
+                $product_id = $product->get_id();
                 $products[] = [
-                    'id' => $item['product_id'],
-                    'quantity' => $item['qty'],
-                    'price' => $item['line_subtotal'] / $item['qty'],
+                    'id' => $product_id,
+                    'quantity' => $item_quantity,
+                    'price' => $item_line_total / $item_quantity,
                 ];
             }
 
             $order_array = [
                 'id' => $order_id,
-                'email' => $order->billing_email,
+                'email' => $order->get_billing_email(),
                 'products' => $products,
             ];
 
@@ -58,11 +64,11 @@ class Clerk_Sales_Tracking
             <span
                     class="clerk"
                     data-api="log/sale"
-                    data-sale="<?php echo $order_array['id']; ?>"
+                    data-sale="<?php echo $order_array['id']; ?>" 
                     data-email="<?php echo $order_array['email']; ?>"
                     data-products='<?php echo json_encode($order_array['products']); ?>'>
             </span>
-            <script>
+            <script type="text/javascript">
             (function () {
                 var clerk_no_productids = [];
                 Clerk('cart', 'set', clerk_no_productids);

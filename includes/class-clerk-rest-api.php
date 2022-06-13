@@ -185,6 +185,8 @@ class Clerk_Rest_Api extends WP_REST_Server
 
                 // clearing stock_quantity
                 $stock_quantity = null;
+                // set empty productArray
+                $productArray = array();
 
                 //Check include out of stock products
                 if (!isset($options['outofstock_products'])) {
@@ -207,16 +209,26 @@ class Clerk_Rest_Api extends WP_REST_Server
                      * Variable product sync fields
                      * Will sync the lowest price, and set the sale flag if that variant is on sale.
                      */
-
-                    $variation = $product->get_available_variations();
-                    $stock_quantity = 0;
+                    $productArray['variant_images'] = array();
+                    $productArray['variant_prices'] = array();
+                    $productArray['variant_skus'] = array();
+                    $productArray['variant_ids'] = array();
+                    $productArray['variant_names'] = array();
+                    $productArray['variant_stocks'] = array();
                     $displayPrice = array();
                     $regularPrice = array();
-                    foreach ($variation as $v) {
-                        $vId = $v['variation_id'];
-                        $displayPrice[$vId] = $v['display_price'];
-                        $regularPrice[$vId] = $v['display_regular_price'];
-                        $variation_obj = new WC_Product_variation($v['variation_id']);
+                    $stock_quantity = 0;
+
+                    $variations = $product->get_available_variations();
+
+                    foreach ($variations as $variation) {
+                        $variant_id = $variation['variation_id'];
+                        //print_r(implode(' ', array_filter(array_values($v['attributes']), 'clerk_filter_null_attributes')));
+
+                        $variant_name = array_values($variation['attributes'][0]);
+                        $displayPrice[$variant_id] = $variation['display_price'];
+                        $regularPrice[$variant_id] = $variation['display_regular_price'];
+                        $variation_obj = new WC_Product_variation($variation['variation_id']);
                         $stock_quantity += $variation_obj->get_stock_quantity();
                     }
 
@@ -518,6 +530,10 @@ class Clerk_Rest_Api extends WP_REST_Server
             $this->logger->error('ERROR product_endpoint_callback', ['error' => $e->getMessage()]);
 
         }
+    }
+
+    function clerk_filter_null_attributes($var){
+        return ($var !== NULL && $var !== FALSE && $var !== '');
     }
 
     function clerk_friendly_attributes($attribute) {
@@ -822,9 +838,14 @@ class Clerk_Rest_Api extends WP_REST_Server
                 return $this->getUnathorizedResponse();
             }
             
-            global $wpdb;
-            $customer_ids = $wpdb->get_col("SELECT DISTINCT meta_value  FROM $wpdb->postmeta
-             WHERE meta_key = '_customer_user' AND meta_value > 0");
+            $subscriber_query = new WP_User_Query( array( 'role' => 'Customer' ) );
+            $customer_query = new WP_User_Query( array( 'role' => 'Subscriber' ) );
+
+            //$user_query = new WP_User_Query( array( 'role__not_in' => 'Administrator' ) );
+            $subscribers = $subscriber_query->get_results();
+            $customers = $customer_query->get_results();
+
+            $users = array_merge($customers, $subscribers);
 
             $FinalCustomerArray = [];
 
@@ -838,18 +859,18 @@ class Clerk_Rest_Api extends WP_REST_Server
 
             }
 
-            foreach ($customer_ids as $customer_id) {
-                $customer = new WP_User($customer_id);
+            foreach ($users as $user) {
+
                 $_customer = [];
-                $_customer['name'] = $customer->data->display_name;
-                $_customer['id'] = $customer->data->ID;
-                $_customer['email'] = $customer->data->user_email;
+                $_customer['name'] = $user->data->display_name;
+                $_customer['id'] = $user->data->ID;
+                $_customer['email'] = $user->data->user_email;
 
                 foreach ($customer_additional_fields as $customer_additional_field) {
 
-                    if (isset($customer->data->{$customer_additional_field})) {
+                    if (isset($user->data->{$customer_additional_field})) {
 
-                        $_customer[$customer_additional_field] = $customer->data->{$customer_additional_field};
+                        $_customer[$customer_additional_field] = $user->data->{$customer_additional_field};
 
                     }
 
@@ -969,7 +990,7 @@ class Clerk_Rest_Api extends WP_REST_Server
 
             foreach ($fields as $key => $field) {
 
-                $fields[$key] = str_replace(' ','', $field);
+                $fields[$key] = str_replace(' ','_', $field);
 
             }
 

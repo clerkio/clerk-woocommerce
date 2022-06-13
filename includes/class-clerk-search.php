@@ -152,8 +152,9 @@ class Clerk_Search
 
                     echo "data-search-categories='".$search_categories."'";
                     echo "data-search-pages='".$search_pages."'";
-                    echo "data-search-pages-type='".$search_pages_type."'";
-
+                    if($search_pages_type != 'All'){
+                        echo "data-search-pages-type='".$search_pages_type."'";
+                    }
                 }
 
                   ?>

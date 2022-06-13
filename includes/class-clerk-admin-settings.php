@@ -469,7 +469,16 @@ class Clerk_Admin_Settings
                 'checked' => 1
             ]
         );
-
+        add_settings_field('collect_emails_signup_message',
+            __('Collect Emails Signup Message', 'clerk'),
+            [$this, 'addTextField'],
+            'clerk',
+            'clerk_section_datasync',
+            [
+                'label_for' => 'collect_emails_signup_message',
+                'description' => 'Message for confirming email signup from Checkout Page'
+            ]
+        );
         add_settings_field('collect_baskets',
             __('Collect Baskets', 'clerk'),
             [$this, 'addCheckboxField'],

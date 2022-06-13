@@ -23,6 +23,10 @@ class Clerk_Visitor_Tracking {
         add_action( 'wp_ajax_nopriv_get_cart', [ $this, 'get_cart'] );
         add_action( 'wp_ajax_get_cart', [ $this, 'get_cart'] );
 
+        $options = get_option('clerk_options');
+        if (array_key_exists('collect_emails', $options) ) {
+            add_action( 'woocommerce_review_order_before_submit', [$this, 'clerk_woocommerce_review_order_before_submit'], 99);
+        }
     }
 
     /**
@@ -107,8 +111,7 @@ class Clerk_Visitor_Tracking {
                         <?php
 
                         if ( isset( $options['livesearch_pages_type'] ) && $options['livesearch_pages_type'] != 'All') :
-
-                            ?>
+                        ?>
                             data-instant-search-pages-type="<?php echo $options['livesearch_pages_type']; ?>"
                         <?php
                         endif;
@@ -287,6 +290,48 @@ class Clerk_Visitor_Tracking {
         }
 
     }
+
+    /**
+     * Add checkbox to subscribe to newsletter
+     */
+    public function clerk_woocommerce_review_order_before_submit()
+    {
+
+        try {
+        $signup_msg = 'Subscribe to our newsletter to receive the latest news and updates!';  
+        $options = get_option('clerk_options');
+        if (array_key_exists('collect_emails_signup_message', $options) ) {
+            $signup_msg = $options['collect_emails_signup_message'];
+        }
+	?>
+		<p class="form-row validate-optional">
+		   <label class="woocommerce-form__label woocommerce-form__label-for-checkbox checkbox">
+		   <input type="checkbox" class="woocommerce-form__input woocommerce-form__input-checkbox input-checkbox" onclick="subscribeClient();" name="subscribe" id="subscribe">
+		   <span class="woocommerce-terms-and-conditions-checkbox-text"><?php echo $signup_msg; ?></span>
+		   </label>
+		</p>
+		<script>
+			function subscribeClient(){
+				let email_input = document.getElementById('billing_email').value;
+				document.getElementById('place_order').addEventListener('click', function(){
+					if(email_input.length > 0){
+						Clerk("call","subscriber/subscribe", {
+						   email: email_input
+						});
+					}
+				});
+			}
+		</script>
+	<?php
+
+        } catch (Exception $e) {
+
+            $this->logger->error('ERROR clerk_woocommerce_archive_description', ['error' => $e->getMessage()]);
+
+        }
+
+    }
+
     /**
      * admin endpiont to get cart contens using ajax
      *
