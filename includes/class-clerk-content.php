@@ -10,7 +10,7 @@ class Clerk_Content
     public function __construct()
     {
         add_action('woocommerce_archive_description', [$this, 'clerk_woocommerce_archive_description'], 99);
-        add_action('woocommerce_after_cart_table', [$this, 'clerk_woocommerce_after_cart_table'], 99);
+        add_action('woocommerce_after_cart', [$this, 'clerk_woocommerce_after_cart_table'], 99);
         add_filter('wc_get_template', [$this, 'clerk_wc_get_template'], 99, 2);
         require_once(__DIR__ . '/class-clerk-logger.php');
         $this->logger = new ClerkLogger();
@@ -30,15 +30,23 @@ class Clerk_Content
             if (isset($options['category_enabled']) && $options['category_enabled']) :
                 
                 $templates = explode(',',$options['category_content']);
-
+                $index = 0;
+                $class_string = 'clerk_';
+                $filter_string = '';
+                $unique_filter = (isset($options['category_excl_duplicates']) && $options['category_excl_duplicates']) ? true : false;
                 foreach ($templates as $template) {
 
                     ?>
-
-                    <span class="clerk" data-template="@<?php echo str_replace(' ', '', $template); ?>"
-                          data-category="<?php echo $category->term_id; ?>"></span>
-                          
+                    <span class="clerk <?php if($unique_filter){ echo $class_string.(string)$index; } ?>"
+                        <?php if($index > 0 && $unique_filter){ echo 'data-exclude-from="'.$filter_string.'"'; }?>
+                        data-template="@<?php echo str_replace(' ', '', $template); ?>"
+                        data-category="<?php echo $category->term_id; ?>"></span> 
                     <?php
+                    if($index > 0){
+                        $filter_string .= ', ';
+                    }
+                    $filter_string .= '.'.$class_string.(string)$index;
+                    $index++;
                 }
             endif;
 
@@ -71,15 +79,25 @@ class Clerk_Content
             if (isset($options['cart_enabled']) && $options['cart_enabled']) {
 
                 $templates = explode(',',$options['cart_content']);
-
+                $index = 0;
+                $class_string = 'clerk_';
+                $filter_string = '';
+                $unique_filter = (isset($options['cart_excl_duplicates']) && $options['cart_excl_duplicates']) ? true : false;
+        
                 foreach ($templates as $template) {
 
                     ?>
-                    <span class="clerk" data-template="@<?php echo str_replace(' ', '', $template); ?>"
-                          data-products="<?php echo json_encode($products); ?>">
+                    <span class="clerk <?php if($unique_filter){ echo $class_string.(string)$index; } ?>"
+                        <?php if($index > 0 && $unique_filter){ echo 'data-exclude-from="'.$filter_string.'"'; }?>
+                        data-template="@<?php echo str_replace(' ', '', $template); ?>"
+                        data-products="<?php echo json_encode($products); ?>">
                     </span>
                     <?php
-
+                    if($index > 0){
+                        $filter_string .= ', ';
+                    }
+                    $filter_string .= '.'.$class_string.(string)$index;
+                    $index++;
                 }
 
             }

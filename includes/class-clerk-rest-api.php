@@ -301,13 +301,13 @@ class Clerk_Rest_Api extends WP_REST_Server
                     continue;
 
                 }
-
+                $image_size_setting = isset($options['data_sync_image_size']) ? $options['data_sync_image_size'] : 'medium';
                 $productArray['id'] = $product->get_id();
                 $productArray['name'] = $product->get_name();
                 $productArray['description'] = get_post_field('post_content', $product->get_id());
                 $productArray['price'] = (float)$price;
                 $productArray['list_price'] = (float)$list_price;
-                $productArray['image'] = wp_get_attachment_image_src($product->get_image_id(),'medium')[0];
+                $productArray['image'] = wp_get_attachment_image_src($product->get_image_id(), $image_size_setting)[0];
                 $productArray['url'] = $product->get_permalink();
                 $productArray['categories'] = wp_list_pluck($categories, 'term_id');
                 $productArray['sku'] = $product->get_sku();

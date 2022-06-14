@@ -144,17 +144,44 @@ class Clerk_Product_Sync {
                    * Variable product sync fields
                    * Will sync the lowest price, and set the sale flag if that variant is on sale.
                    */
-
+                  $productArray['variant_images'] = array();
+                  $productArray['variant_prices'] = array();
+                  $productArray['variant_list_prices'] = array();
+                  $productArray['variant_skus'] = array();
+                  $productArray['variant_ids'] = array();
+                  $productArray['variant_options'] = array();
+                  $productArray['variant_stocks'] = array();
                   $variation = $product->get_available_variations();
                   $stock_quantity = 0;
                   $displayPrice = array();
                   $regularPrice = array();
                   foreach ($variation as $v) {
-                      $vId = $v['variation_id'];
-                      $displayPrice[$vId] = $v['display_price'];
-                      $regularPrice[$vId] = $v['display_regular_price'];
-                      $variation_obj = new WC_Product_variation($v['variation_id']);
-                      $stock_quantity += $variation_obj->get_stock_quantity();
+                        $variant_id = $variation['variation_id'];
+                        $is_available = ($variation['is_in_stock'] && $variation['is_purchasable']) || ($variation['backorders_allowed'] && $variation['is_purchasable']) ? true : false;
+
+                        if(!$is_available){
+                            continue;
+                        }
+
+                        $variation_obj = new WC_Product_variation($variation['variation_id']);
+                        $stock_quantity += $variation_obj->get_stock_quantity();
+
+                        $options_array = array_values($variation['attributes']);
+                        $options_array = array_filter($options_array, function($var){
+                            return (gettype($var) != 'boolean' && $var != NULL && $var != '' && $var != 'Yes' && $var != 'No');
+                        });
+                        $options_string = implode(' ', $options_array);
+
+                        $productArray['variant_options'][] = $options_string;
+                        $productArray['variant_images'][] = $variation['image']['url'];
+                        $productArray['variant_skus'][] = $variation['sku'];
+                        $productArray['variant_ids'][] = $variation['variation_id'];
+                        $productArray['variant_stocks'][] = ($variation_obj->get_stock_quantity() != null) ? $variation_obj->get_stock_quantity() : 777;
+                        $productArray['variant_prices'][] = $variation['display_price'];
+                        $productArray['variant_list_prices'][] = $variation['display_regular_price'];
+
+                        $displayPrice[$variant_id] = $variation['display_price'];
+                        $regularPrice[$variant_id] = $variation['display_regular_price'];
                   }
 
                   if (empty($displayPrice)) {
@@ -198,22 +225,19 @@ class Clerk_Product_Sync {
                 return;
 
               }
-
-              $productArray = [
-                  'id' => $product->get_id(),
-                  'name' => $product->get_name(),
-                  'description' => get_post_field('post_content', $product->get_id()),
-                  'price' => (float)$price,
-                  'list_price' => (float)$list_price,
-                  'image' => wp_get_attachment_image_src($product->get_image_id(),'medium')[0],
-                  'url' => $product->get_permalink(),
-                  'categories' => wp_list_pluck($categories, 'term_id'),
-                  'sku' => $product->get_sku(),
-                  'on_sale' => $on_sale,
-                  'type' => $product->get_type(),
-                  'created_at' => strtotime($product->get_date_created())
-              ];
-
+              $image_size_setting = isset($options['data_sync_image_size']) ? $options['data_sync_image_size'] : 'medium';
+              $productArray['id'] = $product->get_id();
+              $productArray['name'] = $product->get_name();
+              $productArray['description'] = get_post_field('post_content', $product->get_id());
+              $productArray['price'] = (float)$price;
+              $productArray['list_price'] = (float)$list_price;
+              $productArray['image'] = wp_get_attachment_image_src($product->get_image_id(),'medium')[0];
+              $productArray['url'] = $product->get_permalink();
+              $productArray['categories'] = wp_list_pluck($categories, 'term_id');
+              $productArray['sku'] = $product->get_sku();
+              $productArray['on_sale'] = $on_sale;
+              $productArray['type'] = $product->get_type();
+              $productArray['created_at'] = strtotime($product->get_date_created());
               $productArray['all_images'] = [];
 
               foreach (get_intermediate_image_sizes() as $key => $image_size) {
@@ -228,7 +252,7 @@ class Clerk_Product_Sync {
 
               if (!empty($product->get_stock_quantity())) {
 
-                  $productArray['stock'] = $product->get_stock_quantity();
+                  $productArray['stock'] = ($product->get_stock_quantity() != null) ? $product->get_stock_quantity() : 777;
 
               }elseif (isset($stock_quantity)) {
 

@@ -27,33 +27,25 @@ $checkout_url = $woocommerce->cart->get_checkout_url();
     </div>
     <div class="clerk_powerstep_templates">
         <?php
-        $Issetdataexclude = false;
-        $dataexcludestring = '';
-        $count = 0;
+        $index = 0;
+        $class_string = 'clerk_powerstep_';
+        $filter_string = '';
+        $unique_filter = (isset($options['powerstep_excl_duplicates']) && $options['powerstep_excl_duplicates']) ? true : false;
+
         foreach ( get_powerstep_templates() as $template ) :
-            $count++;
-            $id = 'clerk_'.time().$count;
             ?>
-            <span class="clerk"
-                  id="<?php echo $id ?>"
-              <?php if($Issetdataexclude) {
-                  echo 'data-exclude-from="'.$dataexcludestring.'"';
-              } ?>
-              data-template="@<?php echo esc_attr( $template ); ?>"
-                  data-products="[<?php echo esc_attr( $product->get_id() ); ?>]"
-                  data-category="<?php echo esc_attr( reset( $product->get_category_ids() ) ); ?>"
+            <span class="clerk <?php if($unique_filter){ echo $class_string.(string)$index; } ?>"
+                    <?php if($index > 0 && $unique_filter){ echo 'data-exclude-from="'.$filter_string.'"'; }?>
+                    data-template="@<?php echo esc_attr( $template ); ?>"
+                    data-products="[<?php echo esc_attr( $product->get_id() ); ?>]"
+                    data-category="<?php echo esc_attr( reset( $product->get_category_ids() ) ); ?>"
             ></span>
             <?php
-            if ($count == 1) {
-
-                $dataexcludestring .= '#'.$id.':limit(4)';
-
-            }else {
-
-                $dataexcludestring .= ',#'.$id.':limit(4)';
-
+            if($index > 0){
+                $filter_string .= ', ';
             }
-            $Issetdataexclude = true;
+            $filter_string .= '.'.$class_string.(string)$index;
+            $index++;
         endforeach; ?>
     </div>
     <style>

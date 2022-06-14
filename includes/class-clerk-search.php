@@ -71,6 +71,7 @@ class Clerk_Search
 
             $search_include_categories =  $options['search_include_categories'];
             $search_categories =  $options['search_categories'];
+            $search_include_pages = $options['search_include_pages'];
             $search_pages =  $options['search_pages'];
             $search_pages_type =  $options['search_pages_type'];
 
@@ -148,15 +149,15 @@ class Clerk_Search
 
                   }
 
-                  if ($search_include_categories) {
-
+                if (isset($search_include_categories) && $search_include_categories) {
                     echo "data-search-categories='".$search_categories."'";
+                }
+                if (isset($search_include_pages) && $search_include_pages) {
                     echo "data-search-pages='".$search_pages."'";
                     if($search_pages_type != 'All'){
                         echo "data-search-pages-type='".$search_pages_type."'";
                     }
                 }
-
                   ?>
                   data-query="<?php echo esc_attr(get_query_var('searchterm')); ?>">
 		    </span>
