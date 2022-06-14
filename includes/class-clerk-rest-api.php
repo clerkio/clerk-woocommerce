@@ -145,6 +145,14 @@ class Clerk_Rest_Api extends WP_REST_Server
         }
     }
 
+/**
+ * Filter out invalid Variant Option Values
+ */
+
+    function clerk_filter_null_attributes($var){
+        return ($var !== NULL && $var !== FALSE && $var !== '');
+    }
+
  /**
      * Handle product endpoint
      *
@@ -213,7 +221,7 @@ class Clerk_Rest_Api extends WP_REST_Server
                     $productArray['variant_prices'] = array();
                     $productArray['variant_skus'] = array();
                     $productArray['variant_ids'] = array();
-                    $productArray['variant_names'] = array();
+                    $productArray['variant_options'] = array();
                     $productArray['variant_stocks'] = array();
                     $displayPrice = array();
                     $regularPrice = array();
@@ -223,9 +231,10 @@ class Clerk_Rest_Api extends WP_REST_Server
 
                     foreach ($variations as $variation) {
                         $variant_id = $variation['variation_id'];
-                        //print_r(implode(' ', array_filter(array_values($v['attributes']), 'clerk_filter_null_attributes')));
-
-                        $variant_name = array_values($variation['attributes'][0]);
+                        $options_array = array_values($variation['attributes']);
+                        $options_array = array_filter($options_array, array($this, 'clerk_filter_null_attributes'));
+                        $options_string = implode(' ', $options_array);
+                        $productArray['variant_options'][] = $options_string;
                         $displayPrice[$variant_id] = $variation['display_price'];
                         $regularPrice[$variant_id] = $variation['display_regular_price'];
                         $variation_obj = new WC_Product_variation($variation['variation_id']);
@@ -530,10 +539,6 @@ class Clerk_Rest_Api extends WP_REST_Server
             $this->logger->error('ERROR product_endpoint_callback', ['error' => $e->getMessage()]);
 
         }
-    }
-
-    function clerk_filter_null_attributes($var){
-        return ($var !== NULL && $var !== FALSE && $var !== '');
     }
 
     function clerk_friendly_attributes($attribute) {
