@@ -1626,15 +1626,16 @@ class Clerk_Admin_Settings
                 #wpbody {
                     background-color: #DEDEDE;
                     padding-left: 1rem;
-                    border-left: 1px solid #444;
+                    border-left: 1px solid #1d2327;
                 }
 
                 #wpbody form {
                     background-color: #eee;
-                    padding: 1rem;
-                    border: 1px solid #444;
+                    padding: 0rem 1rem 1rem 1rem;
+                    border: 1px solid #1d2327;
                     border-radius: 5px;
                     margin-top: 1rem;
+                    box-shadow: 0 3px 3px rgba(0,0,0,0.2);
                 }
                 #wpbody label {
                     cursor: default;
@@ -1646,6 +1647,13 @@ class Clerk_Admin_Settings
                     width: -webkit-fill-available;  /* Mozilla-based browsers will ignore this. */
                     width: fill-available;
                     max-width: clamp(300px, 50%, 100%);
+                }
+
+                #wpbody h2 {
+                    background: #1d2327;
+                    padding: 1rem;
+                    margin: 0 -1rem;
+                    color: white;
                 }
 
                 #clerkFloatingSaveBtn {
