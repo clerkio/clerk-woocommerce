@@ -160,14 +160,26 @@ class Clerk_Visitor_Tracking {
                 <span
                         class="clerk"
                         data-template="@<?php echo esc_attr( strtolower( str_replace( ' ', '-', $options['livesearch_template'] ) ) ); ?>"
-                        data-instant-search-suggestions="<?php echo $options['livesearch_suggestions']; ?>"
-                        data-instant-search-categories="<?php echo $options['livesearch_categories']; ?>"
-                        data-instant-search-pages="<?php echo $options['livesearch_pages']; ?>"
+                        <?php
+                        if ( isset( $options['livesearch_suggestions'] ) && isset( $options['livesearch_include_suggestions'])) :
+                            ?>
+                                data-instant-search-suggestions="<?php echo $options['livesearch_suggestions']; ?>"
+                            <?php
+                        endif;
+                        if ( isset( $options['livesearch_categories'] ) && isset( $options['livesearch_include_categories'])) :
+                            ?>
+                                data-instant-search-categories="<?php echo $options['livesearch_categories']; ?>"
+                            <?php
+                        endif;
+                        ?>
                         data-instant-search-positioning="<?php echo strtolower($options['livesearch_dropdown_position']); ?>"
                         <?php
-
-                        if ( isset( $options['livesearch_pages_type'] ) && $options['livesearch_pages_type'] != 'All') :
-
+                        if ( isset( $options['livesearch_pages'] ) && isset( $options['livesearch_include_pages'])) :
+                        ?>
+                            data-instant-search-pages="<?php echo $options['livesearch_pages']; ?>"
+                        <?php
+                        endif;
+                        if ( isset( $options['livesearch_pages_type'] ) && $options['livesearch_pages_type'] != 'All' && isset( $options['livesearch_include_pages'])) :
                             ?>
                             data-instant-search-pages-type="<?php echo $options['livesearch_pages_type']; ?>"
                         <?php

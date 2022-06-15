@@ -651,13 +651,13 @@ class Clerk_Admin_Settings
             ]
         );
 
-        add_settings_field('livesearch_include_categories',
-            __('Include Categories', 'clerk'),
+        add_settings_field('livesearch_include_suggestions',
+            __('Include Suggestions', 'clerk'),
             [$this, 'addCheckboxField'],
             'clerk',
             'clerk_section_livesearch',
             [
-                'label_for' => 'livesearch_include_categories',
+                'label_for' => 'livesearch_include_suggestions',
                 'checked' => 0
             ]
         );
@@ -673,6 +673,17 @@ class Clerk_Admin_Settings
             ]
         );
 
+        add_settings_field('livesearch_include_categories',
+            __('Include Categories', 'clerk'),
+            [$this, 'addCheckboxField'],
+            'clerk',
+            'clerk_section_livesearch',
+            [
+                'label_for' => 'livesearch_include_categories',
+                'checked' => 0
+            ]
+        );
+
         add_settings_field('livesearch_categories',
             __('Number of Categories', 'clerk'),
             [$this, 'add1_10Dropdown'],
@@ -681,6 +692,17 @@ class Clerk_Admin_Settings
             [
                 'label_for' => 'livesearch_categories',
                 'default' => 5
+            ]
+        );
+
+        add_settings_field('livesearch_include_pages',
+            __('Include Pages', 'clerk'),
+            [$this, 'addCheckboxField'],
+            'clerk',
+            'clerk_section_livesearch',
+            [
+                'label_for' => 'livesearch_include_pages',
+                'checked' => 0
             ]
         );
 
