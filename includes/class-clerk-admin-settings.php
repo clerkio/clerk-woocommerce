@@ -20,7 +20,7 @@ class Clerk_Admin_Settings
         $this->initHooks();
         require_once(__DIR__ . '/class-clerk-logger.php');
         $this->logger = new ClerkLogger();
-        $this->version = '3.6.1';
+        $this->version = '3.6.2';
 
         $this->InitializeSettings();
 
@@ -469,7 +469,16 @@ class Clerk_Admin_Settings
                 'checked' => 1
             ]
         );
-
+        add_settings_field('collect_emails_signup_message',
+            __('Collect Emails Signup Message', 'clerk'),
+            [$this, 'addTextField'],
+            'clerk',
+            'clerk_section_datasync',
+            [
+                'label_for' => 'collect_emails_signup_message',
+                'description' => 'Message for confirming email signup from Checkout Page'
+            ]
+        );
         add_settings_field('collect_baskets',
             __('Collect Baskets', 'clerk'),
             [$this, 'addCheckboxField'],
@@ -502,7 +511,15 @@ class Clerk_Admin_Settings
                 'checked' => 0
             ]
         );
-
+        add_settings_field('data_sync_image_size',
+            __('Image Size', 'clerk'),
+            [$this, 'addImageSizeDropdown'],
+            'clerk',
+            'clerk_section_datasync',
+            [
+                'label_for' => 'data_sync_image_size',
+            ]
+        );
         //Add search section
         add_settings_section(
             'clerk_section_search',
@@ -551,6 +568,17 @@ class Clerk_Admin_Settings
             [
                 'label_for' => 'search_categories',
                 'default' => 5
+            ]
+        );
+
+        add_settings_field('search_include_pages',
+            __('Include Pages', 'clerk'),
+            [$this, 'addCheckboxField'],
+            'clerk',
+            'clerk_section_search',
+            [
+                'label_for' => 'search_include_pages',
+                'checked' => 0
             ]
         );
 
@@ -818,7 +846,17 @@ class Clerk_Admin_Settings
                 'value' => 'power-step-others-also-bought,power-step-visitor-complementary,power-step-popular,power-step-popular-on-sale',
             ]
         );
-
+        add_settings_field('powerstep_excl_duplicates',
+            __('Filter Duplicates', 'clerk'),
+            [$this, 'addCheckboxField'],
+            'clerk',
+            'clerk_section_powerstep',
+            [
+                'label_for' => 'powerstep_excl_duplicates',
+                'checked' => 0,
+                'description' => 'Exclude duplicate products'
+            ]
+        );
         //Add exit intent section
         add_settings_section(
             'clerk_section_exit_intent',
@@ -876,7 +914,30 @@ class Clerk_Admin_Settings
                 'value' => 'category-page-popular'
             ]
         );
+        add_settings_field('category_excl_duplicates',
+            __('Filter Duplicates', 'clerk'),
+            [$this, 'addCheckboxField'],
+            'clerk',
+            'clerk_section_category',
+            [
+                'label_for' => 'category_excl_duplicates',
+                'checked' => 0,
+                'description' => 'Exclude duplicate products'
+            ]
+        );
 
+        add_settings_field('clerk_category_shortcode',
+            __('Category ID Shortcode', 'clerk'),
+            [$this, 'addTextField'],
+            'clerk',
+            'clerk_section_category',
+            [
+                'label_for' => 'clerk_category_shortcode',
+                'description' => 'Shortcode for printing the Category ID',
+                'readonly' => true,
+                'value' => '[clerk_category_id]',
+            ]
+        );
         //Add product section
         add_settings_section(
             'clerk_section_product',
@@ -903,6 +964,30 @@ class Clerk_Admin_Settings
             [
                 'label_for' => 'product_content',
                 'value' => 'product-page-alternatives,product-page-others-also-bought'
+            ]
+        );
+        add_settings_field('product_excl_duplicates',
+            __('Filter Duplicates', 'clerk'),
+            [$this, 'addCheckboxField'],
+            'clerk',
+            'clerk_section_product',
+            [
+                'label_for' => 'product_excl_duplicates',
+                'checked' => 0,
+                'description' => 'Exclude duplicate products'
+            ]
+        );
+
+        add_settings_field('clerk_product_shortcode',
+            __('Product ID Shortcode', 'clerk'),
+            [$this, 'addTextField'],
+            'clerk',
+            'clerk_section_product',
+            [
+                'label_for' => 'clerk_product_shortcode',
+                'description' => 'Shortcode for printing the Product ID',
+                'readonly' => true,
+                'value' => '[clerk_product_id]',
             ]
         );
 
@@ -934,7 +1019,29 @@ class Clerk_Admin_Settings
                 'value' => 'cart-others-also-bought',
             ]
         );
-
+        add_settings_field('cart_excl_duplicates',
+            __('Filter Duplicates', 'clerk'),
+            [$this, 'addCheckboxField'],
+            'clerk',
+            'clerk_section_cart',
+            [
+                'label_for' => 'cart_excl_duplicates',
+                'checked' => 0,
+                'description' => 'Exclude duplicate products'
+            ]
+        );
+        add_settings_field('clerk_cart_shortcode',
+            __('Product ID Shortcode', 'clerk'),
+            [$this, 'addTextField'],
+            'clerk',
+            'clerk_section_cart',
+            [
+                'label_for' => 'clerk_cart_shortcode',
+                'description' => 'Shortcode for printing the Cart IDs',
+                'readonly' => true,
+                'value' => '[clerk_cart_ids]',
+            ]
+        );
         //Add logging section
         add_settings_section(
             'clerk_section_log',
@@ -1453,6 +1560,98 @@ class Clerk_Admin_Settings
                 .close:after {
                     transform: rotate(-45deg);
                 }
+
+                #wpcontent {
+                    background-color: #f8f8f2;
+                    padding-left: 0.7rem;
+                }
+                #wpcontent h1 {
+                    font-weight: 900;
+                    font-family: roboto;
+                    padding: 1rem 1.5rem 1rem 2.5rem;
+                    transform: translateX(-1.5rem);
+                    background-color: #004576;
+                    border-radius: 5px;
+                    color: #f8f8f2;
+                    box-shadow: 0 3px 3px rgba(0,0,0,0.2);
+                    filter: blur(0);
+                    transition: all 0.3s ease-in-out;
+                    -webkit-touch-callout: none;
+                    -webkit-user-select: none; 
+                    -khtml-user-select: none; 
+                    -moz-user-select: none;
+                    -ms-user-select: none; 
+                    user-select: none; 
+                }
+
+                #clerkLogoHeader {
+                    position: absolute;
+                    top: 32%;
+                    left: 0.5rem;
+                    transition:all 1s ease;
+                }
+
+                #wpcontent h1:hover {
+                    background-color: #ff5c28;
+                }
+                #wpcontent h1:hover #clerkLogoHeader{
+                    left:1.4rem;
+                    filter: drop-shadow(0 0 0.75rem white);
+                }
+                #wpbody {
+                    background-color: #DEDEDE;
+                    padding-left: 1rem;
+                    border-left: 1px solid #444;
+                }
+
+                #wpbody form {
+                    background-color: #eee;
+                    padding: 1rem;
+                    border: 1px solid #444;
+                    border-radius: 5px;
+                    margin-top: 1rem;
+                }
+                #wpbody label {
+                    cursor: default;
+                }
+
+                #wpbody input[type="text"]{
+                    width: 100%;
+                    width: -moz-available;          /* WebKit-based browsers will ignore this. */
+                    width: -webkit-fill-available;  /* Mozilla-based browsers will ignore this. */
+                    width: fill-available;
+                    max-width: clamp(300px, 50%, 100%);
+                }
+
+                #clerkFloatingSaveBtn {
+                    position: fixed;
+                    right: 3rem;
+                    background: #2271b1;
+                    padding: 1rem;
+                    border-radius: 5px;
+                    box-shadow: 0 3px 3px rgb(0 0 0 / 20%);
+                    transition: all 0.3s ease;
+                    color: white;
+                    font-size: 14px;
+                    text-transform: uppercase;
+                    font-weight: 900;
+                    cursor: pointer;
+                    z-index: 99;
+                }
+                #clerkFloatingSaveBtn:hover {
+                    background-color: #135e96;
+                }
+                #submit {
+                    padding: 1rem;
+                    border-radius: 5px;
+                    box-shadow: 0 3px 3px rgb(0 0 0 / 20%);
+                    transition: all 0.3s ease;
+                    color: white;
+                    font-size: 14px;
+                    text-transform: uppercase;
+                    font-weight: 900;
+                    cursor: pointer;
+                }
             </style>
 
             <?php
@@ -1807,6 +2006,9 @@ class Clerk_Admin_Settings
                name="clerk_options[<?php echo esc_attr($args['label_for']); ?>]"
                value="1" <?php checked('1',  $value ); ?>>
         <?php
+        if(isset($args['description'])){
+            echo '<small>'.esc_attr($args['description']).'</small>';
+        }
     }
 
     /**
@@ -1822,6 +2024,28 @@ class Clerk_Admin_Settings
             'selected' => (!empty($options[$args['label_for']])) ? $options[$args['label_for']] : '',
             'name' => sprintf('clerk_options[%s]', $args['label_for'])
         ]);
+    }
+
+    /**
+     * Add page dropdown
+     *
+     * @param $args
+     */
+    public function addImageSizeDropdown($args)
+    {
+        //Get settings value
+        $options = get_option('clerk_options');
+        $sizes = get_intermediate_image_sizes();
+        ?>
+        <select id="<?php echo esc_attr($args['label_for']); ?>"
+                name="clerk_options[<?php echo esc_attr($args['label_for']); ?>]">
+            <?php foreach ($sizes as $k => $size) : ?>
+                <option value="<?php echo $size; ?>"
+                        <?php if (isset($options['data_sync_image_size']) && ($options['data_sync_image_size'] === $size)) : ?>selected<?php endif; ?>><?php echo esc_attr__($size, 'clerk'); ?></option>
+            <?php endforeach; ?>
+        </select>
+        <?php
+
     }
 
     /**
@@ -1930,8 +2154,14 @@ class Clerk_Admin_Settings
         settings_errors('wporg_messages');
         ?>
         <div class="wrap">
-            <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
-            <form action="options.php" method="post">
+            <script id="clerkAdminAjaxFunc">
+                const clerkSubmitAdminForm = () => {
+                    document.querySelector('#submit').click();
+                }
+            </script>
+            <div id="clerkFloatingSaveBtn" onclick="clerkSubmitAdminForm();"><?php echo __('Save Settings', 'clerk') ?></div>
+            <h1><img id="clerkLogoHeader" src="<?php echo plugin_dir_url(CLERK_PLUGIN_FILE) . 'assets/img/clerk.png' ?>"><?php echo esc_html(get_admin_page_title()); ?></h1>
+            <form id="clerkAdminForm" action="options.php" method="post">
                 <?php
                 // output security fields for the registered setting "wporg"
                 settings_fields('clerk');

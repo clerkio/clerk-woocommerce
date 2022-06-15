@@ -7,6 +7,10 @@
     {
       "name": "Wissam Maarouf",
       "email": "wim@clerk.io"
+    },
+    {
+      "name": "Alexander Stage",
+      "email": "abs@clerk.io"
     }
   ],
   "type": "wordpress-plugin",

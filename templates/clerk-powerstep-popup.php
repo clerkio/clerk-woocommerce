@@ -27,33 +27,25 @@ $checkout_url = $woocommerce->cart->get_checkout_url();
     </div>
     <div class="clerk_powerstep_templates">
         <?php
-        $Issetdataexclude = false;
-        $dataexcludestring = '';
-        $count = 0;
+        $index = 0;
+        $class_string = 'clerk_powerstep_';
+        $filter_string = '';
+        $unique_filter = (isset($options['powerstep_excl_duplicates']) && $options['powerstep_excl_duplicates']) ? true : false;
+
         foreach ( get_powerstep_templates() as $template ) :
-            $count++;
-            $id = 'clerk_'.time().$count;
             ?>
-            <span class="clerk"
-                  id="<?php echo $id ?>"
-              <?php if($Issetdataexclude) {
-                  echo 'data-exclude-from="'.$dataexcludestring.'"';
-              } ?>
-              data-template="@<?php echo esc_attr( $template ); ?>"
-                  data-products="[<?php echo esc_attr( $product->get_id() ); ?>]"
-                  data-category="<?php echo esc_attr( reset( $product->get_category_ids() ) ); ?>"
+            <span class="clerk <?php if($unique_filter){ echo $class_string.(string)$index; } ?>"
+                    <?php if($index > 0 && $unique_filter){ echo 'data-exclude-from="'.$filter_string.'"'; }?>
+                    data-template="@<?php echo esc_attr( $template ); ?>"
+                    data-products="[<?php echo esc_attr( $product->get_id() ); ?>]"
+                    data-category="<?php echo esc_attr( reset( $product->get_category_ids() ) ); ?>"
             ></span>
             <?php
-            if ($count == 1) {
-
-                $dataexcludestring .= '#'.$id.':limit(4)';
-
-            }else {
-
-                $dataexcludestring .= ',#'.$id.':limit(4)';
-
+            if($index > 0){
+                $filter_string .= ', ';
             }
-            $Issetdataexclude = true;
+            $filter_string .= '.'.$class_string.(string)$index;
+            $index++;
         endforeach; ?>
     </div>
     <style>
@@ -92,5 +84,77 @@ $checkout_url = $woocommerce->cart->get_checkout_url();
         .clerk_powerstep_clear {
             overflow: hidden;
         }
+        :root{
+            --clerk-popup-width:60ch
+        }
+        @media screen and (max-width:600px){
+            :root{
+                --clerk-popup-width:84vw
+            }
+        }
+        @-webkit-keyframes popin{
+            from{
+                top:translate(-50%,-150%);
+                opacity:0
+            }
+            to{
+                transform:translate(-50%,-50%);
+                opacity:1
+            }
+        }
+        @keyframes popin{
+            from{
+                transform:translate(-50%,-150%);
+                opacity:0
+            }
+            to{
+                transform:translate(-50%,-50%);
+                opacity:1
+            }
+        }
+        .clerk-vert-spacer{
+            margin-bottom:10px
+        }
+        .popin{
+            animation:popin .5s ease-in-out
+        }
+        .clerk_hidden{
+            display:none !important
+        }
+        .clerk-popup{
+            width:clamp(var(--clerk-popup-width),60%,100ch) !important;
+            top:50% !important;
+            left:50% !important;
+            transform:translate(-50%,-50%);
+            margin:0 !important;
+            border:none !important;
+            border-radius:5px !important;
+            max-height:calc(85vh);
+            overflow-y:scroll;
+            overflow-y:overlay;
+            -ms-overflow-style:none;
+            scrollbar-width:none;
+            animation:popin .5s ease-in-out
+        }
+        .clerk-popup-close{
+            right:15px !important;
+            top:10px !important
+        }
+        #clerk-power-popup .price-box{
+            display:flex;
+            flex-direction:column
+        }
+        #clerk-power-popup .success-msg{
+            margin-bottom:10px;
+            margin-top:10px
+        }
+        #clerk-power-popup > * > *:first-child{
+            font-size:clamp(1rem,.5714rem + 1.9048vw,2rem)
+        }
+        .clerk-popup::-webkit-scrollbar{
+            display:none
+        }
+
+        
     </style>
 </div>
