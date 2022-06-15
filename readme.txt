@@ -29,6 +29,24 @@ Once signed up, simply login to your my.clerk.io backend, which will guide you t
 
 
 == Changelog ==
+= 3.6.2 - 2022-06-15 =
+* Added Exclude checkbox for all recs, and added filter to span generation.
+* Added default lists with variable product data, similar to shopify.
+* Added selector for image size to sync in admin.
+* Added checkbox to enabled or disable pages in search page embedcode.
+* Added sync method for subscriber type users, without historic orders.
+* Added checkbox injection with custom message for log/subscriber from checkout page. This is a feature parity thing, with mailchimp/woocommerce mail module.
+* Added shortcodes to allow printing, product, category and cart ids in templating engines like elementor.
+* Fixed position of cart page slider, by changing hook position. Before it would get removed if the client used ajax cart, and edited their cart contents. Placement also overflowed checkout button on mobile.
+* Added better tax handling on order tracking page, to allow us to work seamlessly with geoip modules.
+* Fixed page type set wrong for All option on search page.
+* Added sanity check for attribute keys with dashes, to make them compatible with our feed structure.
+* Improved admin panel UX, with some colors, log and spacing, as well as a floating save button to avoid having to scroll our extensive settings to the bottom to save.
+* Added New way to pull and register subscribers
+* Fixed search page page type bug
+* Change to variant handling to include more complete information.
+* Change to sales tracking to account for geoip tax rates.
+
 = 3.6.1 - 2022-01-20 =
 * Fixed wrong product stock bug.
 
