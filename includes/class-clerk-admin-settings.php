@@ -1031,7 +1031,7 @@ class Clerk_Admin_Settings
             ]
         );
         add_settings_field('clerk_cart_shortcode',
-            __('Product ID Shortcode', 'clerk'),
+            __('Cart IDs Shortcode', 'clerk'),
             [$this, 'addTextField'],
             'clerk',
             'clerk_section_cart',
