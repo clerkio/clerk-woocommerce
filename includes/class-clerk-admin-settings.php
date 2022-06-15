@@ -925,6 +925,19 @@ class Clerk_Admin_Settings
                 'description' => 'Exclude duplicate products'
             ]
         );
+
+        add_settings_field('clerk_category_shortcode',
+            __('Category ID Shortcode', 'clerk'),
+            [$this, 'addTextField'],
+            'clerk',
+            'clerk_section_category',
+            [
+                'label_for' => 'clerk_category_shortcode',
+                'description' => 'Shortcode for printing the Category ID',
+                'readonly' => true,
+                'value' => '[clerk_category_id]',
+            ]
+        );
         //Add product section
         add_settings_section(
             'clerk_section_product',
@@ -964,6 +977,20 @@ class Clerk_Admin_Settings
                 'description' => 'Exclude duplicate products'
             ]
         );
+
+        add_settings_field('clerk_product_shortcode',
+            __('Product ID Shortcode', 'clerk'),
+            [$this, 'addTextField'],
+            'clerk',
+            'clerk_section_product',
+            [
+                'label_for' => 'clerk_product_shortcode',
+                'description' => 'Shortcode for printing the Product ID',
+                'readonly' => true,
+                'value' => '[clerk_product_id]',
+            ]
+        );
+
         //Add cart section
         add_settings_section(
             'clerk_section_cart',
@@ -1001,6 +1028,18 @@ class Clerk_Admin_Settings
                 'label_for' => 'cart_excl_duplicates',
                 'checked' => 0,
                 'description' => 'Exclude duplicate products'
+            ]
+        );
+        add_settings_field('clerk_cart_shortcode',
+            __('Product ID Shortcode', 'clerk'),
+            [$this, 'addTextField'],
+            'clerk',
+            'clerk_section_cart',
+            [
+                'label_for' => 'clerk_cart_shortcode',
+                'description' => 'Shortcode for printing the Cart IDs',
+                'readonly' => true,
+                'value' => '[clerk_cart_ids]',
             ]
         );
         //Add logging section
