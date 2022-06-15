@@ -29,7 +29,7 @@ Once signed up, simply login to your my.clerk.io backend, which will guide you t
 
 
 == Changelog ==
-= 3.6.2 - 2022-06-15 =
+= 3.7.0 - 2022-06-15 =
 * Added Exclude checkbox for all recs, and added filter to span generation.
 * Added default lists with variable product data, similar to shopify.
 * Added selector for image size to sync in admin.
