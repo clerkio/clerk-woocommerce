@@ -133,7 +133,8 @@ $checkout_url = $woocommerce->cart->get_checkout_url();
             overflow-y:scroll;
             overflow-y:overlay;
             -ms-overflow-style:none;
-            scrollbar-width:none
+            scrollbar-width:none;
+            animation:popin .5s ease-in-out
         }
         .clerk-popup-close{
             right:15px !important;
