@@ -20,7 +20,7 @@ class Clerk_Admin_Settings
         $this->initHooks();
         require_once(__DIR__ . '/class-clerk-logger.php');
         $this->logger = new ClerkLogger();
-        $this->version = '3.6.2';
+        $this->version = '3.7.0';
 
         $this->InitializeSettings();
 
@@ -520,6 +520,145 @@ class Clerk_Admin_Settings
                 'label_for' => 'data_sync_image_size',
             ]
         );
+
+
+                //Add livesearch section
+                add_settings_section(
+                    'clerk_section_livesearch',
+                    __('Live search Settings', 'clerk'),
+                    null,
+                    'clerk');
+        
+                add_settings_field('livesearch_enabled',
+                    __('Enabled', 'clerk'),
+                    [$this, 'addCheckboxField'],
+                    'clerk',
+                    'clerk_section_livesearch',
+                    [
+                        'label_for' => 'livesearch_enabled',
+                        'checked' => 0
+                    ]
+                );
+        
+                add_settings_field('livesearch_include_suggestions',
+                    __('Include Suggestions', 'clerk'),
+                    [$this, 'addCheckboxField'],
+                    'clerk',
+                    'clerk_section_livesearch',
+                    [
+                        'label_for' => 'livesearch_include_suggestions',
+                        'checked' => 0
+                    ]
+                );
+        
+                add_settings_field('livesearch_suggestions',
+                    __('Number of Suggestions', 'clerk'),
+                    [$this, 'add1_10Dropdown'],
+                    'clerk',
+                    'clerk_section_livesearch',
+                    [
+                        'label_for' => 'livesearch_suggestions',
+                        'default' => 5
+                    ]
+                );
+        
+                add_settings_field('livesearch_include_categories',
+                    __('Include Categories', 'clerk'),
+                    [$this, 'addCheckboxField'],
+                    'clerk',
+                    'clerk_section_livesearch',
+                    [
+                        'label_for' => 'livesearch_include_categories',
+                        'checked' => 0
+                    ]
+                );
+        
+                add_settings_field('livesearch_categories',
+                    __('Number of Categories', 'clerk'),
+                    [$this, 'add1_10Dropdown'],
+                    'clerk',
+                    'clerk_section_livesearch',
+                    [
+                        'label_for' => 'livesearch_categories',
+                        'default' => 5
+                    ]
+                );
+        
+                add_settings_field('livesearch_include_pages',
+                    __('Include Pages', 'clerk'),
+                    [$this, 'addCheckboxField'],
+                    'clerk',
+                    'clerk_section_livesearch',
+                    [
+                        'label_for' => 'livesearch_include_pages',
+                        'checked' => 0
+                    ]
+                );
+        
+                add_settings_field('livesearch_pages',
+                    __('Number of Pages', 'clerk'),
+                    [$this, 'add1_10Dropdown'],
+                    'clerk',
+                    'clerk_section_livesearch',
+                    [
+                        'label_for' => 'livesearch_pages',
+                        'default' => 5
+                    ]
+                );
+        
+                add_settings_field('livesearch_pages_type',
+                    __('Pages Type', 'clerk'),
+                    [$this, 'addPagesTypeDropdown'],
+                    'clerk',
+                    'clerk_section_livesearch',
+                    [
+                        'label_for' => 'livesearch_pages_type',
+                    ]
+                );
+        
+                add_settings_field('livesearch_dropdown_position',
+                    __('Dropdown Positioning', 'clerk'),
+                    [$this, 'addDropdownPosition'],
+                    'clerk',
+                    'clerk_section_livesearch',
+                    [
+                        'label_for' => 'livesearch_dropdown_position',
+                    ]
+                );
+        
+                add_settings_field('livesearch_field_selector',
+                    __('Live Search Input Selector', 'clerk'),
+                    [$this, 'addTextField'],
+                    'clerk',
+                    'clerk_section_livesearch',
+                    [
+                        'label_for' => 'livesearch_field_selector',
+                        'default' => '.search-field'
+                    ]
+                );
+        
+                add_settings_field('livesearch_form_selector',
+                    __('Live Search Form Selector', 'clerk'),
+                    [$this, 'addTextField'],
+                    'clerk',
+                    'clerk_section_livesearch',
+                    [
+                        'label_for' => 'livesearch_form_selector',
+                        'default' => '[role="search"]'
+                    ]
+                );
+        
+                add_settings_field('livesearch_template',
+                    __('Content', 'clerk'),
+                    [$this, 'addTextField'],
+                    'clerk',
+                    'clerk_section_livesearch',
+                    [
+                        'label_for' => 'livesearch_template',
+                    ]
+                );
+
+
         //Add search section
         add_settings_section(
             'clerk_section_search',
@@ -630,120 +769,6 @@ class Clerk_Admin_Settings
             'clerk_section_search',
             [
                 'label_for' => 'search_load_more_button',
-            ]
-        );
-
-        //Add livesearch section
-        add_settings_section(
-            'clerk_section_livesearch',
-            __('Live search Settings', 'clerk'),
-            null,
-            'clerk');
-
-        add_settings_field('livesearch_enabled',
-            __('Enabled', 'clerk'),
-            [$this, 'addCheckboxField'],
-            'clerk',
-            'clerk_section_livesearch',
-            [
-                'label_for' => 'livesearch_enabled',
-                'checked' => 0
-            ]
-        );
-
-        add_settings_field('livesearch_include_categories',
-            __('Include Categories', 'clerk'),
-            [$this, 'addCheckboxField'],
-            'clerk',
-            'clerk_section_livesearch',
-            [
-                'label_for' => 'livesearch_include_categories',
-                'checked' => 0
-            ]
-        );
-
-        add_settings_field('livesearch_suggestions',
-            __('Number of Suggestions', 'clerk'),
-            [$this, 'add1_10Dropdown'],
-            'clerk',
-            'clerk_section_livesearch',
-            [
-                'label_for' => 'livesearch_suggestions',
-                'default' => 5
-            ]
-        );
-
-        add_settings_field('livesearch_categories',
-            __('Number of Categories', 'clerk'),
-            [$this, 'add1_10Dropdown'],
-            'clerk',
-            'clerk_section_livesearch',
-            [
-                'label_for' => 'livesearch_categories',
-                'default' => 5
-            ]
-        );
-
-        add_settings_field('livesearch_pages',
-            __('Number of Pages', 'clerk'),
-            [$this, 'add1_10Dropdown'],
-            'clerk',
-            'clerk_section_livesearch',
-            [
-                'label_for' => 'livesearch_pages',
-                'default' => 5
-            ]
-        );
-
-        add_settings_field('livesearch_pages_type',
-            __('Pages Type', 'clerk'),
-            [$this, 'addPagesTypeDropdown'],
-            'clerk',
-            'clerk_section_livesearch',
-            [
-                'label_for' => 'livesearch_pages_type',
-            ]
-        );
-
-        add_settings_field('livesearch_dropdown_position',
-            __('Dropdown Positioning', 'clerk'),
-            [$this, 'addDropdownPosition'],
-            'clerk',
-            'clerk_section_livesearch',
-            [
-                'label_for' => 'livesearch_dropdown_position',
-            ]
-        );
-
-        add_settings_field('livesearch_field_selector',
-            __('Live Search Input Selector', 'clerk'),
-            [$this, 'addTextField'],
-            'clerk',
-            'clerk_section_livesearch',
-            [
-                'label_for' => 'livesearch_field_selector',
-                'default' => '.search-field'
-            ]
-        );
-
-        add_settings_field('livesearch_form_selector',
-            __('Live Search Form Selector', 'clerk'),
-            [$this, 'addTextField'],
-            'clerk',
-            'clerk_section_livesearch',
-            [
-                'label_for' => 'livesearch_form_selector',
-                'default' => '[role="search"]'
-            ]
-        );
-
-        add_settings_field('livesearch_template',
-            __('Content', 'clerk'),
-            [$this, 'addTextField'],
-            'clerk',
-            'clerk_section_livesearch',
-            [
-                'label_for' => 'livesearch_template',
             ]
         );
 
@@ -1031,7 +1056,7 @@ class Clerk_Admin_Settings
             ]
         );
         add_settings_field('clerk_cart_shortcode',
-            __('Product ID Shortcode', 'clerk'),
+            __('Cart IDs Shortcode', 'clerk'),
             [$this, 'addTextField'],
             'clerk',
             'clerk_section_cart',
@@ -1601,15 +1626,16 @@ class Clerk_Admin_Settings
                 #wpbody {
                     background-color: #DEDEDE;
                     padding-left: 1rem;
-                    border-left: 1px solid #444;
+                    border-left: 1px solid #1d2327;
                 }
 
                 #wpbody form {
                     background-color: #eee;
-                    padding: 1rem;
-                    border: 1px solid #444;
+                    padding: 0rem 1rem 1rem 1rem;
+                    border: 1px solid #1d2327;
                     border-radius: 5px;
                     margin-top: 1rem;
+                    box-shadow: 0 3px 3px rgba(0,0,0,0.2);
                 }
                 #wpbody label {
                     cursor: default;
@@ -1621,6 +1647,13 @@ class Clerk_Admin_Settings
                     width: -webkit-fill-available;  /* Mozilla-based browsers will ignore this. */
                     width: fill-available;
                     max-width: clamp(300px, 50%, 100%);
+                }
+
+                #wpbody h2 {
+                    background: #1d2327;
+                    padding: 1rem;
+                    margin: 0 -1rem;
+                    color: white;
                 }
 
                 #clerkFloatingSaveBtn {
