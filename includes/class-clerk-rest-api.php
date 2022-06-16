@@ -601,7 +601,7 @@ class Clerk_Rest_Api extends WP_REST_Server
                     $page_draft = [
                         'id' => $page->ID,
                         'type' => $page->post_type,
-                        'url' => $page->guid,
+                        'url' => get_permalink($page->ID),
                         'title' => $page->post_title,
                         'text' => $page->post_content
                     ];
@@ -640,7 +640,7 @@ class Clerk_Rest_Api extends WP_REST_Server
                     $page_draft = [
                         'id' => $page->ID,
                         'type' => $page->post_type,
-                        'url' => $page->guid,
+                        'url' => get_permalink($page->ID),
                         'title' => $page->post_title,
                         'text' => $page->post_content,
                         'image' => get_the_post_thumbnail_url($page->ID)
