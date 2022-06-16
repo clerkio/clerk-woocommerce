@@ -763,8 +763,8 @@ class Clerk_Rest_Api extends WP_REST_Server
                                   "collect_emails_signup_message",
                                   "collect_baskets",
                                   "additional_fields",
-                                  "disable_order_synchronization"
-                                  "data_sync_image_size"
+                                  "disable_order_synchronization",
+                                  "data_sync_image_size",
                                   // LIVE SEARCH SETTINGS (12)
                                   "livesearch_enabled",
                                   "livesearch_include_suggestions",
