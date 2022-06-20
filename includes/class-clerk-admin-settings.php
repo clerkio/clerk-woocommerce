@@ -1234,7 +1234,9 @@ class Clerk_Admin_Settings
                             );
 
                             $response = wp_remote_request( $Endpoint, $_args );
-
+                            if(is_wp_error($response)){
+                                $response = $response->get_error_message();
+                            }
                             if ($this->isJSON($response['body'])) {
 
                                 $response = json_decode($response['body']);
