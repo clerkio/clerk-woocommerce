@@ -39,6 +39,20 @@ class Clerk_Rest_Api extends WP_REST_Server
      */
     public function add_rest_api_routes()
     {
+        //Clerk setting get configuration endpoint
+        register_rest_route('clerk', '/getconfig', [
+            'methods' => 'GET',
+            'callback' => [$this, 'getconfig_endpoint_callback'],
+            'permission_callback' => '__return_true',
+        ]);
+
+        //Clerk setting set configuration endpoint
+        register_rest_route('clerk', '/setconfig', [
+            'methods' => 'POST',
+            'callback' => [$this, 'setconfig_endpoint_callback'],
+            'permission_callback' => '__return_true',
+        ]);
+
         //Product endpoint
         register_rest_route('clerk', '/product', [
             'methods' => 'GET',
@@ -732,50 +746,80 @@ class Clerk_Rest_Api extends WP_REST_Server
             $settings = [];
             $updateArray = [];
 
-            // Array with all Clerk setttings attributes beside without public_key & private_key
-            $settingsArguments = ["lang", 
-                                  "import_url",
+            // Array with all Clerk setttings (68) attributes without public_key & private_key
+            $settingsArguments = [
+                                  // GENERAL (2)
+                                  "lang", 
+                                  "import_url", //  (Predefined)
+                                  // CUSTOMER SYNC SETTINGS (10)
                                   "customer_sync_enabled",
                                   "customer_sync_customer_fields",
+                                  // DATA SYNC SETTINGS (10)
                                   "realtime_updates",
                                   "include_pages",
                                   "page_additional_fields",
                                   "outofstock_products",
                                   "collect_emails",
+                                  "collect_emails_signup_message",
                                   "collect_baskets",
                                   "additional_fields",
-                                  "search_enabled",
-                                  "search_page",
-                                  "search_include_categories",
-                                  "search_categories",
-                                  "search_pages",
-                                  "search_pages_type",
-                                  "search_template",
-                                  "search_no_results_text",
-                                  "search_load_more_button",
+                                  "disable_order_synchronization",
+                                  "data_sync_image_size",
+                                  // LIVE SEARCH SETTINGS (12)
                                   "livesearch_enabled",
-                                  "livesearch_include_categories",
+                                  "livesearch_include_suggestions",
                                   "livesearch_suggestions",
+                                  "livesearch_include_categories",
+                                  "livesearch_categories",
+                                  "livesearch_include_pages",
                                   "livesearch_pages",
                                   "livesearch_pages_type",
                                   "livesearch_dropdown_position",
                                   "livesearch_field_selector",
                                   "livesearch_form_selector",
                                   "livesearch_template",
+                                  // SEARCH SETTINGS (9)
+                                  "search_enabled",
+                                  "search_page",
+                                  "search_include_categories",
+                                  "search_categories",
+                                  "search_include_pages",
+                                  "search_pages",
+                                  "search_pages_type",
+                                  "search_template",
+                                  "search_no_results_text",
+                                  "search_load_more_button",
+                                  // FACETED NAVIGATION (3)
                                   "faceted_navigation_enabled",
                                   "faceted_navigation",
+                                  "faceted_navigation_design",
+                                  // POWERSTEP SETTINGS (5)
                                   "powerstep_enabled",
                                   "powerstep_type",
                                   "powerstep_page",
                                   "powerstep_templates",
+                                  "powerstep_excl_duplicates",
+                                  // EXIT INTENT SETTINGS (2)
+                                  "exit_intent_enabled",
                                   "exit_intent_template",
+                                  // CATEGORY SETTINGS (4)
+                                  "category_enabled",
                                   "category_content",
+                                  "category_excl_duplicates",
+                                  /* "clerk_category_shortcode", (Predefined) */
+                                  // PRODUCT SETTINGS (4)
+                                  "product_enabled",
                                   "product_content",
+                                  "product_excl_duplicates",
+                                  /* "clerk_product_shortcode", (Predefined) */
+                                  // CART SETTINGS (4)
                                   "cart_enabled",
                                   "cart_content",
+                                  "cart_excl_duplicates",
+                                  /* "clerk_cart_shortcode", (Predefined) */
+                                  // LOGGING SETTINGS (3)
+                                  "log_enabled",
                                   "log_to",
-                                  "faceted_navigation_design",
-                                  "livesearch_categories",
                                   "log_level"];
 
             if($body) {
@@ -897,7 +941,7 @@ class Clerk_Rest_Api extends WP_REST_Server
 
                 }
 
-                $FinalCustomerArray[] = apply_filters('clerk_customer_array', $_customer, $customer_id);
+                $FinalCustomerArray[] = apply_filters('clerk_customer_array', $_customer, $user);
 
             }
 

@@ -25,7 +25,7 @@ class Clerk_Visitor_Tracking {
         add_action( 'init', [ $this, 'clerk_add_custom_shortcodes'] );
 
         $options = get_option('clerk_options');
-        if (array_key_exists('collect_emails', $options) ) {
+        if (isset($options['collect_emails']) ) {
             add_action( 'woocommerce_review_order_before_submit', [$this, 'clerk_woocommerce_review_order_before_submit'], 99);
         }
     }
