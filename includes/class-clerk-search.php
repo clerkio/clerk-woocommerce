@@ -67,13 +67,12 @@ class Clerk_Search
 
         if ($options['faceted_navigation_enabled'] !== null && $options['faceted_navigation_enabled']) {
 
-            $facets_design =  $options['faceted_navigation_design'];
-
-            $search_include_categories =  $options['search_include_categories'];
-            $search_categories =  $options['search_categories'];
-            $search_include_pages = $options['search_include_pages'];
-            $search_pages =  $options['search_pages'];
-            $search_pages_type =  $options['search_pages_type'];
+            $facets_design =  isset($options['faceted_navigation_design']) ? $options['faceted_navigation_design'] : false;
+            $search_include_categories =  isset($options['search_include_categories']) ? $options['search_include_categories'] : false;
+            $search_categories =  isset($options['search_categories']) ? $options['search_categories'] : false;
+            $search_include_pages = isset($options['search_include_pages']) ? $options['search_include_pages'] : false;
+            $search_pages =  isset($options['search_pages']) ? $options['search_pages'] : false;
+            $search_pages_type =  isset($options['search_pages_type']) ? $options['search_pages_type'] : false;
 
             $_Attributes = json_decode($options['faceted_navigation']);
             $count = 0;
