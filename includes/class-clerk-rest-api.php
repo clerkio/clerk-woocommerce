@@ -286,13 +286,26 @@ class Clerk_Rest_Api extends WP_REST_Server
 
                     if ($price === $list_price) $on_sale = false; // Remove the sale flag if the cheapest variant is not on sale
 
-                } else {
-
+                }
+                if ($product->is_type('simple')) {
                     /**
                      * Default single product sync fields
                      */
                     $price = $product->get_price();
                     $list_price = $product->get_regular_price();
+                }
+
+                if ($product->is_type('bundle')) {
+                    $bundled_product = new WC_Product_Bundle($product->get_id());
+                    $bundled_items = $bundled_product->get_bundled_items();
+                    if($price == 0 || $list_price == 0){
+                        $price = 0;
+                        $list_price = 0;
+                        foreach ($bundled_items as $item) {
+                            $price += $item->get_price();
+                            $price += $item->get_regular_price();
+                        }
+                    }
                 }
 
                 if ($product->managing_stock() && !isset($options['outofstock_products']) && $product->get_stock_quantity() === 0) {
