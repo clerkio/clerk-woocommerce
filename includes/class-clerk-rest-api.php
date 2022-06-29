@@ -327,6 +327,9 @@ class Clerk_Rest_Api extends WP_REST_Server
                 $productArray['created_at'] = strtotime($product->get_date_created());
                 $productArray['all_images'] = [];
                 $productArray['stock'] = $stock_quantity;
+                $productArray['managing_stock'] = $product->managing_stock();
+                $productArray['backorders'] = $product->get_backorders();
+		        $productArray['stock_status'] = $product->get_stock_status();
 
                 foreach (get_intermediate_image_sizes() as $key => $image_size) {
 

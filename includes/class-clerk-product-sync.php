@@ -205,25 +205,10 @@ class Clerk_Product_Sync {
                   $list_price = $product->get_regular_price();
               }
 
-              if ($product->managing_stock() && !isset($options['outofstock_products']) && $product->get_stock_quantity() === 0) {
-
-                  if (isset($stock_quantity) && $stock_quantity === 0) {
-
+              if (!isset($options['outofstock_products'])) {
+                if($product->get_stock_status() !== 'instock'){
                     return;
-
-                  }elseif(!isset($stock_quantity)) {
-
-                    return;
-
-                  }elseif(!$product->is_in_stock()) {
-
-                    return;
-
-                  }
-              } elseif (! $product->managing_stock() && ! $product->is_in_stock() && !isset($options['outofstock_products'])) {
-
-                return;
-
+                }
               }
               $image_size_setting = isset($options['data_sync_image_size']) ? $options['data_sync_image_size'] : 'medium';
               $productArray['id'] = $product->get_id();
@@ -231,7 +216,7 @@ class Clerk_Product_Sync {
               $productArray['description'] = get_post_field('post_content', $product->get_id());
               $productArray['price'] = (float)$price;
               $productArray['list_price'] = (float)$list_price;
-              $productArray['image'] = wp_get_attachment_image_src($product->get_image_id(),'medium')[0];
+              $productArray['image'] = wp_get_attachment_image_src($product->get_image_id(), $image_size_setting)[0];
               $productArray['url'] = $product->get_permalink();
               $productArray['categories'] = wp_list_pluck($categories, 'term_id');
               $productArray['sku'] = $product->get_sku();
@@ -239,6 +224,9 @@ class Clerk_Product_Sync {
               $productArray['type'] = $product->get_type();
               $productArray['created_at'] = strtotime($product->get_date_created());
               $productArray['all_images'] = [];
+              $productArray['managing_stock'] = $product->managing_stock();
+              $productArray['backorders'] = $product->get_backorders();
+              $productArray['stock_status'] = $product->get_stock_status();
 
               foreach (get_intermediate_image_sizes() as $key => $image_size) {
 
