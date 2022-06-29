@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if ( ! class_exists( 'Clerk' ) ) {
 
-	class Clerk {
+	class Clerk { 
 		public function __construct() {
 			$this->includes();
 			$this->initHooks();
