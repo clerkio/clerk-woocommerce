@@ -1,2 +1,2 @@
 # clerk-woocommerce
-WooCommerce extension for Clerk.io
+WooCommerce extension for Clerk.io   
