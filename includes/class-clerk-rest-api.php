@@ -191,15 +191,28 @@ class Clerk_Rest_Api extends WP_REST_Server
 
             $offset = ($request->get_param('page') === 0) ? 0 : $page * $limit;
 
-            $products = clerk_get_products(array(
-                'limit' => $limit,
-                'page' => $page,
-                'orderby' => $orderby,
-                'order' => $order,
-                'status' => array('publish'),
-                'paginate' => true,
-                'offset' => $offset
-            ));
+            if (!isset($options['outofstock_products'])) {
+                $products = clerk_get_products(array(
+                    'limit' => $limit,
+                    'page' => $page,
+                    'orderby' => $orderby,
+                    'order' => $order,
+                    'status' => array('publish'),
+                    'stock_status' => 'instock',
+                    'paginate' => true,
+                    'offset' => $offset
+                ));
+            } else {
+                    $products = clerk_get_products(array(
+                    'limit' => $limit,
+                    'page' => $page,
+                    'orderby' => $orderby,
+                    'order' => $order,
+                    'status' => array('publish'),
+                    'paginate' => true,
+                    'offset' => $offset
+                ));
+            }
 
             $FinalProductsArray = [];
 
@@ -209,17 +222,6 @@ class Clerk_Rest_Api extends WP_REST_Server
                 $stock_quantity = null;
                 // set empty productArray
                 $productArray = array();
-
-                //Check include out of stock products
-                if (!isset($options['outofstock_products'])) {
-
-                    if (!$product->get_stock_status() === 'instock') {
-
-                        continue;
-
-                    }
-
-                }
 
                 /** @var WC_Product $product */
                 $categories = wp_get_post_terms($product->get_id(), 'product_cat');
@@ -293,11 +295,13 @@ class Clerk_Rest_Api extends WP_REST_Server
                      */
                     $price = $product->get_price();
                     $list_price = $product->get_regular_price();
+                    $stock_quantity = $product->get_stock_quantity();
                 }
 
                 if ($product->is_type('bundle')) {
                     $bundled_product = new WC_Product_Bundle($product->get_id());
                     $bundled_items = $bundled_product->get_bundled_items();
+                    $stock_quantity = $product->get_stock_quantity();
                     if($price == 0 || $list_price == 0){
                         $price = 0;
                         $list_price = 0;
@@ -308,26 +312,6 @@ class Clerk_Rest_Api extends WP_REST_Server
                     }
                 }
 
-                if ($product->managing_stock() && !isset($options['outofstock_products']) && $product->get_stock_quantity() === 0) {
-
-                    if (isset($stock_quantity) && $stock_quantity === 0) {
-
-                        continue;
-
-                    }elseif(!isset($stock_quantity)) {
-
-                        continue;
-
-                    }elseif(!$product->is_in_stock()) {
-
-                        continue;
-
-                    }
-                } elseif (! $product->managing_stock() && ! $product->is_in_stock() && !isset($options['outofstock_products'])) {
-
-                    continue;
-
-                }
                 $image_size_setting = isset($options['data_sync_image_size']) ? $options['data_sync_image_size'] : 'medium';
                 $productArray['id'] = $product->get_id();
                 $productArray['name'] = $product->get_name();
@@ -342,6 +326,7 @@ class Clerk_Rest_Api extends WP_REST_Server
                 $productArray['type'] = $product->get_type();
                 $productArray['created_at'] = strtotime($product->get_date_created());
                 $productArray['all_images'] = [];
+                $productArray['stock'] = $stock_quantity;
 
                 foreach (get_intermediate_image_sizes() as $key => $image_size) {
 
@@ -350,20 +335,6 @@ class Clerk_Rest_Api extends WP_REST_Server
                         array_push($productArray['all_images'] , wp_get_attachment_image_src($product->get_image_id(), $image_size)[0]);
 
                     }
-
-                }
-
-                if (!empty($product->get_stock_quantity())) {
-
-                    $productArray['stock'] = ($product->get_stock_quantity() != null) ? $product->get_stock_quantity() : 777;
-
-                }elseif (isset($stock_quantity)) {
-
-                    $productArray['stock'] = $stock_quantity;
-
-                } else {
-
-                    $productArray['stock'] = ($product->get_stock_quantity() != null) ? $product->get_stock_quantity() : 777;
 
                 }
 
