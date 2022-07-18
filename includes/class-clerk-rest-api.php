@@ -283,8 +283,9 @@ class Clerk_Rest_Api extends WP_REST_Server
                     $price = ($price > 0) ? $price : $product->get_price();
                     $list_price = ($list_price > 0) ? $list_price : $product->get_regular_price();
 
-                    if ($price === $list_price) $on_sale = false; // Remove the sale flag if the cheapest variant is not on sale
-
+                    if ($price === $list_price) {
+                        $on_sale = false; // Remove the sale flag if the cheapest variant is not on sale
+                    }
                 }
                 if ($product->is_type('simple') || $product->is_type('grouped')) {
                     /**
