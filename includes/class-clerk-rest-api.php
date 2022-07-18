@@ -268,7 +268,7 @@ class Clerk_Rest_Api extends WP_REST_Server
                         $productArray['variant_images'][] = $variation['image']['url'];
                         $productArray['variant_skus'][] = $variation['sku'];
                         $productArray['variant_ids'][] = $variation['variation_id'];
-                        $productArray['variant_stocks'][] = ($variation_obj->get_stock_quantity() != null) ? $variation_obj->get_stock_quantity() : 777;
+                        $productArray['variant_stocks'][] = ($variation_obj->get_stock_quantity() != null) ? $variation_obj->get_stock_quantity() : 0;
                         $productArray['variant_prices'][] = $variation['display_price'];
                         $productArray['variant_list_prices'][] = $variation['display_regular_price'];
 
@@ -276,15 +276,12 @@ class Clerk_Rest_Api extends WP_REST_Server
                         $regularPrice[$variant_id] = $variation['display_regular_price'];
                     }
 
-                    if (empty($displayPrice)) {
-
-                        continue;
-
-                    }
-
                     $lowestDisplayPrice = array_keys($displayPrice, min($displayPrice)); // Find the corresponding product ID
                     $price = $displayPrice[$lowestDisplayPrice[0]]; // Get the lowest price
                     $list_price = $regularPrice[$lowestDisplayPrice[0]]; // Get the corresponding list price (regular price)
+
+                    $price = ($price > 0) ? $price : $product->get_price();
+                    $list_price = ($list_price > 0) ? $list_price : $product->get_regular_price();
 
                     if ($price === $list_price) $on_sale = false; // Remove the sale flag if the cheapest variant is not on sale
 
@@ -326,7 +323,7 @@ class Clerk_Rest_Api extends WP_REST_Server
                 $productArray['type'] = $product->get_type();
                 $productArray['created_at'] = strtotime($product->get_date_created());
                 $productArray['all_images'] = [];
-                $productArray['stock'] = ($stock_quantity != null) ? $stock_quantity: 777;
+                $productArray['stock'] = ($stock_quantity != null) ? $stock_quantity: 1;
                 $productArray['managing_stock'] = $product->managing_stock();
                 $productArray['backorders'] = $product->get_backorders();
 		        $productArray['stock_status'] = $product->get_stock_status();
@@ -571,7 +568,7 @@ class Clerk_Rest_Api extends WP_REST_Server
         $options = get_option('clerk_options');
 
         try {
-        
+
             if (!isset($options['include_pages'])) {
                 return [];
             }

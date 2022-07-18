@@ -176,7 +176,7 @@ class Clerk_Product_Sync {
                         $productArray['variant_images'][] = $variation['image']['url'];
                         $productArray['variant_skus'][] = $variation['sku'];
                         $productArray['variant_ids'][] = $variation['variation_id'];
-                        $productArray['variant_stocks'][] = ($variation_obj->get_stock_quantity() != null) ? $variation_obj->get_stock_quantity() : 777;
+                        $productArray['variant_stocks'][] = ($variation_obj->get_stock_quantity() != null) ? $variation_obj->get_stock_quantity() : 0;
                         $productArray['variant_prices'][] = $variation['display_price'];
                         $productArray['variant_list_prices'][] = $variation['display_regular_price'];
 
@@ -184,26 +184,37 @@ class Clerk_Product_Sync {
                         $regularPrice[$variant_id] = $variation['display_regular_price'];
                   }
 
-                  if (empty($displayPrice)) {
-
-                    return;
-
-                  }
-
                   $lowestDisplayPrice = array_keys($displayPrice, min($displayPrice)); // Find the corresponding product ID
                   $price = $displayPrice[$lowestDisplayPrice[0]]; // Get the lowest price
                   $list_price = $regularPrice[$lowestDisplayPrice[0]]; // Get the corresponding list price (regular price)
 
+                  $price = ($price > 0) ? $price : $product->get_price();
+                  $list_price = ($list_price > 0) ? $list_price : $product->get_regular_price();
+
                   if ($price === $list_price) $on_sale = false; // Remove the sale flag if the cheapest variant is not on sale
 
-              } else {
-
+              }
+              if ($product->is_type('simple') || $product->is_type('grouped')) {
                   /**
                    * Default single product sync fields
                    */
                   $price = $product->get_price();
                   $list_price = $product->get_regular_price();
                   $stock_quantity = $product->get_stock_quantity();
+              }
+
+              if ($product->is_type('bundle')) {
+                $bundled_product = new WC_Product_Bundle($product->get_id());
+                $bundled_items = $bundled_product->get_bundled_items();
+                $stock_quantity = $product->get_stock_quantity();
+                if($price == 0 || $list_price == 0){
+                    $price = 0;
+                    $list_price = 0;
+                    foreach ($bundled_items as $item) {
+                        $price += $item->get_price();
+                        $price += $item->get_regular_price();
+                    }
+                }
               }
 
               if (!isset($options['outofstock_products'])) {
@@ -225,7 +236,7 @@ class Clerk_Product_Sync {
               $productArray['type'] = $product->get_type();
               $productArray['created_at'] = strtotime($product->get_date_created());
               $productArray['all_images'] = [];
-              $productArray['stock'] = ($stock_quantity != null) ? $stock_quantity: 777;
+              $productArray['stock'] = ($stock_quantity != null) ? $stock_quantity: 1;
               $productArray['managing_stock'] = $product->managing_stock();
               $productArray['backorders'] = $product->get_backorders();
               $productArray['stock_status'] = $product->get_stock_status();
@@ -242,7 +253,7 @@ class Clerk_Product_Sync {
 
               if (!empty($product->get_stock_quantity())) {
 
-                  $productArray['stock'] = ($product->get_stock_quantity() != null) ? $product->get_stock_quantity() : 777;
+                  $productArray['stock'] = ($product->get_stock_quantity() != null) ? $product->get_stock_quantity() : 1;
 
               }elseif (isset($stock_quantity)) {
 
