@@ -27,6 +27,7 @@ $checkout_url = $woocommerce->cart->get_checkout_url();
     </div>
     <div class="clerk_powerstep_templates">
         <?php
+        $options = get_option('clerk_options');
         $index = 0;
         $class_string = 'clerk_powerstep_';
         $filter_string = '';

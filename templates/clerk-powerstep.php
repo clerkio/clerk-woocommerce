@@ -30,6 +30,7 @@ $checkout_url = $woocommerce->cart->get_checkout_url();
 </div>
 <div class="powerstep-templates">
 	<?php
+    $options = get_option('clerk_options');
     $index = 0;
     $class_string = 'clerk_powerstep_';
     $filter_string = '';
@@ -38,7 +39,7 @@ $checkout_url = $woocommerce->cart->get_checkout_url();
         $count++;
         $id = 'clerk_'.time().$count;
         ?>
-        <span class="clerk <?php if($unique_filter){ echo $class_string.(string)$index; } ?>"
+        <span class="clerk <?php echo $options['powerstep_excl_duplicates']; if($unique_filter){ echo $class_string.(string)$index; } ?>"
             <?php if($index > 0 && $unique_filter){ echo 'data-exclude-from="'.$filter_string.'"'; }?>      
             data-template="@<?php echo esc_attr( $template ); ?>"
             data-products="[<?php echo esc_attr( $product->get_id() ); ?>]"
