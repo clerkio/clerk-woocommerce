@@ -44,7 +44,7 @@ class Clerk_Sales_Tracking
                 $round   = false; // Not rounded at item level ("true"  for rounding at item level)
                 $item_line_total     = $order->get_line_total( $item, $inc_tax, $round ); // Get line total - discounted
                 $item_quantity  = $item->get_quantity();
-                $product_id = $item->get_product_id();
+                $product_id = $item['product_id']; //$item->get_product_id(); this gets the variant ID
                 $products[] = [
                     'id' => $product_id,
                     'quantity' => $item_quantity,
