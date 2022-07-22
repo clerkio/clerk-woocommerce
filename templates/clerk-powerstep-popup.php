@@ -1,7 +1,7 @@
 <?php
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly.
+    exit; // Exit if accessed directly.
 }
 
 global $woocommerce;
@@ -13,17 +13,22 @@ $checkout_url = $woocommerce->cart->get_checkout_url();
 <div id="clerk_powerstep" class="clerk-popup" style="display: none;">
     <span class="clerk-popup-close">×</span>
     <div class="clerk_powerstep_header">
-        <h2><?php printf( esc_html__( 'You added %s to your shopping cart.', 'clerk' ), $product->get_name() ); ?></h2>
+        <h2 class="clerk_powerstep_headline">
+            <span class="clerk_powerstep_product_name">
+                <?php printf( esc_html__( '%s', 'clerk' ), $product->get_name() ); ?>
+            </span>
+            <?php echo esc_html__( ' added to cart!', 'clerk' ); ?>
+        </h2>
     </div>
     <div class="clerk_powerstep_image">
-		<?php echo $product->get_image(); ?>
+        <?php echo $product->get_image(); ?>
     </div>
     <div class="clerk_powerstep_clear actions">
-        <button class="action powerstep-cart" onclick="location.href = '<?php echo esc_attr( $cart_url ) ?>';"
-                type="button" title="<?php echo esc_attr__( 'Cart', 'clerk' ) ?>">
-            <span><?php echo esc_html__( 'Cart', 'clerk' ) ?></span>
+        <button class="button clerk-powerstep-close"><?php echo esc_html__( 'Back', 'clerk' ); ?></button>
+        <button class="button alt powerstep-cart" onclick="location.href = '<?php echo esc_attr( $cart_url ) ?>';"
+                type="button" title="<?php echo esc_attr__( 'Go to cart', 'clerk' ) ?>">
+            <span><?php echo esc_html__( 'Go to cart', 'clerk' ) ?></span>
         </button>
-        <button class="action clerk_powerstep_button clerk-powerstep-close"><?php echo esc_html__( 'Continue Shopping', 'clerk' ); ?></button>
     </div>
     <div class="clerk_powerstep_templates">
         <?php
@@ -50,9 +55,6 @@ $checkout_url = $woocommerce->cart->get_checkout_url();
         endforeach; ?>
     </div>
     <style>
-        .clerk_powerstep_button {
-            float: right;
-        }
         .clerk-popup-close {
             position: absolute;
             right: 8px;
@@ -76,21 +78,44 @@ $checkout_url = $woocommerce->cart->get_checkout_url();
             border-radius: 5px;
             box-shadow: 0px 8px 40px 0px rgba(0,0,60,0.15);
         }
+        .clerk_powerstep_headline {
+            margin: 14px 0px 14px 0px;
+            font-weight: 100;
+        }
+        .clerk_powerstep_product_name {
+            font-weight: bold;
+        }
         .clerk_powerstep_header, .clerk_powerstep_image {
             text-align: center;
         }
+
+        .clerk_powerstep_image {
+            margin: 0px 0px 24px 0px;
+        }
         .clerk_powerstep_image img{
             display: inline;
+            max-width: 25%;
         }
         .clerk_powerstep_clear {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
             overflow: hidden;
+
         }
+
         :root{
             --clerk-popup-width:60ch
         }
         @media screen and (max-width:600px){
             :root{
                 --clerk-popup-width:84vw
+            }
+            .clerk_powerstep_headline {
+                margin: 1em 0 1em 0;
+            }
+            .clerk_powerstep_clear {
+                font-size: 0.8em;
             }
         }
         @-webkit-keyframes popin{
@@ -156,6 +181,5 @@ $checkout_url = $woocommerce->cart->get_checkout_url();
             display:none
         }
 
-        
     </style>
 </div>
