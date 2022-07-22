@@ -587,7 +587,7 @@ class Clerk_Rest_Api extends WP_REST_Server
             ]);
 
             $pages = apply_filters( 'clerk_get_posts', $pages );
-            
+
             $FinalPostArray = [];
 
             foreach ($pages as $page) {
@@ -596,11 +596,17 @@ class Clerk_Rest_Api extends WP_REST_Server
 
                     $page_additional_fields = explode(',',$options['page_additional_fields']);
 
+                    $url = get_permalink($page->ID);
+                    $url = empty($url) ? $page->guid : $url;
+                    if(empty($url)){
+                        continue;
+                    }
+
                     //Changed type output to be a direct print since the page type is sometimes used by clients with custom types to categorise them in searches, etc. Useful to have in raw form.
                     $page_draft = [
                         'id' => $page->ID,
                         'type' => $page->post_type,
-                        'url' => get_permalink($page->ID),
+                        'url' => $url,
                         'title' => $page->post_title,
                         'text' => $page->post_content
                     ];
@@ -635,11 +641,17 @@ class Clerk_Rest_Api extends WP_REST_Server
                 if (!empty($page->post_content)) {
 
                     $page_additional_fields = explode(',',$options['page_additional_fields']);
+
+                    $url = get_permalink($page->ID);
+                    $url = empty($url) ? $page->guid : $url;
+                    if(empty($url)){
+                        continue;
+                    }
                     //Changed type output to be a direct print since the page type is sometimes used by clients with custom types to categorise them in searches, etc. Useful to have in raw form.
                     $page_draft = [
                         'id' => $page->ID,
                         'type' => $page->post_type,
-                        'url' => get_permalink($page->ID),
+                        'url' => $url,
                         'title' => $page->post_title,
                         'text' => $page->post_content,
                         'image' => get_the_post_thumbnail_url($page->ID)
