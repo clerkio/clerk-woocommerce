@@ -39,7 +39,7 @@ class Clerk_Sales_Tracking
             $items = $order->get_items();            //Iterate products, adding to products array
             foreach ($items as $item_id => $item) {
                 ## Option: Including or excluding Taxes
-                $inc_tax = true; 
+                $inc_tax = true;
                 ## Option: Round at item level (or not)
                 $round   = false; // Not rounded at item level ("true"  for rounding at item level)
                 $item_line_total     = $order->get_line_total( $item, $inc_tax, $round ); // Get line total - discounted
@@ -63,7 +63,7 @@ class Clerk_Sales_Tracking
             <span
                     class="clerk"
                     data-api="log/sale"
-                    data-sale="<?php echo $order_array['id']; ?>" 
+                    data-sale="<?php echo $order_array['id']; ?>"
                     data-email="<?php echo $order_array['email']; ?>"
                     data-products='<?php echo json_encode($order_array['products']); ?>'>
             </span>
