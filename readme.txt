@@ -29,6 +29,15 @@ Once signed up, simply login to your my.clerk.io backend, which will guide you t
 
 
 == Changelog ==
+= 3.7.1 - 2022-07-25 =
+* Changed how On Sale attribute is calculated
+* Changed default classes and title on powerstep to WP utility classes
+* Changed variant exclusion based on missing price
+* Added fallback for sales tracking parent id for grouped products
+* Changed stock filter to happen in bulk query instead of per product
+* Added fallback for getting page url
+
+
 = 3.7.0 - 2022-06-15 =
 * Added Exclude checkbox for all recs, and added filter to span generation.
 * Added default lists with variable product data, similar to shopify.
