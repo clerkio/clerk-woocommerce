@@ -899,7 +899,7 @@ class Clerk_Rest_Api extends WP_REST_Server
             if (!$this->validateRequest($request)) {
                 return $this->getUnathorizedResponse();
             }
-            
+
             $subscriber_query = new WP_User_Query( array( 'role' => 'Customer' ) );
             $customer_query = new WP_User_Query( array( 'role' => 'Subscriber' ) );
 
