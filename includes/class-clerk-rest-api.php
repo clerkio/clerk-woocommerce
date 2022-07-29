@@ -324,7 +324,7 @@ class Clerk_Rest_Api extends WP_REST_Server
                 $productArray['type'] = $product->get_type();
                 $productArray['created_at'] = strtotime($product->get_date_created());
                 $productArray['all_images'] = [];
-                $productArray['stock'] = ($stock_quantity != null) ? $stock_quantity: 1;
+                $productArray['stock'] = (is_numeric($stock_quantity)) ? $stock_quantity: 1;
                 $productArray['managing_stock'] = $product->managing_stock();
                 $productArray['backorders'] = $product->get_backorders();
 		        $productArray['stock_status'] = $product->get_stock_status();
@@ -873,9 +873,9 @@ class Clerk_Rest_Api extends WP_REST_Server
             $this->logger->log('Successfully generated category JSON with ' . count($settings) . ' settings', ['error' => 'None']);
 
             header('User-Agent: ClerkExtensionBot WooCommerce/v' .get_bloginfo('version'). ' Clerk/v'.get_file_data(CLERK_PLUGIN_FILE, array('version'), 'plugin')[0]. ' PHP/v'.phpversion());
-           
+
             // Return Clerk settings without public_key & private_key
-            return $settings;            
+            return $settings;
 
         } catch (Exception $e) {
 
