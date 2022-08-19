@@ -185,6 +185,18 @@ class Clerk_Search
             <div id="clerk-search-no-results" style="display: none; margin-left: 3em;"><h2><?php echo $options['search_no_results_text'] ?></h2></div>
 
             <script>
+
+                var clerk_results = false;
+
+                document.addEventListener('DOMContentLoaded', function(){
+                    Clerk('on', 'response', '#clerk-search', function(content, data){
+                        clerk_results = (data.product_data.length > 0) ? true : false;
+                        if(!clerk_results){
+                            document.querySelector('#clerk-search-no-results').style.display = 'initial';
+                        }
+                    });
+                });
+
                 var total_loaded = 0;
 
                 function _clerk_after_load_event(data) {
