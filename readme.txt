@@ -30,7 +30,7 @@ Once signed up, simply login to your my.clerk.io backend, which will guide you t
 
 == Changelog ==
 = 3.7.1 - 2022-07-25 =
-* Changed how On Sale attribute is calculated
+* Changed how On Sale attribute is calculated 
 * Changed default classes and title on powerstep to WP utility classes
 * Changed variant exclusion based on missing price
 * Added fallback for sales tracking parent id for grouped products
