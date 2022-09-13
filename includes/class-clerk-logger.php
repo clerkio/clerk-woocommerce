@@ -60,7 +60,7 @@ class ClerkLogger
 
         else {
 
-            $Metadata['uri'] = "http://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+            $Metadata['uri'] = get_site_url().$_SERVER['REQUEST_URI'];
 
         }
 
@@ -122,7 +122,7 @@ class ClerkLogger
 
         else {
 
-            $Metadata['uri'] = "http://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+            $Metadata['uri'] = get_site_url().$_SERVER['REQUEST_URI'];
 
         }
 
@@ -181,7 +181,7 @@ class ClerkLogger
 
         else {
 
-            $Metadata['uri'] = "http://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+            $Metadata['uri'] = get_site_url().$_SERVER['REQUEST_URI'];
 
         }
 
