@@ -60,7 +60,9 @@ class ClerkLogger
 
         else {
 
-            $Metadata['uri'] = get_site_url().$_SERVER['REQUEST_URI'];
+            $uri = array_key_exists($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
+
+            $Metadata['uri'] = get_site_url().$uri;
 
         }
 
@@ -122,7 +124,9 @@ class ClerkLogger
 
         else {
 
-            $Metadata['uri'] = get_site_url().$_SERVER['REQUEST_URI'];
+            $uri = array_key_exists($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
+
+            $Metadata['uri'] = get_site_url().$uri;
 
         }
 
@@ -181,7 +185,9 @@ class ClerkLogger
 
         else {
 
-            $Metadata['uri'] = get_site_url().$_SERVER['REQUEST_URI'];
+            $uri = array_key_exists($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
+
+            $Metadata['uri'] = get_site_url().$uri;
 
         }
 
