@@ -23,6 +23,7 @@ class Clerk_Product_Sync {
 
 	private function initHooks() {
 		add_action( 'save_post', [ $this, 'save_product' ], 10, 3 );
+        add_action( 'woocommerce_new_product', [ $this, 'save_product' ], 10, 3);
 		add_action( 'before_delete_post', [ $this, 'remove_product' ] );
 	}
 
