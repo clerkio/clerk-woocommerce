@@ -249,7 +249,9 @@ class Clerk_Rest_Api extends WP_REST_Server
                     foreach ($variations as $variation) {
                         $variant_id = $variation['variation_id'];
 
-                        $is_available = (($variation['is_in_stock'] || isset($options['outofstock_products'])) && $variation['is_purchasable']) || ($variation['backorders_allowed'] && $variation['is_purchasable']) ? true : false;
+                        if(array_key_exists('is_in_stock', $variation) && array_key_exists('is_purchasable', $variation) && array_key_exists('backorders_allowed', $variation)){
+                            $is_available = ($variation['is_in_stock'] && $variation['is_purchasable']) || ($variation['backorders_allowed'] && $variation['is_purchasable']) ? true : false;
+                        }
 
                         if(!$is_available){
                             continue;
@@ -276,9 +278,11 @@ class Clerk_Rest_Api extends WP_REST_Server
                         $regularPrice[$variant_id] = $variation['display_regular_price'];
                     }
 
-                    $lowestDisplayPrice = array_keys($displayPrice, min($displayPrice)); // Find the corresponding product ID
-                    $price = $displayPrice[$lowestDisplayPrice[0]]; // Get the lowest price
-                    $list_price = $regularPrice[$lowestDisplayPrice[0]]; // Get the corresponding list price (regular price)
+                    if(!empty($lowestDisplayPrice)){
+                        $lowestDisplayPrice = array_keys($displayPrice, min($displayPrice)); // Find the corresponding product ID
+                        $price = $displayPrice[$lowestDisplayPrice[0]]; // Get the lowest price
+                        $list_price = $regularPrice[$lowestDisplayPrice[0]]; // Get the corresponding list price (regular price)
+                    }
 
                     $price = ($price > 0) ? $price : $product->get_price();
                     $list_price = ($list_price > 0) ? $list_price : $product->get_regular_price();
