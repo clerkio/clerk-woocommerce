@@ -23,7 +23,8 @@ class Clerk_Product_Sync {
 
 	private function initHooks() {
 		add_action( 'save_post', [ $this, 'save_product' ], 10, 3 );
-        add_action( 'woocommerce_new_product', [ $this, 'save_product' ], 10, 3);
+        add_action( 'woocommerce_new_product', [ $this, 'save_product' ], 10, 3 );
+        add_action( 'woocommerce_product_import_inserted_product_object', [ $this, 'save_product' ], 10, 2 );
 		add_action( 'before_delete_post', [ $this, 'remove_product' ] );
 	}
 
@@ -32,6 +33,12 @@ class Clerk_Product_Sync {
         $options = get_option('clerk_options');
 
         try {
+
+            // Handling for products created through wordpress import feature
+            $object_type = get_class($post_id);
+            if ($object_type) {
+                $product = $post_id;
+            }
 
             if (!$options['realtime_updates'] == 1) {
                 return;
