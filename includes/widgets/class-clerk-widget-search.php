@@ -6,7 +6,7 @@ class Clerk_Widget_Search extends WP_Widget {
 	 */
 	public function __construct() {
 		$widget_ops = array(
-			'classname'                   => 'clerk widget_search',
+			'classname'                   => 'widget_search widget_clerk',
 			'description'                 => __( 'Clerk powered search form', 'clerk' ),
 			'customize_selective_refresh' => true,
 		);
