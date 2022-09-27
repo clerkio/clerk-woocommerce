@@ -53,6 +53,21 @@ class Clerk_Product_Sync {
             }
 
             if (clerk_check_version()) {
+		    
+		//Don't send variations when parent is not published
+                if ($product->is_type('variation')) {
+                    $parent = wc_get_product($product->get_parent_id());
+
+                    if (!$parent) {
+                        return;
+                    }
+
+                    if ($parent->get_status() !== 'publish') {
+                        $this->remove_product($product->get_id());
+                        return;
+                    }
+                }
+		    
                 if ($product->get_status() === 'publish') {
                     //Send product to Clerk
                     $this->add_product($product);
@@ -69,7 +84,7 @@ class Clerk_Product_Sync {
 
                     }
 
-                } elseif (!$product->get_status() === 'draft') {
+                } else {
                     //Remove product
                     $this->remove_product($product->get_id());
                 }
