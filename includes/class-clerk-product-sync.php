@@ -165,12 +165,15 @@ class Clerk_Product_Sync {
                   $regularPrice = array();
                   foreach ($variation as $v) {
                         $variant_id = $variation['variation_id'];
+                        $is_available = false;
                         if(array_key_exists('is_in_stock', $variation) && array_key_exists('is_purchasable', $variation) && array_key_exists('backorders_allowed', $variation)){
                             $is_available = ($variation['is_in_stock'] && $variation['is_purchasable']) || ($variation['backorders_allowed'] && $variation['is_purchasable']) ? true : false;
                         }
 
-                        if(!$is_available){
-                            continue;
+                        if(!isset($options['outofstock_products'])){
+                            if(!$is_available){
+                                continue;
+                            }
                         }
 
                         $variation_obj = new WC_Product_variation($variation['variation_id']);
