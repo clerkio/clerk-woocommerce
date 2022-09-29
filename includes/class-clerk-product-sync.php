@@ -212,7 +212,7 @@ class Clerk_Product_Sync {
                         $regularPrice[$variant_id] = $variation['display_regular_price'];
                   }
 
-                if(!empty($lowestDisplayPrice)){
+                if(!empty($displayPrice)){
                     $lowestDisplayPrice = array_keys($displayPrice, min($displayPrice)); // Find the corresponding product ID
                     $price = $displayPrice[$lowestDisplayPrice[0]]; // Get the lowest price
                     $list_price = $regularPrice[$lowestDisplayPrice[0]]; // Get the corresponding list price (regular price)
