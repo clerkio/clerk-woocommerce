@@ -158,6 +158,9 @@ class Clerk_Api {
 
             $url = $this->baseurl . $endpoint;
 
+            $product_params['price'] = floatval($product_params['price']);
+            $product_params['list_price'] = floatval($product_params['list_price']);
+		
             $response = wp_safe_remote_post($url, [
                 'headers' => array('Content-Type' => 'application/json; charset=utf-8'),
                 'body' => json_encode($params),
