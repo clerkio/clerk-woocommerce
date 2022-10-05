@@ -29,6 +29,17 @@ Once signed up, simply login to your my.clerk.io backend, which will guide you t
 
 
 == Changelog ==
+
+= 3.8.0 - 2022-05-10 =
+* Added message to empty search pages.
+* Added settings check before syncing variant stocks.
+* Changed base domain determination to work with CLI updates.
+* Added hooks for syncing new products, without them being edited.
+* Added hooks for catching products created through WooCommerce CSV / Import feature in real time updates.
+* Fixed bug where prices would be cast to strings when only updating that field.
+* Removed css class from input widget, which could generate console errors.
+* Added Get / Set config support for all settings fields in Admin.
+
 = 3.7.1 - 2022-07-25 =
 * Changed how On Sale attribute is calculated 
 * Changed default classes and title on powerstep to WP utility classes
