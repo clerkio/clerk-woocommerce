@@ -367,11 +367,14 @@ class Clerk_Visitor_Tracking {
     {
 
         try {
-        $signup_msg = 'Subscribe to our newsletter to receive the latest news and updates!';  
+        $signup_msg = '';
         $options = get_option('clerk_options');
-        if (array_key_exists('collect_emails_signup_message', $options) ) {
+        $show_signup = false;
+        if (array_key_exists('collect_emails_signup_message', $options) && array_key_exists('collect_emails', $options)) {
             $signup_msg = $options['collect_emails_signup_message'];
+            $show_signup = true;
         }
+        if($show_signup):
 	?>
 		<p class="form-row validate-optional">
 		   <label class="woocommerce-form__label woocommerce-form__label-for-checkbox checkbox">
@@ -392,7 +395,7 @@ class Clerk_Visitor_Tracking {
 			}
 		</script>
 	<?php
-
+        endif;
         } catch (Exception $e) {
 
             $this->logger->error('ERROR clerk_woocommerce_archive_description', ['error' => $e->getMessage()]);
