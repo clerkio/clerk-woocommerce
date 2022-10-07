@@ -40,7 +40,7 @@ class Clerk_Product_Sync {
                 $product = $post_id;
             }
 
-            if (!$options['realtime_updates'] == 1) {
+            if (!array_key_exists('realtime_updates', $options)) {
                 return;
             }
 
