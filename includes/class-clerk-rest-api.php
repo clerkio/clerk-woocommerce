@@ -327,23 +327,13 @@ class Clerk_Rest_Api extends WP_REST_Server
                 $productArray['categories'] = wp_list_pluck($categories, 'term_id');
                 $productArray['sku'] = $product->get_sku();
                 $productArray['on_sale'] = $on_sale;
+                $productArray['all_images'] = [];
                 $productArray['type'] = $product->get_type();
                 $productArray['created_at'] = strtotime($product->get_date_created());
-                $productArray['all_images'] = [];
                 $productArray['stock'] = (is_numeric($stock_quantity)) ? $stock_quantity: 1;
                 $productArray['managing_stock'] = $product->managing_stock();
                 $productArray['backorders'] = $product->get_backorders();
 		        $productArray['stock_status'] = $product->get_stock_status();
-
-                foreach (get_intermediate_image_sizes() as $key => $image_size) {
-
-                    if (!in_array(wp_get_attachment_image_src($product->get_image_id(),$image_size)[0], $productArray['all_images'])) {
-
-                        array_push($productArray['all_images'] , wp_get_attachment_image_src($product->get_image_id(), $image_size)[0]);
-
-                    }
-
-                }
 
                 //Append additional fields
                 foreach ($this->getAdditionalFields() as $field) {
@@ -352,6 +342,15 @@ class Clerk_Rest_Api extends WP_REST_Server
 
                         continue;
 
+                    }
+
+                    if($field == 'all_images'){
+                        foreach (get_intermediate_image_sizes() as $key => $image_size) {
+                            if (!in_array(wp_get_attachment_image_src($product->get_image_id(),$image_size)[0], $productArray['all_images'])) {
+                                array_push($productArray['all_images'] , wp_get_attachment_image_src($product->get_image_id(), $image_size)[0]);
+                            }
+                        }
+                        continue;
                     }
 
                     if ($product->get_attribute($field) || isset($product->$field)) {

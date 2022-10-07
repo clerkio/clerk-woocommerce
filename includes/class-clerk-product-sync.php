@@ -271,16 +271,6 @@ class Clerk_Product_Sync {
               $productArray['backorders'] = $product->get_backorders();
               $productArray['stock_status'] = $product->get_stock_status();
 
-              foreach (get_intermediate_image_sizes() as $key => $image_size) {
-
-                  if (!in_array(wp_get_attachment_image_src($product->get_image_id(),$image_size)[0], $productArray['all_images'])) {
-
-                      array_push($productArray['all_images'] , wp_get_attachment_image_src($product->get_image_id(), $image_size)[0]);
-
-                  }
-
-              }
-
               if (!empty($product->get_stock_quantity())) {
 
                   $productArray['stock'] = ($product->get_stock_quantity() != null) ? $product->get_stock_quantity() : 1;
@@ -294,11 +284,18 @@ class Clerk_Product_Sync {
               //Append additional fields
               foreach ($this->getAdditionalFields() as $field) {
 
-                  if ($field == '') {
+                if ($field == '') {
+                    continue;
+                }
 
-                      continue;
-
-                  }
+                if($field == 'all_images'){
+                    foreach (get_intermediate_image_sizes() as $key => $image_size) {
+                        if (!in_array(wp_get_attachment_image_src($product->get_image_id(),$image_size)[0], $productArray['all_images'])) {
+                            array_push($productArray['all_images'] , wp_get_attachment_image_src($product->get_image_id(), $image_size)[0]);
+                        }
+                    }
+                    continue;
+                }
 
                   if ($product->get_attribute($field) || isset($product->$field)) {
 
