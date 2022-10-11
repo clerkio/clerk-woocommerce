@@ -35,8 +35,8 @@ class Clerk_Product_Sync {
         try {
 
             // Handling for products created through wordpress import feature
-            $object_type = get_class($post_id);
-            if ($object_type) {
+            $object_type = is_int($post_id);
+            if (!$object_type){
                 $product = $post_id;
             }
 
