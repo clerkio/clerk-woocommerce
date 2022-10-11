@@ -30,6 +30,9 @@ Once signed up, simply login to your my.clerk.io backend, which will guide you t
 
 == Changelog ==
 
+= 3.8.1 - 2022-10-10 =
+* Fixed realtime updates object eval
+
 = 3.8.0 - 2022-05-10 =
 * Added message to empty search pages.
 * Added settings check before syncing variant stocks.
