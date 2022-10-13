@@ -23,13 +23,12 @@ class Clerk_Product_Sync {
 
 	private function initHooks() {
 		add_action( 'save_post', [ $this, 'save_product' ], 10, 3 );
-		// The woocommerce_new_product hook seems to pass invalid arguments to save_product function for some sites. Cannot reproduce on test site, but should be removed until cause for difference is found.
-        	// add_action( 'woocommerce_new_product', [ $this, 'save_product' ], 10, 3 );
+        	add_action( 'woocommerce_new_product', [ $this, 'save_product' ], 10, 3 );
         	add_action( 'woocommerce_product_import_inserted_product_object', [ $this, 'save_product' ], 10, 2 );
 		add_action( 'before_delete_post', [ $this, 'remove_product' ] );
 	}
 
-	public function save_product( $post_id, $post, $update ) {
+	public function save_product( $post_id = null, $post = null, $update = null ) {
 
         $options = get_option('clerk_options');
 
