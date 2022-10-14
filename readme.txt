@@ -30,6 +30,9 @@ Once signed up, simply login to your my.clerk.io backend, which will guide you t
 
 == Changelog ==
 
+= 3.8.2 - 2022-10-14 =
+* Added default null values to save_product function
+
 = 3.8.1 - 2022-10-10 =
 * Fixed realtime updates object eval
 

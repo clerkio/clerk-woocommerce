@@ -53,7 +53,7 @@ class Clerk_Product_Sync {
             }
 
             if (clerk_check_version()) {
-		    
+
 		//Don't send variations when parent is not published
                 if ($product->is_type('variation')) {
                     $parent = wc_get_product($product->get_parent_id());
