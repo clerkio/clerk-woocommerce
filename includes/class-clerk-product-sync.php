@@ -234,18 +234,23 @@ class Clerk_Product_Sync {
               }
 
               if ($product->is_type('bundle')) {
-                $bundled_product = new WC_Product_Bundle($product->get_id());
-                $bundled_items = $bundled_product->get_bundled_items();
+                $price = $product->min_raw_price;
+                $list_price = $product->min_raw_regular_price;
+                $bundled_items = $product->get_bundled_items();
                 $stock_quantity = $product->get_stock_quantity();
-                if($price == 0 || $list_price == 0){
+                if(!$price){
                     $price = 0;
-                    $list_price = 0;
                     foreach ($bundled_items as $item) {
                         $price += $item->get_price();
+                    }
+                }
+                if(!$list_price){
+                    $list_price = 0;
+                    foreach ($bundled_items as $item) {
                         $list_price += $item->get_regular_price();
                     }
                 }
-              }
+                }
 
               if (!isset($options['outofstock_products'])) {
                 if($product->get_stock_status() !== 'instock'){
