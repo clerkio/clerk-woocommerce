@@ -311,7 +311,7 @@ class Clerk_Rest_Api extends WP_REST_Server
                         $list_price = 0;
                         foreach ($bundled_items as $item) {
                             $price += $item->get_price();
-                            $price += $item->get_regular_price();
+                            $list_price += $item->get_regular_price();
                         }
                     }
                 }
