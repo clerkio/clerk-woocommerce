@@ -247,7 +247,7 @@ class Clerk_Visitor_Tracking {
             
                                 request = jQuery.ajax({
                                                 type : "POST",
-                                                url  : "/wordpress/wp-admin/admin-ajax.php",
+                                                url  : "<?php echo admin_url( 'admin-ajax.php' ); ?>",
                                                 data: {
                                                     action:'get_cart'
                                                 }, 
@@ -334,7 +334,7 @@ class Clerk_Visitor_Tracking {
                                     }
                                     });
 
-                                    request.open('POST', "/wordpress/wp-admin/admin-ajax.php", true);
+                                    request.open('POST', "<?php echo admin_url( 'admin-ajax.php' ); ?>", true);
                                     request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
                                     request.send(data);
                         
