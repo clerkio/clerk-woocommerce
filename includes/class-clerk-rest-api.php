@@ -591,9 +591,19 @@ class Clerk_Rest_Api extends WP_REST_Server
 
             //Get all posts regardless of custom types, can be named anything from blog, post, weaboo, since people can create their own
             //Same operations as for normal pages apply, fields are named the same
+
+            $post_types = array('post', 'page');
+            $additional_types_list = array();
+            if(isset($options['page_additional_types'])){
+                $additional_types = preg_replace('/\s+/', '', $options['page_additional_types']);
+                $additional_types_list = explode(',', $additional_types);
+                $post_types = array_values(array_unique(array_merge($post_types, $additional_types_list)));
+            }
+
             $pages = get_posts([
             'post_status' => 'publish',
-            'numberposts' => -1
+            'numberposts' => -1,
+            'post_type' => $post_types
             ]);
 
             $pages = apply_filters( 'clerk_get_posts', $pages );
@@ -722,6 +732,7 @@ class Clerk_Rest_Api extends WP_REST_Server
                 "realtime_updates",
                 "include_pages",
                 "page_additional_fields",
+                "page_additional_types",
                 "outofstock_products",
                 "collect_emails",
                 "collect_emails_signup_message",
@@ -846,6 +857,7 @@ class Clerk_Rest_Api extends WP_REST_Server
                                   "realtime_updates",
                                   "include_pages",
                                   "page_additional_fields",
+                                  "page_additional_types",
                                   "outofstock_products",
                                   "collect_emails",
                                   "collect_emails_signup_message",

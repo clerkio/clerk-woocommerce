@@ -448,6 +448,17 @@ class Clerk_Admin_Settings
             ]
         );
 
+        add_settings_field('page_additional_types',
+            __('Page Additional Types', 'clerk'),
+            [$this, 'addTextField'],
+            'clerk',
+            'clerk_section_datasync',
+            [
+                'label_for' => 'page_additional_types',
+                'description' => 'A comma separated list of additional page types to sync'
+            ]
+        );
+
         add_settings_field('outofstock_products',
             __('Include Out Of Stock Products', 'clerk'),
             [$this, 'addCheckboxField'],
@@ -1716,10 +1727,13 @@ class Clerk_Admin_Settings
 
     public function addPagesTypeDropdown($args)
     {
-
-        $Types = ['All', 'CMS Page', 'Blog Post'];
         $options = get_option('clerk_options');
-
+        $post_type_args = array('public' => true);
+        $post_types = get_post_types($post_type_args);
+        $Types = ['All'];
+        if($post_types){
+            $Types = array_merge($Types, $post_types);
+        }
         ?>
         <select id="<?php echo esc_attr($args['label_for']); ?>"
                 name="clerk_options[<?php echo esc_attr($args['label_for']); ?>]">
