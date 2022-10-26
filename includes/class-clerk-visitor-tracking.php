@@ -154,6 +154,16 @@ class Clerk_Visitor_Tracking {
             <!-- End of Clerk.io E-commerce Personalisation tool - www.clerk.io -->
             <?php
 
+            if(isset( $options['clerk_additional_scripts_enabled'])){
+                if(isset($options['clerk_additional_scripts_content'])){
+                    $script_js = $options['clerk_additional_scripts_content'];
+                } else {
+                    $script_js = 's';
+                }
+                $additional_scripts_html = "<script id='clerk_additional_header_scripts'>$script_js</script>";
+                echo $additional_scripts_html;
+            }
+
             if ( isset( $options['livesearch_enabled'] ) && $options['livesearch_enabled'] ) :
 
                 ?>

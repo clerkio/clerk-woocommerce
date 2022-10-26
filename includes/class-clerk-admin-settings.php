@@ -893,6 +893,52 @@ class Clerk_Admin_Settings
                 'description' => 'Exclude duplicate products'
             ]
         );
+
+        add_settings_field('powerstep_custom_text_enabled',
+            __('Enable Custom Texts', 'clerk'),
+            [$this, 'addCheckboxField'],
+            'clerk',
+            'clerk_section_powerstep',
+            [
+                'label_for' => 'powerstep_custom_text_enabled',
+                'checked' => 0
+            ]
+        );
+
+        add_settings_field('powerstep_custom_text_back',
+            __('Back Button', 'clerk'),
+            [$this, 'addTextField'],
+            'clerk',
+            'clerk_section_powerstep',
+            [
+                'label_for' => 'powerstep_custom_text_back',
+                'value' => 'Back to Shopping',
+            ]
+        );
+
+        add_settings_field('powerstep_custom_text_cart',
+            __('Cart Button', 'clerk'),
+            [$this, 'addTextField'],
+            'clerk',
+            'clerk_section_powerstep',
+            [
+                'label_for' => 'powerstep_custom_text_cart',
+                'value' => 'Continue to Cart',
+            ]
+        );
+
+        add_settings_field('powerstep_custom_text_title',
+            __('Product Title', 'clerk'),
+            [$this, 'addTextField'],
+            'clerk',
+            'clerk_section_powerstep',
+            [
+                'label_for' => 'powerstep_custom_text_title',
+                'value' => 'You added PRODUCT_NAME to your cart!',
+                'description' => 'PRODUCT_NAME is dynamically replaced with product title.'
+            ]
+        );
+
         //Add exit intent section
         add_settings_section(
             'clerk_section_exit_intent',
@@ -1078,6 +1124,38 @@ class Clerk_Admin_Settings
                 'value' => '[clerk_cart_ids]',
             ]
         );
+
+        //Add additional scripts section
+        add_settings_section(
+            'clerk_section_additional_scripts',
+            __('Additional Scripts', 'clerk'),
+            null,
+            'clerk');
+
+        add_settings_field('clerk_additional_scripts_enabled',
+            __('Enabled', 'clerk'),
+            [$this, 'addCheckboxField'],
+            'clerk',
+            'clerk_section_additional_scripts',
+            [
+                'label_for' => 'clerk_additional_scripts_enabled',
+                'checked' => 1
+            ]
+        );
+
+
+        add_settings_field('clerk_additional_scripts_content',
+            __('JS Code', 'clerk'),
+            [$this, 'addTextArea'],
+            'clerk',
+            'clerk_section_additional_scripts',
+            [
+                'label_for' => 'clerk_additional_scripts_content',
+                'description' => 'Scripts will be added to the to the site header.',
+                'value' => ''
+            ]
+        );
+
         //Add logging section
         add_settings_section(
             'clerk_section_log',
@@ -2061,6 +2139,48 @@ class Clerk_Admin_Settings
     }
 
     /**
+     * Add text multi-line area
+     *
+     * @param $args
+     */
+    public function addTextArea($args)
+    {
+        //Get settings value
+        $options = get_option('clerk_options');
+
+        if (isset($options[$args['label_for']])) {
+
+            $value = $options[$args['label_for']];
+
+        }else {
+
+            if (isset($args['value'])) {
+
+                $value = $args['value'];
+            }
+            else {
+
+                $value = '';
+
+            }
+
+        }
+        ?>
+        <textarea id="<?php echo esc_attr($args['label_for']); ?>"
+                rows="5"
+                cols="50"
+                name="clerk_options[<?php echo esc_attr($args['label_for']); ?>]"
+                value="<?php echo $value; ?>"><?php echo $value; ?></textarea>
+        <?php
+        if (isset($args['description'])) :
+            ?>
+            <p class="description"
+               id="<?php echo $args['label_for']; ?>-description"><?php echo $args['description']; ?></p>
+        <?php
+        endif;
+    }
+
+    /**
      * Add page dropdown
      *
      * @param $args
@@ -2207,6 +2327,28 @@ class Clerk_Admin_Settings
                 const clerkSubmitAdminForm = () => {
                     document.querySelector('#submit').click();
                 }
+                document.addEventListener('DOMContentLoaded', function(){
+                    document.querySelector('#powerstep_custom_text_enabled').addEventListener('click', function(e){
+                        switch(e.target.checked){
+                            case true:
+                                document.querySelector('#powerstep_custom_text_back').removeAttribute('disabled');
+                                document.querySelector('#powerstep_custom_text_title').removeAttribute('disabled');
+                                document.querySelector('#powerstep_custom_text_cart').removeAttribute('disabled');
+                                break;
+                            case false:
+                                document.querySelector('#powerstep_custom_text_back').setAttribute('disabled', true);
+                                document.querySelector('#powerstep_custom_text_title').setAttribute('disabled', true);
+                                document.querySelector('#powerstep_custom_text_cart').setAttribute('disabled', true);
+                                break;
+                        }
+                    });
+                    let customPowerstepTexts = document.querySelector('#powerstep_custom_text_enabled').checked;
+                    if(!customPowerstepTexts){
+                        document.querySelector('#powerstep_custom_text_back').setAttribute('disabled', true);
+                        document.querySelector('#powerstep_custom_text_title').setAttribute('disabled', true);
+                        document.querySelector('#powerstep_custom_text_cart').setAttribute('disabled', true);
+                    }
+                });
             </script>
             <div id="clerkFloatingSaveBtn" onclick="clerkSubmitAdminForm();"><?php echo __('Save Settings', 'clerk') ?></div>
             <h1><img id="clerkLogoHeader" src="<?php echo plugin_dir_url(CLERK_PLUGIN_FILE) . 'assets/img/clerk.png' ?>"><?php echo esc_html(get_admin_page_title()); ?></h1>

@@ -9,6 +9,29 @@ global $woocommerce;
 $cart_url     = $woocommerce->cart->get_cart_url();
 $checkout_url = $woocommerce->cart->get_checkout_url();
 /** @var WC_Product $product */
+$options = get_option('clerk_options');
+
+$product_name = (string)$product->get_name();
+$title_message = esc_html__( ' added to cart!', 'clerk' );
+$title_html = "<span class='clerk_powerstep_product_name'>$product_name</span>$title_message";
+$back_button_text = esc_html__( 'Back', 'clerk' );
+$cart_button_text = esc_html__( 'Go to cart', 'clerk' );
+if(isset($options['powerstep_custom_text_enabled'])){
+    if(isset($options['powerstep_custom_text_title'])){
+        if(str_contains($options['powerstep_custom_text_title'], 'PRODUCT_NAME')){
+            $translated_array = explode('PRODUCT_NAME', $options['powerstep_custom_text_title']);
+            $pre_trans = $translated_array[0];
+            $post_trans = $translated_array[1];
+            $title_html = "$pre_trans<span class='clerk_powerstep_product_name'>$product_name</span>$post_trans";
+        }
+    }
+    if(isset($options['powerstep_custom_text_back'])){
+        $back_button_text = $options['powerstep_custom_text_back'];
+    }
+    if(isset($options['powerstep_custom_text_cart'])){
+        $cart_button_text = $options['powerstep_custom_text_cart'];
+    }
+}
 ?>
 <div id="clerk_powerstep" class="clerk-popup" style="display: none;">
     <span class="clerk-popup-close">×</span>
@@ -32,7 +55,6 @@ $checkout_url = $woocommerce->cart->get_checkout_url();
     </div>
     <div class="clerk_powerstep_templates">
         <?php
-        $options = get_option('clerk_options');
         $index = 0;
         $class_string = 'clerk_powerstep_';
         $filter_string = '';
