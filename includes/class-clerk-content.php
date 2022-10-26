@@ -27,7 +27,7 @@ class Clerk_Content
             $category = get_queried_object();
             $options = get_option('clerk_options');
 
-            if (isset($options['category_enabled']) && $options['category_enabled']) :
+            if (isset($options['category_enabled']) && $options['category_enabled'] && property_exists($category, 'term_id')) :
                 
                 $templates = explode(',',$options['category_content']);
                 $index = 0;
