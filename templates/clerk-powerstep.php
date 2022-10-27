@@ -37,17 +37,17 @@ if(isset($options['powerstep_custom_text_enabled'])){
 <div class="powerstep-success">
     <div class="powerstep-product">
 		<?php echo $product->get_image(); ?>
-		<?php printf( esc_html__( 'You added %s to your shopping cart.', 'clerk' ), $product->get_name() ); ?>
+		<?php echo $title_html; ?>
     </div>
     <div class="powerstep-actions">
         <br>
         <button class="button alt powerstep-cart" onclick="location.href = '<?php echo esc_attr( $cart_url ); ?>';"
-                type="button" title="<?php echo  esc_attr__( 'Go to cart', 'clerk' ); ?>">
-            <span><?php echo  esc_attr__( 'Go to cart', 'clerk' ); ?></span>
+                type="button" title="<?php echo $cart_button_text; ?>">
+            <span><?php echo $cart_button_text; ?></span>
         </button>
         <button class="button" onclick="window.history.back();" type="button"
-                title="<?php echo esc_html__( 'Back', 'clerk' ); ?>">
-            <span><?php echo esc_html__( 'Back', 'clerk' ); ?></span>
+                title="<?php echo $back_button_text; ?>">
+            <span><?php echo $back_button_text; ?></span>
         </button>
     </div>
 </div>

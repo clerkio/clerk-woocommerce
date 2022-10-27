@@ -37,20 +37,17 @@ if(isset($options['powerstep_custom_text_enabled'])){
     <span class="clerk-popup-close">×</span>
     <div class="clerk_powerstep_header">
         <h2 class="clerk_powerstep_headline">
-            <span class="clerk_powerstep_product_name">
-                <?php printf( esc_html__( '%s', 'clerk' ), $product->get_name() ); ?>
-            </span>
-            <?php echo esc_html__( ' added to cart!', 'clerk' ); ?>
+            <?php echo $title_html; ?>
         </h2>
     </div>
     <div class="clerk_powerstep_image">
         <?php echo $product->get_image(); ?>
     </div>
     <div class="clerk_powerstep_clear actions">
-        <button class="button clerk-powerstep-close"><?php echo esc_html__( 'Back', 'clerk' ); ?></button>
+        <button class="button clerk-powerstep-close"><?php echo $back_button_text; ?></button>
         <button class="button alt powerstep-cart" onclick="location.href = '<?php echo esc_attr( $cart_url ) ?>';"
-                type="button" title="<?php echo esc_attr__( 'Go to cart', 'clerk' ) ?>">
-            <span><?php echo esc_html__( 'Go to cart', 'clerk' ) ?></span>
+                type="button" title="<?php echo $cart_button_text; ?>">
+            <span><?php echo $cart_button_text; ?></span>
         </button>
     </div>
     <div class="clerk_powerstep_templates">

@@ -28,7 +28,7 @@ class Clerk_Content
             $options = get_option('clerk_options');
 
             if (isset($options['category_enabled']) && $options['category_enabled'] && property_exists($category, 'term_id')) :
-                
+
                 $templates = explode(',',$options['category_content']);
                 $index = 0;
                 $class_string = 'clerk_';
@@ -40,7 +40,7 @@ class Clerk_Content
                     <span class="clerk <?php if($unique_filter){ echo $class_string.(string)$index; } ?>"
                         <?php if($index > 0 && $unique_filter){ echo 'data-exclude-from="'.$filter_string.'"'; }?>
                         data-template="@<?php echo str_replace(' ', '', $template); ?>"
-                        data-category="<?php echo $category->term_id; ?>"></span> 
+                        data-category="<?php echo $category->term_id; ?>"></span>
                     <?php
                     if($index > 0){
                         $filter_string .= ', ';
