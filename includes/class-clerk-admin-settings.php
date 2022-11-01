@@ -1682,6 +1682,7 @@ class Clerk_Admin_Settings
                     padding-left: 0.7rem;
                 }
                 #wpcontent h1 {
+                    max-width: fit-content;
                     font-weight: 900;
                     font-family: roboto;
                     padding: 1rem 1.5rem 1rem 2.5rem;
@@ -1750,6 +1751,7 @@ class Clerk_Admin_Settings
                 #clerkFloatingSaveBtn {
                     position: fixed;
                     right: 3rem;
+                    top: 3rem;
                     background: #2271b1;
                     padding: 1rem;
                     border-radius: 5px;
