@@ -261,14 +261,15 @@ class Clerk_Rest_Api extends WP_REST_Server
 
                         $variation_obj = new WC_Product_variation($variation['variation_id']);
                         $stock_quantity += $variation_obj->get_stock_quantity();
+                        if(isset($variation['attributes'])){
+                            $options_array = array_values($variation['attributes']);
+                            $options_array = array_filter($options_array, function($var){
+                                return (gettype($var) != 'boolean' && $var != NULL && $var != '' && $var != 'Yes' && $var != 'No');
+                            });
+                            $options_string = implode(' ', $options_array);
+                            $productArray['variant_options'][] = $options_string;
+                        }
 
-                        $options_array = array_values($variation['attributes']);
-                        $options_array = array_filter($options_array, function($var){
-                            return (gettype($var) != 'boolean' && $var != NULL && $var != '' && $var != 'Yes' && $var != 'No');
-                        });
-                        $options_string = implode(' ', $options_array);
-
-                        $productArray['variant_options'][] = $options_string;
                         $productArray['variant_images'][] = $variation['image']['url'];
                         $productArray['variant_skus'][] = $variation['sku'];
                         $productArray['variant_ids'][] = $variation['variation_id'];
