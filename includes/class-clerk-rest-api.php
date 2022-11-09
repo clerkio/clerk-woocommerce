@@ -371,6 +371,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
                     }
 
                 }
+                $productArray['id'] = $product->get_id();
                 $productArray['name'] = $product->get_name();
                 $productArray['description'] = get_post_field('post_content', $product->get_id());
                 $productArray['price'] = (float) $price;
