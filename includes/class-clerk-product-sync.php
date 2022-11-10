@@ -266,13 +266,15 @@ class Clerk_Product_Sync {
 
             $image_size_setting = isset($options['data_sync_image_size']) ? $options['data_sync_image_size'] : 'medium';
 
-            $product_image = wp_get_attachment_image_src($product->get_image_id(), $image_size_setting)[0];
+            $product_image = wp_get_attachment_image_src($product->get_image_id(), $image_size_setting);
             if (!$product_image) {
                 if (function_exists('wc_placeholder_img_src')) {
                     $product_image = wc_placeholder_img_src($image_size_setting);
                 } else {
                     $product_image = '';
                 }
+            } else {
+                $product_image = $product_image[0];
             }
 
             $productArray['id'] = $product->get_id();
