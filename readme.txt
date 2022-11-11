@@ -1,11 +1,11 @@
-=== Clerk === 
+=== Clerk ===
 Contributors: clerkio, audunhus
 Tags: product recommendations, semantic search, customer conversion, customer retention, customer segmentation, webshop personalization, sales optimisation
 License: MIT
 License URI: https://opensource.org/licenses/MIT
-Tested up to: 5.4.1
+Tested up to: 6.1
 WC requires at least: 2.6
-WC tested up to: 6.5.1
+WC tested up to: 7.1.0
 
 == Description ==
 Clerk.io is a software that helps your customers buy more from your webshop, through 4 amazing feature:
@@ -30,6 +30,11 @@ Once signed up, simply login to your my.clerk.io backend, which will guide you t
 
 == Changelog ==
 
+= 3.8.3 - 2022-10-14
+* Added header scripts field to admin
+* Added manual translations to powerstep
+* Improved key verification for API
+
 = 3.8.2 - 2022-10-14 =
 * Added default null values to save_product function
 
@@ -47,7 +52,7 @@ Once signed up, simply login to your my.clerk.io backend, which will guide you t
 * Added Get / Set config support for all settings fields in Admin.
 
 = 3.7.1 - 2022-07-25 =
-* Changed how On Sale attribute is calculated 
+* Changed how On Sale attribute is calculated
 * Changed default classes and title on powerstep to WP utility classes
 * Changed variant exclusion based on missing price
 * Added fallback for sales tracking parent id for grouped products
