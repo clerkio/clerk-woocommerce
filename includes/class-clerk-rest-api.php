@@ -39,7 +39,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
             'clerk',
             '/getconfig',
             [
-                'methods' => 'GET',
+                'methods' => array('GET', 'POST'),
                 'callback' => [$this, 'getconfig_endpoint_callback'],
                 'permission_callback' => '__return_true',
             ]
@@ -61,7 +61,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
             'clerk',
             '/product',
             [
-                'methods' => 'GET',
+                'methods' => array('GET', 'POST'),
                 'callback' => [$this, 'product_endpoint_callback'],
                 'permission_callback' => '__return_true',
             ]
@@ -72,7 +72,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
             'clerk',
             '/page',
             [
-                'methods' => 'GET',
+                'methods' => array('GET', 'POST'),
                 'callback' => [$this, 'page_endpoint_callback'],
                 'permission_callback' => '__return_true',
             ]
@@ -83,7 +83,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
             'clerk',
             '/category',
             [
-                'methods' => 'GET',
+                'methods' => array('GET', 'POST'),
                 'callback' => [$this, 'category_endpoint_callback'],
                 'permission_callback' => '__return_true',
             ]
@@ -94,7 +94,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
             'clerk',
             '/order',
             [
-                'methods' => 'GET',
+                'methods' => array('GET', 'POST'),
                 'callback' => [$this, 'order_endpoint_callback'],
                 'permission_callback' => '__return_true',
             ]
@@ -105,7 +105,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
             'clerk',
             '/customer',
             [
-                'methods' => 'GET',
+                'methods' => array('GET', 'POST'),
                 'callback' => [$this, 'customer_endpoint_callback'],
                 'permission_callback' => '__return_true',
             ]
@@ -116,7 +116,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
             'clerk',
             '/version',
             [
-                'methods' => 'GET',
+                'methods' => array('GET', 'POST'),
                 'callback' => [$this, 'version_endpoint_callback'],
                 'permission_callback' => '__return_true',
             ]
@@ -127,7 +127,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
             'clerk',
             '/plugin',
             [
-                'methods' => 'GET',
+                'methods' => array('GET', 'POST'),
                 'callback' => [$this, 'plugin_endpoint_callback'],
                 'permission_callback' => '__return_true',
             ]
@@ -138,7 +138,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
             'clerk',
             '/log',
             [
-                'methods' => 'GET',
+                'methods' => array('GET', 'POST'),
                 'callback' => [$this, 'log_endpoint_callback'],
                 'permission_callback' => '__return_true',
             ]
@@ -985,7 +985,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
                     // We will find the settings names that has not been send with the body request and add them to an array
                     // so we can send the origin name values to the database as well
 
-                    $arrDiff = array_diff_key($options, $bodyArray); // Array: Compare the keys of two arrays, and return the differences           
+                    $arrDiff = array_diff_key($options, $bodyArray); // Array: Compare the keys of two arrays, and return the differences
 
                     // Add the arguments not in the body to the settings array
                     foreach ($arrDiff as $key => $value) {
@@ -1132,16 +1132,28 @@ class Clerk_Rest_Api extends WP_REST_Server {
      *
      * @return bool
      */
-    private function validateRequest($request) {
+    private function validateRequest($request)
+    {
 
         try {
 
             $options = get_option('clerk_options');
 
-            $public_key = $request->get_param('key');
-            $private_key = $request->get_param('private_key');
-
-            if ($public_key === $options['public_key'] && $private_key === $options['private_key']) {
+            $clerk_plugin_version = get_file_data(CLERK_PLUGIN_FILE, array('version'), 'plugin')[0];
+            $public_key = '';
+            $private_key = '';
+            if (version_compare($clerk_plugin_version, '3.8.2', '>')) {
+                $body = $request->get_body();
+                if($body){
+                    $body_json = json_decode($body, true);
+                    $public_key = $body_json['key'];
+                    $private_key = $body_json['private_key'];
+                }
+            } else {
+                $public_key = $request->get_param('key');
+                $private_key = $request->get_param('private_key');
+            }
+            if ($this->timingSafeEquals($options['public_key'], $public_key) && $this->timingSafeEquals($options['private_key'], $private_key)) {
 
                 return true;
             }
@@ -1156,6 +1168,24 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
         }
 
+    }
+
+    private function timingSafeEquals($safe, $user) {
+        $safeLen = strlen($safe);
+        $userLen = strlen($user);
+
+        if ($userLen != $safeLen) {
+            return false;
+        }
+
+        $result = 0;
+
+        for ($i = 0; $i < $userLen; $i++) {
+            $result |= (ord($safe[$i]) ^ ord($user[$i]));
+        }
+
+        // They are only identical strings if $result is exactly 0...
+        return $result === 0;
     }
 
     /**
