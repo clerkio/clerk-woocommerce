@@ -1142,12 +1142,16 @@ class Clerk_Rest_Api extends WP_REST_Server {
             $clerk_plugin_version = get_file_data(CLERK_PLUGIN_FILE, array('version'), 'plugin')[0];
             $public_key = '';
             $private_key = '';
-            if (version_compare($clerk_plugin_version, '3.8.2', '>')) {
-                $body = $request->get_body();
+            if (version_compare($clerk_plugin_version, '3.8.2', '>=')) {
+                $body = $request->get_body_params();
                 if($body){
-                    $body_json = json_decode($body, true);
-                    $public_key = $body_json['key'];
-                    $private_key = $body_json['private_key'];
+                    if(is_array($body)){
+                        $public_key = array_key_exists('key', $body) ? $body['key'] : '';
+                        $private_key = array_key_exists('private_key', $body) ? $body['private_key'] : '';
+                    }
+                } else {
+                    $this->logger->warn('Failed to validate API Keys', ['response' => false]);
+                    return false;
                 }
             } else {
                 $public_key = $request->get_param('key');
