@@ -1142,21 +1142,18 @@ class Clerk_Rest_Api extends WP_REST_Server {
             $clerk_plugin_version = get_file_data(CLERK_PLUGIN_FILE, array('version'), 'plugin')[0];
             $public_key = '';
             $private_key = '';
-            if (version_compare($clerk_plugin_version, '3.8.2', '>=')) {
-                $body = $request->get_body_params();
-                if($body){
-                    if(is_array($body)){
-                        $public_key = array_key_exists('key', $body) ? $body['key'] : '';
-                        $private_key = array_key_exists('private_key', $body) ? $body['private_key'] : '';
-                    }
-                } else {
-                    $this->logger->warn('Failed to validate API Keys', ['response' => false]);
-                    return false;
+
+            $body = json_decode($request->get_body(), true);
+            if($body){
+                if(is_array($body)){
+                    $public_key = array_key_exists('key', $body) ? $body['key'] : '';
+                    $private_key = array_key_exists('private_key', $body) ? $body['private_key'] : '';
                 }
             } else {
-                $public_key = $request->get_param('key');
-                $private_key = $request->get_param('private_key');
+                $this->logger->warn('Failed to validate API Keys', ['response' => false]);
+                return false;
             }
+
             if ($this->timingSafeEquals($options['public_key'], $public_key) && $this->timingSafeEquals($options['private_key'], $private_key)) {
 
                 return true;
