@@ -34,7 +34,7 @@ class Clerk_Api {
 	/**
 	 * Error and Warning Logger
 	 *
-	 * @var $logger ClerkLogger
+	 * @var $logger Clerk_Logger
 	 */
 	protected $logger;
 
@@ -44,7 +44,7 @@ class Clerk_Api {
 	public function __construct() {
 
 		include_once __DIR__ . '/class-clerk-logger.php';
-		$this->logger = new ClerkLogger();
+		$this->logger = new Clerk_Logger();
 
 	}
 

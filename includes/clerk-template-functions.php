@@ -75,7 +75,7 @@ function clerk_get_template( $template_name, $args = array(), $template_path = '
 
 	if ( ! file_exists( $template_file ) ) {
 		/* translators: %s file name */
-		_doing_it_wrong( __FUNCTION__, sprintf( esc_html( __( '%s does not exist.', 'clerk' ) ), esc_url( $template_file ) ), '1.0.0' );
+		_doing_it_wrong( __FUNCTION__, sprintf( esc_html( __( '%s does not exist.', 'clerk' ) ), esc_url_raw( $template_file ) ), '1.0.0' );
 
 		return;
 	}

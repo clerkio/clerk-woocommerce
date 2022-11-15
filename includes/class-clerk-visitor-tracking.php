@@ -27,7 +27,7 @@ class Clerk_Visitor_Tracking {
 	/**
 	 * Error and Warning Logger
 	 *
-	 * @var $logger ClerkLogger
+	 * @var $logger Clerk_Logger
 	 */
 	protected $logger;
 
@@ -37,7 +37,7 @@ class Clerk_Visitor_Tracking {
 	public function __construct() {
 		$this->init_hooks();
 		include_once __DIR__ . '/class-clerk-logger.php';
-		$this->logger = new ClerkLogger();
+		$this->logger = new Clerk_Logger();
 	}
 
 	/**
@@ -251,7 +251,7 @@ class Clerk_Visitor_Tracking {
 								$(this).attr('value', '<?php echo get_search_query(); ?>');
 							});
 							$("<?php echo esc_attr( $options['livesearch_form_selector'] ); ?>").each(function (){
-								$(this).attr('action', '<?php echo esc_url( get_page_link( $options['search_page'] ) ); ?>');
+								$(this).attr('action', '<?php echo esc_url_raw( get_page_link( $options['search_page'] ) ); ?>');
 							});
 
 							$('input[name="post_type"][value="product"]').each(function (){
@@ -286,7 +286,7 @@ class Clerk_Visitor_Tracking {
 
 								request = jQuery.ajax({
 												type : "POST",
-												url  : "<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>",
+												url  : "<?php echo esc_url_raw( admin_url( 'admin-ajax.php' ) ); ?>",
 												data: {
 													action:'get_cart'
 												},
@@ -373,7 +373,7 @@ class Clerk_Visitor_Tracking {
 									}
 									});
 
-									request.open('POST', "<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>", true);
+									request.open('POST', "<?php echo esc_url_raw( admin_url( 'admin-ajax.php' ) ); ?>", true);
 									request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
 									request.send(data);
 

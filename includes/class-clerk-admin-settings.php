@@ -27,7 +27,7 @@ class Clerk_Admin_Settings {
 	/**
 	 * Error and Warning Logger
 	 *
-	 * @var $logger ClerkLogger
+	 * @var $logger Clerk_Logger
 	 */
 	protected $logger;
 	/**
@@ -44,7 +44,7 @@ class Clerk_Admin_Settings {
 
 		$this->init_hooks();
 		require_once __DIR__ . '/class-clerk-logger.php';
-		$this->logger  = new ClerkLogger();
+		$this->logger  = new Clerk_Logger();
 		$this->version = '3.8.3';
 
 		$this->initialize_settings();
@@ -2212,7 +2212,7 @@ class Clerk_Admin_Settings {
 		echo( '<script>' .
 			'(function () {' .
 			'$.ajax({' .
-			'url: "' . esc_url( plugin_dir_url( __DIR__ ) ) . 'clerk_log.log", success: function (data) {' .
+			'url: "' . esc_url_raw( plugin_dir_url( __DIR__ ) ) . 'clerk_log.log", success: function (data) {' .
 			'document.getElementById("logger_view").innerHTML = data;' .
 			'},' .
 			'});' .
