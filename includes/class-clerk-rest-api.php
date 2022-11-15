@@ -246,7 +246,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 		try {
 
 			if ( ! $this->validateRequest( $request ) ) {
-				return $this->getUnathorizedResponse();
+				return $this->get_unathorized_response();
 			}
 
 			$limit   = $request->get_param( 'limit' ) ? $request->get_param( 'limit' ) : -1;
@@ -420,7 +420,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 				$product_array['stock_status']   = $product->get_stock_status();
 
 				// Append additional fields.
-				foreach ( $this->getAdditionalFields() as $field ) {
+				foreach ( $this->get_additional_fields() as $field ) {
 
 					if ( '' === $field ) {
 						continue;
@@ -440,7 +440,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 							$product_array[ str_replace( '-', '_', $this->clerk_friendly_attributes( $field ) ) ] = str_replace( ' ', '', explode( ',', $product->get_attribute( $field ) ) );
 						}
 
-						// 21-10-2021 KKY - Additional Fields for Configurable and Grouped Products - additional fields
+						// 21-10-2021 KKY - Additional Fields for Configurable and Grouped Products - additional fields.
 
 						if ( $product->is_type( 'variable' ) ) {
 							$variations      = $product->get_available_variations();
@@ -490,13 +490,13 @@ class Clerk_Rest_Api extends WP_REST_Server {
 							$product_array[ 'child_' . str_replace( '-', '_', $this->clerk_friendly_attributes( $field ) ) . 's' ] = $child_atributes;
 						}
 
-						// 21-10-2021 KKY - Additional Fields for Configurable and Grouped Products - additional fields
+						// 21-10-2021 KKY - Additional Fields for Configurable and Grouped Products - additional fields.
 
 					} elseif ( get_post_meta( $product->get_id(), $field, true ) ) {
 
 						$product_array[ $this->clerk_friendly_attributes( $field ) ] = get_post_meta( $product->get_id(), $field, true );
 
-						// 21-10-2021 KKY - Additional Fields for Configurable and Grouped Products - additional fields
+						// 21-10-2021 KKY - Additional Fields for Configurable and Grouped Products - additional fields.
 
 						if ( $product->is_type( 'variable' ) ) {
 							$variations      = $product->get_available_variations();
@@ -551,7 +551,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 							$product_array[ 'child_' . str_replace( '-', '_', $this->clerk_friendly_attributes( $field ) ) . 's' ] = $child_atributes;
 						}
 
-						// 21-10-2021 KKY - Additional Fields for Configurable and Grouped Products - additional fields
+						// 21-10-2021 KKY - Additional Fields for Configurable and Grouped Products - additional fields.
 
 					} elseif ( wp_get_post_terms( $product->get_id(), strtolower( $field ), array( 'fields' => 'names' ) ) ) {
 
@@ -561,7 +561,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 							$product_array[ strtolower( $this->clerk_friendly_attributes( $field ) ) ] = $attrubutefield;
 
-							// 21-10-2021 KKY - Additional Fields for Configurable and Grouped Products - additional fields
+							// 21-10-2021 KKY - Additional Fields for Configurable and Grouped Products - additional fields.
 
 							if ( $product->is_type( 'variable' ) ) {
 								$variations      = $product->get_available_variations();
@@ -669,7 +669,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 			}
 
 			if ( ! $this->validateRequest( $request ) ) {
-				return $this->getUnathorizedResponse();
+				return $this->get_unathorized_response();
 			}
 
 			$post_types            = array( 'post', 'page' );
@@ -800,7 +800,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 		try {
 
 			if ( ! $this->validateRequest( $request ) ) {
-				return $this->getUnathorizedResponse();
+				return $this->get_unathorized_response();
 			}
 
 			$default_setting_keys = array(
@@ -907,7 +907,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 		try {
 
 			if ( ! $this->validateRequest( $request ) ) {
-				return $this->getUnathorizedResponse();
+				return $this->get_unathorized_response();
 			}
 
 			$body = $request->get_body(); // JSON blob string without public_key & private_key.
@@ -1058,7 +1058,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 			}
 
 			if ( ! $this->validateRequest( $request ) ) {
-				return $this->getUnathorizedResponse();
+				return $this->get_unathorized_response();
 			}
 
 			$subscriber_query = new WP_User_Query( array( 'role' => 'Subscriber' ) );
@@ -1209,7 +1209,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 	 *
 	 * @return WP_REST_Response
 	 */
-	private function getUnathorizedResponse() {
+	private function get_unathorized_response() {
 
 		try {
 
@@ -1229,7 +1229,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 		} catch ( Exception $e ) {
 
-			$this->logger->error( 'ERROR getUnathorizedResponse', array( 'error' => $e->getMessage() ) );
+			$this->logger->error( 'ERROR get_unathorized_response', array( 'error' => $e->getMessage() ) );
 
 		}
 
@@ -1240,7 +1240,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 	 *
 	 * @return array
 	 */
-	private function getAdditionalFields() {
+	private function get_additional_fields() {
 
 		try {
 
@@ -1264,7 +1264,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 		} catch ( Exception $e ) {
 
-			$this->logger->error( 'ERROR getAdditionalFields', array( 'error' => $e->getMessage() ) );
+			$this->logger->error( 'ERROR get_additional_fields', array( 'error' => $e->getMessage() ) );
 
 		}
 
@@ -1282,7 +1282,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 		try {
 
 			if ( ! $this->validateRequest( $request ) ) {
-				return $this->getUnathorizedResponse();
+				return $this->get_unathorized_response();
 			}
 
 			$limit   = $request->get_param( 'limit' ) ? $request->get_param( 'limit' ) : 0;
@@ -1345,7 +1345,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 		try {
 
 			if ( ! $this->validateRequest( $request ) ) {
-				return $this->getUnathorizedResponse();
+				return $this->get_unathorized_response();
 			}
 
 			$options = get_option( 'clerk_options' );
@@ -1452,7 +1452,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 		try {
 
 			if ( ! $this->validateRequest( $request ) ) {
-				return $this->getUnathorizedResponse();
+				return $this->get_unathorized_response();
 			}
 
 			$response = new WP_REST_Response(
@@ -1489,7 +1489,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 		try {
 
 			if ( ! $this->validateRequest( $request ) ) {
-				return $this->getUnathorizedResponse();
+				return $this->get_unathorized_response();
 			}
 
 			$plugins = get_plugins();
