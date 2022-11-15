@@ -1,7 +1,29 @@
 <?php
+/**
+ * Plugin Name: Clerk
+ * Plugin URI: https://clerk.io/
+ * Description: Clerk.io Turns More Browsers Into Buyers
+ * Version: 3.8.3
+ * Author: Clerk.io
+ * Author URI: https://clerk.io
+ *
+ * Text Domain: clerk
+ * Domain Path: /i18n/languages/
+ * License: MIT
+ *
+ * @package clerkio/clerk-woocommerce
+ */
 
+/**
+ * Clerk_Widget_Content Class
+ *
+ * Clerk Module Core Class
+ */
 class Clerk_Widget_Content extends WP_Widget {
+
 	/**
+	 * Clerk Api Interface
+	 *
 	 * @var Clerk_Api
 	 */
 	protected $api;
@@ -18,40 +40,41 @@ class Clerk_Widget_Content extends WP_Widget {
 		$this->api  = new Clerk_Api();
 
 		parent::__construct( 'clerk_content', __( 'Clerk Content', 'clerk' ), $widget_ops );
-		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
-		add_action( 'wp_ajax_clerk_get_parameters_for_content', [ $this, 'get_parameters_for_content' ] );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
+		add_action( 'wp_ajax_clerk_get_parameters_for_content', array( $this, 'get_parameters_for_content' ) );
 	}
 
 	/**
 	 * Render clerk content
 	 *
-	 * @param array $args
-	 * @param array $instance
+	 * @param array $args Arguments.
+	 * @param array $instance Instance.
 	 */
 	public function widget( $args, $instance ) {
-		$spanAttributes = array();
 
-		if ( is_product_category() && $instance['category'] == 0 ) {
-			$spanAttributes['data-category'] = get_queried_object()->term_id;
+		$span_attributes = array();
+
+		if ( is_product_category() && 0 === (int) $instance['category'] ) {
+			$span_attributes['data-category'] = get_queried_object()->term_id;
 		}
 
-		if ( $instance['category'] != 0 ) {
-			$spanAttributes['data-category'] = $instance['category'];
+		if ( 0 !== (int) $instance['category'] ) {
+			$span_attributes['data-category'] = $instance['category'];
 		}
 
-		if ( is_product() && $instance['product'] == 0 ) {
-			$spanAttributes['data-products'] = '[' . get_queried_object()->ID . ']';
+		if ( is_product() && 0 === $instance['product'] ) {
+			$span_attributes['data-products'] = '[' . get_queried_object()->ID . ']';
 		}
 
-		if ( $instance['product'] != 0 ) {
-			$spanAttributes['data-products'] = '[' . $instance['product'] . ']';
+		if ( 0 !== $instance['product'] ) {
+			$span_attributes['data-products'] = '[' . $instance['product'] . ']';
 		}
 
-		echo $args['before_widget'];
+		echo esc_html( $args['before_widget'] );
 
-		printf( '<span class="clerk" data-template="@%s" %s></span>', $instance['content'], $this->parseSpanAttributes( $spanAttributes ) );
+		echo '<span class="clerk" data-template="@' . esc_html( $instance['content'] ) . '" ' . esc_html( $this->parseSpanAttributes( $span_attributes ) ) . '></span>';
 
-		echo $args['after_widget'];
+		echo esc_html( $args['after_widget'] );
 	}
 
 	/**
@@ -71,46 +94,75 @@ class Clerk_Widget_Content extends WP_Widget {
 			)
 		);
 
-		$contents = $this->api->getContent();
+		$contents = $this->api->get_content();
 
-		if ( $contents->status === 'ok' ) {
+		if ( 'ok' === $contents->status ) {
 			?>
-            <p>
-                <label for="<?php echo $this->get_field_id( 'content' ); ?>"><?php echo esc_html__( 'Content', 'clerk' ); ?></label>
-                <select name="<?php echo $this->get_field_name( 'content' ); ?>"
-                        id="<?php echo $this->get_field_id( 'content' ); ?>" onchange="clerkGetContent(this)">
-                    <option value=""><?php _e( 'Select Content', 'clerk' ); ?></option>
-					<?php foreach ( $contents->contents as $content ) : ?>
-						<?php if ( $content->type !== 'html' ) {
-							continue;
-						} ?>
-                        <option value="<?php echo esc_attr( $content->id ); ?>"
-						        <?php if ( $instance['content'] === $content->id ) : ?>selected<?php endif; ?>><?php echo $content->name; ?></option>
-					<?php endforeach; ?>
-                </select>
-            </p>
-            <p <?php if ( $instance['category'] == 0 ) : ?>style="display:none;"<?php endif; ?> data-clerk-category>
-                <label for="<?php echo $this->get_field_id( 'category' ); ?>"><?php echo esc_html__( 'Category', 'clerk' ); ?></label>
+			<p>
+				<label for="<?php echo esc_attr( $this->get_field_id( 'content' ) ); ?>"><?php echo esc_html__( 'Content', 'clerk' ); ?></label>
+				<select name="<?php echo esc_attr( $this->get_field_name( 'content' ) ); ?>"
+						id="<?php echo esc_attr( $this->get_field_id( 'content' ) ); ?>" onchange="clerkGetContent(this)">
+					<option value=""><?php esc_attr_e( 'Select Content', 'clerk' ); ?></option>
+			<?php foreach ( $contents->contents as $content ) : ?>
 				<?php
-				echo wc_product_dropdown_categories( array(
-					'name'        => $this->get_field_name( 'category' ),
-					'id'          => $this->get_field_id( 'category' ),
-					'show_count'  => false,
-					'value_field' => 'id',
-					'selected'    => isset( $instance['category'] ) ? $instance['category'] : false
-				) );
+				if ( 'html' !== $content->type ) {
+					continue;
+				}
 				?>
-            </p>
-            <p <?php if ( $instance['product'] == 0 ) : ?>style="display:none;"<?php endif; ?> data-clerk-product>
-                <label for="<?php echo $this->get_field_id( 'product' ); ?>"><?php echo esc_html__( 'Product', 'clerk' ); ?></label>
-				<?php echo $this->getProductDropdown( $instance ); ?>
-            </p>
+						<option value="<?php echo esc_attr( $content->id ); ?>"
+				<?php
+				if ( $instance['content'] === $content->id ) :
+					?>
+					selected
+					<?php
+				endif;
+				?>
+				><?php echo esc_attr( $content->name ); ?></option>
+			<?php endforeach; ?>
+				</select>
+			</p>
+			<p
+			<?php
+			if ( 0 === (int) $instance['category'] ) :
+				?>
+				style="display:none;"
+				<?php
+			endif;
+			?>
+			data-clerk-category>
+				<label for="<?php echo esc_attr( $this->get_field_id( 'category' ) ); ?>"><?php echo esc_html__( 'Category', 'clerk' ); ?></label>
+			<?php
+			echo wp_kses_post(
+				wc_product_dropdown_categories(
+					array(
+						'name'        => $this->get_field_name( 'category' ),
+						'id'          => $this->get_field_id( 'category' ),
+						'show_count'  => false,
+						'value_field' => 'id',
+						'selected'    => isset( $instance['category'] ) ? $instance['category'] : false,
+					)
+				)
+			);
+			?>
+			</p>
+			<p
+			<?php
+			if ( 0 === (int) $instance['product'] ) :
+				?>
+				style="display:none;"
+				<?php
+			endif;
+			?>
+			data-clerk-product>
+				<label for="<?php echo esc_attr( $this->get_field_id( 'product' ) ); ?>"><?php echo esc_html__( 'Product', 'clerk' ); ?></label>
+			<?php echo wp_kses_post( $this->getProductDropdown( $instance ) ); ?>
+			</p>
 			<?php
 		} else {
 			?>
-            <p>
-				<?php echo esc_html__( 'Failed to load content, please ensure that your api keys are correct.', 'clerk' ); ?>
-            </p>
+			<p>
+			<?php echo esc_html__( 'Failed to load content, please ensure that your api keys are correct.', 'clerk' ); ?>
+			</p>
 			<?php
 		}
 	}
@@ -118,28 +170,28 @@ class Clerk_Widget_Content extends WP_Widget {
 	/**
 	 * Enqueue admin javascript
 	 *
-	 * @param $hook
+	 * @param string $hook Hook.
 	 */
 	public function enqueue_scripts( $hook ) {
-		if ( $hook !== 'widgets.php' ) {
+		if ( 'widgets.php' !== $hook ) {
 			return;
 		}
 
-		wp_register_script( 'clerk_admin_widget', plugins_url( '../../assets/js/admin/widget.js', __FILE__ ), array( 'jquery' ) );
+		wp_register_script( 'clerk_admin_widget', plugins_url( '../../assets/js/admin/widget.js', __FILE__ ), array( 'jquery' ), get_bloginfo( 'version' ), true );
 		wp_enqueue_script( 'clerk_admin_widget' );
 	}
 
 	/**
 	 * Parse span attributes to attribute string
 	 *
-	 * @param $spanAttributes
+	 * @param array $span_attributes Span attributes.
 	 *
 	 * @return string
 	 */
-	private function parseSpanAttributes( $spanAttributes ) {
+	private function parseSpanAttributes( $span_attributes ) {
 		$output = '';
 
-		foreach ( $spanAttributes as $attribute => $value ) {
+		foreach ( $span_attributes as $attribute => $value ) {
 			$output .= ' ' . $attribute . '=\'' . esc_attr( $value ) . '\'';
 		}
 
@@ -150,120 +202,120 @@ class Clerk_Widget_Content extends WP_Widget {
 	 * Get parameters for content endpoint
 	 */
 	public function get_parameters_for_content() {
-		$contentParam = $_POST['content'];
+		$content_param = isset( $_POST['content'] ) ? esc_url_raw( wp_unslash( $_POST['content'] ) ) : '';
 
-		$contents = $this->api->getContent();
+		$contents = $this->api->get_content();
 
 		$response = array();
 
-		if ( $contents->status === 'ok' ) {
+		if ( 'ok' === $contents->status ) {
 			foreach ( $contents->contents as $content ) {
-				if ( $content->id === $contentParam ) {
+				if ( $content->id === $content_param ) {
 					$parameters = $this->getParametersForEndpoint( $content->api );
 
-					if ( in_array( 'category', $parameters ) ) {
+					if ( in_array( 'category', $parameters, true ) ) {
 						$response['category'] = true;
 					}
 
-					if ( in_array( 'products', $parameters ) ) {
+					if ( in_array( 'products', $parameters, true ) ) {
 						$response['product'] = true;
 					}
 
-					echo json_encode( $response );
+					echo wp_json_encode( $response );
 					wp_die();
 				}
 			}
 		}
 
-		wp_die(); // this is required to terminate immediately and return a proper response
+		wp_die(); // this is required to terminate immediately and return a proper response.
 	}
 
 	/**
 	 * Get parameters for API endpoint
 	 *
-	 * @param $endpoint
+	 * @param string $endpoint Endpoint.
 	 *
 	 * @return bool|array
 	 */
 	public function getParametersForEndpoint( $endpoint ) {
-		$endpointMap = [
-			'search/search'                          => [
+		$endpoint_map = array(
+			'search/search'                          => array(
 				'query',
-				'limit'
-			],
-			'search/predictive'                      => [
+				'limit',
+			),
+			'search/predictive'                      => array(
 				'query',
-				'limit'
-			],
-			'search/categories'                      => [
+				'limit',
+			),
+			'search/categories'                      => array(
 				'query',
-				'limit'
-			],
-			'search/suggestions'                     => [
+				'limit',
+			),
+			'search/suggestions'                     => array(
 				'query',
-				'limit'
-			],
-			'search/popular'                         => [
+				'limit',
+			),
+			'search/popular'                         => array(
 				'query',
-				'limit'
-			],
-			'recommendations/popular'                => [
-				'limit'
-			],
-			'recommendations/trending'               => [
-				'limit'
-			],
-			'recommendations/currently_watched'      => [
-				'limit'
-			],
-			'recommendations/popular'                => [
-				'limit'
-			],
-			'recommendations/keywords'               => [
 				'limit',
-				'keywords'
-			],
-			'recommendations/complementary'          => [
+			),
+			'recommendations/popular'                => array(
 				'limit',
-				'products'
-			],
-			'recommendations/substituting'           => [
+			),
+			'recommendations/trending'               => array(
 				'limit',
-				'products'
-			],
-			'recommendations/category/popular'       => [
+			),
+			'recommendations/currently_watched'      => array(
 				'limit',
-				'category'
-			],
-			'recommendations/category/trending'      => [
+			),
+			'recommendations/popular'                => array(
 				'limit',
-				'category'
-			],
-			'recommendations/visitor/history'        => [
+			),
+			'recommendations/keywords'               => array(
 				'limit',
-			],
-			'recommendations/visitor/complementary'  => [
+				'keywords',
+			),
+			'recommendations/complementary'          => array(
 				'limit',
-			],
-			'recommendations/visitor/substituting'   => [
+				'products',
+			),
+			'recommendations/substituting'           => array(
 				'limit',
-			],
-			'recommendations/customer/history'       => [
+				'products',
+			),
+			'recommendations/category/popular'       => array(
 				'limit',
-				'email'
-			],
-			'recommendations/customer/complementary' => [
+				'category',
+			),
+			'recommendations/category/trending'      => array(
 				'limit',
-				'email'
-			],
-			'recommendations/customer/substituting'  => [
+				'category',
+			),
+			'recommendations/visitor/history'        => array(
 				'limit',
-				'email'
-			],
-		];
+			),
+			'recommendations/visitor/complementary'  => array(
+				'limit',
+			),
+			'recommendations/visitor/substituting'   => array(
+				'limit',
+			),
+			'recommendations/customer/history'       => array(
+				'limit',
+				'email',
+			),
+			'recommendations/customer/complementary' => array(
+				'limit',
+				'email',
+			),
+			'recommendations/customer/substituting'  => array(
+				'limit',
+				'email',
+			),
+		);
 
-		if ( array_key_exists( $endpoint, $endpointMap ) ) {
-			return $endpointMap[ $endpoint ];
+		if ( array_key_exists( $endpoint, $endpoint_map ) ) {
+			return $endpoint_map[ $endpoint ];
 		}
 
 		return false;
@@ -272,7 +324,7 @@ class Clerk_Widget_Content extends WP_Widget {
 	/**
 	 * Get dropdown of products
 	 *
-	 * @param $instance
+	 * @param array $instance Request Instance.
 	 *
 	 * @return string
 	 */
@@ -281,13 +333,15 @@ class Clerk_Widget_Content extends WP_Widget {
 
 		$html .= '<option value="0">' . esc_html__( 'Select Product', 'clerk' ) . '</option>';
 
-		$products = clerk_get_products( array(
-			'status' => array( 'publish' ),
-		) );
+		$products = clerk_get_products(
+			array(
+				'status' => array( 'publish' ),
+			)
+		);
 
 		foreach ( $products as $product ) {
-			$selected = ( $instance['product'] == $product->get_id() ) ? 'selected' : '';
-			$html     .= '<option value="' . esc_attr( $product->get_id() ) . '"' . $selected . '>' . $product->get_title() . '</option>';
+			$selected = ( (string) $instance['product'] === (string) $product->get_id() ) ? 'selected' : '';
+			$html    .= '<option value="' . esc_attr( $product->get_id() ) . '"' . $selected . '>' . $product->get_title() . '</option>';
 		}
 
 		$html .= '</select>';
