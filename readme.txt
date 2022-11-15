@@ -4,8 +4,9 @@ Tags: product recommendations, semantic search, customer conversion, customer re
 License: MIT
 License URI: https://opensource.org/licenses/MIT
 Tested up to: 6.1
-WC requires at least: 2.6
+WC requires at least: 4.4.0
 WC tested up to: 7.1.0
+Stable tag: 3.8.3
 
 == Description ==
 Clerk.io is a software that helps your customers buy more from your webshop, through 4 amazing feature:
