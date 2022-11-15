@@ -33,7 +33,7 @@ class Clerk_Basket {
 	protected $logger;
 
 	/**
-	 * Clerk_Powerstep constructor.
+	 * Clerk_Basket constructor.
 	 */
 	public function __construct() {
 		$this->init_hooks();
