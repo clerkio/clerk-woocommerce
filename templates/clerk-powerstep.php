@@ -22,7 +22,7 @@ global $woocommerce;
 
 $cart_url     = $woocommerce->cart->get_cart_url();
 $checkout_url = $woocommerce->cart->get_checkout_url();
-$options = get_option( 'clerk_options' );
+$options      = get_option( 'clerk_options' );
 
 $product_name     = (string) $product->get_name();
 $title_message    = esc_html__( ' added to cart!', 'clerk' );
@@ -48,18 +48,18 @@ if ( isset( $options['powerstep_custom_text_enabled'] ) ) {
 ?>
 <div class="powerstep-success">
 	<div class="powerstep-product">
-		<?php echo $product->get_image(); ?>
-		<?php echo $title_html; ?>
+		<?php echo esc_html( $product->get_image() ); ?>
+		<?php echo esc_html( $title_html ); ?>
 	</div>
 	<div class="powerstep-actions">
 		<br>
 		<button class="button alt powerstep-cart" onclick="location.href = '<?php echo esc_attr( $cart_url ); ?>';"
-				type="button" title="<?php echo esc_attr($cart_button_text); ?>">
-			<span><?php echo esc_attr($cart_button_text); ?></span>
+				type="button" title="<?php echo esc_attr( $cart_button_text ); ?>">
+			<span><?php echo esc_attr( $cart_button_text ); ?></span>
 		</button>
 		<button class="button" onclick="window.history.back();" type="button"
-				title="<?php echo esc_attr($back_button_text); ?>">
-			<span><?php echo esc_attr($back_button_text); ?></span>
+				title="<?php echo esc_attr( $back_button_text ); ?>">
+			<span><?php echo esc_attr( $back_button_text ); ?></span>
 		</button>
 	</div>
 </div>
@@ -71,20 +71,19 @@ if ( isset( $options['powerstep_custom_text_enabled'] ) ) {
 	$unique_filter = ( isset( $options['powerstep_excl_duplicates'] ) && $options['powerstep_excl_duplicates'] ) ? true : false;
 	foreach ( get_powerstep_templates() as $template ) :
 		$count++;
-		$id = 'clerk_' . time() . $count;
 		?>
 		<span class="clerk
 		<?php
 		if ( $unique_filter ) {
-			echo esc_attr($class_string . (string) $index);
+			echo esc_attr( $class_string . (string) $index );
 		}
 		?>
-						   "
-			<?php
-			if ( $index > 0 && $unique_filter ) {
-				echo 'data-exclude-from="' . esc_attr($filter_string) . '"';
-			}
-			?>
+		"
+		<?php
+		if ( $index > 0 && $unique_filter ) {
+			echo 'data-exclude-from="' . esc_attr( $filter_string ) . '"';
+		}
+		?>
 			data-template="@<?php echo esc_attr( $template ); ?>"
 			data-products="[<?php echo esc_attr( $product->get_id() ); ?>]"
 			data-category="<?php echo esc_attr( reset( $product->get_category_ids() ) ); ?>"
