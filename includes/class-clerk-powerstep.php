@@ -30,7 +30,7 @@ class Clerk_Powerstep {
 	/**
 	 * Error and Warning Logger
 	 *
-	 * @var $logger ClerkLogger
+	 * @var $logger Clerk_Logger
 	 */
 
 	protected $logger;
@@ -41,7 +41,7 @@ class Clerk_Powerstep {
 	public function __construct() {
 		$this->init_hooks();
 		include_once __DIR__ . '/class-clerk-logger.php';
-		$this->logger = new ClerkLogger();
+		$this->logger = new Clerk_Logger();
 	}
 
 	/**
@@ -94,7 +94,7 @@ class Clerk_Powerstep {
 				return $url;
 			}
 
-			$url = esc_url( get_page_link( $options['powerstep_page'] ) . '?product_id=' . $product_id );
+			$url = esc_url_raw( get_page_link( $options['powerstep_page'] ) . '?product_id=' . $product_id );
 
 			return $url;
 
@@ -115,9 +115,9 @@ class Clerk_Powerstep {
 
 		try {
             if( array_key_exists('add-to-cart', $_REQUEST) ){
-			    if ( empty( esc_url_raw( wp_unslash( $_REQUEST['add-to-cart'] ) ) ) || ! is_numeric( esc_url_raw( wp_unslash( $_REQUEST['add-to-cart'] ) ) ) ) {
-				    return $url;
-			    }
+              if ( empty( esc_url_raw( wp_unslash( $_REQUEST['add-to-cart'] ) ) ) || ! is_numeric( esc_url_raw( wp_unslash( $_REQUEST['add-to-cart'] ) ) ) ) {
+                return $url;
+              }
             } else {
                 return $url;
             }
@@ -146,7 +146,7 @@ class Clerk_Powerstep {
 				return $url;
 			}
 
-			$url = esc_url( get_page_link( $options['powerstep_page'] ) . '?product_id=' . $product_id );
+			$url = esc_url_raw( get_page_link( $options['powerstep_page'] ) . '?product_id=' . $product_id );
 
 			header( 'Location: ' . $url );
 
@@ -239,7 +239,7 @@ class Clerk_Powerstep {
 				array(
 					'ajax_url'      => admin_url( 'admin-ajax.php' ),
 					'type'          => $options['powerstep_type'],
-					'powerstep_url' => esc_url( get_page_link( $options['powerstep_page'] ) ),
+					'powerstep_url' => esc_url_raw( get_page_link( $options['powerstep_page'] ) ),
 				)
 			);
 

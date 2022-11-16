@@ -1,64 +1,84 @@
 <?php
+/**
+ * Plugin Name: Clerk
+ * Plugin URI: https://clerk.io/
+ * Description: Clerk.io Turns More Browsers Into Buyers
+ * Version: 3.8.3
+ * Author: Clerk.io
+ * Author URI: https://clerk.io
+ *
+ * Text Domain: clerk
+ * Domain Path: /i18n/languages/
+ * License: MIT
+ *
+ * @package clerkio/clerk-woocommerce
+ */
 
-if (!defined('ABSPATH')) {
-    exit; // Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
 }
 
-class Clerk_Exit_Intent
-{
-    /**
-     * Clerk_Exit_Intent constructor.
-     */
-    protected $logger;
+/**
+ * Clerk_Exit_Intent Class
+ *
+ * Clerk Module Core Class
+ */
+class Clerk_Exit_Intent {
 
-    public function __construct()
-    {
-        $this->initHooks();
-        require_once(__DIR__ . '/class-clerk-logger.php');
-        $this->logger = new ClerkLogger();
-    }
+	/**
+	 * Error and Warning Logger
+	 *
+	 * @var $logger Clerk_Logger
+	 */
+	protected $logger;
 
-    /**
-     * Init hooks
-     */
-    private function initHooks()
-    {
-        add_action('wp_footer', [$this, 'add_exit_intent']);
-    }
+	/**
+	 * Clerk_Exit_Intent constructor.
+	 */
+	public function __construct() {
+		$this->init_hooks();
+		include_once __DIR__ . '/class-clerk-logger.php';
+		$this->logger = new Clerk_Logger();
+	}
 
-    /**
-     * Include exit intent
-     */
-    public function add_exit_intent()
-    {
+	/**
+	 * Init hooks
+	 */
+	private function init_hooks() {
+		add_action( 'wp_footer', array( $this, 'add_exit_intent' ) );
+	}
 
-        try {
+	/**
+	 * Include exit intent
+	 */
+	public function add_exit_intent() {
 
-            $options = get_option('clerk_options');
+		try {
 
-            if (isset($options['exit_intent_enabled']) && $options['exit_intent_enabled']){
+			$options = get_option( 'clerk_options' );
 
-                $templates = explode(',',$options['exit_intent_template']);
+			if ( isset( $options['exit_intent_enabled'] ) && $options['exit_intent_enabled'] ) {
 
-                foreach ($templates as $template) {
+				$templates = explode( ',', $options['exit_intent_template'] );
 
-                    ?>
-                    <span class="clerk"
-                          data-template="@<?php echo esc_attr(str_replace(' ','',$template)); ?>"
-                          data-exit-intent="true">
-                    </span>
-                    <?php
+				foreach ( $templates as $template ) {
 
-                }
+					?>
+					<span
+					class="clerk"
+					data-template="@<?php echo esc_attr( str_replace( ' ', '', $template ) ); ?>"
+					data-exit-intent="true">
+					</span>
+					<?php
 
-            }
+				}
+			}
+		} catch ( Exception $e ) {
 
-        } catch (Exception $e) {
+			$this->logger->error( 'ERROR add_exit_intent', array( 'error' => $e->getMessage() ) );
 
-            $this->logger->error('ERROR add_exit_intent', ['error' => $e->getMessage()]);
-
-        }
-    }
+		}
+	}
 }
 
 new Clerk_Exit_Intent();

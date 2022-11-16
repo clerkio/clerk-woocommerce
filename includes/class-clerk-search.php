@@ -1,231 +1,240 @@
 <?php
+/**
+ * Plugin Name: Clerk
+ * Plugin URI: https://clerk.io/
+ * Description: Clerk.io Turns More Browsers Into Buyers
+ * Version: 3.8.3
+ * Author: Clerk.io
+ * Author URI: https://clerk.io
+ *
+ * Text Domain: clerk
+ * Domain Path: /i18n/languages/
+ * License: MIT
+ *
+ * @package clerkio/clerk-woocommerce
+ */
 
-if (!defined('ABSPATH')) {
-    exit; // Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
 }
 
-class Clerk_Search
-{
-    /**
-     * Clerk_Search constructor.
-     */
-    protected $logger;
+/**
+ * Clerk_Search Class
+ *
+ * Clerk Module Core Class
+ */
+class Clerk_Search {
 
-    public function __construct()
-    {
-        $this->initHooks();
-        require_once(__DIR__ . '/class-clerk-logger.php');
-        $this->logger = new ClerkLogger();
-    }
+	/**
+	 * Error and Warning Logger
+	 *
+	 * @var $logger Clerk_Logger
+	 */
+	protected $logger;
 
-    /**
-     * Init hooks
-     */
-    private function initHooks()
-    {
-        add_filter('query_vars', [$this, 'add_search_vars']);
-        add_shortcode('clerk-search', [$this, 'handle_shortcode']);
-    }
+	/**
+	 * Clerk_Search constructor.
+	 */
+	public function __construct() {
+		$this->init_hooks();
+		include_once __DIR__ . '/class-clerk-logger.php';
+		$this->logger = new Clerk_Logger();
+	}
 
-    /**
-     * Add query var for searchterm
-     *
-     * @param $vars
-     *
-     * @return array
-     */
-    public function add_search_vars($vars)
-    {
+	/**
+	 * Init hooks
+	 */
+	private function init_hooks() {
+		add_filter( 'query_vars', array( $this, 'add_search_vars' ) );
+		add_shortcode( 'clerk-search', array( $this, 'handle_shortcode' ) );
+	}
 
-        try {
+	/**
+	 * Add query var for searchterm
+	 *
+	 * @param mixed $vars Url arguments.
+	 *
+	 * @return array
+	 */
+	public function add_search_vars( $vars ) {
 
-            $vars[] = 'searchterm';
+		try {
 
-            return $vars;
+			$vars[] = 'searchterm';
 
-        } catch (Exception $e) {
+			return $vars;
 
-            $this->logger->error('ERROR add_search_vars', ['error' => $e->getMessage()]);
+		} catch ( Exception $e ) {
 
-        }
+			$this->logger->error( 'ERROR add_search_vars', array( 'error' => $e->getMessage() ) );
 
-    }
+		}
 
-    /**
-     * Output clerk-search shortcode
-     *
-     * @param $atts
-     */
-    public function handle_shortcode($atts)
-    {
+	}
 
-        $facets_attributes = '[';
-        $facets_titles = '{';
-        $Attributes = [];
+	/**
+	 * Output clerk-search shortcode
+	 *
+	 * @param array|mix|void $atts Void attribute.
+	 */
+	public function handle_shortcode( $atts ) {
 
-        $options = get_option('clerk_options');
+		$facets_attributes = '[';
+		$facets_titles     = '{';
+		$attributes        = array();
 
-        if ($options['faceted_navigation_enabled'] !== null && $options['faceted_navigation_enabled']) {
+		$options = get_option( 'clerk_options' );
 
-            $facets_design =  isset($options['faceted_navigation_design']) ? $options['faceted_navigation_design'] : false;
-            $search_include_categories =  isset($options['search_include_categories']) ? $options['search_include_categories'] : false;
-            $search_categories =  isset($options['search_categories']) ? $options['search_categories'] : false;
-            $search_include_pages = isset($options['search_include_pages']) ? $options['search_include_pages'] : false;
-            $search_pages =  isset($options['search_pages']) ? $options['search_pages'] : false;
-            $search_pages_type =  isset($options['search_pages_type']) ? $options['search_pages_type'] : false;
+		if ( null !== $options['faceted_navigation_enabled'] && $options['faceted_navigation_enabled'] ) {
 
-            $_Attributes = json_decode($options['faceted_navigation']);
-            $count = 0;
+			$facets_design             = isset( $options['faceted_navigation_design'] ) ? $options['faceted_navigation_design'] : false;
+			$search_include_categories = isset( $options['search_include_categories'] ) ? $options['search_include_categories'] : false;
+			$search_categories         = isset( $options['search_categories'] ) ? $options['search_categories'] : false;
+			$search_include_pages      = isset( $options['search_include_pages'] ) ? $options['search_include_pages'] : false;
+			$search_pages              = isset( $options['search_pages'] ) ? $options['search_pages'] : false;
+			$search_pages_type         = isset( $options['search_pages_type'] ) ? $options['search_pages_type'] : false;
 
-            foreach ($_Attributes as $key => $_Attribute) {
+			$_attributes = json_decode( $options['faceted_navigation'] );
+			$count       = 0;
 
-                if ($_Attribute->checked) {
+			foreach ( $_attributes as $key => $_attribute ) {
 
-                    array_push($Attributes, $_Attribute);
+				if ( $_attribute->checked ) {
 
-                }
+					array_push( $attributes, $_attribute );
 
-            }
+				}
+			}
 
-           
-            /**
-             * Changed to use usort instead to fix sorting bug 22-07-2021 KKY
-             * 
-             * foreach ($Attributes as $key => $Sorted_Attribute) {
-             * 
-             *      $Sorted_Attributes[$Sorted_Attribute->position] = $Sorted_Attribute;
-             * 
-             * }
-             * 
-             */
-                
-            $Sorted_Attributes = $Attributes;
+			/**
+			 * Changed to use usort instead to fix sorting bug 22-07-2021 KKY
+			 *
+			 * @example
+			 * foreach ($attributes as $key => $Sorted_Attribute) {
+			 *
+			 *      $sorted_attributes[$Sorted_Attribute->position] = $Sorted_Attribute;
+			 *
+			 * }
+			 */
 
-            usort($Sorted_Attributes, function($a, $b) {
-                return $a->position <=> $b->position;
-            });
+			$sorted_attributes = $attributes;
 
-            foreach ($Sorted_Attributes as $key => $Attribute) {
+			usort(
+				$sorted_attributes,
+				function ( $a, $b ) {
+					return $a->position <=> $b->position;
+				}
+			);
 
-                $count++;
+			foreach ( $sorted_attributes as $key => $attribute ) {
 
-                if ($count == count($Attributes)) {
+				$count++;
 
-                    $facets_attributes .= '"' . $Attribute->attribute . '"';
-                    $facets_titles .= '"' . $Attribute->attribute . '": "' . $Attribute->title . '"';
+				if ( count( $attributes ) === $count ) {
 
-                } else {
+					$facets_attributes .= '"' . $attribute->attribute . '"';
+					$facets_titles     .= '"' . $attribute->attribute . '": "' . $attribute->title . '"';
 
-                    $facets_attributes .= '"' . $Attribute->attribute . '", ';
-                    $facets_titles .= '"' . $Attribute->attribute . '": "' . $Attribute->title . '",';
+				} else {
 
-                }
-            }
-           
-        }
+					$facets_attributes .= '"' . $attribute->attribute . '", ';
+					$facets_titles     .= '"' . $attribute->attribute . '": "' . $attribute->title . '",';
 
-        $facets_attributes .= ']\'';
-        $facets_titles .= '}\'';
+				}
+			}
+		}
 
-        try {
+		$facets_attributes .= ']\'';
+		$facets_titles     .= '}\'';
 
-            $options = get_option('clerk_options');
-            ?>
-            <span id="clerk-search"
-                  class="clerk"
-                  data-template="@<?php echo esc_attr(strtolower(str_replace(' ', '-', $options['search_template']))); ?>"
-                  data-limit="40"
-                  data-offset="0"
-                  data-target="#clerk-search-results"
-                  data-after-render="_clerk_after_load_event"
-                  <?php
-                  if (count($Attributes) > 0) {
+		try {
 
-                      echo 'data-facets-target="#clerk-search-filters"';
-                      echo "data-facets-attributes='".$facets_attributes;
-                      echo "data-facets-titles='".$facets_titles;
-                      echo "data-facets-design='".$facets_design ."'";
+			$options = get_option( 'clerk_options' );
+			?>
+			<span
+			id="clerk-search"
+			class="clerk"
+			data-template="@<?php echo esc_attr( strtolower( str_replace( ' ', '-', $options['search_template'] ) ) ); ?>"
+			data-limit="40"
+			data-offset="0"
+			data-target="#clerk-search-results"
+			data-after-render="_clerk_after_load_event"
+			<?php
+			if ( count( $attributes ) > 0 ) {
+				echo 'data-facets-target="#clerk-search-filters"';
+				echo "data-facets-attributes='" . esc_attr( $facets_attributes );
+				echo "data-facets-titles='" . esc_attr( $facets_titles );
+				echo "data-facets-design='" . esc_attr( $facets_design ) . "'";
+			}
+			if ( isset( $search_include_categories ) && $search_include_categories ) {
+				echo "data-search-categories='" . esc_attr( $search_categories ) . "'";
+			}
+			if ( isset( $search_include_pages ) && $search_include_pages ) {
+				echo "data-search-pages='" . esc_attr( $search_pages ) . "'";
+				if ( 'All' !== $search_pages_type ) {
+					echo "data-search-pages-type='" . esc_attr( $search_pages_type ) . "'";
+				}
+			}
+			?>
+			data-query="<?php echo esc_attr( get_query_var( 'searchterm' ) ); ?>">
+			</span>
+			<?php
+			if ( count( $attributes ) > 0 ) {
+				echo '<div id="clerk-search-page-wrap" style="display: flex;">';
+				echo '<div id="clerk-search-filters"></div>';
+			}
+			?>
+			<ul style="width: 100%;" id="clerk-search-results"></ul>
+			<?php
+			if ( count( $attributes ) > 0 ) {
+				echo ' </div>';
+			}
+			?>
+			</div>
+			<div id="clerk-search-no-results" style="display: none; margin-left: 3em;"><h2><?php echo esc_attr( $options['search_no_results_text'] ); ?></h2></div>
 
-                  }
+			<script>
 
-                if (isset($search_include_categories) && $search_include_categories) {
-                    echo "data-search-categories='".$search_categories."'";
-                }
-                if (isset($search_include_pages) && $search_include_pages) {
-                    echo "data-search-pages='".$search_pages."'";
-                    if($search_pages_type != 'All'){
-                        echo "data-search-pages-type='".$search_pages_type."'";
-                    }
-                }
-                  ?>
-                  data-query="<?php echo esc_attr(get_query_var('searchterm')); ?>">
-		    </span>
-            <?php
-            if (count($Attributes) > 0) {
+				var clerk_results = false;
 
-                echo '<div id="clerk-search-page-wrap" style="display: flex;">';
-                echo '<div id="clerk-search-filters"></div>';
+				document.addEventListener('DOMContentLoaded', function(){
+					Clerk('on', 'response', '#clerk-search', function(content, data){
+						clerk_results = (data.product_data.length > 0) ? true : false;
+						if(!clerk_results){
+							document.querySelector('#clerk-search-no-results').style.display = 'initial';
+						}
+					});
+				});
 
-            }
+				var total_loaded = 0;
 
-            ?>
+				function _clerk_after_load_event(data) {
 
-            <ul style="width: 100%;" id="clerk-search-results"></ul>
+					total_loaded += data.response.result.length;
 
-            <?php
+					var e = jQuery('#clerk-search');
 
-            if (count($Attributes) > 0) {
+					if (typeof e.data('limit') === "undefined") {
+						e.data('limit', data.response.result.length)
+					}
 
-                echo ' </div>';
+					if (total_loaded == 0) {
+						jQuery('#clerk-search-no-results').show();
+					} else {
+						jQuery('#clerk-search-no-results').hide();
+					}
 
-            }
+				}
+			</script>
+			<?php
 
-            ?>
-            </div>
-            <div id="clerk-search-no-results" style="display: none; margin-left: 3em;"><h2><?php echo $options['search_no_results_text'] ?></h2></div>
+		} catch ( Exception $e ) {
 
-            <script>
+			$this->logger->error( 'ERROR handle_shortcode', array( 'error' => $e->getMessage() ) );
 
-                var clerk_results = false;
+		}
 
-                document.addEventListener('DOMContentLoaded', function(){
-                    Clerk('on', 'response', '#clerk-search', function(content, data){
-                        clerk_results = (data.product_data.length > 0) ? true : false;
-                        if(!clerk_results){
-                            document.querySelector('#clerk-search-no-results').style.display = 'initial';
-                        }
-                    });
-                });
-
-                var total_loaded = 0;
-
-                function _clerk_after_load_event(data) {
-
-                    total_loaded += data.response.result.length;
-
-                    var e = jQuery('#clerk-search');
-
-                    if (typeof e.data('limit') === "undefined") {
-                        e.data('limit', data.response.result.length)
-                    }
-
-                    if (total_loaded == 0) {
-                        jQuery('#clerk-search-no-results').show();
-                    } else {
-                        jQuery('#clerk-search-no-results').hide();
-                    }
-
-                }
-            </script>
-            <?php
-
-        } catch (Exception $e) {
-
-            $this->logger->error('ERROR handle_shortcode', ['error' => $e->getMessage()]);
-
-        }
-
-    }
+	}
 }
 
 new Clerk_Search();

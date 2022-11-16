@@ -1,178 +1,225 @@
 <?php
+/**
+ * Plugin Name: Clerk
+ * Plugin URI: https://clerk.io/
+ * Description: Clerk.io Turns More Browsers Into Buyers
+ * Version: 3.8.3
+ * Author: Clerk.io
+ * Author URI: https://clerk.io
+ *
+ * Text Domain: clerk
+ * Domain Path: /i18n/languages/
+ * License: MIT
+ *
+ * @package clerkio/clerk-woocommerce
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly
+	exit; // Exit if accessed directly.
 }
-
+/**
+ * Clerk_Api Class
+ *
+ * Clerk Module Core Class
+ */
 class Clerk_Api {
+
 	/**
-	 * @var string
+	 * Base Url String
+	 *
+	 * @var $baseurl Clerk Api Base URL.
 	 */
 	protected $baseurl = 'http://api.clerk.io/v2/';
-    protected $logger;
-    public function __construct() {
 
-        require_once( __DIR__ . '/class-clerk-logger.php' );
-        $this->logger = new ClerkLogger();
+	/**
+	 * Error and Warning Logger
+	 *
+	 * @var $logger Clerk_Logger
+	 */
+	protected $logger;
 
-    }
+	/**
+	 * Clerk_Admin_Settings constructor.
+	 */
+	public function __construct() {
+
+		include_once __DIR__ . '/class-clerk-logger.php';
+		$this->logger = new Clerk_Logger();
+
+	}
 
 	/**
 	 * Remove product
 	 *
-	 * @param $product_id
+	 * @param string|integer $product_id Product ID.
 	 */
-	public function removeProduct( $product_id ) {
+	public function remove_product( $product_id ) {
 
-        try {
+		try {
 
-            $options = get_option('clerk_options');
+			$options = get_option( 'clerk_options' );
 
-            $params = [
-                'key' => $options['public_key'],
-                'private_key' => $options['private_key'],
-                'products' => $product_id.',',
-            ];
+			$params = array(
+				'key'         => $options['public_key'],
+				'private_key' => $options['private_key'],
+				'products'    => array( $product_id ),
+			);
 
-            $this->get('product/remove', $params);
-            $this->logger->log('Removed products ', ['params' => $params['products']]);
+			$this->get( 'product/remove', $params );
+			$this->logger->log( 'Removed products ', array( 'params' => $params['products'] ) );
 
-        } catch (Exception $e) {
+		} catch ( Exception $e ) {
 
-            $this->logger->error('ERROR removeProduct', ['error' => $e->getMessage()]);
+			$this->logger->error( 'ERROR remove_product', array( 'error' => $e->getMessage() ) );
 
-        }
+		}
 
 	}
 
 	/**
 	 * Add product to Clerk
 	 *
-	 * @param $product_params
+	 * @param array $product_params Product Info.
 	 */
-	public function addProduct( $product_params ) {
+	public function add_product( $product_params ) {
 
-        try {
+		try {
 
-            $options = get_option('clerk_options');
+			$options = get_option( 'clerk_options' );
 
-            $params = [
-                'key' => $options['public_key'],
-                'private_key' => $options['private_key'],
-                'products' => [$product_params],
-            ];
+			$params = array(
+				'key'         => $options['public_key'],
+				'private_key' => $options['private_key'],
+				'products'    => array( $product_params ),
+			);
 
-            $this->post('product/add', $params);
-            $this->logger->log('Created products ' . $params['products']['name'], ['params' => $params['products']]);
+			$this->post( 'product/add', $params );
+			$this->logger->log( 'Created products ' . $params['products']['name'], array( 'params' => $params['products'] ) );
 
-        } catch (Exception $e) {
+		} catch ( Exception $e ) {
 
-            $this->logger->error('ERROR addProduct', ['error' => $e->getMessage()]);
+			$this->logger->error( 'ERROR add_product', array( 'error' => $e->getMessage() ) );
 
-        }
+		}
 
-    }
+	}
 
 	/**
 	 * Get contents from Clerk
 	 *
 	 * @return array|WP_Error
 	 */
-	public function getContent() {
+	public function get_content() {
 
-        try {
+		try {
 
-            $contents = get_transient('clerk_api_contents');
+			$contents = get_transient( 'clerk_api_contents' );
 
-            if ($contents) {
-                return $contents;
-            }
+			if ( $contents ) {
+				return $contents;
+			}
 
-            $options = get_option('clerk_options');
+			$options = get_option( 'clerk_options' );
 
-            $params = [
-                'key' => $options['public_key'],
-                'private_key' => $options['private_key'],
-            ];
+			$params = array(
+				'key'         => $options['public_key'],
+				'private_key' => $options['private_key'],
+			);
 
-            $request = $this->get('client/account/content/list', $params);
+			$request = $this->get( 'client/account/content/list', $params );
 
-            if (is_wp_error($request)) {
-                return false;
-            }
+			if ( is_wp_error( $request ) ) {
+				return false;
+			}
 
-            $body = wp_remote_retrieve_body($request);
-            $json = json_decode($body);
+			$body = wp_remote_retrieve_body( $request );
+			$json = json_decode( $body );
 
-            if ($json->status === 'ok') {
-                set_transient('clerk_api_contents', $json, 14400);
-            }
+			if ( 'ok' === $json->status ) {
+				set_transient( 'clerk_api_contents', $json, 14400 );
+			}
 
-            return $json;
+			return $json;
 
-        } catch (Exception $e) {
+		} catch ( Exception $e ) {
 
-            $this->logger->error('ERROR getContent', ['error' => $e->getMessage()]);
+			$this->logger->error( 'ERROR get_content', array( 'error' => $e->getMessage() ) );
 
-        }
+		}
 
 	}
 
 	/**
 	 * Perform a GET request
 	 *
-	 * @param string $endpoint
-	 * @param array $params
+	 * @param string $endpoint Api endpoint.
+	 * @param array  $params Url parameters.
 	 *
 	 * @return array|WP_Error
 	 */
-	private function get( $endpoint, $params = [] ) {
+	private function get( $endpoint, $params = array() ) {
 
-        try {
+		try {
 
-            $url = $this->baseurl . $endpoint . '?' . http_build_query($params);
-            $response = wp_safe_remote_get($url);
+			$url      = $this->baseurl . $endpoint . '?' . http_build_query( $params );
+			$response = wp_safe_remote_get( $url );
 
-            $this->logger->log('GET request', ['endpoint' => $endpoint, 'params' => $params, 'response' => $response]);
+			$this->logger->log(
+				'GET request',
+				array(
+					'endpoint' => $endpoint,
+					'params'   => $params,
+					'response' => $response,
+				)
+			);
 
-            return $response;
+			return $response;
 
-        } catch (Exception $e) {
+		} catch ( Exception $e ) {
 
-            $this->logger->error('GET request failed', ['error' => $e->getMessage()]);
+			$this->logger->error( 'GET request failed', array( 'error' => $e->getMessage() ) );
 
-        }
+		}
 
 	}
 
 	/**
 	 * Perform a POST request
 	 *
-	 * @param string $endpoint
-	 * @param array $params
-     */
-    private function post($endpoint, $params = [])
-    {
+	 * @param string $endpoint Api endpoint.
+	 * @param array  $params Url parameters.
+	 */
+	private function post( $endpoint, $params = array() ) {
 
-        try {
+		try {
 
-            $url = $this->baseurl . $endpoint;
+			$url = $this->baseurl . $endpoint;
 
-            $product_params['price'] = floatval($product_params['price']);
-            $product_params['list_price'] = floatval($product_params['list_price']);
-		
-            $response = wp_safe_remote_post($url, [
-                'headers' => array('Content-Type' => 'application/json; charset=utf-8'),
-                'body' => json_encode($params),
-            ]);
+			$product_params['price']      = floatval( $product_params['price'] );
+			$product_params['list_price'] = floatval( $product_params['list_price'] );
 
-            $this->logger->log('POST request', ['endpoint' => $endpoint, 'params' => $params, 'response' => $response]);
+			$response = wp_safe_remote_post(
+				$url,
+				array(
+					'headers' => array( 'Content-Type' => 'application/json; charset=utf-8' ),
+					'body'    => wp_json_encode( $params ),
+				)
+			);
 
-        } catch (Exception $e) {
+			$this->logger->log(
+				'POST request',
+				array(
+					'endpoint' => $endpoint,
+					'params'   => $params,
+					'response' => $response,
+				)
+			);
 
-            $this->logger->error('POST request failed', ['error' => $e->getMessage()]);
+		} catch ( Exception $e ) {
 
-        }
+			$this->logger->error( 'POST request failed', array( 'error' => $e->getMessage() ) );
 
-    }
+		}
+
+	}
 }

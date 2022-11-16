@@ -1,144 +1,182 @@
 <?php
+/**
+ * Plugin Name: Clerk
+ * Plugin URI: https://clerk.io/
+ * Description: Clerk.io Turns More Browsers Into Buyers
+ * Version: 3.8.3
+ * Author: Clerk.io
+ * Author URI: https://clerk.io
+ *
+ * Text Domain: clerk
+ * Domain Path: /i18n/languages/
+ * License: MIT
+ *
+ * @package clerkio/clerk-woocommerce
+ */
 
-class Clerk_Content
-{
-    /**
-     * Clerk_Content constructor.
-     */
-    protected $logger;
+/**
+ * Clerk_Content Class
+ *
+ * Clerk Module Core Class
+ */
+class Clerk_Content {
 
-    public function __construct()
-    {
-        add_action('woocommerce_archive_description', [$this, 'clerk_woocommerce_archive_description'], 99);
-        add_action('woocommerce_after_cart', [$this, 'clerk_woocommerce_after_cart_table'], 99);
-        add_filter('wc_get_template', [$this, 'clerk_wc_get_template'], 99, 2);
-        require_once(__DIR__ . '/class-clerk-logger.php');
-        $this->logger = new ClerkLogger();
-    }
+	/**
+	 * Error and Warning Logger
+	 *
+	 * @var $logger Clerk_Logger
+	 */
+	protected $logger;
 
-    /**
-     * Add content to category if enabled
-     */
-    public function clerk_woocommerce_archive_description()
-    {
+	/**
+	 * Clerk_Content constructor.
+	 */
+	public function __construct() {
+		add_action( 'woocommerce_archive_description', array( $this, 'clerk_woocommerce_archive_description' ), 99 );
+		add_action( 'woocommerce_after_cart', array( $this, 'clerk_woocommerce_after_cart_table' ), 99 );
+		add_filter( 'wc_get_template', array( $this, 'clerk_wc_get_template' ), 99, 2 );
+		include_once __DIR__ . '/class-clerk-logger.php';
+		$this->logger = new Clerk_Logger();
+	}
 
-        try {
+	/**
+	 * Add content to category if enabled
+	 */
+	public function clerk_woocommerce_archive_description() {
 
-            $category = get_queried_object();
-            $options = get_option('clerk_options');
+		try {
 
-            if (isset($options['category_enabled']) && $options['category_enabled'] && property_exists($category, 'term_id')) :
+			$category = get_queried_object();
+			$options  = get_option( 'clerk_options' );
 
-                $templates = explode(',',$options['category_content']);
-                $index = 0;
-                $class_string = 'clerk_';
-                $filter_string = '';
-                $unique_filter = (isset($options['category_excl_duplicates']) && $options['category_excl_duplicates']) ? true : false;
-                foreach ($templates as $template) {
+			if ( isset( $options['category_enabled'] ) && $options['category_enabled'] && property_exists( $category, 'term_id' ) ) :
 
-                    ?>
-                    <span class="clerk <?php if($unique_filter){ echo $class_string.(string)$index; } ?>"
-                        <?php if($index > 0 && $unique_filter){ echo 'data-exclude-from="'.$filter_string.'"'; }?>
-                        data-template="@<?php echo str_replace(' ', '', $template); ?>"
-                        data-category="<?php echo $category->term_id; ?>"></span>
-                    <?php
-                    if($index > 0){
-                        $filter_string .= ', ';
-                    }
-                    $filter_string .= '.'.$class_string.(string)$index;
-                    $index++;
-                }
-            endif;
+				$templates     = explode( ',', $options['category_content'] );
+				$index         = 0;
+				$class_string  = 'clerk_';
+				$filter_string = '';
+				$unique_filter = ( isset( $options['category_excl_duplicates'] ) && $options['category_excl_duplicates'] ) ? true : false;
+				foreach ( $templates as $template ) {
 
-        } catch (Exception $e) {
+					?>
+					<span class="clerk
+					<?php
+					if ( $unique_filter ) {
+						echo esc_attr( $class_string . (string) $index );
+					}
+					?>
+					"
+					<?php
+					if ( $index > 0 && $unique_filter ) {
+						echo esc_attr( 'data-exclude-from="' . $filter_string . '"' );
+					}
+					?>
+						data-template="@<?php echo esc_attr( str_replace( ' ', '', $template ) ); ?>"
+						data-category="<?php echo esc_attr( $category->term_id ); ?>"></span>
+					<?php
+					if ( $index > 0 ) {
+						$filter_string .= ', ';
+					}
+					$filter_string .= '.' . $class_string . (string) $index;
+					$index++;
+				}
+			endif;
 
-            $this->logger->error('ERROR clerk_woocommerce_archive_description', ['error' => $e->getMessage()]);
+		} catch ( Exception $e ) {
 
-        }
+			$this->logger->error( 'ERROR clerk_woocommerce_archive_description', array( 'error' => $e->getMessage() ) );
 
-    }
+		}
 
-    /**
-     * Add content after cart if enabled
-     */
-    public function clerk_woocommerce_after_cart_table()
-    {
+	}
 
-        try {
+	/**
+	 * Add content after cart if enabled
+	 */
+	public function clerk_woocommerce_after_cart_table() {
 
-            global $woocommerce;
-            $items = $woocommerce->cart->get_cart();
+		try {
 
-            $options = get_option('clerk_options');
-            $products = array();
+			global $woocommerce;
+			$items = $woocommerce->cart->get_cart();
 
-            foreach ($items as $item => $values) {
-                $products[] = $values['product_id'];
-            }
+			$options  = get_option( 'clerk_options' );
+			$products = array();
 
-            if (isset($options['cart_enabled']) && $options['cart_enabled']) {
+			foreach ( $items as $item => $values ) {
+				$products[] = $values['product_id'];
+			}
 
-                $templates = explode(',',$options['cart_content']);
-                $index = 0;
-                $class_string = 'clerk_';
-                $filter_string = '';
-                $unique_filter = (isset($options['cart_excl_duplicates']) && $options['cart_excl_duplicates']) ? true : false;
-        
-                foreach ($templates as $template) {
+			if ( isset( $options['cart_enabled'] ) && $options['cart_enabled'] ) {
 
-                    ?>
-                    <span class="clerk <?php if($unique_filter){ echo $class_string.(string)$index; } ?>"
-                        <?php if($index > 0 && $unique_filter){ echo 'data-exclude-from="'.$filter_string.'"'; }?>
-                        data-template="@<?php echo str_replace(' ', '', $template); ?>"
-                        data-products="<?php echo json_encode($products); ?>">
-                    </span>
-                    <?php
-                    if($index > 0){
-                        $filter_string .= ', ';
-                    }
-                    $filter_string .= '.'.$class_string.(string)$index;
-                    $index++;
-                }
+				$templates     = explode( ',', $options['cart_content'] );
+				$index         = 0;
+				$class_string  = 'clerk_';
+				$filter_string = '';
+				$unique_filter = ( isset( $options['cart_excl_duplicates'] ) && $options['cart_excl_duplicates'] ) ? true : false;
 
-            }
+				foreach ( $templates as $template ) {
 
-        } catch (Exception $e) {
+					?>
+					<span class="clerk
+					<?php
+					if ( $unique_filter ) {
+						echo esc_attr( $class_string . (string) $index );
+					}
+					?>
+					"
+					<?php
+					if ( $index > 0 && $unique_filter ) {
+						echo esc_attr( 'data-exclude-from="' . $filter_string . '"' );
+					}
+					?>
+						data-template="@<?php echo esc_attr( str_replace( ' ', '', $template ) ); ?>"
+						data-products="<?php echo esc_attr( wp_json_encode( $products ) ); ?>">
+					</span>
+					<?php
+					if ( $index > 0 ) {
+						$filter_string .= ', ';
+					}
+					$filter_string .= '.' . $class_string . (string) $index;
+					$index++;
+				}
+			}
+		} catch ( Exception $e ) {
 
-            $this->logger->error('ERROR clerk_woocommerce_after_cart_table', ['error' => $e->getMessage()]);
+			$this->logger->error( 'ERROR clerk_woocommerce_after_cart_table', array( 'error' => $e->getMessage() ) );
 
-        }
-    }
+		}
+	}
 
-    /**
-     * Rewrite related products template if enabled
-     *
-     * @param $located
-     * @param $template_name
-     *
-     * @return string
-     */
-    public function clerk_wc_get_template($located, $template_name)
-    {
+	/**
+	 * Rewrite related products template if enabled
+	 *
+	 * @param mixed  $located Template found.
+	 * @param string $template_name Template name.
+	 *
+	 * @return string
+	 */
+	public function clerk_wc_get_template( $located, $template_name ) {
 
-        try {
+		try {
 
-            if ($template_name === 'single-product/related.php') {
-                $options = get_option('clerk_options');
+			if ( 'single-product/related.php' === $template_name ) {
+				$options = get_option( 'clerk_options' );
 
-                if (isset($options['product_enabled']) && $options['product_enabled']) :
-                    return clerk_locate_template('clerk-related-products.php');
-                endif;
-            }
+				if ( isset( $options['product_enabled'] ) && $options['product_enabled'] ) :
+					return clerk_locate_template( 'clerk-related-products.php' );
+				endif;
+			}
 
-            return $located;
+			return $located;
 
-        } catch (Exception $e) {
+		} catch ( Exception $e ) {
 
-            $this->logger->error('ERROR clerk_wc_get_template', ['error' => $e->getMessage()]);
+			$this->logger->error( 'ERROR clerk_wc_get_template', array( 'error' => $e->getMessage() ) );
 
-        }
+		}
 
-    }
+	}
 }
 
 new Clerk_Content();

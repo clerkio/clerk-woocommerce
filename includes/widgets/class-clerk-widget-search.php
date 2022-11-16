@@ -1,6 +1,26 @@
 <?php
+/**
+ * Plugin Name: Clerk
+ * Plugin URI: https://clerk.io/
+ * Description: Clerk.io Turns More Browsers Into Buyers
+ * Version: 3.8.3
+ * Author: Clerk.io
+ * Author URI: https://clerk.io
+ *
+ * Text Domain: clerk
+ * Domain Path: /i18n/languages/
+ * License: MIT
+ *
+ * @package clerkio/clerk-woocommerce
+ */
 
+/**
+ * Clerk_Sales_Tracking Class
+ *
+ * Clerk Module Core Class
+ */
 class Clerk_Widget_Search extends WP_Widget {
+
 	/**
 	 * Clerk_Widget_Search constructor.
 	 */
@@ -16,21 +36,25 @@ class Clerk_Widget_Search extends WP_Widget {
 	/**
 	 * Render clerk search form
 	 *
-	 * @param array $args
-	 * @param array $instance
+	 * @param array $args Arguments.
+	 * @param array $instance Instance.
 	 */
 	public function widget( $args, $instance ) {
-		$title = apply_filters( 'widget_title', empty( $instance['title'] ) ? '' : $instance['title'], $instance,
-			$this->id_base );
+		$title = apply_filters(
+			'widget_title',
+			empty( $instance['title'] ) ? '' : esc_html( $instance['title'] ),
+			$instance,
+			$this->id_base
+		);
 
-		echo $args['before_widget'];
+		echo esc_html( $args['before_widget'] );
 		if ( $title ) {
-			echo $args['before_title'] . $title . $args['after_title'];
+			echo esc_html( $args['before_title'] . $title . $args['after_title'] );
 		}
 
-		// Use current theme search form if it exists
+		// Use current theme search form if it exists.
 		get_clerk_search_form();
 
-		echo $args['after_widget'];
+		echo esc_html( $args['after_widget'] );
 	}
 }

@@ -1,15 +1,29 @@
 <?php
+/**
+ * Plugin Name: Clerk
+ * Plugin URI: https://clerk.io/
+ * Description: Clerk.io Turns More Browsers Into Buyers
+ * Version: 3.8.3
+ * Author: Clerk.io
+ * Author URI: https://clerk.io
+ *
+ * Text Domain: clerk
+ * Domain Path: /i18n/languages/
+ * License: MIT
+ *
+ * @package clerkio/clerk-woocommerce
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly
+	exit; // Exit if accessed directly.
 }
 
 /**
- * Locate template
+ * Locate template file
  *
- * @param $template_name
- * @param string $template_path
- * @param string $default_path
+ * @param string $template_name Name.
+ * @param string $template_path Path.
+ * @param string $default_path Fallback.
  *
  * @return string
  */
@@ -21,7 +35,7 @@ function clerk_locate_template( $template_name, $template_path = '', $default_pa
 
 	// Set default plugin templates path.
 	if ( ! $default_path ) {
-		$default_path = plugin_dir_path( __FILE__ ) . '../templates/'; // Path to the template folder
+		$default_path = plugin_dir_path( __FILE__ ) . '../templates/'; // Path to the template folder.
 	}
 
 	// Search template file in theme folder.
@@ -40,15 +54,28 @@ function clerk_locate_template( $template_name, $template_path = '', $default_pa
 	return apply_filters( 'clerk_locate_template', $template, $template_name, $template_path, $default_path );
 }
 
-function clerk_get_template( $template_name, $args = array(), $tempate_path = '', $default_path = '' ) {
+/**
+ * Locate template
+ *
+ * @param string $template_name Name.
+ * @param array  $args Arguments.
+ * @param string $template_path Path.
+ * @param string $default_path Fallback.
+ *
+ * @return object
+ */
+function clerk_get_template( $template_name, $args = array(), $template_path = '', $default_path = '' ) {
 	if ( is_array( $args ) && isset( $args ) ) {
-		extract( $args );
+		foreach ( $args as $key => $value ) {
+			$$key = $value;
+		}
 	}
 
-	$template_file = clerk_locate_template( $template_name, $tempate_path, $default_path );
+	$template_file = clerk_locate_template( $template_name, $template_path, $default_path );
 
 	if ( ! file_exists( $template_file ) ) {
-		_doing_it_wrong( __FUNCTION__, sprintf( __( '%s does not exist.', 'clerk' ), $template_file ), '1.0.0' );
+		/* translators: %s file name */
+		_doing_it_wrong( __FUNCTION__, sprintf( esc_html( __( '%s does not exist.', 'clerk' ) ), esc_url_raw( $template_file ) ), '1.0.0' );
 
 		return;
 	}
@@ -57,39 +84,63 @@ function clerk_get_template( $template_name, $args = array(), $tempate_path = ''
 }
 
 if ( ! function_exists( 'get_product_search_form' ) ) {
+	/**
+	 * Return searchform template
+	 *
+	 * @return html
+	 */
 	function get_clerk_search_form() {
 		return clerk_get_template( 'clerk-searchform.php' );
 	}
 }
 
 if ( ! function_exists( 'get_clerk_powerstep' ) ) {
+	/**
+	 * Return powerstep page template
+	 *
+	 * @param array $product Product object.
+	 *
+	 * @return html
+	 */
 	function get_clerk_powerstep( $product ) {
-		return clerk_get_template( 'clerk-powerstep.php', [ 'product' => $product ] );
+		return clerk_get_template( 'clerk-powerstep.php', array( 'product' => $product ) );
 	}
 }
 
 if ( ! function_exists( 'get_clerk_powerstep_popup' ) ) {
+	/**
+	 * Return powerstep popup template
+	 *
+	 * @param array $product Product object.
+	 *
+	 * @return html
+	 */
 	function get_clerk_powerstep_popup( $product ) {
-		return clerk_get_template( 'clerk-powerstep-popup.php', [ 'product' => $product ] );
+		return clerk_get_template( 'clerk-powerstep-popup.php', array( 'product' => $product ) );
 	}
 }
 
 
 if ( ! function_exists( 'get_powerstep_templates' ) ) {
+	/**
+	 * Return powerstep popup clerk content strings
+	 *
+	 * @return string
+	 */
 	function get_powerstep_templates() {
 		$options = get_option( 'clerk_options' );
 
 		if ( ! $options['powerstep_templates'] ) {
-			return [];
+			return array();
 		}
 
 		$templates = explode( ',', $options['powerstep_templates'] );
 
-		foreach ($templates as $key => $template) {
+		foreach ( $templates as $key => $template ) {
 
-            $templates[$key] = str_replace(' ','', $template);
+			$templates[ $key ] = str_replace( ' ', '', $template );
 
-        }
+		}
 
 		$templates = array_map( 'trim', $templates );
 

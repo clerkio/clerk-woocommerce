@@ -1,15 +1,15 @@
 .powerstep-success {
-    overflow: hidden;
+	overflow: hidden;
 }
 
 .powerstep-product img {
-    vertical-align: top;
+	vertical-align: top;
 }
 
 .powerstep-actions {
-    text-align: right;
+	text-align: right;
 }
 
 .powerstep-cart {
-    float: left;
+	float: left;
 }

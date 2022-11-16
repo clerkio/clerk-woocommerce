@@ -1,242 +1,269 @@
 <?php
+/**
+ * Plugin Name: Clerk
+ * Plugin URI: https://clerk.io/
+ * Description: Clerk.io Turns More Browsers Into Buyers
+ * Version: 3.8.3
+ * Author: Clerk.io
+ * Author URI: https://clerk.io
+ *
+ * Text Domain: clerk
+ * Domain Path: /i18n/languages/
+ * License: MIT
+ *
+ * @package clerkio/clerk-woocommerce
+ */
 
 /**
- * Class Logger
+ * Clerk_Logger Class
+ *
+ * Clerk Module Core Class
  */
-class ClerkLogger
-{
-    /**
-     * @var mixed|void
-     */
-    private $options;
+class Clerk_Logger {
+
+	/**
+	 * Options
+	 *
+	 * @var mixed|void
+	 */
+	private $options;
+
+	/**
+	 * Platform
+	 *
+	 * @var string
+	 */
+	private $platform;
+
+	/**
+	 * Key
+	 *
+	 * @var string|void
+	 */
+	private $key;
+
+	/**
+	 * Date Time
+	 *
+	 * @var DateTime
+	 */
+	private $date;
+
+	/**
+	 * Time
+	 *
+	 * @var int
+	 */
+	private $time;
+
+	/**
+	 * Clerk_Logger constructor.
+	 *
+	 * @throws Exception Init on exception.
+	 */
+	public function __construct() {
 
-    /**
-     * @var string
-     */
-    private $Platform;
+		$this->options  = get_option( 'clerk_options' );
+		$this->platform = 'WordPress';
+		if ( ! empty( $this->options ) ) {
+			$this->key = $this->options['public_key'];
+		}
+		$this->date = new DateTime();
+		$this->time = $this->date->getTimestamp();
 
-    /**
-     * @var
-     */
-    private $Key;
+	}
 
-    /**
-     * @var DateTime
-     */
-    private $Date;
+	/**
+	 * Log Warnings and Erros
+	 *
+	 * @param string|void       $message Status Message.
+	 * @param array|object|void $metadata Data.
+	 */
+	public function log( $message, $metadata ) {
 
-    /**
-     * @var int
-     */
-    private $Time;
+		if ( isset( $_SERVER['HTTPS'] ) && 'on' === $_SERVER['HTTPS'] ) {
 
-    /**
-     * ClerkLogger constructor.
-     * @throws Exception
-     */
-    function __construct()
-    {
+			$http_host       = isset( $_SERVER['HTTP_HOST'] ) ? esc_url_raw( wp_unslash( $_SERVER['HTTP_HOST'] ) ) : '';
+			$request_uri     = isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
+			$metadata['uri'] = 'http://' . $http_host . $request_uri;
 
-        $this->options = get_option('clerk_options');
-        $this->Platform = 'Wordpress';
-        if( !empty($this->options) ) {
-            $this->Key = $this->options['public_key'];
-        }
-        $this->Date = new DateTime();
-        $this->Time = $this->Date->getTimestamp();
+		} else {
 
-    }
+			$request_uri     = isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
+			$metadata['uri'] = get_site_url() . $request_uri;
 
-    /**
-     * @param $Message
-     * @param $Metadata
-     */
-    public function log($Message, $Metadata)
-    {
+		}
 
-        if(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')
+		if ( $_GET ) {
 
-            $Metadata['uri'] = "http://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+			$metadata['params'] = $_GET;
 
-        else {
+		} elseif ( $_POST ) {
 
-            $uri = array_key_exists('REQUEST_URI', $_SERVER) ? $_SERVER['REQUEST_URI'] : '';
+			$metadata['params'] = $_POST;
 
-            $Metadata['uri'] = get_site_url().$uri;
+		}
 
-        }
+		$type = 'log';
 
-        if ($_GET) {
+		if ( isset( $this->options['log_enabled'] ) && '1' === $this->options['log_enabled'] ) {
 
-            $Metadata['params'] = $_GET;
+			if ( 'Error + Warn + Debug Mode' === $this->options['log_level'] ) {
 
-        }elseif ($_POST) {
+				if ( 'my.clerk.io' === $this->options['log_to'] ) {
 
-            $Metadata['params'] = $_POST;
+					$_endpoint = 'https://api.clerk.io/v2/log/debug';
 
-        }
+					$data_string = wp_json_encode(
+						array(
+							'key'      => $this->key,
+							'source'   => $this->platform,
+							'time'     => $this->time,
+							'type'     => $type,
+							'message'  => $message,
+							'metadata' => $metadata,
+						)
+					);
 
-        $Type = 'log';
+					$args = array(
+						'body'    => $data_string,
+						'method'  => 'POST',
+						'headers' => array( 'User-Agent' => 'ClerkExtensionBot WooCommerce/v' . get_bloginfo( 'version' ) . ' Clerk/v3.8.2 PHP/v' . phpversion() ),
+					);
 
-        if (isset($this->options['log_enabled']) && $this->options['log_enabled'] !== '1') {
+					wp_remote_request( $_endpoint, $args );
 
-        } else {
+				}
+			}
+		}
+	}
 
-            if ($this->options['log_level'] !== 'Error + Warn + Debug Mode') {
+	/**
+	 * Log error
+	 *
+	 * @param string|void       $message Status Message.
+	 * @param array|object|void $metadata Data.
+	 */
+	public function error( $message, $metadata ) {
 
-            } else {
+		if ( isset( $_SERVER['HTTPS'] ) && 'on' === $_SERVER['HTTPS'] ) {
 
-                if ($this->options['log_to'] == 'my.clerk.io') {
+			$http_host       = isset( $_SERVER['HTTP_HOST'] ) ? esc_url_raw( wp_unslash( $_SERVER['HTTP_HOST'] ) ) : '';
+			$request_uri     = isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
+			$metadata['uri'] = 'http://' . $http_host . $request_uri;
 
-                    $Endpoint = 'https://api.clerk.io/v2/log/debug';
+		} else {
 
-                    $data_string = json_encode([
-                        'key' =>$this->Key,
-                        'source' => $this->Platform,
-                        'time' => $this->Time,
-                        'type' => $Type,
-                        'message' => $Message,
-                        'metadata' => $Metadata]);
+			$request_uri     = isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
+			$metadata['uri'] = get_site_url() . $request_uri;
+		}
 
-                    $args = array(
-                        'body'        => $data_string,
-                        'method'      => 'POST',
-                        'headers'     => array('User-Agent' => 'ClerkExtensionBot WooCommerce/v' .get_bloginfo('version'). ' Clerk/v3.8.2 PHP/v'.phpversion())
-                    );
+		if ( $_GET ) {
 
-                    wp_remote_request( $Endpoint, $args );
+			$metadata['params'] = $_GET;
 
-                }
-            }
-        }
-    }
+		} elseif ( $_POST ) {
 
-    /**
-     * @param $Message
-     * @param $Metadata
-     */
-    public function error($Message, $Metadata)
-    {
+			$metadata['params'] = $_POST;
 
-        if(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')
+		}
 
-            $Metadata['uri'] = "http://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+		$type = 'error';
 
-        else {
+		if ( isset( $this->options['log_enabled'] ) && '1' === $this->options['log_enabled'] ) {
 
-            $uri = array_key_exists('REQUEST_URI', $_SERVER) ? $_SERVER['REQUEST_URI'] : '';
+			if ( 'my.clerk.io' === $this->options['log_to'] ) {
 
-            $Metadata['uri'] = get_site_url().$uri;
+				$_endpoint = 'https://api.clerk.io/v2/log/debug';
 
-        }
+				$data_string = wp_json_encode(
+					array(
+						'debug'    => '1',
+						'key'      => $this->key,
+						'source'   => $this->platform,
+						'time'     => $this->time,
+						'type'     => $type,
+						'message'  => $message,
+						'metadata' => $metadata,
+					)
+				);
 
-        if ($_GET) {
+				$args = array(
+					'body'    => $data_string,
+					'method'  => 'POST',
+					'headers' => array( 'User-Agent' => 'ClerkExtensionBot WooCommerce/v' . get_bloginfo( 'version' ) . ' Clerk/v3.8.2 PHP/v' . phpversion() ),
+				);
 
-            $Metadata['params'] = $_GET;
+				wp_remote_request( $_endpoint, $args );
 
-        }elseif ($_POST) {
+			}
+		}
+	}
 
-            $Metadata['params'] = $_POST;
+	/**
+	 * Log warning
+	 *
+	 * @param string|void       $message Status Message.
+	 * @param array|object|void $metadata Data.
+	 */
+	public function warn( $message, $metadata ) {
 
-        }
+		if ( isset( $_SERVER['HTTPS'] ) && 'on' === $_SERVER['HTTPS'] ) {
 
-        $Type = 'error';
+			$http_host       = isset( $_SERVER['HTTP_HOST'] ) ? esc_url_raw( wp_unslash( $_SERVER['HTTP_HOST'] ) ) : '';
+			$request_uri     = isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
+			$metadata['uri'] = 'http://' . $http_host . $request_uri;
 
-        if (isset($this->options['log_enabled']) && $this->options['log_enabled'] !== '1') {
+		} else {
 
+			$request_uri     = isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
+			$metadata['uri'] = get_site_url() . $request_uri;
 
-        } else {
+		}
 
-            if ($this->options['log_to'] == 'my.clerk.io') {
+		if ( $_GET ) {
 
-                $Endpoint = 'https://api.clerk.io/v2/log/debug';
+			$metadata['params'] = $_GET;
 
-                $data_string = json_encode([
-                    'debug' => '1',
-                    'key' => $this->Key,
-                    'source' => $this->Platform,
-                    'time' => $this->Time,
-                    'type' => $Type,
-                    'message' => $Message,
-                    'metadata' => $Metadata]);
+		} elseif ( $_POST ) {
 
-                $args = array(
-                    'body' => $data_string,
-                    'method' => 'POST',
-                    'headers' => array('User-Agent' => 'ClerkExtensionBot WooCommerce/v' . get_bloginfo('version') . ' Clerk/v3.8.2 PHP/v' . phpversion())
-                );
+			$metadata['params'] = $_POST;
 
-                wp_remote_request($Endpoint, $args);
+		}
 
-            }
-        }
-    }
+		$type = 'warn';
 
-    /**
-     * @param $Message
-     * @param $Metadata
-     */
-    public function warn($Message, $Metadata)
-    {
+		if ( isset( $this->options['log_enabled'] ) && '1' === $this->options['log_enabled'] ) {
 
-        if(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')
+			if ( 'Only Error' !== $this->options['log_level'] ) {
 
-            $Metadata['uri'] = "http://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+				if ( 'my.clerk.io' === $this->options['log_to'] ) {
 
-        else {
+					$_endpoint = 'https://api.clerk.io/v2/log/debug';
 
-            $uri = array_key_exists('REQUEST_URI', $_SERVER) ? $_SERVER['REQUEST_URI'] : '';
+					$data_string = wp_json_encode(
+						array(
+							'debug'    => '1',
+							'key'      => $this->key,
+							'source'   => $this->platform,
+							'time'     => $this->time,
+							'type'     => $type,
+							'message'  => $message,
+							'metadata' => $metadata,
+						)
+					);
 
-            $Metadata['uri'] = get_site_url().$uri;
+					$args = array(
+						'body'    => $data_string,
+						'method'  => 'POST',
+						'headers' => array( 'User-Agent' => 'ClerkExtensionBot WooCommerce/v' . get_bloginfo( 'version' ) . ' Clerk/v3.8.2 PHP/v' . phpversion() ),
+					);
 
-        }
+					wp_remote_request( $_endpoint, $args );
 
-        if ($_GET) {
-
-            $Metadata['params'] = $_GET;
-
-        }elseif ($_POST) {
-
-            $Metadata['params'] = $_POST;
-
-        }
-
-        $Type = 'warn';
-
-        if (isset($this->options['log_enabled']) && $this->options['log_enabled'] !== '1') {
-
-
-        } else {
-
-            if ($this->options['log_level'] == 'Only Error') {
-
-
-            } else {
-
-                if ($this->options['log_to'] == 'my.clerk.io') {
-
-                    $Endpoint = 'https://api.clerk.io/v2/log/debug';
-
-                    $data_string = json_encode([
-                        'debug' => '1',
-                        'key' =>$this->Key,
-                        'source' => $this->Platform,
-                        'time' => $this->Time,
-                        'type' => $Type,
-                        'message' => $Message,
-                        'metadata' => $Metadata]);
-
-                    $args = array(
-                        'body'        => $data_string,
-                        'method'      => 'POST',
-                        'headers'     => array('User-Agent' => 'ClerkExtensionBot WooCommerce/v' .get_bloginfo('version'). ' Clerk/v3.8.2 PHP/v'.phpversion())
-                    );
-
-                    wp_remote_request( $Endpoint, $args );
-
-                }
-            }
-        }
-    }
+				}
+			}
+		}
+	}
 
 }
