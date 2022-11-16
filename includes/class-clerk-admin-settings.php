@@ -2505,7 +2505,7 @@ class Clerk_Admin_Settings {
 
 		// check if the user have submitted the settings.
 		// WordPress will add the "settings-updated" $_GET parameter to the url.
-		if ( isset( $_GET['settings-updated'] ) ) {
+		if ( null !== filter_input( INPUT_GET, 'settings-updated', FILTER_SANITIZE_STRING ) ) {
 			delete_transient( 'clerk_api_contents' );
 			// add settings saved message with the class of "updated".
 			add_settings_error( 'wporg_messages', 'wporg_message', __( 'Settings Saved', 'wporg' ), 'updated' );

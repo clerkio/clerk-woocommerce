@@ -94,13 +94,13 @@ class Clerk_Logger {
 
 		}
 
-		if ( $_GET ) {
+		if ( filter_input_array( INPUT_GET, FILTER_SANITIZE_STRING ) ) {
 
-			$metadata['params'] = $_GET;
+			$metadata['params'] = filter_input_array( INPUT_GET, FILTER_SANITIZE_STRING );
 
-		} elseif ( $_POST ) {
+		} elseif ( filter_input_array( INPUT_POST, FILTER_SANITIZE_STRING ) ) {
 
-			$metadata['params'] = $_POST;
+			$metadata['params'] = filter_input_array( INPUT_POST, FILTER_SANITIZE_STRING );
 
 		}
 
@@ -158,13 +158,13 @@ class Clerk_Logger {
 			$metadata['uri'] = get_site_url() . $request_uri;
 		}
 
-		if ( $_GET ) {
+		if ( filter_input_array( INPUT_GET, FILTER_SANITIZE_STRING ) ) {
 
-			$metadata['params'] = $_GET;
+			$metadata['params'] = filter_input_array( INPUT_GET, FILTER_SANITIZE_STRING );
 
-		} elseif ( $_POST ) {
+		} elseif ( filter_input_array( INPUT_POST, FILTER_SANITIZE_STRING ) ) {
 
-			$metadata['params'] = $_POST;
+			$metadata['params'] = filter_input_array( INPUT_POST, FILTER_SANITIZE_STRING );
 
 		}
 
@@ -221,13 +221,13 @@ class Clerk_Logger {
 
 		}
 
-		if ( $_GET ) {
+		if ( filter_input_array( INPUT_GET, FILTER_SANITIZE_STRING ) ) {
 
-			$metadata['params'] = $_GET;
+			$metadata['params'] = filter_input_array( INPUT_GET, FILTER_SANITIZE_STRING );
 
-		} elseif ( $_POST ) {
+		} elseif ( filter_input_array( INPUT_POST, FILTER_SANITIZE_STRING ) ) {
 
-			$metadata['params'] = $_POST;
+			$metadata['params'] = filter_input_array( INPUT_POST, FILTER_SANITIZE_STRING );
 
 		}
 

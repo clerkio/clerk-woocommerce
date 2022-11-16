@@ -73,9 +73,25 @@ class Clerk_Basket {
 			$items = $woocommerce->cart->get_cart();
 			$email = (string) $current_user->user_email;
 
-			if ( empty( $_REQUEST['add-to-cart'] ) || ! is_numeric( $_REQUEST['add-to-cart'] ) ) {
-				if ( empty( $_REQUEST['removed_item'] ) || ! is_numeric( $_REQUEST['removed_item'] ) ) {
-					if ( empty( $_REQUEST['product_id'] ) || ! is_numeric( $_REQUEST['product_id'] ) ) {
+			$add_to_cart_param = false;
+			$add_to_cart_param = ( null !== filter_input( INPUT_POST, 'add-to-cart', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_POST, 'add-to-cart', FILTER_SANITIZE_STRING ) : $add_to_cart_param;
+			$add_to_cart_param = ( null !== filter_input( INPUT_GET, 'add-to-cart', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_GET, 'add-to-cart', FILTER_SANITIZE_STRING ) : $add_to_cart_param;
+
+			$removed_item_param = false;
+			$removed_item_param = ( null !== filter_input( INPUT_POST, 'removed_item', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_POST, 'removed_item', FILTER_SANITIZE_STRING ) : $removed_item_param;
+			$removed_item_param = ( null !== filter_input( INPUT_GET, 'removed_item', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_GET, 'removed_item', FILTER_SANITIZE_STRING ) : $removed_item_param;
+
+			$product_id_param = false;
+			$product_id_param = ( null !== filter_input( INPUT_POST, 'product_id', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_POST, 'product_id', FILTER_SANITIZE_STRING ) : $product_id_param;
+			$product_id_param = ( null !== filter_input( INPUT_GET, 'product_id', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_GET, 'product_id', FILTER_SANITIZE_STRING ) : $product_id_param;
+
+			if ( false === $add_to_cart_param || false === $removed_item_param || false === $product_id_param ) {
+				return $url;
+			}
+
+			if ( empty( $add_to_cart_param ) || ! is_numeric( $add_to_cart_param ) ) {
+				if ( empty( $removed_item_param ) || ! is_numeric( $removed_item_param ) ) {
+					if ( empty( $product_id_param ) || ! is_numeric( $product_id_param ) ) {
 						return $url;
 					}
 				}
