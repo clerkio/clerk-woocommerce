@@ -42,19 +42,19 @@ class Clerk_Widget_Search extends WP_Widget {
 	public function widget( $args, $instance ) {
 		$title = apply_filters(
 			'widget_title',
-			empty( $instance['title'] ) ? '' : esc_html( $instance['title'] ),
+			empty( $instance['title'] ) ? '' : wp_kses_post( $instance['title'] ),
 			$instance,
 			$this->id_base
 		);
 
-		echo esc_html( $args['before_widget'] );
+		echo wp_kses_post( $args['before_widget'] );
 		if ( $title ) {
-			echo esc_html( $args['before_title'] . $title . $args['after_title'] );
+			echo wp_kses_post( $args['before_title'] . $title . $args['after_title'] );
 		}
 
 		// Use current theme search form if it exists.
 		get_clerk_search_form();
 
-		echo esc_html( $args['after_widget'] );
+		echo wp_kses_post( $args['after_widget'] );
 	}
 }

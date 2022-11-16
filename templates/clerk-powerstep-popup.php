@@ -18,10 +18,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-global $woocommerce;
-
-$cart_url     = $woocommerce->cart->get_cart_url();
-$checkout_url = $woocommerce->cart->get_checkout_url();
+$cart_url     = wc_get_cart_url();
+$checkout_url = wc_get_checkout_url();
 $options      = get_option( 'clerk_options' );
 
 $product_name     = (string) $product->get_name();
@@ -50,11 +48,11 @@ if ( isset( $options['powerstep_custom_text_enabled'] ) ) {
 	<span class="clerk-popup-close">×</span>
 	<div class="clerk_powerstep_header">
 		<h2 class="clerk_powerstep_headline">
-			<?php echo esc_html( $title_html ); ?>
+			<?php echo wp_kses_post( $title_html ); ?>
 		</h2>
 	</div>
 	<div class="clerk_powerstep_image">
-		<?php echo esc_html( $product->get_image() ); ?>
+		<?php echo wp_kses_post( $product->get_image() ); ?>
 	</div>
 	<div class="clerk_powerstep_clear actions">
 		<button class="button clerk-powerstep-close"><?php echo esc_html( $back_button_text ); ?></button>

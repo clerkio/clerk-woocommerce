@@ -27,7 +27,6 @@ if ( isset( $options['product_enabled'] ) && $options['product_enabled'] ) :
 	$filter_string = '';
 	$unique_filter = ( isset( $options['product_excl_duplicates'] ) && $options['product_excl_duplicates'] ) ? true : false;
 	foreach ( $contents as $content ) :
-
 		?>
 		<span class="clerk
 		<?php

@@ -76,7 +76,7 @@ class Clerk_Powerstep {
 			$add_to_cart_param = ( null !== filter_input( INPUT_POST, 'add-to-cart', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_POST, 'add-to-cart', FILTER_SANITIZE_STRING ) : $add_to_cart_param;
 			$add_to_cart_param = ( null !== filter_input( INPUT_GET, 'add-to-cart', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_GET, 'add-to-cart', FILTER_SANITIZE_STRING ) : $add_to_cart_param;
 			if ( $add_to_cart_param ) {
-				if ( empty( esc_url_raw( wp_unslash( $add_to_cart_param ) ) ) || ! is_numeric( esc_url_raw( wp_unslash( $add_to_cart_param ) ) ) ) {
+				if ( ! is_numeric(  $add_to_cart_param ) ) {
 					return $url;
 				}
 			} else {
@@ -89,7 +89,7 @@ class Clerk_Powerstep {
 				return $url;
 			}
 
-			$product_id = absint( esc_url_raw( wp_unslash( $add_to_cart_param ) ) );
+			$product_id = absint( $add_to_cart_param );
 
 			$adding_to_cart = wc_get_product( $product_id );
 
@@ -122,7 +122,7 @@ class Clerk_Powerstep {
 			$add_to_cart_param = ( null !== filter_input( INPUT_POST, 'add-to-cart', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_POST, 'add-to-cart', FILTER_SANITIZE_STRING ) : $add_to_cart_param;
 			$add_to_cart_param = ( null !== filter_input( INPUT_GET, 'add-to-cart', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_GET, 'add-to-cart', FILTER_SANITIZE_STRING ) : $add_to_cart_param;
 			if ( $add_to_cart_param ) {
-				if ( empty( esc_url_raw( wp_unslash( $add_to_cart_param ) ) ) || ! is_numeric( esc_url_raw( wp_unslash( $add_to_cart_param ) ) ) ) {
+				if ( ! is_numeric( $add_to_cart_param ) ) {
 					return $url;
 				}
 			} else {
@@ -130,7 +130,7 @@ class Clerk_Powerstep {
 			}
 			$options = get_option( 'clerk_options' );
 
-			$product_id = absint( esc_url_raw( wp_unslash( $add_to_cart_param ) ) );
+			$product_id = absint( $add_to_cart_param );
 
 			if ( ! $options['powerstep_enabled'] || self::TYPE_PAGE !== $options['powerstep_type'] ) {
 

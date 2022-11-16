@@ -18,10 +18,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-global $woocommerce;
-
-$cart_url     = $woocommerce->cart->get_cart_url();
-$checkout_url = $woocommerce->cart->get_checkout_url();
+$cart_url     = wc_get_cart_url();
+$checkout_url = wc_get_checkout_url();
 $options      = get_option( 'clerk_options' );
 
 $product_name     = (string) $product->get_name();
@@ -48,8 +46,8 @@ if ( isset( $options['powerstep_custom_text_enabled'] ) ) {
 ?>
 <div class="powerstep-success">
 	<div class="powerstep-product">
-		<?php echo esc_html( $product->get_image() ); ?>
-		<?php echo esc_html( $title_html ); ?>
+		<?php echo wp_kses_post( $product->get_image() ); ?>
+		<?php echo wp_kses_post( $title_html ); ?>
 	</div>
 	<div class="powerstep-actions">
 		<br>
@@ -70,7 +68,6 @@ if ( isset( $options['powerstep_custom_text_enabled'] ) ) {
 	$filter_string = '';
 	$unique_filter = ( isset( $options['powerstep_excl_duplicates'] ) && $options['powerstep_excl_duplicates'] ) ? true : false;
 	foreach ( get_powerstep_templates() as $template ) :
-		$count++;
 		?>
 		<span class="clerk
 		<?php

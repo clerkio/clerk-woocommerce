@@ -70,11 +70,11 @@ class Clerk_Widget_Content extends WP_Widget {
 			$span_attributes['data-products'] = '[' . $instance['product'] . ']';
 		}
 
-		echo esc_html( $args['before_widget'] );
+		echo wp_kses_post( $args['before_widget'] );
 
-		echo '<span class="clerk" data-template="@' . esc_html( $instance['content'] ) . '" ' . esc_html( $this->parseSpanAttributes( $span_attributes ) ) . '></span>';
+		echo '<span class="clerk" data-template="@' . wp_kses_post( $instance['content'] ) . '" ' . wp_kses_post( $this->parseSpanAttributes( $span_attributes ) ) . '></span>';
 
-		echo esc_html( $args['after_widget'] );
+		echo wp_kses_post( $args['after_widget'] );
 	}
 
 	/**
