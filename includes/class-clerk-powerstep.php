@@ -115,9 +115,9 @@ class Clerk_Powerstep {
 
 		try {
             if( array_key_exists('add-to-cart', $_REQUEST) ){
-    			if ( empty( esc_url_raw( wp_unslash( $_REQUEST['add-to-cart'] ) ) ) || ! is_numeric( esc_url_raw( wp_unslash( $_REQUEST['add-to-cart'] ) ) ) ) {
-	    			return $url;
-		    	}
+              if ( empty( esc_url_raw( wp_unslash( $_REQUEST['add-to-cart'] ) ) ) || ! is_numeric( esc_url_raw( wp_unslash( $_REQUEST['add-to-cart'] ) ) ) ) {
+                return $url;
+              }
             } else {
                 return $url;
             }
