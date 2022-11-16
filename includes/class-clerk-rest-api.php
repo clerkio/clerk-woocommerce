@@ -159,30 +159,35 @@ class Clerk_Rest_Api extends WP_REST_Server {
         try {
 
             //Determine if this this is a clerk request
-            if ($attributes = $request->get_attributes()) {
-                if (is_array($attributes['callback']) && $attributes['callback'][0] instanceof $this) {
-                    // Embed links inside the request.
-                    $result = $this->response_to_data($result, isset($_GET['_embed']));
+			if ( $request->get_attributes() ) {
+                $attributes = $request->get_attributes();
+				if ( is_array( $attributes['callback'] ) && $attributes['callback'][0] instanceof $this ) {
+					// Embed links inside the request.
+					$result = $this->response_to_data( $result, isset( $_GET['_embed'] ) );
 
-                    if ($request->get_param('debug') && $request->get_param('debug') == true) {
-                        $result = wp_json_encode($result, JSON_PRETTY_PRINT);
-                    } else {
-                        $result = wp_json_encode($result);
-                    }
+					if ( $request->get_param( 'debug' ) && true === $request->get_param( 'debug' ) ) {
+						$result = wp_json_encode( $result, JSON_PRETTY_PRINT );
 
-                    $json_error_message = $this->get_json_last_error();
-                    if ($json_error_message) {
-                        $json_error_obj = new WP_Error('rest_encode_error', $json_error_message,
-                            array('status' => 500));
-                        $result = $this->error_to_response($json_error_obj);
-                        $result = wp_json_encode($result->data[0]);
-                    }
+					} else {
+						$result = wp_json_encode( $result );
+					}
 
-                    echo $result;
+					$json_error_message = $this->get_json_last_error();
+					if ( $json_error_message ) {
+						$json_error_obj = new WP_Error(
+							'rest_encode_error',
+							$json_error_message,
+							array( 'status' => 500 )
+						);
+						$result         = $this->error_to_response( $json_error_obj );
+						$result         = wp_json_encode( $result->data[0] );
+					}
 
-                    return true;
-                }
-            }
+                    echo wp_json_encode(json_decode($result));
+
+					return true;
+				}
+			}
 
             return false;
 
