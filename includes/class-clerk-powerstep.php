@@ -73,11 +73,13 @@ class Clerk_Powerstep {
 	public function redirect_to_powerstep( $url ) {
 
 		try {
-
-			if ( empty( esc_url_raw( wp_unslash( $_REQUEST['add-to-cart'] ) ) ) || ! is_numeric( esc_url_raw( wp_unslash( $_REQUEST['add-to-cart'] ) ) ) ) {
-				return $url;
-			}
-
+            if( array_key_exists('add-to-cart', $_REQUEST) ){
+			    if ( empty( esc_url_raw( wp_unslash( $_REQUEST['add-to-cart'] ) ) ) || ! is_numeric( esc_url_raw( wp_unslash( $_REQUEST['add-to-cart'] ) ) ) ) {
+				    return $url;
+			    }
+            } else {
+                return $url;
+            }
 			$options = get_option( 'clerk_options' );
 
 			if ( ! $options['powerstep_enabled'] || self::TYPE_PAGE !== $options['powerstep_type'] ) {
@@ -112,11 +114,13 @@ class Clerk_Powerstep {
 	public function redirect_to_powerstep_no_ajax( $url ) {
 
 		try {
-
-			if ( empty( esc_url_raw( wp_unslash( $_REQUEST['add-to-cart'] ) ) ) || ! is_numeric( esc_url_raw( wp_unslash( $_REQUEST['add-to-cart'] ) ) ) ) {
-				return $url;
-			}
-
+            if( array_key_exists('add-to-cart', $_REQUEST) ){
+    			if ( empty( esc_url_raw( wp_unslash( $_REQUEST['add-to-cart'] ) ) ) || ! is_numeric( esc_url_raw( wp_unslash( $_REQUEST['add-to-cart'] ) ) ) ) {
+	    			return $url;
+		    	}
+            } else {
+                return $url;
+            }
 			$options = get_option( 'clerk_options' );
 
 			$product_id = absint( esc_url_raw( wp_unslash( $_REQUEST['add-to-cart'] ) ) );
