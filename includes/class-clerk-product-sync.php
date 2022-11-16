@@ -61,11 +61,33 @@ class Clerk_Product_Sync {
 	 * Init hooks
 	 */
 	private function init_hooks() {
-		add_action( 'save_post', array( $this, 'save_product' ), 10, 3 );
 		add_action( 'woocommerce_new_product', array( $this, 'save_product' ), 10, 3 );
-		add_action( 'woocommerce_product_import_inserted_product_object', array( $this, 'save_product' ), 10, 2 );
+        add_action( 'woocommerce_update_product', array( $this, 'save_product' ), 10, 3 );
+		add_action( 'woocommerce_product_import_inserted_product_object', array( $this, 'pre_save_product' ), 10, 3 );
 		add_action( 'before_delete_post', array( $this, 'remove_product' ) );
 	}
+
+	/**
+	 * Update Product from Import
+	 *
+	 * @param object|void $product Product Object.
+	 * @param array|mixed $data Meta data.
+	 */
+    public function pre_save_product( $product = null, $data = null ){
+
+        try {
+            if($product){
+                if ( is_a( $product, 'WC_Product' ) ) {
+                    $product_id = $product->get_id();
+                    $this->save_product($product_id);
+                }
+            }
+        } catch ( Exception $e ) {
+
+            $this->logger->error( 'ERROR pre_save_product', array( 'error' => $e->getMessage() ) );
+
+        }
+    }
 
 	/**
 	 * Update Product
@@ -74,17 +96,11 @@ class Clerk_Product_Sync {
 	 * @param object|mixed $post Post Object.
 	 * @param bool|void    $update Update flag.
 	 */
-	public function save_product( $post_id = null, $post = null, $update = null ) {
+	public function save_product( $product_id = null ) {
 
 		$options = get_option( 'clerk_options' );
 
 		try {
-
-			// Handling for products created through WordPress import feature.
-			$is_integer = is_int( $post_id );
-			if ( ! $is_integer && ! empty( $post_id ) ) {
-				$product = $post_id;
-			}
 
 			if ( isset( $options ) ) {
 				if ( ! array_key_exists( 'realtime_updates', $options ) ) {
@@ -92,15 +108,14 @@ class Clerk_Product_Sync {
 				}
 			}
 
-			if ( ! $post ) {
-				return;
-			}
-
-			if ( is_int( $post ) ) {
-				if ( ! wc_get_product( $post ) ) {
-					return;
-				}
-			}
+            if(is_int($product_id)){
+                $product = wc_get_product( $product_id );
+                if(! is_a( $product, 'WC_Product' )){
+                    return;
+                }
+            } else {
+                return;
+            }
 
 			if ( clerk_check_version() ) {
 
