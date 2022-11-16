@@ -11,6 +11,9 @@
  * License: MIT
  *
  * @package clerkio/clerk-woocommerce
+ *
+ * @file Handles front end content get.
+ * Ajax handler.
  */
 
 function clerkGetContent(el)
