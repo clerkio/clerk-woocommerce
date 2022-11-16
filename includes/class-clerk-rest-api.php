@@ -188,10 +188,14 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 			// Determine if this this is a clerk request.
 			if ( $request->get_attributes() ) {
-                $attributes = $request->get_attributes();
+				$attributes = $request->get_attributes();
 				if ( is_array( $attributes['callback'] ) && $attributes['callback'][0] instanceof $this ) {
 					// Embed links inside the request.
-					$result = $this->response_to_data( $result, isset( $_GET['_embed'] ) );
+					if ( $request->get_param( '_embed' ) ) {
+						$result = $this->response_to_data( $result, esc_url_raw( wp_unslash( $request->get_param( '_embed' ) ) ) );
+					} else {
+						return false;
+					}
 
 					if ( $request->get_param( 'debug' ) && true === $request->get_param( 'debug' ) ) {
 						$result = wp_json_encode( $result, JSON_PRETTY_PRINT );
@@ -714,7 +718,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 						'text'  => $page->post_content,
 					);
 
-					if ( ! $this->ValidatePage( $page_draft ) ) {
+					if ( ! $this->validate_page( $page_draft ) ) {
 
 						continue;
 
@@ -758,7 +762,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 						'image' => get_the_post_thumbnail_url( $page->ID ),
 					);
 
-					if ( ! $this->ValidatePage( $page_draft ) ) {
+					if ( ! $this->validate_page( $page_draft ) ) {
 
 						continue;
 
@@ -1118,7 +1122,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 	 *
 	 * @param object $page Page.
 	 */
-	public function ValidatePage( $page ) {
+	public function validate_page( $page ) {
 
 		$required_fields = array( 'title', 'text', 'type', 'id' );
 		foreach ( $page as $key => $content ) {

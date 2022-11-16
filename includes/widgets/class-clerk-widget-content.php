@@ -155,7 +155,7 @@ class Clerk_Widget_Content extends WP_Widget {
 			?>
 			data-clerk-product>
 				<label for="<?php echo esc_attr( $this->get_field_id( 'product' ) ); ?>"><?php echo esc_html__( 'Product', 'clerk' ); ?></label>
-			<?php echo wp_kses_post( $this->getProductDropdown( $instance ) ); ?>
+			<?php echo wp_kses_post( $this->get_product_dropdown( $instance ) ); ?>
 			</p>
 			<?php
 		} else {
@@ -202,7 +202,7 @@ class Clerk_Widget_Content extends WP_Widget {
 	 * Get parameters for content endpoint
 	 */
 	public function get_parameters_for_content() {
-		$content_param = isset( $_POST['content'] ) ? esc_url_raw( wp_unslash( $_POST['content'] ) ) : '';
+		$content_param = ( null !== filter_input( INPUT_POST, 'content', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_POST, 'content', FILTER_SANITIZE_STRING ) : '';
 
 		$contents = $this->api->get_content();
 
@@ -211,7 +211,7 @@ class Clerk_Widget_Content extends WP_Widget {
 		if ( 'ok' === $contents->status ) {
 			foreach ( $contents->contents as $content ) {
 				if ( $content->id === $content_param ) {
-					$parameters = $this->getParametersForEndpoint( $content->api );
+					$parameters = $this->get_parameters_for_endpoint( $content->api );
 
 					if ( in_array( 'category', $parameters, true ) ) {
 						$response['category'] = true;
@@ -237,7 +237,7 @@ class Clerk_Widget_Content extends WP_Widget {
 	 *
 	 * @return bool|array
 	 */
-	public function getParametersForEndpoint( $endpoint ) {
+	public function get_parameters_for_endpoint( $endpoint ) {
 		$endpoint_map = array(
 			'search/search'                          => array(
 				'query',
@@ -328,7 +328,7 @@ class Clerk_Widget_Content extends WP_Widget {
 	 *
 	 * @return string
 	 */
-	public function getProductDropdown( $instance ) {
+	public function get_product_dropdown( $instance ) {
 		$html = '<select name="' . $this->get_field_name( 'product' ) . '" id="' . $this->get_field_id( 'content' ) . '">';
 
 		$html .= '<option value="0">' . esc_html__( 'Select Product', 'clerk' ) . '</option>';

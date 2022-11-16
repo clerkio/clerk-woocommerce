@@ -11,8 +11,6 @@
  * License: MIT
  *
  * @package clerkio/clerk-woocommerce
- * @file
- * Handles user interaction with form outside page reload.
  */
 
 function clerkGetContent(el)

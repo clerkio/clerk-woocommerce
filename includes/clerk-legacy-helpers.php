@@ -55,10 +55,10 @@ if ( ! function_exists( 'clerk_get_products' ) ) {
 
 		// Handle some BW compatibility arg names where wp_query args differ in naming.
 		$map_legacy = array(
-			'numberposts'    => 'limit',
+			'numberposts'    => 'limit', // Max Request is 200 from API.
 			'post_status'    => 'status',
 			'post_parent'    => 'parent',
-			'posts_per_page' => 'limit',
+			'posts_per_page' => 'limit', // Max Request is 200 from API.
 			'paged'          => 'page',
 		);
 
@@ -75,10 +75,10 @@ if ( ! function_exists( 'clerk_get_products' ) ) {
 			'post_type'      => 'variation' === $args['type'] ? 'product_variation' : 'product',
 			'post_status'    => $args['status'],
 			'posts_per_page' => $args['limit'],
-			'meta_query'     => array(),
+			'meta_query'     => array(), // Necessary to model Product Attribute data.
 			'orderby'        => $args['orderby'],
 			'order'          => $args['order'],
-			'tax_query'      => array(),
+			'tax_query'      => array(), // Necessary to model Catalog Relation data.
 		);
 		// Do not load unnecessary post data if the user only wants IDs.
 		if ( 'ids' === $args['return'] ) {
