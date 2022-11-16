@@ -187,7 +187,8 @@ class Clerk_Rest_Api extends WP_REST_Server {
 		try {
 
 			// Determine if this this is a clerk request.
-			if ( $attributes === $request->get_attributes() ) {
+			if ( $request->get_attributes() ) {
+                $attributes = $request->get_attributes();
 				if ( is_array( $attributes['callback'] ) && $attributes['callback'][0] instanceof $this ) {
 					// Embed links inside the request.
 					$result = $this->response_to_data( $result, isset( $_GET['_embed'] ) );
@@ -209,7 +210,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 						$result         = wp_json_encode( $result->data[0] );
 					}
 
-					echo esc_html( $result );
+					echo wp_json_encode( json_decode( $result ) );
 
 					return true;
 				}
@@ -245,7 +246,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 		try {
 
-			if ( ! $this->validateRequest( $request ) ) {
+			if ( ! $this->validate_request( $request ) ) {
 				return $this->get_unathorized_response();
 			}
 
@@ -668,7 +669,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 				return array();
 			}
 
-			if ( ! $this->validateRequest( $request ) ) {
+			if ( ! $this->validate_request( $request ) ) {
 				return $this->get_unathorized_response();
 			}
 
@@ -799,7 +800,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 		try {
 
-			if ( ! $this->validateRequest( $request ) ) {
+			if ( ! $this->validate_request( $request ) ) {
 				return $this->get_unathorized_response();
 			}
 
@@ -906,7 +907,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 		try {
 
-			if ( ! $this->validateRequest( $request ) ) {
+			if ( ! $this->validate_request( $request ) ) {
 				return $this->get_unathorized_response();
 			}
 
@@ -1057,7 +1058,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 				return array();
 			}
 
-			if ( ! $this->validateRequest( $request ) ) {
+			if ( ! $this->validate_request( $request ) ) {
 				return $this->get_unathorized_response();
 			}
 
@@ -1140,7 +1141,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 	 *
 	 * @return bool
 	 */
-	private function validateRequest( $request ) {
+	private function validate_request( $request ) {
 
 		try {
 
@@ -1172,7 +1173,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 		} catch ( Exception $e ) {
 
-			$this->logger->error( 'ERROR validateRequest', array( 'error' => $e->getMessage() ) );
+			$this->logger->error( 'ERROR validate_request', array( 'error' => $e->getMessage() ) );
 
 		}
 
@@ -1281,7 +1282,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 		try {
 
-			if ( ! $this->validateRequest( $request ) ) {
+			if ( ! $this->validate_request( $request ) ) {
 				return $this->get_unathorized_response();
 			}
 
@@ -1344,7 +1345,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 		try {
 
-			if ( ! $this->validateRequest( $request ) ) {
+			if ( ! $this->validate_request( $request ) ) {
 				return $this->get_unathorized_response();
 			}
 
@@ -1451,7 +1452,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 		try {
 
-			if ( ! $this->validateRequest( $request ) ) {
+			if ( ! $this->validate_request( $request ) ) {
 				return $this->get_unathorized_response();
 			}
 
@@ -1488,7 +1489,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 		try {
 
-			if ( ! $this->validateRequest( $request ) ) {
+			if ( ! $this->validate_request( $request ) ) {
 				return $this->get_unathorized_response();
 			}
 
