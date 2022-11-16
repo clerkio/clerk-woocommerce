@@ -162,8 +162,8 @@ class Clerk_Search {
 			<?php
 			if ( count( $attributes ) > 0 ) {
 				echo 'data-facets-target="#clerk-search-filters"';
-				echo "data-facets-attributes='" . esc_attr( $facets_attributes );
-				echo "data-facets-titles='" . esc_attr( $facets_titles );
+				echo "data-facets-attributes='" . esc_attr( $facets_attributes ) . "'";
+				echo "data-facets-titles='" . esc_attr( $facets_titles ) . "'";
 				echo "data-facets-design='" . esc_attr( $facets_design ) . "'";
 			}
 			if ( isset( $search_include_categories ) && $search_include_categories ) {
