@@ -117,6 +117,7 @@ class Clerk_Powerstep {
 	public function redirect_to_powerstep_no_ajax( $url ) {
 
 		try {
+
 			$add_to_cart_param = false;
 			$add_to_cart_param = ( null !== filter_input( INPUT_POST, 'add-to-cart', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_POST, 'add-to-cart', FILTER_SANITIZE_STRING ) : $add_to_cart_param;
 			$add_to_cart_param = ( null !== filter_input( INPUT_GET, 'add-to-cart', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_GET, 'add-to-cart', FILTER_SANITIZE_STRING ) : $add_to_cart_param;
@@ -127,7 +128,6 @@ class Clerk_Powerstep {
 			} else {
 				return $url;
 			}
-
 			$options = get_option( 'clerk_options' );
 
 			$product_id = absint( esc_url_raw( wp_unslash( $add_to_cart_param ) ) );
