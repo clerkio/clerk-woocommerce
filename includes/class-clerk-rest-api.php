@@ -1151,15 +1151,15 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 			$options = get_option( 'clerk_options' );
 
-            $request_method_string = $request->get_method();
+			$request_method_string = $request->get_method();
 
-            if( 'POST' !== $request_method_string){
-                $this->logger->warn( 'Using Incorrect Request Method', array( 'response' => false ) );
-                return false;
-            }
+			if ( 'POST' !== $request_method_string ) {
+				$this->logger->warn( 'Using Incorrect Request Method', array( 'response' => false ) );
+				return false;
+			}
 
-			$public_key           = '';
-			$private_key          = '';
+			$public_key  = '';
+			$private_key = '';
 
 			$body = json_decode( $request->get_body(), true );
 			if ( $body ) {

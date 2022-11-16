@@ -80,7 +80,7 @@ class Clerk_Admin_Settings {
 		if ( ! isset( $options['log_to'] ) || ( isset( $options['log_to'] ) && false === $options['log_to'] ) ) {
 			// The option hasn't been added yet. We'll add it with $autoload set to 'no'.
 			$autoload = 'no';
-			add_option( 'log_to',  'my.clerk.io', '', $autoload );
+			add_option( 'log_to', 'my.clerk.io', '', $autoload );
 		}
 
 		if ( ! isset( $options['log_level'] ) || ( isset( $options['log_level'] ) && false === $options['log_level'] ) ) {

@@ -76,7 +76,7 @@ class Clerk_Powerstep {
 			$add_to_cart_param = ( null !== filter_input( INPUT_POST, 'add-to-cart', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_POST, 'add-to-cart', FILTER_SANITIZE_STRING ) : $add_to_cart_param;
 			$add_to_cart_param = ( null !== filter_input( INPUT_GET, 'add-to-cart', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_GET, 'add-to-cart', FILTER_SANITIZE_STRING ) : $add_to_cart_param;
 			if ( $add_to_cart_param ) {
-				if ( ! is_numeric(  $add_to_cart_param ) ) {
+				if ( ! is_numeric( $add_to_cart_param ) ) {
 					return $url;
 				}
 			} else {
@@ -270,7 +270,7 @@ class Clerk_Powerstep {
 
 			if ( ! $add_to_cart_param ) {
 				return;
-            }
+			}
 			$product = wc_get_product( absint( $add_to_cart_param ) );
 
 			if ( ! $product ) {
