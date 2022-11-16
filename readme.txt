@@ -4,7 +4,7 @@ Tags: product recommendations, semantic search, customer conversion, customer re
 License: MIT
 License URI: https://opensource.org/licenses/MIT
 Tested up to: 6.1
-WC requires at least: 2.6
+WC requires at least: 4.4.0
 WC tested up to: 7.1.0
 
 == Description ==
