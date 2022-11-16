@@ -2523,7 +2523,7 @@ class Clerk_Admin_Settings {
 					document.querySelector('#powerstep_custom_text_enabled').addEventListener('click', function(e){
 						switch(e.target.checked){
 							case true:
-								@param $args						document.querySelector('#powerstep_custom_text_back').removeAttribute('disabled');
+								document.querySelector('#powerstep_custom_text_back').removeAttribute('disabled');
 								document.querySelector('#powerstep_custom_text_title').removeAttribute('disabled');
 								document.querySelector('#powerstep_custom_text_cart').removeAttribute('disabled');
 								break;
