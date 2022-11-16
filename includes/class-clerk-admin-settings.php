@@ -80,19 +80,19 @@ class Clerk_Admin_Settings {
 		if ( ! isset( $options['log_to'] ) || ( isset( $options['log_to'] ) && false === $options['log_to'] ) ) {
 			// The option hasn't been added yet. We'll add it with $autoload set to 'no'.
 			$autoload = 'no';
-			add_option( $options, array( 'log_to' => 'my.clerk.io' ), '', $autoload );
+			add_option( 'log_to',  'my.clerk.io', '', $autoload );
 		}
 
 		if ( ! isset( $options['log_level'] ) || ( isset( $options['log_level'] ) && false === $options['log_level'] ) ) {
 			// The option hasn't been added yet. We'll add it with $autoload set to 'no'.
 			$autoload = 'no';
-			add_option( $options, array( 'log_level' => 'Error + Warn' ), '', $autoload );
+			add_option( 'log_level', 'Error + Warn', '', $autoload );
 		}
 
 		if ( ! isset( $options['log_enabled'] ) || ( isset( $options['log_enabled'] ) && false === $options['log_enabled'] ) ) {
 			// The option hasn't been added yet. We'll add it with $autoload set to 'no'.
 			$autoload = 'no';
-			add_option( $options, array( 'log_enabled' => '1' ), '', $autoload );
+			add_option( 'log_enabled', 1, '', $autoload );
 		}
 
 		if ( null !== get_option( 'livesearch_initiated' ) || false === get_option( 'livesearch_initiated' ) ) {
@@ -1296,7 +1296,7 @@ class Clerk_Admin_Settings {
 	/**
 	 * Add Clerk Plugin Version
 	 */
-	public function add_version() {
+	private function add_version() {
 
 		?>
 		<span>

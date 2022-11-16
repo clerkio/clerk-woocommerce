@@ -265,15 +265,13 @@ class Clerk_Powerstep {
 
 		try {
 
-			if ( isset( $_POST['product_id'] ) ) {
-				if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['product_id'] ) ) ) ) {
-					return;
-				}
-			} else {
-				return;
-			}
+			$add_to_cart_param = false;
+			$add_to_cart_param = ( null !== filter_input( INPUT_POST, 'product_id', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_POST, 'product_id', FILTER_SANITIZE_STRING ) : $add_to_cart_param;
 
-			$product = wc_get_product( absint( $_POST['product_id'] ) );
+			if ( ! $add_to_cart_param ) {
+				return;
+            }
+			$product = wc_get_product( absint( $add_to_cart_param ) );
 
 			if ( ! $product ) {
 				return;
