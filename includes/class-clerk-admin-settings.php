@@ -1296,7 +1296,7 @@ class Clerk_Admin_Settings {
 	/**
 	 * Add Clerk Plugin Version
 	 */
-	private function add_version() {
+	public function add_version() {
 
 		?>
 		<span>
