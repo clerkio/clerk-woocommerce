@@ -29,6 +29,11 @@ Once signed up, simply login to your my.clerk.io backend, which will guide you t
 
 
 == Changelog ==
+* Corrected Syntax for WP standards.
+* Added security sanitation to all request data.
+* Updated methods for realtime updates, to none locking methods for post meta.
+* Deferred template JS load time.
+* Changed allowed methods for all external requests.
 
 = 3.8.3 - 2022-10-14
 * Added header scripts field to admin
