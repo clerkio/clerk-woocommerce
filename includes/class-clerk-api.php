@@ -94,7 +94,8 @@ class Clerk_Api {
 			);
 
 			$this->post( 'product/add', $params );
-			$this->logger->log( 'Created products ' . $params['products']['name'], array( 'params' => $params['products'] ) );
+			$name = $params['products']['name'] ?? '';
+			$this->logger->log( 'Created products ' . $name, array( 'params' => $params['products'] ) );
 
 		} catch ( Exception $e ) {
 
@@ -194,9 +195,6 @@ class Clerk_Api {
 		try {
 
 			$url = $this->baseurl . $endpoint;
-
-			$product_params['price']      = floatval( $product_params['price'] );
-			$product_params['list_price'] = floatval( $product_params['list_price'] );
 
 			$response = wp_safe_remote_post(
 				$url,

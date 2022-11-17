@@ -402,12 +402,12 @@ class Clerk_Product_Sync {
 						foreach ( $variations as $v ) {
 							$collectinfo   = '';
 							$variation_obj = new WC_Product_variation( $v['variation_id'] );
-							$atribute      = str_replace( ' ', '', explode( ',', $variation_obj->get_attribute( $field ) ) );
+							$attribute     = str_replace( ' ', '', explode( ',', $variation_obj->get_attribute( $field ) ) );
 
-							if ( is_array( $atribute ) ) {
-								$collectinfo = $atribute[0];
+							if ( is_array( $attribute ) ) {
+								$collectinfo = $attribute[0];
 							} else {
-								$collectinfo = $atribute;
+								$collectinfo = $attribute;
 							}
 
 							if ( '' === $collectinfo && isset( $variation_obj->get_data()[ $field ] ) ) {
@@ -429,12 +429,12 @@ class Clerk_Product_Sync {
 							$collectinfo  = '';
 							$childproduct = wc_get_product( $child_id );
 
-							$atribute = str_replace( ' ', '', explode( ',', $childproduct->get_attribute( $field ) ) );
+							$attribute = str_replace( ' ', '', explode( ',', $childproduct->get_attribute( $field ) ) );
 
-							if ( is_array( $atribute ) ) {
-								$collectinfo = $atribute[0];
+							if ( is_array( $attribute ) ) {
+								$collectinfo = $attribute[0];
 							} else {
-								$collectinfo = $atribute;
+								$collectinfo = $attribute;
 							}
 
 							if ( '' === $collectinfo && isset( $childproduct->$field ) ) {
@@ -461,12 +461,12 @@ class Clerk_Product_Sync {
 						foreach ( $variation as $v ) {
 							$collectinfo   = '';
 							$variation_obj = new WC_Product_variation( $v['variation_id'] );
-							$atribute      = get_post_meta( $variation_obj->get_id(), $field, true );
+							$attribute     = get_post_meta( $variation_obj->get_id(), $field, true );
 
-							if ( is_array( $atribute ) ) {
-								$collectinfo = $atribute[0];
+							if ( is_array( $attribute ) ) {
+								$collectinfo = $attribute[0];
 							} else {
-								$collectinfo = $atribute;
+								$collectinfo = $attribute;
 							}
 
 							if ( '' === $collectinfo && isset( $variation_obj->get_data()[ $field ] ) ) {
@@ -488,12 +488,12 @@ class Clerk_Product_Sync {
 							$collectinfo  = '';
 							$childproduct = wc_get_product( $child_id );
 
-							$atribute = get_post_meta( $childproduct->get_id(), $field, true );
+							$attribute = get_post_meta( $childproduct->get_id(), $field, true );
 
-							if ( is_array( $atribute ) ) {
-								$collectinfo = $atribute[0];
+							if ( is_array( $attribute ) ) {
+								$collectinfo = $attribute[0];
 							} else {
-								$collectinfo = $atribute;
+								$collectinfo = $attribute;
 							}
 
 							if ( '' === $collectinfo && isset( $childproduct->$field ) ) {
@@ -530,12 +530,12 @@ class Clerk_Product_Sync {
 
 								if ( ! property_exists( $attribute_field, 'errors' ) ) {
 
-									$atribute = $attribute_field;
+									$attribute = $attribute_field;
 
-									if ( is_array( $atribute ) ) {
-										$collectinfo = $atribute[0];
+									if ( is_array( $attribute ) ) {
+										$collectinfo = $attribute[0];
 									} else {
-										$collectinfo = $atribute;
+										$collectinfo = $attribute;
 									}
 
 									if ( '' === $collectinfo && isset( $variation_obj->get_data()[ $field ] ) ) {
@@ -560,10 +560,10 @@ class Clerk_Product_Sync {
 
 								$attribute_field = wp_get_post_terms( $childproduct->get_id(), strtolower( $field ), array( 'fields' => 'names' ) );
 
-								if ( is_array( $atribute ) ) {
-									$collectinfo = $atribute[0];
+								if ( is_array( $attribute ) ) {
+									$collectinfo = $attribute[0];
 								} else {
-									$collectinfo = $atribute;
+									$collectinfo = $attribute;
 								}
 
 								if ( '' === $collectinfo && isset( $childproduct->$field ) ) {
