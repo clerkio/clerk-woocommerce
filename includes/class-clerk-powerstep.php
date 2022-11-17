@@ -236,10 +236,10 @@ class Clerk_Powerstep {
 			}
 
 			if ( is_page( $options['powerstep_page'] ) ) {
-				wp_enqueue_style( 'clerk_powerstep_css', plugins_url( '../assets/css/powerstep.css', __FILE__ ), array(), bloginfo( 'version' ) );
+				wp_enqueue_style( 'clerk_powerstep_css', plugins_url( '../assets/css/powerstep.css', __FILE__ ), array(), get_bloginfo( 'version' ) );
 			}
 
-			wp_enqueue_script( 'clerk_powerstep_js', plugins_url( '../assets/js/powerstep.js', __FILE__ ), array( 'jquery' ), bloginfo( 'version' ), true );
+			wp_enqueue_script( 'clerk_powerstep_js', plugins_url( '../assets/js/powerstep.js', __FILE__ ), array( 'jquery' ), get_bloginfo( 'version' ), true );
 			wp_localize_script(
 				'clerk_powerstep_js',
 				'variables',
