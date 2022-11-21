@@ -144,8 +144,8 @@ class Clerk_Search {
 			}
 		}
 
-		$facets_attributes .= ']\'';
-		$facets_titles     .= '}\'';
+		$facets_attributes .= ']';
+		$facets_titles     .= '}';
 
 		try {
 
