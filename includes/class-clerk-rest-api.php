@@ -716,6 +716,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 						'url'   => $url,
 						'title' => $page->post_title,
 						'text'  => $page->post_content,
+						'image' => get_the_post_thumbnail_url( $page->ID ),
 					);
 
 					if ( ! $this->validate_page( $page_draft ) ) {
