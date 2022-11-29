@@ -3,7 +3,7 @@
  * Plugin Name: Clerk
  * Plugin URI: https://clerk.io/
  * Description: Clerk.io Turns More Browsers Into Buyers
- * Version: 4.0.0
+ * Version: 4.0.1
  * Author: Clerk.io
  * Author URI: https://clerk.io
  *
@@ -256,7 +256,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 			$limit   = $request->get_param( 'limit' ) ? $request->get_param( 'limit' ) : -1;
 			$page    = ( $request->get_param( 'page' ) !== null ) ? $request->get_param( 'page' ) : 0;
-			$orderby = $request->get_param( 'orderby' ) ? $request->get_param( 'orderby' ) : 'product_id';
+			$orderby = $request->get_param( 'orderby' ) ? $request->get_param( 'orderby' ) : 'name';
 			$order   = $request->get_param( 'order' ) ? $request->get_param( 'order' ) : 'ASC';
 
 			$offset = ( $request->get_param( 'page' ) === 0 ) ? 0 : $page * $limit;
@@ -716,6 +716,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 						'url'   => $url,
 						'title' => $page->post_title,
 						'text'  => $page->post_content,
+						'image' => get_the_post_thumbnail_url( $page->ID ),
 					);
 
 					if ( ! $this->validate_page( $page_draft ) ) {

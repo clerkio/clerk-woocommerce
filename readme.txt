@@ -6,7 +6,7 @@ License URI: https://opensource.org/licenses/MIT
 Tested up to: 6.1.1
 WC requires at least: 4.4.0
 WC tested up to: 7.1.0
-Stable Tag: 4.0.0
+Stable Tag: 4.0.1
 
 == Description ==
 Clerk.io is a software that helps your customers buy more from your webshop, through 4 amazing feature:
@@ -30,6 +30,11 @@ Once signed up, simply login to your my.clerk.io backend, which will guide you t
 
 
 == Changelog ==
+= 4.0.1 - 2022-11-28
+* Changed sorting for pagination to work better with overwritten Product ids from alternate import methods.
+* Added featured image import to custom page types.
+* Fixed escaped quote in facet titles string.
+
 = 4.0.0 - 2022-11-17
 * Corrected Syntax for WP standards.
 * Added security sanitation to all request data.
