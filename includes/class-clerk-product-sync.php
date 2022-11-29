@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Plugin Name: Clerk
  * Plugin URI: https://clerk.io/
@@ -25,6 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Clerk_Product_Sync {
 
+
 	/**
 	 * Clerk Api Interface
 	 *
@@ -43,7 +45,7 @@ class Clerk_Product_Sync {
 	 * Clerk_Product_Sync constructor.
 	 */
 	public function __construct() {
-		$this->includes();
+		 $this->includes();
 		$this->init_hooks();
 		$this->logger = new Clerk_Logger();
 		$this->api    = new Clerk_Api();
@@ -61,7 +63,7 @@ class Clerk_Product_Sync {
 	 * Init hooks
 	 */
 	private function init_hooks() {
-		add_action( 'woocommerce_new_product', array( $this, 'save_product' ), 10, 3 );
+		 add_action( 'woocommerce_new_product', array( $this, 'save_product' ), 10, 3 );
 		add_action( 'woocommerce_update_product', array( $this, 'save_product' ), 10, 3 );
 		add_action( 'woocommerce_product_import_inserted_product_object', array( $this, 'pre_save_product' ), 10, 3 );
 		add_action( 'before_delete_post', array( $this, 'remove_product' ) );
@@ -74,7 +76,6 @@ class Clerk_Product_Sync {
 	 * @param array|mixed $data Meta data.
 	 */
 	public function pre_save_product( $product = null, $data = null ) {
-
 		try {
 			if ( $product ) {
 				if ( is_a( $product, 'WC_Product' ) ) {
@@ -85,7 +86,6 @@ class Clerk_Product_Sync {
 		} catch ( Exception $e ) {
 
 			$this->logger->error( 'ERROR pre_save_product', array( 'error' => $e->getMessage() ) );
-
 		}
 	}
 
@@ -95,7 +95,6 @@ class Clerk_Product_Sync {
 	 * @param integer $product_id Product ID.
 	 */
 	public function save_product( $product_id = null ) {
-
 		$options = get_option( 'clerk_options' );
 
 		try {
@@ -183,9 +182,7 @@ class Clerk_Product_Sync {
 		} catch ( Exception $e ) {
 
 			$this->logger->error( 'ERROR save_product', array( 'error' => $e->getMessage() ) );
-
 		}
-
 	}
 
 	/**
@@ -194,7 +191,6 @@ class Clerk_Product_Sync {
 	 * @param integer $post_id Post Id.
 	 */
 	public function remove_product( $post_id ) {
-
 		try {
 			$options = get_option( 'clerk_options' );
 			if ( 1 !== (int) $options['realtime_updates'] ) {
@@ -202,11 +198,9 @@ class Clerk_Product_Sync {
 			}
 			// Remove product from Clerk.
 			$this->api->remove_product( $post_id );
-
 		} catch ( Exception $e ) {
 
 			$this->logger->error( 'ERROR remove_product', array( 'error' => $e->getMessage() ) );
-
 		}
 	}
 
@@ -216,7 +210,6 @@ class Clerk_Product_Sync {
 	 * @param WC_Product $product Product Object.
 	 */
 	private function add_product( WC_Product $product ) {
-
 		$product_array = array();
 
 		try {
@@ -241,16 +234,13 @@ class Clerk_Product_Sync {
 				$product_array['variant_ids']         = array();
 				$product_array['variant_options']     = array();
 				$product_array['variant_stocks']      = array();
-				$variation                            = $product->get_available_variations();
+				$variations                           = $product->get_available_variations( 'objects' );
 				$stock_quantity                       = 0;
 				$display_price                        = array();
 				$regular_price                        = array();
-				foreach ( $variation as $v ) {
-					$variant_id   = $variation['variation_id'];
-					$is_available = false;
-					if ( array_key_exists( 'is_in_stock', $variation ) && array_key_exists( 'is_purchasable', $variation ) && array_key_exists( 'backorders_allowed', $variation ) ) {
-						$is_available = ( $variation['is_in_stock'] && $variation['is_purchasable'] ) || ( $variation['backorders_allowed'] && $variation['is_purchasable'] ) ? true : false;
-					}
+				foreach ( $variations as $variation ) {
+
+					$is_available = ( $variation->is_in_stock() && $variation->is_purchasable() ) || ( $variation->backorders_allowed() && $variation->is_purchasable() ) ? true : false;
 
 					if ( ! isset( $options['outofstock_products'] ) ) {
 						if ( ! $is_available ) {
@@ -258,11 +248,10 @@ class Clerk_Product_Sync {
 						}
 					}
 
-					$variation_obj   = new WC_Product_variation( $variation['variation_id'] );
-					$stock_quantity += $variation_obj->get_stock_quantity();
+					$stock_quantity += $variation->get_stock_quantity();
 
-					if ( isset( $variation['attributes'] ) ) {
-						$options_array                      = array_values( $variation['attributes'] );
+					if ( ! empty( $variation->get_attributes() ) ) {
+						$options_array                      = array_values( $variation->get_attributes() );
 						$options_array                      = array_filter(
 							$options_array,
 							function ( $var ) {
@@ -273,15 +262,15 @@ class Clerk_Product_Sync {
 						$product_array['variant_options'][] = $options_string;
 					}
 
-					$product_array['variant_images'][]      = $variation['image']['url'];
-					$product_array['variant_skus'][]        = $variation['sku'];
-					$product_array['variant_ids'][]         = $variation['variation_id'];
-					$product_array['variant_stocks'][]      = ( null !== $variation_obj->get_stock_quantity() ) ? $variation_obj->get_stock_quantity() : 0;
-					$product_array['variant_prices'][]      = $variation['display_price'];
-					$product_array['variant_list_prices'][] = $variation['display_regular_price'];
+					$product_array['variant_images'][]      = wp_get_attachment_image_url( $variation->get_image_id() );
+					$product_array['variant_skus'][]        = $variation->get_sku();
+					$product_array['variant_ids'][]         = $variation->get_id();
+					$product_array['variant_stocks'][]      = ( null !== $variation->get_stock_quantity() ) ? $variation->get_stock_quantity() : 0;
+					$product_array['variant_prices'][]      = wc_get_price_to_display( $variation );
+					$product_array['variant_list_prices'][] = $variation->get_regular_price();
 
-					$display_price[ $variant_id ] = $variation['display_price'];
-					$regular_price[ $variant_id ] = $variation['display_regular_price'];
+					$display_price[ $variation->get_id() ] = wc_get_price_to_display( $variation );
+					$regular_price[ $variation->get_id() ] = $variation->get_regular_price();
 				}
 
 				if ( ! empty( $display_price ) ) {
@@ -364,11 +353,9 @@ class Clerk_Product_Sync {
 			if ( ! empty( $product->get_stock_quantity() ) ) {
 
 				$product_array['stock'] = ( null !== $product->get_stock_quantity() ) ? $product->get_stock_quantity() : 1;
-
 			} elseif ( isset( $stock_quantity ) ) {
 
 				$product_array['stock'] = $stock_quantity;
-
 			}
 
 			// Append additional fields.
@@ -415,7 +402,6 @@ class Clerk_Product_Sync {
 							}
 
 							$child_attributes[] = $collectinfo;
-
 						}
 
 						$product_array[ 'child_' . $this->clerk_friendly_attributes( $field ) . 's' ] = $child_attributes;
@@ -456,12 +442,11 @@ class Clerk_Product_Sync {
 					// 21-10-2021 KKY - Additional Fields for Configurable and Grouped Products - additional fields.
 
 					if ( $product->is_type( 'variable' ) ) {
-						$variation        = $product->get_available_variations();
+						$variations       = $product->get_available_variations( 'objects' );
 						$child_attributes = array();
-						foreach ( $variation as $v ) {
-							$collectinfo   = '';
-							$variation_obj = new WC_Product_variation( $v['variation_id'] );
-							$attribute     = get_post_meta( $variation_obj->get_id(), $field, true );
+						foreach ( $variations as $variation ) {
+							$collectinfo = '';
+							$attribute   = get_post_meta( $variation->get_id(), $field, true );
 
 							if ( is_array( $attribute ) ) {
 								$collectinfo = $attribute[0];
@@ -469,12 +454,11 @@ class Clerk_Product_Sync {
 								$collectinfo = $attribute;
 							}
 
-							if ( '' === $collectinfo && isset( $variation_obj->get_data()[ $field ] ) ) {
-								$collectinfo = $variation_obj->get_data()[ $field ];
+							if ( '' === $collectinfo && isset( $variation->get_data()[ $field ] ) ) {
+								$collectinfo = $variation->get_data()[ $field ];
 							}
 
 							$child_attributes[] = $collectinfo;
-
 						}
 
 						$product_array[ 'child_' . $this->clerk_friendly_attributes( $field ) . 's' ] = $child_attributes;
@@ -519,14 +503,13 @@ class Clerk_Product_Sync {
 						// 21-10-2021 KKY - Additional Fields for Configurable and Grouped Products - additional fields.
 
 						if ( $product->is_type( 'variable' ) ) {
-							$variation        = $product->get_available_variations();
+							$variation        = $product->get_available_variations( 'objects' );
 							$child_attributes = array();
 
-							foreach ( $variation as $v ) {
-								$collectinfo   = '';
-								$variation_obj = new WC_Product_variation( $v['variation_id'] );
+							foreach ( $variations as $variation ) {
+								$collectinfo = '';
 
-								$attribute_field = wp_get_post_terms( $variation_obj->get_id(), strtolower( $field ), array( 'fields' => 'names' ) );
+								$attribute_field = wp_get_post_terms( $variation->get_id(), strtolower( $field ), array( 'fields' => 'names' ) );
 
 								if ( ! property_exists( $attribute_field, 'errors' ) ) {
 
@@ -538,12 +521,11 @@ class Clerk_Product_Sync {
 										$collectinfo = $attribute;
 									}
 
-									if ( '' === $collectinfo && isset( $variation_obj->get_data()[ $field ] ) ) {
-										$collectinfo = $variation_obj->get_data()[ $field ];
+									if ( '' === $collectinfo && isset( $variation->get_data()[ $field ] ) ) {
+										$collectinfo = $variation->get_data()[ $field ];
 									}
 
 									$child_attributes[] = $collectinfo;
-
 								}
 							}
 
@@ -585,13 +567,10 @@ class Clerk_Product_Sync {
 
 			$params = apply_filters( 'clerk_product_sync_array', $product_array, $product );
 			$this->api->add_product( $params );
-
 		} catch ( Exception $e ) {
 
 			$this->logger->error( 'ERROR add_product', array( 'error' => $e->getMessage() ) );
-
 		}
-
 	}
 
 
@@ -614,7 +593,6 @@ class Clerk_Product_Sync {
 	 * @return array
 	 */
 	private function get_additional_fields() {
-
 		try {
 
 			$options = get_option( 'clerk_options' );
@@ -624,13 +602,10 @@ class Clerk_Product_Sync {
 			$fields = explode( ',', $additional_fields );
 
 			return $fields;
-
 		} catch ( Exception $e ) {
 
 			$this->logger->error( 'ERROR get_additional_fields', array( 'error' => $e->getMessage() ) );
-
 		}
-
 	}
 }
 
