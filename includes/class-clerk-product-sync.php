@@ -365,6 +365,12 @@ class Clerk_Product_Sync {
 					continue;
 				}
 
+        if ( 'short_description' === $field ) {
+          $product_array['short_description'] = $product->get_short_description();
+          continue;
+        }
+
+
 				if ( 'all_images' === $field ) {
 					foreach ( get_intermediate_image_sizes() as $key => $image_size ) {
 						if ( ! in_array( wp_get_attachment_image_src( $product->get_image_id(), $image_size )[0], $product_array['all_images'], true ) ) {

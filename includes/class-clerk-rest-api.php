@@ -425,11 +425,16 @@ class Clerk_Rest_Api extends WP_REST_Server {
 				$product_array['stock_status']   = $product->get_stock_status();
 
 				// Append additional fields.
-				foreach ( $this->get_additional_fields() as $field ) {
+        foreach ( $this->get_additional_fields() as $field ) {
 
 					if ( '' === $field ) {
 						continue;
 					}
+
+          if ( 'short_description' === $field ) {
+            $product_array['short_description'] = $product->get_short_description();
+            continue;
+          }
 
 					if ( 'all_images' === $field ) {
 						foreach ( get_intermediate_image_sizes() as $key => $image_size ) {
