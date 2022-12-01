@@ -349,6 +349,7 @@ class Clerk_Product_Sync {
 			$product_array['managing_stock'] = $product->managing_stock();
 			$product_array['backorders']     = $product->get_backorders();
 			$product_array['stock_status']   = $product->get_stock_status();
+        	$product_array['short_description'] = $product->get_short_description();
 
 			if ( ! empty( $product->get_stock_quantity() ) ) {
 
