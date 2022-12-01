@@ -94,8 +94,8 @@ class Clerk_Sales_Tracking {
 			</span>
 			<script type="text/javascript">
 			document.addEventListener('DOMContentLoaded', function(){
-                Clerk('cart', 'set', []);
-            });
+				Clerk('cart', 'set', []);
+			});
 			</script>
 			<?php
 

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Plugin Name: Clerk
  * Plugin URI: https://clerk.io/
@@ -45,7 +44,7 @@ class Clerk_Product_Sync {
 	 * Clerk_Product_Sync constructor.
 	 */
 	public function __construct() {
-		 $this->includes();
+		$this->includes();
 		$this->init_hooks();
 		$this->logger = new Clerk_Logger();
 		$this->api    = new Clerk_Api();
@@ -63,7 +62,7 @@ class Clerk_Product_Sync {
 	 * Init hooks
 	 */
 	private function init_hooks() {
-		 add_action( 'woocommerce_new_product', array( $this, 'save_product' ), 10, 3 );
+		add_action( 'woocommerce_new_product', array( $this, 'save_product' ), 10, 3 );
 		add_action( 'woocommerce_update_product', array( $this, 'save_product' ), 10, 3 );
 		add_action( 'woocommerce_product_import_inserted_product_object', array( $this, 'pre_save_product' ), 10, 3 );
 		add_action( 'before_delete_post', array( $this, 'remove_product' ) );
@@ -365,11 +364,10 @@ class Clerk_Product_Sync {
 					continue;
 				}
 
-        if ( 'short_description' === $field ) {
-          $product_array['short_description'] = $product->get_short_description();
-          continue;
-        }
-
+				if ( 'short_description' === $field ) {
+					$product_array['short_description'] = $product->get_short_description();
+					continue;
+				}
 
 				if ( 'all_images' === $field ) {
 					foreach ( get_intermediate_image_sizes() as $key => $image_size ) {
