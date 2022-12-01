@@ -93,10 +93,9 @@ class Clerk_Sales_Tracking {
 					data-products='<?php echo wp_json_encode( $order_array['products'] ); ?>'>
 			</span>
 			<script type="text/javascript">
-			(function () {
-				var clerk_no_productids = [];
-				Clerk('cart', 'set', clerk_no_productids);
-			})();
+			document.addEventListener('DOMContentLoaded', function(){
+                Clerk('cart', 'set', []);
+            });
 			</script>
 			<?php
 
