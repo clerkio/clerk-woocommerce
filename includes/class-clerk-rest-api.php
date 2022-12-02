@@ -634,8 +634,9 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 				$product_array = apply_filters( 'clerk_product_array', $product_array, $product );
 
-				$final_products_array[] = $product_array;
-
+				if ( ! empty( $product_array )) {
+					$final_products_array[] = $product_array;
+				}
 			}
 
 			$this->logger->log( 'Successfully generated JSON with ' . count( $final_products_array ) . ' products', array( 'error' => 'None' ) );
