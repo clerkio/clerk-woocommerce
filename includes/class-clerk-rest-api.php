@@ -634,7 +634,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 				$product_array = apply_filters( 'clerk_product_array', $product_array, $product );
 
-				if ( ! empty( $product_array ) {
+				if ( ! empty( $product_array )) {
 					$final_products_array[] = $product_array;
 				}
 			}
