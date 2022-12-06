@@ -155,10 +155,7 @@ class Clerk_Search {
 			id="clerk-search"
 			class="clerk"
 			data-template="@<?php echo esc_attr( strtolower( str_replace( ' ', '-', $options['search_template'] ) ) ); ?>"
-			data-limit="40"
-			data-offset="0"
 			data-target="#clerk-search-results"
-			data-after-render="_clerk_after_load_event"
 			<?php
 			if ( count( $attributes ) > 0 ) {
 				echo 'data-facets-target="#clerk-search-filters"';
@@ -206,25 +203,6 @@ class Clerk_Search {
 					});
 				});
 
-				var total_loaded = 0;
-
-				function _clerk_after_load_event(data) {
-
-					total_loaded += data.response.result.length;
-
-					var e = jQuery('#clerk-search');
-
-					if (typeof e.data('limit') === "undefined") {
-						e.data('limit', data.response.result.length)
-					}
-
-					if (total_loaded == 0) {
-						jQuery('#clerk-search-no-results').show();
-					} else {
-						jQuery('#clerk-search-no-results').hide();
-					}
-
-				}
 			</script>
 			<?php
 
