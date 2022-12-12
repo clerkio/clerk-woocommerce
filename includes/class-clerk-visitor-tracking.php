@@ -188,9 +188,9 @@ class Clerk_Visitor_Tracking {
 				if ( isset( $options['clerk_additional_scripts_content'] ) ) {
 					$script_js = $options['clerk_additional_scripts_content'];
 				} else {
-					$script_js = 's';
+					$script_js = '';
 				}
-				echo "<script id='clerk_additional_header_scripts'>" . esc_attr( $script_js ) . '</script>';
+				echo "<script id='clerk_additional_header_scripts'>" . html_entity_decode(esc_attr( $script_js )) . '</script>';
 			}
 
 			if ( isset( $options['livesearch_enabled'] ) && $options['livesearch_enabled'] ) :
