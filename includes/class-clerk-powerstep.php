@@ -50,7 +50,7 @@ class Clerk_Powerstep {
 		$options = get_option( 'clerk_options' );
 
 		// if powerstep disabled, there's no need to init hooks.
-		if ( ! isset( $options['powerstep_enabled'] ) ) {
+		if ( ! $options['powerstep_enabled'] ) {
 			return false;
 		}
 
