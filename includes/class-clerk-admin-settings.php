@@ -271,14 +271,14 @@ class Clerk_Admin_Settings {
 
 		}
 
-		if ( isset( $options['powerstep_enabled'] ) && ! $powerstep_initiated ) {
+		if ( isset( $options['powerstep_enabled'] ) && $options['powerstep_enabled'] && ! $powerstep_initiated ) {
 
 			update_option( 'powerstep_initiated', 1 );
 			$this->logger->log( 'Powerstep initiated', array( '' => '' ) );
 
 		}
 
-		if ( ! isset( $options['powerstep_enabled'] ) && $powerstep_initiated ) {
+		if ( isset( $options['powerstep_enabled'] ) && ! $options['powerstep_enabled'] && $powerstep_initiated ) {
 
 			update_option( 'powerstep_initiated', 0 );
 			$this->logger->log( 'Powerstep uninitiated', array( '' => '' ) );
