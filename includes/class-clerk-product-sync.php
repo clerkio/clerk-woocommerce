@@ -500,7 +500,11 @@ class Clerk_Product_Sync {
 
 					$attribute_field = wp_get_post_terms( $product->get_id(), strtolower( $field ), array( 'fields' => 'names' ) );
 
-					if ( ! property_exists( $attribute_field, 'errors' ) ) {
+					if(is_object($attribute_field)){
+						$attribute_field = (array) $attribute_field;
+					}
+
+					if ( ! array_key_exists( 'errors', $attribute_field ) ) {
 
 						$product_array[ strtolower( $this->clerk_friendly_attributes( $field ) ) ] = $attribute_field;
 
@@ -515,7 +519,7 @@ class Clerk_Product_Sync {
 
 								$attribute_field = wp_get_post_terms( $variation->get_id(), strtolower( $field ), array( 'fields' => 'names' ) );
 
-								if ( ! property_exists( $attribute_field, 'errors' ) ) {
+								if ( ! array_key_exists( 'errors', $attribute_field ) ) {
 
 									$attribute = $attribute_field;
 

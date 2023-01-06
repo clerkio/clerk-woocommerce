@@ -565,11 +565,15 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 					} elseif ( wp_get_post_terms( $product->get_id(), strtolower( $field ), array( 'fields' => 'names' ) ) ) {
 
-						$attrubutefield = wp_get_post_terms( $product->get_id(), strtolower( $field ), array( 'fields' => 'names' ) );
+						$attributefield = wp_get_post_terms( $product->get_id(), strtolower( $field ), array( 'fields' => 'names' ) );
 
-						if ( ! property_exists( $attrubutefield, 'errors' ) ) {
+						if(is_object($attributefield)){
+							$attributefield = (array) $attributefield;
+						}
 
-							$product_array[ strtolower( $this->clerk_friendly_attributes( $field ) ) ] = $attrubutefield;
+						if ( ! array_key_exists( 'errors', $attributefield ) ) {
+
+							$product_array[ strtolower( $this->clerk_friendly_attributes( $field ) ) ] = $attributefield;
 
 							// 21-10-2021 KKY - Additional Fields for Configurable and Grouped Products - additional fields.
 
@@ -581,11 +585,11 @@ class Clerk_Rest_Api extends WP_REST_Server {
 									$collectinfo   = '';
 									$variation_obj = new WC_Product_variation( $v['variation_id'] );
 
-									$attrubutefield = wp_get_post_terms( $variation_obj->get_id(), strtolower( $field ), array( 'fields' => 'names' ) );
+									$attributefield = wp_get_post_terms( $variation_obj->get_id(), strtolower( $field ), array( 'fields' => 'names' ) );
 
-									if ( ! property_exists( $attrubutefield, 'errors' ) ) {
+									if ( ! array_key_exists( 'errors', $attributefield ) ) {
 
-										$atribute = $attrubutefield;
+										$atribute = $attributefield;
 
 										if ( is_array( $atribute ) ) {
 											$collectinfo = $atribute[0];
@@ -611,8 +615,8 @@ class Clerk_Rest_Api extends WP_REST_Server {
 								foreach ( $child_product_ids as $child_id ) {
 									$collectinfo    = '';
 									$childproduct   = wc_get_product( $child_id );
-									$attrubutefield = wp_get_post_terms( $childproduct->get_id(), strtolower( $field ), array( 'fields' => 'names' ) );
-									$atribute       = $attrubutefield;
+									$attributefield = wp_get_post_terms( $childproduct->get_id(), strtolower( $field ), array( 'fields' => 'names' ) );
+									$atribute       = $attributefield;
 
 									if ( is_array( $atribute ) ) {
 										$collectinfo = $atribute[0];
