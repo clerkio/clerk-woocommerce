@@ -588,6 +588,10 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 									$attributefield = wp_get_post_terms( $variation_obj->get_id(), strtolower( $field ), array( 'fields' => 'names' ) );
 
+                  if(is_object($attributefield)){
+			      				$attributefield = (array) $attributefield;
+                  }
+
 									if ( ! array_key_exists( 'errors', $attributefield ) ) {
 
 										$atribute = $attributefield;

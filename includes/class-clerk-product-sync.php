@@ -520,6 +520,10 @@ class Clerk_Product_Sync {
 
 								$attribute_field = wp_get_post_terms( $variation->get_id(), strtolower( $field ), array( 'fields' => 'names' ) );
 
+					      if(is_object($attribute_field)){
+						      $attribute_field = (array) $attribute_field;
+					      }
+
 								if ( ! array_key_exists( 'errors', $attribute_field ) ) {
 
 									$attribute = $attribute_field;
