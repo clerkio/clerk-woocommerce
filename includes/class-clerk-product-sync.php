@@ -505,6 +505,10 @@ class Clerk_Product_Sync {
 						$attribute_field = (array) $attribute_field;
 					}
 
+					if(is_array($attribute_field)){
+						$attribute_field = array_values($attribute_field);
+					}
+
 					if ( ! array_key_exists( 'errors', $attribute_field ) ) {
 
 						$product_array[ strtolower( $this->clerk_friendly_attributes( $field ) ) ] = $attribute_field;
@@ -520,15 +524,15 @@ class Clerk_Product_Sync {
 
 								$attribute_field = wp_get_post_terms( $variation->get_id(), strtolower( $field ), array( 'fields' => 'names' ) );
 
-					      if(is_object($attribute_field)){
-						      $attribute_field = (array) $attribute_field;
-					      }
+								if(is_object($attribute_field)){
+									$attribute_field = (array) $attribute_field;
+								}
 
 								if ( ! array_key_exists( 'errors', $attribute_field ) ) {
 
 									$attribute = $attribute_field;
 
-									if ( is_array( $attribute ) ) {
+									if ( is_array( $atribute ) && count( $atribute ) > 0 ) {
 										$collectinfo = $attribute[0];
 									} else {
 										$collectinfo = $attribute;
@@ -538,11 +542,15 @@ class Clerk_Product_Sync {
 										$collectinfo = $variation->get_data()[ $field ];
 									}
 
-									$child_attributes[] = $collectinfo;
+									if ( $$collectinfo ) {
+										$child_attributes[] = $collectinfo;
+									}
+
 								}
 							}
-
-							$product_array[ 'child_' . strtolower( $this->clerk_friendly_attributes( $field ) ) . 's' ] = $child_attributes;
+							if (!empty($child_atributes)) {
+								$product_array[ 'child_' . strtolower( $this->clerk_friendly_attributes( $field ) ) . 's' ] = $child_attributes;
+							}
 						}
 
 						if ( $product->is_type( 'grouped' ) ) {
@@ -555,7 +563,7 @@ class Clerk_Product_Sync {
 
 								$attribute_field = wp_get_post_terms( $childproduct->get_id(), strtolower( $field ), array( 'fields' => 'names' ) );
 
-								if ( is_array( $attribute ) ) {
+								if ( is_array( $atribute ) && count( $atribute ) > 0 ) {
 									$collectinfo = $attribute[0];
 								} else {
 									$collectinfo = $attribute;
@@ -564,11 +572,13 @@ class Clerk_Product_Sync {
 								if ( '' === $collectinfo && isset( $childproduct->$field ) ) {
 									$collectinfo = $childproduct->$field;
 								}
-
-								$child_attributes[] = $collectinfo;
+								if ($collectinfo) {
+									$child_attributes[] = $collectinfo;
+								}
 							}
-
-							$product_array[ 'child_' . strtolower( $this->clerk_friendly_attributes( $field ) ) . 's' ] = $child_attributes;
+							if (!empty($child_atributes)) {
+								$product_array[ 'child_' . strtolower( $this->clerk_friendly_attributes( $field ) ) . 's' ] = $child_attributes;
+							}
 						}
 					}
 				}

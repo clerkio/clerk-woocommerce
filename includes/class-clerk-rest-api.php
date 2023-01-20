@@ -572,6 +572,10 @@ class Clerk_Rest_Api extends WP_REST_Server {
 							$attributefield = (array) $attributefield;
 						}
 
+						if(is_array($attrubutefield)){
+							$attrubutefield = array_values($attrubutefield);
+						}
+
 						if ( ! array_key_exists( 'errors', $attributefield ) ) {
 
 							$product_array[ strtolower( $this->clerk_friendly_attributes( $field ) ) ] = $attributefield;
@@ -588,15 +592,19 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 									$attributefield = wp_get_post_terms( $variation_obj->get_id(), strtolower( $field ), array( 'fields' => 'names' ) );
 
-                  if(is_object($attributefield)){
-			      				$attributefield = (array) $attributefield;
-                  }
+									if(is_object($attributefield)){
+										$attributefield = (array) $attributefield;
+									}
 
 									if ( ! array_key_exists( 'errors', $attributefield ) ) {
 
+										if(is_object($attrubutefield)){
+											$attrubutefield = (array) $attrubutefield;
+										}
+
 										$atribute = $attributefield;
 
-										if ( is_array( $atribute ) ) {
+										if ( is_array( $atribute ) && count( $atribute ) > 0 ) {
 											$collectinfo = $atribute[0];
 										} else {
 											$collectinfo = $atribute;
@@ -606,12 +614,15 @@ class Clerk_Rest_Api extends WP_REST_Server {
 											$collectinfo = $variation_obj->get_data()[ $field ];
 										}
 
-										$child_atributes[] = $collectinfo;
+										if( $collectinfo ){
+											$child_atributes[] = $collectinfo;
+										}
 
 									}
 								}
-
-								$product_array[ 'child_' . strtolower( str_replace( '-', '_', $this->clerk_friendly_attributes( $field ) ) ) . 's' ] = $child_atributes;
+								if (!empty($child_atributes)) {
+									$product_array[ 'child_' . strtolower( str_replace( '-', '_', $this->clerk_friendly_attributes( $field ) ) ) . 's' ] = $child_atributes;
+								}
 							}
 
 							if ( $product->is_type( 'grouped' ) ) {
@@ -623,7 +634,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 									$attributefield = wp_get_post_terms( $childproduct->get_id(), strtolower( $field ), array( 'fields' => 'names' ) );
 									$atribute       = $attributefield;
 
-									if ( is_array( $atribute ) ) {
+									if ( is_array( $atribute ) && count( $atribute ) > 0 ) {
 										$collectinfo = $atribute[0];
 									} else {
 										$collectinfo = $atribute;
@@ -632,10 +643,13 @@ class Clerk_Rest_Api extends WP_REST_Server {
 									if ( '' === $collectinfo && isset( $childproduct->$field ) ) {
 										$collectinfo = $childproduct->$field;
 									}
-
-									$child_atributes[] = $collectinfo;
+									if( $collectinfo ){
+										$child_atributes[] = $collectinfo;
+									}
 								}
-								$product_array[ 'child_' . strtolower( str_replace( '-', '_', $this->clerk_friendly_attributes( $field ) ) ) . 's' ] = $child_atributes;
+								if (!empty($child_atributes)) {
+									$product_array[ 'child_' . strtolower( str_replace( '-', '_', $this->clerk_friendly_attributes( $field ) ) ) . 's' ] = $child_atributes;
+								}
 							}
 						}
 					}
