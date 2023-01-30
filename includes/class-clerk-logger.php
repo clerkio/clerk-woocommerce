@@ -3,7 +3,7 @@
  * Plugin Name: Clerk
  * Plugin URI: https://clerk.io/
  * Description: Clerk.io Turns More Browsers Into Buyers
- * Version: 4.0.1
+ * Version: 4.0.2
  * Author: Clerk.io
  * Author URI: https://clerk.io
  *
@@ -128,7 +128,7 @@ class Clerk_Logger {
 					$args = array(
 						'body'    => $data_string,
 						'method'  => 'POST',
-						'headers' => array( 'User-Agent' => 'ClerkExtensionBot WooCommerce/v' . get_bloginfo( 'version' ) . ' Clerk/v4.0.1 PHP/v' . phpversion() ),
+						'headers' => array( 'User-Agent' => 'ClerkExtensionBot WooCommerce/v' . get_bloginfo( 'version' ) . ' Clerk/v4.0.2 PHP/v' . phpversion() ),
 					);
 
 					wp_remote_request( $_endpoint, $args );
@@ -191,7 +191,7 @@ class Clerk_Logger {
 				$args = array(
 					'body'    => $data_string,
 					'method'  => 'POST',
-					'headers' => array( 'User-Agent' => 'ClerkExtensionBot WooCommerce/v' . get_bloginfo( 'version' ) . ' Clerk/v4.0.1 PHP/v' . phpversion() ),
+					'headers' => array( 'User-Agent' => 'ClerkExtensionBot WooCommerce/v' . get_bloginfo( 'version' ) . ' Clerk/v4.0.2 PHP/v' . phpversion() ),
 				);
 
 				wp_remote_request( $_endpoint, $args );
@@ -256,7 +256,7 @@ class Clerk_Logger {
 					$args = array(
 						'body'    => $data_string,
 						'method'  => 'POST',
-						'headers' => array( 'User-Agent' => 'ClerkExtensionBot WooCommerce/v' . get_bloginfo( 'version' ) . ' Clerk/v4.0.1 PHP/v' . phpversion() ),
+						'headers' => array( 'User-Agent' => 'ClerkExtensionBot WooCommerce/v' . get_bloginfo( 'version' ) . ' Clerk/v4.0.2 PHP/v' . phpversion() ),
 					);
 
 					wp_remote_request( $_endpoint, $args );

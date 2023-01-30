@@ -6,7 +6,7 @@ License URI: https://opensource.org/licenses/MIT
 Tested up to: 6.1.1
 WC requires at least: 4.4.0
 WC tested up to: 7.1.0
-Stable Tag: 4.0.1
+Stable Tag: 4.0.2
 
 == Description ==
 Clerk.io is a software that helps your customers buy more from your webshop, through 4 amazing feature:
@@ -30,6 +30,14 @@ Once signed up, simply login to your my.clerk.io backend, which will guide you t
 
 
 == Changelog ==
+= 4.0.2 - 2023-01-30
+* Improved Object returns handling for custom taxonomies
+* Added catalog visibility default field
+* Fixed powerstep disable lockout
+* Fixed quote type for powerstep embedcode
+* Removed limit from search page template embed, on favor of content
+* Added santinitation for empty attributes
+
 = 4.0.1 - 2022-11-28
 * Changed sorting for pagination to work better with overwritten Product ids from alternate import methods.
 * Added featured image import to custom page types.
