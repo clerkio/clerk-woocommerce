@@ -706,21 +706,29 @@ class Clerk_Rest_Api extends WP_REST_Server {
 				return $this->get_unathorized_response();
 			}
 
+			$limit   = $request->get_param( 'limit' ) ? $request->get_param( 'limit' ) : 100;
+			$offset  = ( $request->get_param( 'page' ) !== null ) ? ($request->get_param( 'page' ) * $limit) : 0;
+
 			$post_types            = array( 'post', 'page' );
 			$additional_types_list = array();
+
 			if ( isset( $options['page_additional_types'] ) ) {
 				$additional_types      = preg_replace( '/\s+/', '', $options['page_additional_types'] );
 				$additional_types_list = explode( ',', $additional_types );
 				$post_types            = array_values( array_unique( array_merge( $post_types, $additional_types_list ) ) );
 			}
 
-			$pages = get_posts(
-				array(
-					'post_status' => 'publish',
-					'numberposts' => -1,
-					'post_type'   => $post_types,
-				)
+			$post_query_args = array(
+				'post_status' => 'publish',
+				'numberposts' => $limit,
+				'post_type'   => $post_types
 			);
+
+			if($offset > 0){
+				$post_query_args['offset'] = $offset;
+			}
+
+			$pages = get_posts($post_query_args);
 
 			$pages = apply_filters( 'clerk_get_posts', $pages );
 
@@ -732,20 +740,19 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 					$page_additional_fields = explode( ',', $options['page_additional_fields'] );
 
-					$url = get_permalink( $page->ID );
+					$url = get_permalink( $page->ID ); 
 					$url = empty( $url ) ? $page->guid : $url;
 					if ( empty( $url ) ) {
 						continue;
 					}
 
-					// Changed type output to be a direct print since the page type is sometimes used by clients with custom types to categorise them in searches, etc. Useful to have in raw form.
 					$page_draft = array(
 						'id'    => $page->ID,
 						'type'  => $page->post_type,
 						'url'   => $url,
 						'title' => $page->post_title,
-						'text'  => $page->post_content,
-						'image' => get_the_post_thumbnail_url( $page->ID ),
+						'text' => gettype($page->post_content) === 'string' ? strip_tags($page->post_content) : '',
+						'image' => get_the_post_thumbnail_url( $page->ID )
 					);
 
 					if ( ! $this->validate_page( $page_draft ) ) {
@@ -767,55 +774,10 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 				}
 			}
-			$pages = apply_filters( 'clerk_get_pages', get_pages() );
-
-			$final_page_array = array();
-
-			foreach ( $pages as $page ) {
-
-				if ( ! empty( $page->post_content ) ) {
-
-					$page_additional_fields = explode( ',', $options['page_additional_fields'] );
-
-					$url = get_permalink( $page->ID );
-					$url = empty( $url ) ? $page->guid : $url;
-					if ( empty( $url ) ) {
-						continue;
-					}
-					// Changed type output to be a direct print since the page type is sometimes used by clients with custom types to categorise them in searches, etc. Useful to have in raw form.
-					$page_draft = array(
-						'id'    => $page->ID,
-						'type'  => $page->post_type,
-						'url'   => $url,
-						'title' => $page->post_title,
-						'text'  => $page->post_content,
-						'image' => get_the_post_thumbnail_url( $page->ID ),
-					);
-
-					if ( ! $this->validate_page( $page_draft ) ) {
-
-						continue;
-
-					}
-
-					foreach ( $page_additional_fields as $page_additional_field ) {
-						$page_additional_field = str_replace( ' ', '', $page_additional_field );
-						if ( ! empty( $page_additional_field ) ) {
-
-							$page_draft[ $page_additional_field ] = $page->{ $page_additional_field};
-
-						}
-					}
-
-					$final_page_array[] = apply_filters( 'clerk_page_array', $page_draft, $page );
-
-				}
-			}
-			// Merge Pages and Posts into 1 array.
-			$final_content_array = array_merge( $final_page_array, $final_post_array );
+			
 			$this->logger->log( 'Successfully generated JSON with ' . count( $final_content_array ) . ' pages', array( 'error' => 'None' ) );
 			header( 'User-Agent: ClerkExtensionBot WooCommerce/v' . get_bloginfo( 'version' ) . ' Clerk/v' . get_file_data( CLERK_PLUGIN_FILE, array( 'version' ), 'plugin' )[0] . ' PHP/v' . phpversion() );
-			return $final_content_array;
+			return $final_post_array;
 
 		} catch ( Exception $e ) {
 
