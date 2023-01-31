@@ -409,8 +409,10 @@ class Clerk_Visitor_Tracking {
 			$options     = get_option( 'clerk_options' );
 			$show_signup = false;
 			if ( array_key_exists( 'collect_emails_signup_message', $options ) && array_key_exists( 'collect_emails', $options ) ) {
-				$signup_msg  = $options['collect_emails_signup_message'];
-				$show_signup = true;
+				if(strlen($options['collect_emails_signup_message']) > 0){
+					$signup_msg  = $options['collect_emails_signup_message'];
+					$show_signup = true;
+				}
 			}
 			if ( $show_signup ) :
 				?>
