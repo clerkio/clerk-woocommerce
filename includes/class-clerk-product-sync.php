@@ -288,8 +288,8 @@ class Clerk_Product_Sync {
 				/**
 				 * Default single product sync fields
 				 */
-				$price          = $product->get_price();
-				$list_price     = $product->get_regular_price();
+				$price          = wc_get_price_including_tax( $product, array('price'=>$product->get_price()));
+				$list_price     = wc_get_price_including_tax( $product, array('price'=>$product->get_regular_price()));
 				$stock_quantity = $product->get_stock_quantity();
 			}
 
