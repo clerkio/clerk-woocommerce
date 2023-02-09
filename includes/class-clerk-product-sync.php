@@ -516,7 +516,7 @@ class Clerk_Product_Sync {
 						// 21-10-2021 KKY - Additional Fields for Configurable and Grouped Products - additional fields.
 
 						if ( $product->is_type( 'variable' ) ) {
-							$variation        = $product->get_available_variations( 'objects' );
+							$variations        = $product->get_available_variations( 'objects' );
 							$child_attributes = array();
 
 							foreach ( $variations as $variation ) {
