@@ -632,4 +632,4 @@ class Clerk_Product_Sync {
 	}
 }
 
-new Clerk_Product_Sync();
+$clerk_product_sync = new Clerk_Product_Sync();
