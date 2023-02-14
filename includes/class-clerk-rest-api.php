@@ -3,7 +3,7 @@
  * Plugin Name: Clerk
  * Plugin URI: https://clerk.io/
  * Description: Clerk.io Turns More Browsers Into Buyers
- * Version: 4.0.2
+ * Version: 4.0.3
  * Author: Clerk.io
  * Author URI: https://clerk.io
  *
@@ -740,7 +740,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 					$page_additional_fields = explode( ',', $options['page_additional_fields'] );
 
-					$url = get_permalink( $page->ID ); 
+					$url = get_permalink( $page->ID );
 					$url = empty( $url ) ? $page->guid : $url;
 					if ( empty( $url ) ) {
 						continue;
@@ -774,8 +774,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 				}
 			}
-			
-			$this->logger->log( 'Successfully generated JSON with ' . count( $final_content_array ) . ' pages', array( 'error' => 'None' ) );
+			$this->logger->log( 'Successfully generated JSON with ' . count( $final_post_array ) . ' pages', array( 'error' => 'None' ) );
 			header( 'User-Agent: ClerkExtensionBot WooCommerce/v' . get_bloginfo( 'version' ) . ' Clerk/v' . get_file_data( CLERK_PLUGIN_FILE, array( 'version' ), 'plugin' )[0] . ' PHP/v' . phpversion() );
 			return $final_post_array;
 
