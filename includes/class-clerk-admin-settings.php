@@ -2376,7 +2376,7 @@ class Clerk_Admin_Settings {
 	 */
 	public function add_image_size_dropdown( $args ) {
 		// Get settings value.
-		$options = array_map( 'esc_attr', get_option( 'clerk_options' ) );
+		$options = get_option( 'clerk_options' );
 		$sizes   = get_intermediate_image_sizes();
 		?>
 		<select id="<?php echo esc_attr( $args['label_for'] ); ?>"
