@@ -425,7 +425,6 @@ class Clerk_Rest_Api extends WP_REST_Server {
 				$product_array['backorders']     = $product->get_backorders();
 				$product_array['stock_status']   = $product->get_stock_status();
 
-				// Append additional fields.
 				foreach ( $this->get_additional_fields() as $field ) {
 
 					if ( '' === $field ) {
@@ -450,8 +449,6 @@ class Clerk_Rest_Api extends WP_REST_Server {
 						if ( ! isset( $product_array[ $this->clerk_friendly_attributes( $field ) ] ) ) {
 							$product_array[ str_replace( '-', '_', $this->clerk_friendly_attributes( $field ) ) ] = str_replace( ' ', '', explode( ',', $product->get_attribute( $field ) ) );
 						}
-
-						// 21-10-2021 KKY - Additional Fields for Configurable and Grouped Products - additional fields.
 
 						if ( $product->is_type( 'variable' ) ) {
 							$variations      = $product->get_available_variations();
@@ -501,13 +498,9 @@ class Clerk_Rest_Api extends WP_REST_Server {
 							$product_array[ 'child_' . str_replace( '-', '_', $this->clerk_friendly_attributes( $field ) ) . 's' ] = $child_atributes;
 						}
 
-						// 21-10-2021 KKY - Additional Fields for Configurable and Grouped Products - additional fields.
-
 					} elseif ( get_post_meta( $product->get_id(), $field, true ) ) {
 
 						$product_array[ $this->clerk_friendly_attributes( $field ) ] = get_post_meta( $product->get_id(), $field, true );
-
-						// 21-10-2021 KKY - Additional Fields for Configurable and Grouped Products - additional fields.
 
 						if ( $product->is_type( 'variable' ) ) {
 							$variations      = $product->get_available_variations();
@@ -562,8 +555,6 @@ class Clerk_Rest_Api extends WP_REST_Server {
 							$product_array[ 'child_' . str_replace( '-', '_', $this->clerk_friendly_attributes( $field ) ) . 's' ] = $child_atributes;
 						}
 
-						// 21-10-2021 KKY - Additional Fields for Configurable and Grouped Products - additional fields.
-
 					} elseif ( wp_get_post_terms( $product->get_id(), strtolower( $field ), array( 'fields' => 'names' ) ) ) {
 
 						$attributefield = wp_get_post_terms( $product->get_id(), strtolower( $field ), array( 'fields' => 'names' ) );
@@ -572,15 +563,13 @@ class Clerk_Rest_Api extends WP_REST_Server {
 							$attributefield = (array) $attributefield;
 						}
 
-						if(is_array($attributefield)){
-							$attributefield = array_values($attributefield);
-						}
-
 						if ( ! array_key_exists( 'errors', $attributefield ) ) {
 
+							if(is_array($attributefield)){
+								$attributefield = array_values($attributefield);
+							}
+							
 							$product_array[ strtolower( $this->clerk_friendly_attributes( $field ) ) ] = $attributefield;
-
-							// 21-10-2021 KKY - Additional Fields for Configurable and Grouped Products - additional fields.
 
 							if ( $product->is_type( 'variable' ) ) {
 								$variations      = $product->get_available_variations();

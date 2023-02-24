@@ -505,11 +505,11 @@ class Clerk_Product_Sync {
 						$attribute_field = (array) $attribute_field;
 					}
 
-					if(is_array($attribute_field)){
-						$attribute_field = array_values($attribute_field);
-					}
-
 					if ( ! array_key_exists( 'errors', $attribute_field ) ) {
+
+						if(is_array($attribute_field)){
+							$attribute_field = array_values($attribute_field);
+						}
 
 						$product_array[ strtolower( $this->clerk_friendly_attributes( $field ) ) ] = $attribute_field;
 
