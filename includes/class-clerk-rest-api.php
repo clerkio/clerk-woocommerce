@@ -572,8 +572,8 @@ class Clerk_Rest_Api extends WP_REST_Server {
 							$attributefield = (array) $attributefield;
 						}
 
-						if(is_array($attrubutefield)){
-							$attrubutefield = array_values($attrubutefield);
+						if(is_array($attributefield)){
+							$attributefield = array_values($attributefield);
 						}
 
 						if ( ! array_key_exists( 'errors', $attributefield ) ) {
@@ -598,8 +598,8 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 									if ( ! array_key_exists( 'errors', $attributefield ) ) {
 
-										if(is_object($attrubutefield)){
-											$attrubutefield = (array) $attrubutefield;
+										if(is_object($attributefield)){
+											$attributefield = (array) $attributefield;
 										}
 
 										$atribute = $attributefield;
