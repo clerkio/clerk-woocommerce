@@ -2357,7 +2357,7 @@ class Clerk_Admin_Settings {
 	 */
 	public function add_page_dropdown( $args ) {
 		// Get settings value.
-		$options   = get_option( 'clerk_options' );
+		$options   = (array)get_option( 'clerk_options' );
 		$label_for = esc_attr( $args['label_for'] );
 		$selection = array_key_exists( $label_for, $options ) ? $options[ $label_for ] : '';
 		$selection = empty( $selection ) ? '' : $selection;
