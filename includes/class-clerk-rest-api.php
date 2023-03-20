@@ -295,6 +295,9 @@ class Clerk_Rest_Api extends WP_REST_Server {
 				$stock_quantity = null;
 				$product_array  = array();
 				$categories     = wp_get_post_terms( $product->get_id(), 'product_cat' );
+				$price			= 0;
+				$list_price		= 0;
+
 
 				$on_sale = $product->is_on_sale();
 

@@ -219,7 +219,9 @@ class Clerk_Product_Sync {
 
 			$categories = wp_get_post_terms( $product->get_id(), 'product_cat' );
 
-			$on_sale = $product->is_on_sale();
+			$on_sale 		= $product->is_on_sale();
+			$price			= 0;
+			$list_price 	= 0;
 
 			if ( $product->is_type( 'variable' ) ) {
 				/**
