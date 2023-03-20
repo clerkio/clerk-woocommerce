@@ -1342,7 +1342,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 				return $this->get_unathorized_response();
 			}
 
-			$options = get_option( 'clerk_options' );
+			$options = (array) get_option( 'clerk_options' );
 
 			if ( isset( $options['disable_order_synchronization'] ) && null !== $options['disable_order_synchronization'] && $options['disable_order_synchronization'] ) {
 				return array();
@@ -1397,7 +1397,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 				);
 
 				// Include email if defined.
-				if ( null !== $options['collect_emails'] && $options['collect_emails'] ) {
+				if ( isset( $options['collect_emails'] ) && null !== $options['collect_emails'] && $options['collect_emails'] ) {
 					// billing_email is a protected property in 3.0.
 					if ( clerk_check_version() ) {
 						$order_object['email'] = $order->get_billing_email();
