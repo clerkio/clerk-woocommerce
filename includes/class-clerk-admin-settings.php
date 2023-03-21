@@ -2358,13 +2358,13 @@ class Clerk_Admin_Settings {
 	public function add_page_dropdown( $args ) {
 		// Get settings value.
 		$options   = (array)get_option( 'clerk_options' );
-		$label_for = esc_attr( $args['label_for'] );
+		$label_for = is_array(  $args['label_for'] ) ? esc_attr( $args['label_for'] ) : array();
 		$selection = array_key_exists( $label_for, $options ) ? $options[ $label_for ] : '';
 		$selection = empty( $selection ) ? '' : $selection;
 		wp_dropdown_pages(
 			array(
 				'selected' => esc_attr( $selection ),
-				'name'     => sprintf( 'clerk_options[%s]', esc_attr( $args['label_for'] ) ),
+				'name'     => sprintf( 'clerk_options[%s]', $label_for ),
 			)
 		);
 	}
