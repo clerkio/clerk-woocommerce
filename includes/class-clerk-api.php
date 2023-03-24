@@ -29,7 +29,7 @@ class Clerk_Api {
 	 *
 	 * @var $baseurl Clerk Api Base URL.
 	 */
-	protected $baseurl = 'http://api.clerk.io/v2/';
+	protected $baseurl = 'https://api.clerk.io/v2/';
 
 	/**
 	 * Error and Warning Logger

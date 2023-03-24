@@ -85,7 +85,7 @@ class Clerk_Logger {
 
 			$http_host       = isset( $_SERVER['HTTP_HOST'] ) ? esc_url_raw( wp_unslash( $_SERVER['HTTP_HOST'] ) ) : '';
 			$request_uri     = isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
-			$metadata['uri'] = 'http://' . $http_host . $request_uri;
+			$metadata['uri'] = 'https://' . $http_host . $request_uri;
 
 		} else {
 
@@ -150,7 +150,7 @@ class Clerk_Logger {
 
 			$http_host       = isset( $_SERVER['HTTP_HOST'] ) ? esc_url_raw( wp_unslash( $_SERVER['HTTP_HOST'] ) ) : '';
 			$request_uri     = isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
-			$metadata['uri'] = 'http://' . $http_host . $request_uri;
+			$metadata['uri'] = 'https://' . $http_host . $request_uri;
 
 		} else {
 
@@ -212,7 +212,7 @@ class Clerk_Logger {
 
 			$http_host       = isset( $_SERVER['HTTP_HOST'] ) ? esc_url_raw( wp_unslash( $_SERVER['HTTP_HOST'] ) ) : '';
 			$request_uri     = isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
-			$metadata['uri'] = 'http://' . $http_host . $request_uri;
+			$metadata['uri'] = 'https://' . $http_host . $request_uri;
 
 		} else {
 
