@@ -138,7 +138,7 @@ class Clerk_Powerstep {
 					$_uri        = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
 					$_host       = isset( $_SERVER['HTTP_HOST'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) ) : '';
 					$actual_link = ( isset( $_SERVER['HTTPS'] ) && 'on' === sanitize_text_field( wp_unslash( $_SERVER['HTTPS'] ) ) ? 'https' : 'http' ) . "://$_host$_uri";
-					$_url        = str_replace( '?add-to-cart=' . $product_id, '', $actual_link ) . '?clerk_powerstep=true&product_id=' . $product_id;
+					$_url        = str_replace( '?add-to-cart=' . $product_id, '', $actual_link ) . '?clerk_powerstep=true&product_id=' . $product_id . '&add-to-cart=' . $product_id;
 					header( 'Location: ' . $_url );
 					return $url;
 
@@ -287,6 +287,7 @@ class Clerk_Powerstep {
 		}
 
 	}
+
 }
 
 new Clerk_Powerstep();
