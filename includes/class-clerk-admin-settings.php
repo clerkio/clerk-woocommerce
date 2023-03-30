@@ -3,7 +3,7 @@
  * Plugin Name: Clerk
  * Plugin URI: https://clerk.io/
  * Description: Clerk.io Turns More Browsers Into Buyers
- * Version: 4.0.6
+ * Version: 4.0.7
  * Author: Clerk.io
  * Author URI: https://clerk.io
  *
@@ -45,7 +45,7 @@ class Clerk_Admin_Settings {
 		$this->init_hooks();
 		require_once __DIR__ . '/class-clerk-logger.php';
 		$this->logger  = new Clerk_Logger();
-		$this->version = '4.0.6';
+		$this->version = '4.0.7';
 
 		$this->initialize_settings();
 
@@ -1759,11 +1759,11 @@ class Clerk_Admin_Settings {
 					filter: blur(0);
 					transition: all 0.3s ease-in-out;
 					-webkit-touch-callout: none;
-					-webkit-user-select: none; 
-					-khtml-user-select: none; 
+					-webkit-user-select: none;
+					-khtml-user-select: none;
 					-moz-user-select: none;
-					-ms-user-select: none; 
-					user-select: none; 
+					-ms-user-select: none;
+					user-select: none;
 				}
 
 				#clerkLogoHeader {
@@ -2358,7 +2358,7 @@ class Clerk_Admin_Settings {
 	public function add_page_dropdown( $args ) {
 		// Get settings value.
 		$options   = (array)get_option( 'clerk_options' );
-		$label_for = is_array(  $args['label_for'] ) ? esc_attr( $args['label_for'] ) : array();
+		$label_for = is_array(  $args['label_for'] ) ? esc_attr( $args['label_for'] ) : (is_string($args['label_for'] ) ? esc_attr( $args['label_for'] ) : array());
 		$selection = array_key_exists( $label_for, $options ) ? $options[ $label_for ] : '';
 		$selection = empty( $selection ) ? '' : $selection;
 		wp_dropdown_pages(
