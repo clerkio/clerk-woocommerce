@@ -239,7 +239,10 @@ class Clerk_Product_Sync {
 				$stock_quantity                       = 0;
 				$display_price                        = array();
 				$regular_price                        = array();
+
 				foreach ( $variations as $variation ) {
+
+					$variation = (object) $variation;
 
 					$is_available = ( $variation->is_in_stock() && $variation->is_purchasable() ) || ( $variation->backorders_allowed() && $variation->is_purchasable() ) ? true : false;
 
