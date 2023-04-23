@@ -244,7 +244,7 @@ class Clerk_Product_Sync {
 
 					$variation = (object) $variation;
 
-					$is_available = ( $variation->is_in_stock() && $variation->is_purchasable() ) || ( $variation->backorders_allowed() && $variation->is_purchasable() ) ? true : false;
+					$is_available = ( $variation->is_in_stock && $variation->is_purchasable ) || ( $variation->backorders_allowed && $variation->is_purchasable ) ? true : false;
 
 					if ( ! isset( $options['outofstock_products'] ) ) {
 						if ( ! $is_available ) {
