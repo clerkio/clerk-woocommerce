@@ -320,6 +320,9 @@ class Clerk_Rest_Api extends WP_REST_Server {
 					$variations = $product->get_available_variations();
 
 					foreach ( $variations as $variation ) {
+						if( ! array_key_exists( 'variation_id', $variation ) ) {
+							continue;
+						}
 						$variant_id   = $variation['variation_id'];
 						$is_available = false;
 						if ( array_key_exists( 'is_in_stock', $variation ) && array_key_exists( 'is_purchasable', $variation ) && array_key_exists( 'backorders_allowed', $variation ) ) {

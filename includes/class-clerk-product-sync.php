@@ -241,10 +241,10 @@ class Clerk_Product_Sync {
 				$regular_price                        = array();
 
 				foreach ( $variations as $variation ) {
-
-					$variation = (object) $variation;
-
-					$is_available = ( $variation->is_in_stock && $variation->is_purchasable ) || ( $variation->backorders_allowed && $variation->is_purchasable ) ? true : false;
+					$is_available = false;
+					if ( array_key_exists( 'is_in_stock', $variation ) && array_key_exists( 'is_purchasable', $variation ) && array_key_exists( 'backorders_allowed', $variation ) ) {
+						$is_available = ( $variation['is_in_stock'] && $variation['is_purchasable'] ) || ( $variation['backorders_allowed'] && $variation['is_purchasable'] ) ? true : false;
+					}
 
 					if ( ! isset( $options['outofstock_products'] ) ) {
 						if ( ! $is_available ) {
@@ -252,6 +252,11 @@ class Clerk_Product_Sync {
 						}
 					}
 
+					if( ! array_key_exists( 'variation_id', $variation ) ) {
+						continue;
+					}
+
+					$variation = new WC_Product_variation( $variation['variation_id'] );
 					$stock_quantity += $variation->get_stock_quantity();
 
 					if ( ! empty( $variation->get_attributes() ) ) {
