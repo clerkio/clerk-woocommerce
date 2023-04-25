@@ -295,9 +295,8 @@ class Clerk_Rest_Api extends WP_REST_Server {
 				$stock_quantity = null;
 				$product_array  = array();
 				$categories     = wp_get_post_terms( $product->get_id(), 'product_cat' );
-				$price			= 0;
-				$list_price		= 0;
-
+				$price          = 0;
+				$list_price     = 0;
 
 				$on_sale = $product->is_on_sale();
 
@@ -320,7 +319,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 					$variations = $product->get_available_variations();
 
 					foreach ( $variations as $variation ) {
-						if( ! array_key_exists( 'variation_id', $variation ) ) {
+						if ( ! array_key_exists( 'variation_id', $variation ) ) {
 							continue;
 						}
 						$variant_id   = $variation['variation_id'];
@@ -377,8 +376,8 @@ class Clerk_Rest_Api extends WP_REST_Server {
 					/**
 					 * Default single / grouped product sync fields
 					 */
-					$price          = wc_get_price_including_tax( $product, array('price'=>$product->get_price()));
-					$list_price     = wc_get_price_including_tax( $product, array('price'=>$product->get_regular_price()));
+					$price          = wc_get_price_including_tax( $product, array( 'price' => $product->get_price() ) );
+					$list_price     = wc_get_price_including_tax( $product, array( 'price' => $product->get_regular_price() ) );
 					$stock_quantity = $product->get_stock_quantity();
 				}
 
@@ -503,7 +502,6 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 							$product_array[ 'child_' . str_replace( '-', '_', $this->clerk_friendly_attributes( $field ) ) . 's' ] = $child_atributes;
 						}
-
 					} elseif ( get_post_meta( $product->get_id(), $field, true ) ) {
 
 						$product_array[ $this->clerk_friendly_attributes( $field ) ] = get_post_meta( $product->get_id(), $field, true );
@@ -560,21 +558,20 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 							$product_array[ 'child_' . str_replace( '-', '_', $this->clerk_friendly_attributes( $field ) ) . 's' ] = $child_atributes;
 						}
-
 					} elseif ( wp_get_post_terms( $product->get_id(), strtolower( $field ), array( 'fields' => 'names' ) ) ) {
 
 						$attributefield = wp_get_post_terms( $product->get_id(), strtolower( $field ), array( 'fields' => 'names' ) );
 
-						if(is_object($attributefield)){
+						if ( is_object( $attributefield ) ) {
 							$attributefield = (array) $attributefield;
 						}
 
 						if ( ! array_key_exists( 'errors', $attributefield ) ) {
 
-							if(is_array($attributefield)){
-								$attributefield = array_values($attributefield);
+							if ( is_array( $attributefield ) ) {
+								$attributefield = array_values( $attributefield );
 							}
-							
+
 							$product_array[ strtolower( $this->clerk_friendly_attributes( $field ) ) ] = $attributefield;
 
 							if ( $product->is_type( 'variable' ) ) {
@@ -587,13 +584,13 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 									$attributefield = wp_get_post_terms( $variation_obj->get_id(), strtolower( $field ), array( 'fields' => 'names' ) );
 
-									if(is_object($attributefield)){
+									if ( is_object( $attributefield ) ) {
 										$attributefield = (array) $attributefield;
 									}
 
 									if ( ! array_key_exists( 'errors', $attributefield ) ) {
 
-										if(is_object($attributefield)){
+										if ( is_object( $attributefield ) ) {
 											$attributefield = (array) $attributefield;
 										}
 
@@ -609,13 +606,12 @@ class Clerk_Rest_Api extends WP_REST_Server {
 											$collectinfo = $variation_obj->get_data()[ $field ];
 										}
 
-										if( $collectinfo ){
+										if ( $collectinfo ) {
 											$child_atributes[] = $collectinfo;
 										}
-
 									}
 								}
-								if (!empty($child_atributes)) {
+								if ( ! empty( $child_atributes ) ) {
 									$product_array[ 'child_' . strtolower( str_replace( '-', '_', $this->clerk_friendly_attributes( $field ) ) ) . 's' ] = $child_atributes;
 								}
 							}
@@ -638,11 +634,11 @@ class Clerk_Rest_Api extends WP_REST_Server {
 									if ( '' === $collectinfo && isset( $childproduct->$field ) ) {
 										$collectinfo = $childproduct->$field;
 									}
-									if( $collectinfo ){
+									if ( $collectinfo ) {
 										$child_atributes[] = $collectinfo;
 									}
 								}
-								if (!empty($child_atributes)) {
+								if ( ! empty( $child_atributes ) ) {
 									$product_array[ 'child_' . strtolower( str_replace( '-', '_', $this->clerk_friendly_attributes( $field ) ) ) . 's' ] = $child_atributes;
 								}
 							}
@@ -652,7 +648,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 				$product_array = apply_filters( 'clerk_product_array', $product_array, $product );
 
-				if ( ! empty( $product_array )) {
+				if ( ! empty( $product_array ) ) {
 					$final_products_array[] = $product_array;
 				}
 			}
@@ -701,8 +697,8 @@ class Clerk_Rest_Api extends WP_REST_Server {
 				return $this->get_unathorized_response();
 			}
 
-			$limit   = $request->get_param( 'limit' ) ? $request->get_param( 'limit' ) : 100;
-			$offset  = ( $request->get_param( 'page' ) !== null ) ? ($request->get_param( 'page' ) * $limit) : 0;
+			$limit  = $request->get_param( 'limit' ) ? $request->get_param( 'limit' ) : 100;
+			$offset = ( $request->get_param( 'page' ) !== null ) ? ( $request->get_param( 'page' ) * $limit ) : 0;
 
 			$post_types            = array( 'post', 'page' );
 			$additional_types_list = array();
@@ -716,14 +712,14 @@ class Clerk_Rest_Api extends WP_REST_Server {
 			$post_query_args = array(
 				'post_status' => 'publish',
 				'numberposts' => $limit,
-				'post_type'   => $post_types
+				'post_type'   => $post_types,
 			);
 
-			if($offset > 0){
+			if ( $offset > 0 ) {
 				$post_query_args['offset'] = $offset;
 			}
 
-			$pages = get_posts($post_query_args);
+			$pages = get_posts( $post_query_args );
 
 			$pages = apply_filters( 'clerk_get_posts', $pages );
 
@@ -746,8 +742,8 @@ class Clerk_Rest_Api extends WP_REST_Server {
 						'type'  => $page->post_type,
 						'url'   => $url,
 						'title' => $page->post_title,
-						'text' => gettype($page->post_content) === 'string' ? strip_tags($page->post_content) : '',
-						'image' => get_the_post_thumbnail_url( $page->ID )
+						'text'  => gettype( $page->post_content ) === 'string' ? wp_strip_all_tags( $page->post_content ) : '',
+						'image' => get_the_post_thumbnail_url( $page->ID ),
 					);
 
 					if ( ! $this->validate_page( $page_draft ) ) {

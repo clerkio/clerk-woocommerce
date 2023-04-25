@@ -219,9 +219,9 @@ class Clerk_Product_Sync {
 
 			$categories = wp_get_post_terms( $product->get_id(), 'product_cat' );
 
-			$on_sale 		= $product->is_on_sale();
-			$price			= 0;
-			$list_price 	= 0;
+			$on_sale    = $product->is_on_sale();
+			$price      = 0;
+			$list_price = 0;
 
 			if ( $product->is_type( 'variable' ) ) {
 				/**
@@ -252,11 +252,11 @@ class Clerk_Product_Sync {
 						}
 					}
 
-					if( ! array_key_exists( 'variation_id', $variation ) ) {
+					if ( ! array_key_exists( 'variation_id', $variation ) ) {
 						continue;
 					}
 
-					$variation = new WC_Product_variation( $variation['variation_id'] );
+					$variation       = new WC_Product_variation( $variation['variation_id'] );
 					$stock_quantity += $variation->get_stock_quantity();
 
 					if ( ! empty( $variation->get_attributes() ) ) {
@@ -298,8 +298,8 @@ class Clerk_Product_Sync {
 				/**
 				 * Default single product sync fields
 				 */
-				$price          = wc_get_price_including_tax( $product, array('price'=>$product->get_price()));
-				$list_price     = wc_get_price_including_tax( $product, array('price'=>$product->get_regular_price()));
+				$price          = wc_get_price_including_tax( $product, array( 'price' => $product->get_price() ) );
+				$list_price     = wc_get_price_including_tax( $product, array( 'price' => $product->get_regular_price() ) );
 				$stock_quantity = $product->get_stock_quantity();
 			}
 
@@ -511,14 +511,14 @@ class Clerk_Product_Sync {
 
 					$attribute_field = wp_get_post_terms( $product->get_id(), strtolower( $field ), array( 'fields' => 'names' ) );
 
-					if(is_object($attribute_field)){
+					if ( is_object( $attribute_field ) ) {
 						$attribute_field = (array) $attribute_field;
 					}
 
 					if ( ! array_key_exists( 'errors', $attribute_field ) ) {
 
-						if(is_array($attribute_field)){
-							$attribute_field = array_values($attribute_field);
+						if ( is_array( $attribute_field ) ) {
+							$attribute_field = array_values( $attribute_field );
 						}
 
 						$product_array[ strtolower( $this->clerk_friendly_attributes( $field ) ) ] = $attribute_field;
@@ -526,7 +526,7 @@ class Clerk_Product_Sync {
 						// 21-10-2021 KKY - Additional Fields for Configurable and Grouped Products - additional fields.
 
 						if ( $product->is_type( 'variable' ) ) {
-							$variations        = $product->get_available_variations( 'objects' );
+							$variations       = $product->get_available_variations( 'objects' );
 							$child_attributes = array();
 
 							foreach ( $variations as $variation ) {
@@ -534,7 +534,7 @@ class Clerk_Product_Sync {
 
 								$attribute_field = wp_get_post_terms( $variation->get_id(), strtolower( $field ), array( 'fields' => 'names' ) );
 
-								if(is_object($attribute_field)){
+								if ( is_object( $attribute_field ) ) {
 									$attribute_field = (array) $attribute_field;
 								}
 
@@ -555,10 +555,9 @@ class Clerk_Product_Sync {
 									if ( $$collectinfo ) {
 										$child_attributes[] = $collectinfo;
 									}
-
 								}
 							}
-							if (!empty($child_atributes)) {
+							if ( ! empty( $child_atributes ) ) {
 								$product_array[ 'child_' . strtolower( $this->clerk_friendly_attributes( $field ) ) . 's' ] = $child_attributes;
 							}
 						}
@@ -582,11 +581,11 @@ class Clerk_Product_Sync {
 								if ( '' === $collectinfo && isset( $childproduct->$field ) ) {
 									$collectinfo = $childproduct->$field;
 								}
-								if ($collectinfo) {
+								if ( $collectinfo ) {
 									$child_attributes[] = $collectinfo;
 								}
 							}
-							if (!empty($child_atributes)) {
+							if ( ! empty( $child_atributes ) ) {
 								$product_array[ 'child_' . strtolower( $this->clerk_friendly_attributes( $field ) ) . 's' ] = $child_attributes;
 							}
 						}

@@ -190,7 +190,7 @@ class Clerk_Visitor_Tracking {
 				} else {
 					$script_js = '';
 				}
-				echo "<script id='clerk_additional_header_scripts'>" . html_entity_decode(esc_attr( $script_js ), ENT_QUOTES) . '</script>';
+				echo "<script id='clerk_additional_header_scripts'>" . html_entity_decode( esc_attr( $script_js ), ENT_QUOTES ) . '</script>';
 			}
 
 			if ( isset( $options['livesearch_enabled'] ) && $options['livesearch_enabled'] ) :
@@ -409,7 +409,7 @@ class Clerk_Visitor_Tracking {
 			$options     = get_option( 'clerk_options' );
 			$show_signup = false;
 			if ( array_key_exists( 'collect_emails_signup_message', $options ) && array_key_exists( 'collect_emails', $options ) ) {
-				if(strlen($options['collect_emails_signup_message']) > 0){
+				if ( strlen( $options['collect_emails_signup_message'] ) > 0 ) {
 					$signup_msg  = $options['collect_emails_signup_message'];
 					$show_signup = true;
 				}
