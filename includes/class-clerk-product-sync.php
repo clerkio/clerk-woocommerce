@@ -322,6 +322,24 @@ class Clerk_Product_Sync {
 				}
 			}
 
+			$supported_product_types = array(
+				'simple',
+				'grouped',
+				'bundle',
+				'variable'
+			);
+
+			// Use default method for getting price if type is custom.
+
+			if( ! in_array( $product->get_type(), $supported_product_types ) ) {
+				if(method_exists($product, 'get_price')){
+					$price = $product->get_price();
+				}
+				if(method_exists($product, 'get_regular_price')){
+					$list_price = $product->get_regular_price();
+				}
+			}
+
 			if ( ! isset( $options['outofstock_products'] ) ) {
 				if ( $product->get_stock_status() !== 'instock' ) {
 					return;

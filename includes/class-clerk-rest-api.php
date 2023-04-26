@@ -400,6 +400,22 @@ class Clerk_Rest_Api extends WP_REST_Server {
 					}
 				}
 
+				$supported_product_types = array(
+					'simple',
+					'grouped',
+					'bundle',
+					'variable'
+				);
+
+				if( ! in_array( $product->get_type(), $supported_product_types ) ) {
+					if(method_exists($product, 'get_price')){
+						$price = $product->get_price();
+					}
+					if(method_exists($product, 'get_regular_price')){
+						$list_price = $product->get_regular_price();
+					}
+				}
+
 				$image_size_setting = isset( $options['data_sync_image_size'] ) ? $options['data_sync_image_size'] : 'medium';
 				$product_image      = wp_get_attachment_image_src( $product->get_image_id(), $image_size_setting );
 				if ( ! $product_image ) {
