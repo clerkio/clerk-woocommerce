@@ -241,6 +241,9 @@ class Clerk_Product_Sync {
 				$regular_price                        = array();
 
 				foreach ( $variations as $variation ) {
+
+					$variation = ( array ) $variation;
+
 					$is_available = false;
 					if ( array_key_exists( 'is_in_stock', $variation ) && array_key_exists( 'is_purchasable', $variation ) && array_key_exists( 'backorders_allowed', $variation ) ) {
 						$is_available = ( $variation['is_in_stock'] && $variation['is_purchasable'] ) || ( $variation['backorders_allowed'] && $variation['is_purchasable'] ) ? true : false;

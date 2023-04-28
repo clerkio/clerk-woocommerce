@@ -319,6 +319,9 @@ class Clerk_Rest_Api extends WP_REST_Server {
 					$variations = $product->get_available_variations();
 
 					foreach ( $variations as $variation ) {
+
+						$variation = ( array ) $variation;
+
 						if ( ! array_key_exists( 'variation_id', $variation ) ) {
 							continue;
 						}
