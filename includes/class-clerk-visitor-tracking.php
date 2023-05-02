@@ -448,18 +448,20 @@ class Clerk_Visitor_Tracking {
 	 * Admin endpiont to get cart contens using ajax
 	 */
 	public function get_cart() {
-		global $woocommerce;
-		$items        = $woocommerce->cart->get_cart();
-		$_product_ids = array();
 
-		foreach ( $items as $item => $values ) {
-			if ( ! in_array( $values['data']->get_id(), $_product_ids, true ) ) {
-				array_push( $_product_ids, $values['data']->get_id() );
+		$cart_ids = array();
+		$items    = WC()->cart->get_cart();
+
+		if( ! empty($items) ) {
+			foreach ( $items as $cart_item ) {
+				if( ! in_array( $cart_item['product_id'], $cart_ids, true ) ){
+					array_push( $cart_ids, $cart_item['product_id'] );
+				}
 			}
 		}
 
 		header( 'Content-Type: application/json' );
-		wp_die( wp_json_encode( $_product_ids ) );
+		wp_die( wp_json_encode( $cart_ids ) );
 	}
 
 }
