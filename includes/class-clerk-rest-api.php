@@ -385,8 +385,8 @@ class Clerk_Rest_Api extends WP_REST_Server {
 				}
 
 				if ( $product->is_type( 'bundle' ) ) {
-					$price          = $product->min_raw_price;
-					$list_price     = $product->min_raw_regular_price;
+					$price          = $product->get_min_raw_price();
+					$list_price     = $product->get_min_raw_regular_price();
 					$bundled_items  = $product->get_bundled_items();
 					$stock_quantity = $product->get_stock_quantity();
 					if ( ! $price ) {
