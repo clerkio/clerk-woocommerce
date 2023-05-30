@@ -96,6 +96,10 @@ class Clerk_Product_Sync {
 	public function save_product( $product_id = null ) {
 		$options = get_option( 'clerk_options' );
 
+		if(!is_array($options)){
+			return;
+		}
+
 		try {
 
 			if ( isset( $options ) ) {
@@ -192,6 +196,11 @@ class Clerk_Product_Sync {
 	public function remove_product( $post_id ) {
 		try {
 			$options = get_option( 'clerk_options' );
+
+			if(!is_array($options)){
+				return;
+			}
+
 			if ( 1 !== (int) $options['realtime_updates'] ) {
 				return;
 			}
@@ -213,6 +222,11 @@ class Clerk_Product_Sync {
 
 		try {
 			$options = get_option( 'clerk_options' );
+
+			if(!is_array($options)){
+				return;
+			}
+
 			if ( 1 !== (int) $options['realtime_updates'] ) {
 				return;
 			}
@@ -649,6 +663,10 @@ class Clerk_Product_Sync {
 		try {
 
 			$options = get_option( 'clerk_options' );
+
+			if(!is_array($options)){
+				return;
+			}
 
 			$additional_fields = $options['additional_fields'];
 
