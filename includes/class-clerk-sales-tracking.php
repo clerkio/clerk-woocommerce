@@ -63,7 +63,7 @@ class Clerk_Sales_Tracking {
 			$products = array();
 			$items    = $order->get_items();            // Iterate products, adding to products array.
 
-			if( function_exists('wc_aelia_cs_convert') ) {
+			if( has_action('wc_aelia_cs_convert') && get_option('woocommerce_currency')) {
 				$rate = floatval(apply_filters('wc_aelia_cs_convert', 1000000, get_option('woocommerce_currency'), get_woocommerce_currency())) / 1000000;
 			} else {
 				$rate = 1;

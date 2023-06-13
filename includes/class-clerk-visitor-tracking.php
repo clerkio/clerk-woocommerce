@@ -165,6 +165,20 @@ class Clerk_Visitor_Tracking {
 				}
 			}
 
+			if( has_action('wc_aelia_cs_convert') && get_option('woocommerce_currency') ) {
+				$rate = floatval(apply_filters('wc_aelia_cs_convert', 1000000, get_option('woocommerce_currency'), get_woocommerce_currency())) / 1000000;
+			} else {
+				$rate = 1;
+			}
+
+			if( ! is_numeric($rate) ){
+				$rate = 1;
+			}
+
+			$currency_iso = get_option('woocommerce_currency');
+
+			$currency_symbol = get_woocommerce_currency_symbol();
+
 			?>
 			<!-- Start of Clerk.io E-commerce Personalisation tool - www.clerk.io -->
 			<script>
@@ -178,7 +192,23 @@ class Clerk_Visitor_Tracking {
 				Clerk('config', {
 					key: '<?php echo esc_html( $options['public_key'] ); ?>',
 					collect_email: <?php echo esc_html( $options['collect_emails'] ) ? 'true' : 'false'; ?>,
-					language: '<?php echo esc_html( $lang ); ?>'
+					language: '<?php echo esc_html( $lang ); ?>',
+					formatters: {
+						currency_converter: function(price) {
+							const rate = parseFloat('<?php echo esc_attr( $rate ); ?>');
+							return price / rate;
+						}
+					},
+					<?php
+					if ($currency_iso && $currency_symbol):
+					?>
+					globals: {
+						currency_symbol: '<?php echo $currency_symbol ?>',
+						currency_iso: '<?php echo $currency_iso ?>'
+					}
+					<?php
+					endif;
+					?>
 				});
 			</script>
 			<!-- End of Clerk.io E-commerce Personalisation tool - www.clerk.io -->
