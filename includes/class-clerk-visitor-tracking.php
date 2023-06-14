@@ -196,7 +196,7 @@ class Clerk_Visitor_Tracking {
 					formatters: {
 						currency_converter: function(price) {
 							const rate = parseFloat('<?php echo esc_attr( $rate ); ?>');
-							return price / rate;
+							return price * rate;
 						}
 					},
 					<?php
