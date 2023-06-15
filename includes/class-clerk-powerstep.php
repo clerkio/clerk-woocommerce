@@ -121,6 +121,11 @@ class Clerk_Powerstep {
 			$add_to_cart_param = false;
 			$add_to_cart_param = ( null !== filter_input( INPUT_POST, 'add-to-cart', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_POST, 'add-to-cart', FILTER_SANITIZE_STRING ) : $add_to_cart_param;
 			$add_to_cart_param = ( null !== filter_input( INPUT_GET, 'add-to-cart', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_GET, 'add-to-cart', FILTER_SANITIZE_STRING ) : $add_to_cart_param;
+
+			$variant_id = false;
+			$variant_id = ( null !== filter_input( INPUT_POST, 'variation_id', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_POST, 'variation_id', FILTER_SANITIZE_STRING ) : $variant_id;
+			$variant_id = ( null !== filter_input( INPUT_GET, 'variation_id', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_GET, 'variation_id', FILTER_SANITIZE_STRING ) : $variant_id;
+
 			if ( $add_to_cart_param ) {
 				if ( ! is_numeric( $add_to_cart_param ) ) {
 					return $url;
@@ -138,7 +143,17 @@ class Clerk_Powerstep {
 					$_uri        = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
 					$_host       = isset( $_SERVER['HTTP_HOST'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) ) : '';
 					$actual_link = ( isset( $_SERVER['HTTPS'] ) && 'on' === sanitize_text_field( wp_unslash( $_SERVER['HTTPS'] ) ) ? 'https' : 'http' ) . "://$_host$_uri";
-					$_url        = str_replace( '?add-to-cart=' . $product_id, '', $actual_link ) . '?clerk_powerstep=true&product_id=' . $product_id . '&add-to-cart=' . $product_id;
+
+					$params = array(
+						'product_id' => $product_id,
+						'clerk_powerstep' => true
+					);
+					if( is_numeric( $variant_id ) ) {
+						$params['variation_id'] = $variant_id;
+					}
+
+					$_url = $actual_link . '?' . http_build_query($params);
+
 					header( 'Location: ' . $_url );
 					return $url;
 
