@@ -62,8 +62,12 @@ class Clerk_Product_Sync {
 	 * Init hooks
 	 */
 	private function init_hooks() {
-		add_action( 'woocommerce_new_product', array( $this, 'save_product' ), 10, 3 );
-		add_action( 'woocommerce_update_product', array( $this, 'save_product' ), 10, 3 );
+
+		add_action( 'woocommerce_new_product', array( $this, 'save_product' ), 100, 3 );
+		// This hook will run before the price is updated if there is a module modifying the price via a hook.
+		// save_post with a high enough prio defer score.
+		//add_action( 'woocommerce_update_product', array( $this, 'save_product' ), 1000, 3 );
+		add_action( 'save_post', array( $this, 'pre_save_post' ), 1000, 3 );
 		add_action( 'woocommerce_product_import_inserted_product_object', array( $this, 'pre_save_product' ), 10, 3 );
 		add_action( 'before_delete_post', array( $this, 'remove_product' ) );
 	}
@@ -87,7 +91,26 @@ class Clerk_Product_Sync {
 			$this->logger->error( 'ERROR pre_save_product', array( 'error' => $e->getMessage() ) );
 		}
 	}
+	/**
+	 * Update Product from Import
+	 *
+	 * @param int|void $post_id Product Id.
+	 * @param WP_Post|void $post Post Object.
+	 * @param bool|void $update Whether an existing post is being updated.
+	 */
+	public function pre_save_post( $post_id = null, $post = null, $update = null ) {
+		try {
+			if ( $post_id ) {
+				$product = wc_get_product( $post_id );
+				if ( is_a( $product, 'WC_Product' ) ) {
+					$this->save_product( $post_id );
+				}
+			}
+		} catch ( Exception $e ) {
 
+			$this->logger->error( 'ERROR pre_save_post', array( 'error' => $e->getMessage() ) );
+		}
+	}
 	/**
 	 * Update Product
 	 *
