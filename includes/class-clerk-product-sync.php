@@ -426,6 +426,8 @@ class Clerk_Product_Sync {
 				$product_array['stock'] = $stock_quantity;
 			}
 
+			$exempted_fields = ( array ) $this->get_additional_fields_raw();
+
 			// Append additional fields.
 			foreach ( $this->get_additional_fields() as $field ) {
 
@@ -450,7 +452,13 @@ class Clerk_Product_Sync {
 				if ( $product->get_attribute( $field ) || isset( $product->$field ) ) {
 
 					if ( ! isset( $product_array[ $this->clerk_friendly_attributes( $field ) ] ) ) {
-						$product_array[ $this->clerk_friendly_attributes( $field ) ] = str_replace( ' ', '', explode( ',', $product->get_attribute( $field ) ) );
+
+						if ( ! in_array( $field, $exempted_fields ) ) {
+							$product_array[ $this->clerk_friendly_attributes( $field ) ] = str_replace( ' ', '', explode( ',', $product->get_attribute( $field ) ) );
+						} else {
+							$product_array[ $this->clerk_friendly_attributes( $field ) ] = $product->get_attribute( $field );
+						}
+
 					}
 
 					// 21-10-2021 KKY - Additional Fields for Configurable and Grouped Products - additional fields.
@@ -462,7 +470,12 @@ class Clerk_Product_Sync {
 						foreach ( $variations as $v ) {
 							$collectinfo   = '';
 							$variation_obj = new WC_Product_variation( $v['variation_id'] );
-							$attribute     = str_replace( ' ', '', explode( ',', $variation_obj->get_attribute( $field ) ) );
+
+							if ( ! in_array( $field, $exempted_fields ) ) {
+								$attribute     = str_replace( ' ', '', explode( ',', $variation_obj->get_attribute( $field ) ) );
+							} else {
+								$attribute     = $variation_obj->get_attribute( $field );
+							}
 
 							if ( is_array( $attribute ) ) {
 								$collectinfo = $attribute[0];
@@ -488,7 +501,11 @@ class Clerk_Product_Sync {
 							$collectinfo  = '';
 							$childproduct = wc_get_product( $child_id );
 
-							$attribute = str_replace( ' ', '', explode( ',', $childproduct->get_attribute( $field ) ) );
+							if ( ! in_array( $field, $exempted_fields ) ) {
+								$attribute = str_replace( ' ', '', explode( ',', $childproduct->get_attribute( $field ) ) );
+							} else {
+								$attribute = $childproduct->get_attribute( $field );
+							}
 
 							if ( is_array( $attribute ) ) {
 								$collectinfo = $attribute[0];
@@ -701,6 +718,35 @@ class Clerk_Product_Sync {
 			$this->logger->error( 'ERROR get_additional_fields', array( 'error' => $e->getMessage() ) );
 		}
 	}
+
+	/**
+	 * Get additional fields for product export
+	 *
+	 * @return array
+	 */
+	private function get_additional_fields_raw() {
+		try {
+
+			$options = get_option( 'clerk_options' );
+
+			if( ! is_array( $options ) ){
+				return;
+			}
+
+			if ( array_key_exists('additional_fields_raw', $options) ) {
+				$additional_fields = $options['additional_fields_raw'];
+				$fields = explode( ',', $additional_fields );
+			} else {
+				$fields = array();
+			}
+
+			return $fields;
+		} catch ( Exception $e ) {
+
+			$this->logger->error( 'ERROR get_additional_fields_raw', array( 'error' => $e->getMessage() ) );
+		}
+	}
+
 }
 
 $clerk_product_sync = new Clerk_Product_Sync();
