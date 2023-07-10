@@ -511,7 +511,7 @@ class Clerk_Admin_Settings {
 
 		add_settings_field(
 			'additional_fields_raw',
-			__( 'Additional Fields', 'clerk' ),
+			__( 'Additional Fields Raw', 'clerk' ),
 			array( $this, 'add_text_field' ),
 			'clerk',
 			'clerk_section_datasync',
