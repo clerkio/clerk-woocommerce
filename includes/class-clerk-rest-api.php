@@ -449,6 +449,8 @@ class Clerk_Rest_Api extends WP_REST_Server {
 				$product_array['backorders']     = $product->get_backorders();
 				$product_array['stock_status']   = $product->get_stock_status();
 
+				$exempted_fields = ( array ) $this->get_additional_fields_raw();
+
 				foreach ( $this->get_additional_fields() as $field ) {
 
 					if ( '' === $field ) {
@@ -471,7 +473,13 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 					if ( $product->get_attribute( $field ) || isset( $product->$field ) ) {
 						if ( ! isset( $product_array[ $this->clerk_friendly_attributes( $field ) ] ) ) {
-							$product_array[ str_replace( '-', '_', $this->clerk_friendly_attributes( $field ) ) ] = str_replace( ' ', '', explode( ',', $product->get_attribute( $field ) ) );
+
+							if ( ! in_array( $field, $exempted_fields ) ) {
+								$product_array[ str_replace( '-', '_', $this->clerk_friendly_attributes( $field ) ) ] = str_replace( ' ', '', explode( ',', $product->get_attribute( $field ) ) );
+							} else {
+								$product_array[ str_replace( '-', '_', $this->clerk_friendly_attributes( $field ) ) ] = $product->get_attribute( $field );
+							}
+
 						}
 
 						if ( $product->is_type( 'variable' ) ) {
@@ -480,7 +488,12 @@ class Clerk_Rest_Api extends WP_REST_Server {
 							foreach ( $variations as $v ) {
 								$collectinfo   = '';
 								$variation_obj = new WC_Product_variation( $v['variation_id'] );
-								$atribute      = str_replace( ' ', '', explode( ',', $variation_obj->get_attribute( $field ) ) );
+
+								if ( ! in_array( $field, $exempted_fields ) ) {
+									$atribute      = str_replace( ' ', '', explode( ',', $variation_obj->get_attribute( $field ) ) );
+								} else {
+									$atribute      = $variation_obj->get_attribute( $field );
+								}
 
 								if ( is_array( $atribute ) ) {
 									$collectinfo = $atribute[0];
@@ -504,7 +517,13 @@ class Clerk_Rest_Api extends WP_REST_Server {
 							foreach ( $child_product_ids as $child_id ) {
 								$collectinfo  = '';
 								$childproduct = wc_get_product( $child_id );
-								$atribute     = str_replace( ' ', '', explode( ',', $childproduct->get_attribute( $field ) ) );
+
+								if ( ! in_array( $field, $exempted_fields ) ) {
+									$atribute     = str_replace( ' ', '', explode( ',', $childproduct->get_attribute( $field ) ) );
+								} else {
+									$atribute     = $childproduct->get_attribute( $field );
+								}
+
 
 								if ( is_array( $atribute ) ) {
 									$collectinfo = $atribute[0];
@@ -823,6 +842,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 				'collect_emails_signup_message',
 				'collect_baskets',
 				'additional_fields',
+				'additional_fields_raw',
 				'disable_order_synchronization',
 				'data_sync_image_size',
 				'livesearch_enabled',
@@ -937,6 +957,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 				'collect_emails_signup_message',
 				'collect_baskets',
 				'additional_fields',
+				'additional_fields_raw',
 				'disable_order_synchronization',
 				'data_sync_image_size',
 				'livesearch_enabled',
@@ -1277,6 +1298,38 @@ class Clerk_Rest_Api extends WP_REST_Server {
 		} catch ( Exception $e ) {
 
 			$this->logger->error( 'ERROR get_additional_fields', array( 'error' => $e->getMessage() ) );
+
+		}
+
+	}
+
+	/**
+	 * Get additional fields for product export
+	 *
+	 * @return array
+	 */
+	private function get_additional_fields_raw() {
+
+		try {
+
+			$options = get_option( 'clerk_options' );
+
+			if( ! is_array($options) ){
+				return;
+			}
+
+			if ( array_key_exists('additional_fields_raw', $options) ) {
+				$additional_fields = $options['additional_fields_raw'];
+				$fields = explode( ',', $additional_fields );
+			} else {
+				$fields = array();
+			}
+
+			return $fields;
+
+		} catch ( Exception $e ) {
+
+			$this->logger->error( 'ERROR get_additional_fields_raw', array( 'error' => $e->getMessage() ) );
 
 		}
 

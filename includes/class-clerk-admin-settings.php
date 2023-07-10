@@ -510,6 +510,18 @@ class Clerk_Admin_Settings {
 		);
 
 		add_settings_field(
+			'additional_fields_raw',
+			__( 'Additional Fields Raw', 'clerk' ),
+			array( $this, 'add_text_field' ),
+			'clerk',
+			'clerk_section_datasync',
+			array(
+				'label_for'   => 'additional_fields_raw',
+				'description' => 'Attributes to exempt from sanitation and type casting',
+			)
+		);
+
+		add_settings_field(
 			'disable_order_synchronization',
 			__( 'Disable Order Synchronization', 'clerk' ),
 			array( $this, 'add_checkbox_field' ),
