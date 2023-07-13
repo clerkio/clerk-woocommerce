@@ -1340,7 +1340,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 	/**
 	 * Trim whitespace from product attributes
 	 *
-	 * @return string
+	 * @return string|void
 	 */
 	private function trim_whitespace_in_attribute($attribute_value = null) {
 
@@ -1348,8 +1348,12 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 			$options = get_option( 'clerk_options' );
 
-			if ( ! is_array($options) || ! is_string($attribute_value) ){
-				return '';
+			if ( ! is_array($options) ){
+				return;
+			}
+
+			if ( ! is_string($attribute_value) ) {
+				return $attribute_value;
 			}
 
 			if ( isset($options['additional_fields_trim']) ) {

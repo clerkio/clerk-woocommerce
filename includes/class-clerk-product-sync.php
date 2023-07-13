@@ -750,7 +750,7 @@ class Clerk_Product_Sync {
 	/**
 	 * Trim whitespace from product attributes
 	 *
-	 * @return string
+	 * @return string|void
 	 */
 	private function trim_whitespace_in_attribute($attribute_value = null) {
 
@@ -758,8 +758,12 @@ class Clerk_Product_Sync {
 
 			$options = get_option( 'clerk_options' );
 
-			if ( ! is_array($options) || ! is_string($attribute_value) ){
+			if ( ! is_array($options) ){
 				return '';
+			}
+
+			if ( ! is_string($attribute_value) ) {
+				return $attribute_value;
 			}
 
 			if ( isset($options['additional_fields_trim']) ) {
