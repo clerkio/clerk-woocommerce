@@ -510,6 +510,19 @@ class Clerk_Admin_Settings {
 		);
 
 		add_settings_field(
+			'additional_fields_trim',
+			__( 'Strip/Trim Split Attributes', 'clerk' ),
+			array( $this, 'add_checkbox_field' ),
+			'clerk',
+			'clerk_section_datasync',
+			array(
+				'label_for' => 'additional_fields_trim',
+				'checked'   => 0,
+				'description' => 'Check for Trim, uncheck for Strip'
+			)
+		);
+
+		add_settings_field(
 			'additional_fields_raw',
 			__( 'Additional Fields Raw', 'clerk' ),
 			array( $this, 'add_text_field' ),

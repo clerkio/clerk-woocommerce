@@ -475,7 +475,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 						if ( ! isset( $product_array[ $this->clerk_friendly_attributes( $field ) ] ) ) {
 
 							if ( ! in_array( $field, $exempted_fields ) ) {
-								$product_array[ str_replace( '-', '_', $this->clerk_friendly_attributes( $field ) ) ] = str_replace( ' ', '', explode( ',', $product->get_attribute( $field ) ) );
+								$product_array[ str_replace( '-', '_', $this->clerk_friendly_attributes( $field ) ) ] = array_walk( explode( ',', $product->get_attribute( $field ) ), array( $this, 'trim_whitespace_in_attribute' ) );
 							} else {
 								$product_array[ str_replace( '-', '_', $this->clerk_friendly_attributes( $field ) ) ] = $product->get_attribute( $field );
 							}
@@ -490,7 +490,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 								$variation_obj = new WC_Product_variation( $v['variation_id'] );
 
 								if ( ! in_array( $field, $exempted_fields ) ) {
-									$atribute      = str_replace( ' ', '', explode( ',', $variation_obj->get_attribute( $field ) ) );
+									$atribute      = array_walk( explode( ',', $variation_obj->get_attribute( $field ) ), array( $this, 'trim_whitespace_in_attribute' ) );
 								} else {
 									$atribute      = $variation_obj->get_attribute( $field );
 								}
@@ -519,7 +519,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 								$childproduct = wc_get_product( $child_id );
 
 								if ( ! in_array( $field, $exempted_fields ) ) {
-									$atribute     = str_replace( ' ', '', explode( ',', $childproduct->get_attribute( $field ) ) );
+									$atribute     = array_walk( explode( ',', $childproduct->get_attribute( $field ) ), array( $this, 'trim_whitespace_in_attribute' ) );
 								} else {
 									$atribute     = $childproduct->get_attribute( $field );
 								}
@@ -843,6 +843,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 				'collect_baskets',
 				'additional_fields',
 				'additional_fields_raw',
+				'additional_fields_trim',
 				'disable_order_synchronization',
 				'data_sync_image_size',
 				'livesearch_enabled',
@@ -958,6 +959,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 				'collect_baskets',
 				'additional_fields',
 				'additional_fields_raw',
+				'additional_fields_trim',
 				'disable_order_synchronization',
 				'data_sync_image_size',
 				'livesearch_enabled',
@@ -1315,7 +1317,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 			$options = get_option( 'clerk_options' );
 
 			if( ! is_array($options) ){
-				return;
+				return array();
 			}
 
 			if ( array_key_exists('additional_fields_raw', $options) ) {
@@ -1330,6 +1332,35 @@ class Clerk_Rest_Api extends WP_REST_Server {
 		} catch ( Exception $e ) {
 
 			$this->logger->error( 'ERROR get_additional_fields_raw', array( 'error' => $e->getMessage() ) );
+
+		}
+
+	}
+
+	/**
+	 * Trim whitespace from product attributes
+	 *
+	 * @return string
+	 */
+	private function trim_whitespace_in_attribute($attribute_value = null) {
+
+		try {
+
+			$options = get_option( 'clerk_options' );
+
+			if ( ! is_array($options) || ! is_string($attribute_value) ){
+				return '';
+			}
+
+			if ( isset($options['additional_fields_trim']) ) {
+				return trim($attribute_value);
+			} else {
+				return str_replace( ' ', '', $attribute_value);
+			}
+
+		} catch ( Exception $e ) {
+
+			$this->logger->error( 'ERROR trim_whitespace_in_attribute', array( 'error' => $e->getMessage() ) );
 
 		}
 
