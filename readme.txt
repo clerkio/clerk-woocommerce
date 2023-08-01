@@ -30,6 +30,12 @@ Once signed up, simply login to your my.clerk.io backend, which will guide you t
 
 
 == Changelog ==
+= 4.1.0 - 2023-08-01
+* Added support for currency conversion for clients using aelia_currency_convert.
+* Fixed variant id param getting trimmed with non ajax powerstep page for some users.
+* Change realtime update hook for products to be more deferred.
+* Added option to exclude custom attributes from getting stripped and split.
+
 = 4.0.9 - 2023-04-25
 * Added more type safety to realtime update variant emulation.
 
