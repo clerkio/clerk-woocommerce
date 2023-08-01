@@ -279,12 +279,7 @@ class Clerk_Product_Sync {
 
 				foreach ( $variations as $variation ) {
 
-					$variation = ( array ) $variation;
-
-					$is_available = false;
-					if ( array_key_exists( 'is_in_stock', $variation ) && array_key_exists( 'is_purchasable', $variation ) && array_key_exists( 'backorders_allowed', $variation ) ) {
-						$is_available = ( $variation['is_in_stock'] && $variation['is_purchasable'] ) || ( $variation['backorders_allowed'] && $variation['is_purchasable'] ) ? true : false;
-					}
+					$is_available = ( $variation->is_in_stock() && $variation->is_purchasable() ) || ( $variation->backorders_allowed() && $variation->is_purchasable() ) ? true : false;
 
 					if ( ! isset( $options['outofstock_products'] ) ) {
 						if ( ! $is_available ) {
@@ -292,11 +287,6 @@ class Clerk_Product_Sync {
 						}
 					}
 
-					if ( ! array_key_exists( 'variation_id', $variation ) ) {
-						continue;
-					}
-
-					$variation       = new WC_Product_variation( $variation['variation_id'] );
 					$stock_quantity += $variation->get_stock_quantity();
 
 					if ( ! empty( $variation->get_attributes() ) ) {
@@ -586,15 +576,9 @@ class Clerk_Product_Sync {
 
 					$attribute_field = wp_get_post_terms( $product->get_id(), strtolower( $field ), array( 'fields' => 'names' ) );
 
-					if ( is_object( $attribute_field ) ) {
-						$attribute_field = (array) $attribute_field;
-					}
+					if ( ! is_wp_error( $attribute_field ) ) {
 
-					if ( ! array_key_exists( 'errors', $attribute_field ) ) {
-
-						if ( is_array( $attribute_field ) ) {
-							$attribute_field = array_values( $attribute_field );
-						}
+                        			$attribute_field = array_values( $attribute_field );
 
 						$product_array[ strtolower( $this->clerk_friendly_attributes( $field ) ) ] = $attribute_field;
 
@@ -609,11 +593,7 @@ class Clerk_Product_Sync {
 
 								$attribute_field = wp_get_post_terms( $variation->get_id(), strtolower( $field ), array( 'fields' => 'names' ) );
 
-								if ( is_object( $attribute_field ) ) {
-									$attribute_field = (array) $attribute_field;
-								}
-
-								if ( ! array_key_exists( 'errors', $attribute_field ) ) {
+								if ( ! is_wp_error( $attribute_field ) ) {
 
 									$attribute = $attribute_field;
 
@@ -632,7 +612,7 @@ class Clerk_Product_Sync {
 									}
 								}
 							}
-							if ( ! empty( $child_atributes ) ) {
+							if ( ! empty( $child_attributes ) ) {
 								$product_array[ 'child_' . strtolower( $this->clerk_friendly_attributes( $field ) ) . 's' ] = $child_attributes;
 							}
 						}
@@ -645,9 +625,9 @@ class Clerk_Product_Sync {
 								$collectinfo  = '';
 								$childproduct = wc_get_product( $child_id );
 
-								$attribute_field = wp_get_post_terms( $childproduct->get_id(), strtolower( $field ), array( 'fields' => 'names' ) );
+								$attribute = wp_get_post_terms( $childproduct->get_id(), strtolower( $field ), array( 'fields' => 'names' ) );
 
-								if ( is_array( $atribute ) && count( $atribute ) > 0 ) {
+								if ( is_array( $attribute ) && count( $attribute ) > 0 ) {
 									$collectinfo = $attribute[0];
 								} else {
 									$collectinfo = $attribute;
@@ -660,7 +640,7 @@ class Clerk_Product_Sync {
 									$child_attributes[] = $collectinfo;
 								}
 							}
-							if ( ! empty( $child_atributes ) ) {
+							if ( ! empty( $child_attributes ) ) {
 								$product_array[ 'child_' . strtolower( $this->clerk_friendly_attributes( $field ) ) . 's' ] = $child_attributes;
 							}
 						}
