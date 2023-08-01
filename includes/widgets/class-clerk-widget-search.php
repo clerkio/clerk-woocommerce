@@ -3,7 +3,7 @@
  * Plugin Name: Clerk
  * Plugin URI: https://clerk.io/
  * Description: Clerk.io Turns More Browsers Into Buyers
- * Version: 4.0.9
+ * Version: 4.1.0
  * Author: Clerk.io
  * Author URI: https://clerk.io
  *
