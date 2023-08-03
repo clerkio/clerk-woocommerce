@@ -49,6 +49,36 @@ class Clerk_Api {
 	}
 
 	/**
+	 * Post Received Token for Verification
+	 *
+	 * @param array|void $data
+	 */
+	public function verify_token( $data = null ) {
+
+        if( ! $data ) {
+            return false;
+        }
+
+		try {
+
+			$endpoint = 'token/verify';
+
+			$response = $this->post($endpoint, $data);
+
+			if( ! $response ) {
+				return array();
+			} else {
+				return $response;
+			}
+
+
+		} catch ( Exception $e ) {
+			$this->logger->error( 'ERROR verify_token', array( 'error' => $e->getMessage() ) );
+		}
+
+	}
+
+	/**
 	 * Remove product
 	 *
 	 * @param string|integer $product_id Product ID.
