@@ -512,7 +512,8 @@ class Clerk_Rest_Api extends WP_REST_Server {
 						if ( ! isset( $product_array[ $this->clerk_friendly_attributes( $field ) ] ) ) {
 
 							if ( ! in_array( $field, $exempted_fields, true ) ) {
-								$product_array[ str_replace( '-', '_', $this->clerk_friendly_attributes( $field ) ) ] = array_walk( explode( ',', $product->get_attribute( $field ) ), array( $this, 'trim_whitespace_in_attribute' ) );
+								$product_split_attribute = explode( ',', $product->get_attribute( $field ) );
+								$product_array[ str_replace( '-', '_', $this->clerk_friendly_attributes( $field ) ) ] = array_map( array( $this, 'trim_whitespace_in_attribute' ), $product_split_attribute );
 							} else {
 								$product_array[ str_replace( '-', '_', $this->clerk_friendly_attributes( $field ) ) ] = $product->get_attribute( $field );
 							}
@@ -526,7 +527,8 @@ class Clerk_Rest_Api extends WP_REST_Server {
 								$variation_obj = new WC_Product_variation( $v['variation_id'] );
 
 								if ( ! in_array( $field, $exempted_fields, true ) ) {
-									$atribute = array_walk( explode( ',', $variation_obj->get_attribute( $field ) ), array( $this, 'trim_whitespace_in_attribute' ) );
+									$atribute_split = explode( ',', $variation_obj->get_attribute( $field ) );
+									$atribute = array_map( array( $this, 'trim_whitespace_in_attribute' ), $atribute_split );
 								} else {
 									$atribute = $variation_obj->get_attribute( $field );
 								}
@@ -555,7 +557,8 @@ class Clerk_Rest_Api extends WP_REST_Server {
 								$childproduct = wc_get_product( $child_id );
 
 								if ( ! in_array( $field, $exempted_fields, true ) ) {
-									$atribute = array_walk( explode( ',', $childproduct->get_attribute( $field ) ), array( $this, 'trim_whitespace_in_attribute' ) );
+									$atribute_split = explode( ',', $childproduct->get_attribute( $field ) );
+									$atribute = array_map( array( $this, 'trim_whitespace_in_attribute' ), $atribute_split );
 								} else {
 									$atribute = $childproduct->get_attribute( $field );
 								}

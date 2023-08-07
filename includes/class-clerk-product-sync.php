@@ -493,7 +493,8 @@ class Clerk_Product_Sync {
 					if ( ! isset( $product_array[ $this->clerk_friendly_attributes( $field ) ] ) ) {
 
 						if ( ! in_array( $field, $exempted_fields, true ) ) {
-							$product_array[ $this->clerk_friendly_attributes( $field ) ] = array_walk( explode( ',', $product->get_attribute( $field ) ), array( $this, 'trim_whitespace_in_attribute' ) );
+							$product_attribute_split = explode( ',', $product->get_attribute( $field ) );
+							$product_array[ $this->clerk_friendly_attributes( $field ) ] = array_map( array( $this, 'trim_whitespace_in_attribute' ), $product_attribute_split );
 						} else {
 							$product_array[ $this->clerk_friendly_attributes( $field ) ] = $product->get_attribute( $field );
 						}
@@ -510,7 +511,8 @@ class Clerk_Product_Sync {
 							$variation_obj = new WC_Product_variation( $v['variation_id'] );
 
 							if ( ! in_array( $field, $exempted_fields, true ) ) {
-								$attribute = array_walk( explode( ',', $variation_obj->get_attribute( $field ) ), array( $this, 'trim_whitespace_in_attribute' ) );
+								$atribute_split = explode( ',', $variation_obj->get_attribute( $field ) );
+								$attribute = array_map( array( $this, 'trim_whitespace_in_attribute' ), $atribute_split );
 							} else {
 								$attribute = $variation_obj->get_attribute( $field );
 							}
@@ -540,7 +542,8 @@ class Clerk_Product_Sync {
 							$childproduct = wc_get_product( $child_id );
 
 							if ( ! in_array( $field, $exempted_fields, true ) ) {
-								$attribute = array_walk( explode( ',', $childproduct->get_attribute( $field ) ), array( $this, 'trim_whitespace_in_attribute' ) );
+								$atribute_split = explode( ',', $childproduct->get_attribute( $field ) );
+								$attribute = array_map( array( $this, 'trim_whitespace_in_attribute' ), $atribute_split );
 							} else {
 								$attribute = $childproduct->get_attribute( $field );
 							}
