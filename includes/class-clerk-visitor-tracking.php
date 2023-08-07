@@ -165,17 +165,17 @@ class Clerk_Visitor_Tracking {
 				}
 			}
 
-			if( has_action('wc_aelia_cs_convert') && get_option('woocommerce_currency') ) {
-				$rate = floatval(apply_filters('wc_aelia_cs_convert', 1000000, get_option('woocommerce_currency'), get_woocommerce_currency())) / 1000000;
+			if ( has_action( 'wc_aelia_cs_convert' ) && get_option( 'woocommerce_currency' ) ) {
+				$rate = floatval( apply_filters( 'wc_aelia_cs_convert', 1000000, get_option( 'woocommerce_currency' ), get_woocommerce_currency() ) ) / 1000000;
 			} else {
 				$rate = 1;
 			}
 
-			if( ! is_numeric($rate) ){
+			if ( ! is_numeric( $rate ) ) {
 				$rate = 1;
 			}
 
-			$currency_iso = get_option('woocommerce_currency');
+			$currency_iso = get_option( 'woocommerce_currency' );
 
 			$currency_symbol = get_woocommerce_currency_symbol();
 
@@ -200,13 +200,13 @@ class Clerk_Visitor_Tracking {
 						}
 					},
 					<?php
-					if ($currency_iso && $currency_symbol):
-					?>
+					if ( $currency_iso && $currency_symbol ) :
+						?>
 					globals: {
-						currency_symbol: '<?php echo $currency_symbol ?>',
-						currency_iso: '<?php echo $currency_iso ?>'
+						currency_symbol: '<?php echo esc_attr( $currency_symbol ); ?>',
+						currency_iso: '<?php echo esc_attr( $currency_iso ); ?>'
 					}
-					<?php
+						<?php
 					endif;
 					?>
 				});
@@ -482,9 +482,9 @@ class Clerk_Visitor_Tracking {
 		$cart_ids = array();
 		$items    = WC()->cart->get_cart();
 
-		if( ! empty($items) ) {
+		if ( ! empty( $items ) ) {
 			foreach ( $items as $cart_item ) {
-				if( ! in_array( $cart_item['product_id'], $cart_ids, true ) ){
+				if ( ! in_array( $cart_item['product_id'], $cart_ids, true ) ) {
 					array_push( $cart_ids, $cart_item['product_id'] );
 				}
 			}

@@ -516,9 +516,9 @@ class Clerk_Admin_Settings {
 			'clerk',
 			'clerk_section_datasync',
 			array(
-				'label_for' => 'additional_fields_trim',
-				'checked'   => 0,
-				'description' => 'Check for Trim, uncheck for Strip'
+				'label_for'   => 'additional_fields_trim',
+				'checked'     => 0,
+				'description' => 'Check for Trim, uncheck for Strip',
 			)
 		);
 

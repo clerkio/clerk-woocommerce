@@ -63,8 +63,8 @@ class Clerk_Sales_Tracking {
 			$products = array();
 			$items    = $order->get_items();            // Iterate products, adding to products array.
 
-			if( has_action('wc_aelia_cs_convert') && get_option('woocommerce_currency')) {
-				$rate = floatval(apply_filters('wc_aelia_cs_convert', 1000000, get_option('woocommerce_currency'), get_woocommerce_currency())) / 1000000;
+			if ( has_action( 'wc_aelia_cs_convert' ) && get_option( 'woocommerce_currency' ) ) {
+				$rate = floatval( apply_filters( 'wc_aelia_cs_convert', 1000000, get_option( 'woocommerce_currency' ), get_woocommerce_currency() ) ) / 1000000;
 			} else {
 				$rate = 1;
 			}
@@ -80,7 +80,7 @@ class Clerk_Sales_Tracking {
 				$products[]      = array(
 					'id'       => $product_id,
 					'quantity' => $item_quantity,
-					'price'    => ($item_line_total / $item_quantity) / $rate,
+					'price'    => ( $item_line_total / $item_quantity ) / $rate,
 				);
 			}
 

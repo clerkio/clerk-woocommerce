@@ -145,14 +145,14 @@ class Clerk_Powerstep {
 					$actual_link = ( isset( $_SERVER['HTTPS'] ) && 'on' === sanitize_text_field( wp_unslash( $_SERVER['HTTPS'] ) ) ? 'https' : 'http' ) . "://$_host$_uri";
 
 					$params = array(
-						'product_id' => $product_id,
-						'clerk_powerstep' => true
+						'product_id'      => $product_id,
+						'clerk_powerstep' => true,
 					);
-					if( is_numeric( $variant_id ) ) {
+					if ( is_numeric( $variant_id ) ) {
 						$params['variation_id'] = $variant_id;
 					}
 
-					$_url = $actual_link . '?' . http_build_query($params);
+					$_url = $actual_link . '?' . http_build_query( $params );
 
 					header( 'Location: ' . $_url );
 					return $url;

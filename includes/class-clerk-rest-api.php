@@ -292,11 +292,13 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 			foreach ( $products->products as $product ) {
 
-				$stock_quantity = null;
-				$product_array  = array();
-				$categories     = wp_get_post_terms( $product->get_id(), 'product_cat' );
-				$price          = 0;
-				$list_price     = 0;
+				$stock_quantity      = null;
+				$product_array       = array();
+				$categories          = wp_get_post_terms( $product->get_id(), 'product_cat' );
+				$price               = 0;
+				$list_price          = 0;
+				$price_excl_tax      = 0;
+				$list_price_excl_tax = 0;
 
 				$on_sale = $product->is_on_sale();
 
@@ -305,22 +307,26 @@ class Clerk_Rest_Api extends WP_REST_Server {
 					 * Variable product sync fields
 					 * Will sync the lowest price, and set the sale flag if that variant is on sale.
 					 */
-					$product_array['variant_images']      = array();
-					$product_array['variant_prices']      = array();
-					$product_array['variant_list_prices'] = array();
-					$product_array['variant_skus']        = array();
-					$product_array['variant_ids']         = array();
-					$product_array['variant_options']     = array();
-					$product_array['variant_stocks']      = array();
-					$display_price                        = array();
-					$regular_price                        = array();
-					$stock_quantity                       = 0;
+					$product_array['variant_images']               = array();
+					$product_array['variant_prices']               = array();
+					$product_array['variant_list_prices']          = array();
+					$product_array['variant_prices_excl_tax']      = array();
+					$product_array['variant_list_prices_excl_tax'] = array();
+					$product_array['variant_skus']                 = array();
+					$product_array['variant_ids']                  = array();
+					$product_array['variant_options']              = array();
+					$product_array['variant_stocks']               = array();
+					$display_price                                 = array();
+					$regular_price                                 = array();
+					$display_price_excl_tax                        = array();
+					$regular_price_excl_tax                        = array();
+					$stock_quantity                                = 0;
 
 					$variations = $product->get_available_variations();
 
 					foreach ( $variations as $variation ) {
 
-						$variation = ( array ) $variation;
+						$variation = (array) $variation;
 
 						if ( ! array_key_exists( 'variation_id', $variation ) ) {
 							continue;
@@ -351,25 +357,45 @@ class Clerk_Rest_Api extends WP_REST_Server {
 							$product_array['variant_options'][] = $options_string;
 						}
 
-						$product_array['variant_images'][]      = $variation['image']['url'];
-						$product_array['variant_skus'][]        = $variation['sku'];
-						$product_array['variant_ids'][]         = $variation['variation_id'];
-						$product_array['variant_stocks'][]      = ( null !== $variation_obj->get_stock_quantity() ) ? $variation_obj->get_stock_quantity() : 0;
-						$product_array['variant_prices'][]      = $variation['display_price'];
-						$product_array['variant_list_prices'][] = $variation['display_regular_price'];
+						$variant_price      = $variation_obj->get_price();
+						$variant_list_price = $variation_obj->get_regular_price();
 
-						$display_price[ $variant_id ] = $variation['display_price'];
-						$regular_price[ $variant_id ] = $variation['display_regular_price'];
+						$variant_price_incl_tax      = wc_get_price_including_tax( $variation_obj, array( 'price' => $variant_price ) );
+						$variant_list_price_incl_tax = wc_get_price_including_tax( $variation_obj, array( 'price' => $variant_list_price ) );
+
+						$variant_price_excl_tax      = wc_get_price_excluding_tax( $variation_obj, array( 'price' => $variant_price ) );
+						$variant_list_price_excl_tax = wc_get_price_excluding_tax( $variation_obj, array( 'price' => $variant_list_price ) );
+
+						$product_array['variant_images'][]               = $variation['image']['url'];
+						$product_array['variant_skus'][]                 = $variation['sku'];
+						$product_array['variant_ids'][]                  = $variation['variation_id'];
+						$product_array['variant_stocks'][]               = ( null !== $variation_obj->get_stock_quantity() ) ? $variation_obj->get_stock_quantity() : 0;
+						$product_array['variant_prices'][]               = $variant_price_incl_tax;
+						$product_array['variant_list_prices'][]          = $variant_list_price_incl_tax;
+						$product_array['variant_prices_excl_tax'][]      = $variant_price_excl_tax;
+						$product_array['variant_list_prices_excl_tax'][] = $variant_list_price_excl_tax;
+
+						$display_price[ $variant_id ]          = $variant_price_incl_tax;
+						$regular_price[ $variant_id ]          = $variant_list_price_incl_tax;
+						$display_price_excl_tax[ $variant_id ] = $variant_price_excl_tax;
+						$regular_price_excl_tax[ $variant_id ] = $variant_list_price_excl_tax;
 					}
 
 					if ( ! empty( $display_price ) ) {
 						$lowest_display_price = array_keys( $display_price, min( $display_price ), true ); // Find the corresponding product ID.
 						$price                = $display_price[ $lowest_display_price[0] ]; // Get the lowest price.
 						$list_price           = $regular_price[ $lowest_display_price[0] ]; // Get the corresponding list price (regular price).
+
+						$lowest_display_price_excl_tax = array_keys( $display_price_excl_tax, min( $display_price_excl_tax ), true );
+						$price_excl_tax                = $display_price_excl_tax[ $lowest_display_price_excl_tax[0] ];
+						$list_price_excl_tax           = $regular_price_excl_tax[ $lowest_display_price_excl_tax[0] ];
 					}
 
-					$price      = ( $price > 0 ) ? $price : $product->get_price();
-					$list_price = ( $list_price > 0 ) ? $list_price : $product->get_regular_price();
+					$price      = ( $price > 0 ) ? $price : wc_get_price_including_tax( $product, array( 'price' => $product->get_price() ) );
+					$list_price = ( $list_price > 0 ) ? $list_price : wc_get_price_including_tax( $product, array( 'price' => $product->get_regular_price() ) );
+
+					$price_excl_tax      = ( $price_excl_tax > 0 ) ? $price_excl_tax : wc_get_price_excluding_tax( $product, array( 'price' => $product->get_price() ) );
+					$list_price_excl_tax = ( $list_price_excl_tax > 0 ) ? $list_price_excl_tax : wc_get_price_excluding_tax( $product, array( 'price' => $product->get_regular_price() ) );
 
 					if ( $price === $list_price ) {
 						$on_sale = false; // Remove the sale flag if the cheapest variant is not on sale.
@@ -379,26 +405,32 @@ class Clerk_Rest_Api extends WP_REST_Server {
 					/**
 					 * Default single / grouped product sync fields
 					 */
-					$price          = wc_get_price_including_tax( $product, array( 'price' => $product->get_price() ) );
-					$list_price     = wc_get_price_including_tax( $product, array( 'price' => $product->get_regular_price() ) );
+					$price      = wc_get_price_including_tax( $product, array( 'price' => $product->get_price() ) );
+					$list_price = wc_get_price_including_tax( $product, array( 'price' => $product->get_regular_price() ) );
+
+					$price_excl_tax      = wc_get_price_excluding_tax( $product, array( 'price' => $product->get_price() ) );
+					$list_price_excl_tax = wc_get_price_excluding_tax( $product, array( 'price' => $product->get_regular_price() ) );
+
 					$stock_quantity = $product->get_stock_quantity();
 				}
 
 				if ( $product->is_type( 'bundle' ) ) {
-					$price          = $product->min_raw_price;
-					$list_price     = $product->min_raw_regular_price;
-					$bundled_items  = $product->get_bundled_items();
-					$stock_quantity = $product->get_stock_quantity();
-					if ( ! $price ) {
-						$price = 0;
+					$price               = $product->min_raw_price ? wc_get_price_including_tax( $product, array( 'price' => $product->min_raw_price ) ) : null;
+					$list_price          = $product->min_raw_regular_price ? wc_get_price_including_tax( $product, array( 'price' => $product->min_raw_regular_price ) ) : null;
+					$price_excl_tax      = $product->min_raw_price ? wc_get_price_excluding_tax( $product, array( 'price' => $product->min_raw_price ) ) : null;
+					$list_price_excl_tax = $product->min_raw_regular_price ? wc_get_price_excluding_tax( $product, array( 'price' => $product->min_raw_regular_price ) ) : null;
+					$bundled_items       = $product->get_bundled_items();
+					$stock_quantity      = $product->get_stock_quantity();
+					if ( ! $price || ! $list_price ) {
+						$price               = 0;
+						$list_price          = 0;
+						$price_excl_tax      = 0;
+						$list_price_excl_tax = 0;
 						foreach ( $bundled_items as $item ) {
-							$price += $item->get_price();
-						}
-					}
-					if ( ! $list_price ) {
-						$list_price = 0;
-						foreach ( $bundled_items as $item ) {
-							$list_price += $item->get_regular_price();
+							$price               += wc_get_price_including_tax( $item, array( 'price' => $item->get_price() ) );
+							$list_price          += wc_get_price_including_tax( $item, array( 'price' => $item->get_regular_price() ) );
+							$price_excl_tax      += wc_get_price_excluding_tax( $item, array( 'price' => $item->get_price() ) );
+							$list_price_excl_tax += wc_get_price_excluding_tax( $item, array( 'price' => $item->get_regular_price() ) );
 						}
 					}
 				}
@@ -407,15 +439,18 @@ class Clerk_Rest_Api extends WP_REST_Server {
 					'simple',
 					'grouped',
 					'bundle',
-					'variable'
+					'variable',
 				);
 
-				if( ! in_array( $product->get_type(), $supported_product_types ) ) {
-					if(method_exists($product, 'get_price')){
-						$price = $product->get_price();
+				// Fallback for getting price from custom created product types.
+				if ( ! in_array( $product->get_type(), $supported_product_types, true ) ) {
+					if ( method_exists( $product, 'get_price' ) ) {
+						$price          = wc_get_price_including_tax( $product, array( 'price' => $product->get_price() ) );
+						$price_excl_tax = wc_get_price_excluding_tax( $product, array( 'price' => $product->get_price() ) );
 					}
-					if(method_exists($product, 'get_regular_price')){
-						$list_price = $product->get_regular_price();
+					if ( method_exists( $product, 'get_regular_price' ) ) {
+						$list_price          = wc_get_price_including_tax( $product, array( 'price' => $product->get_regular_price() ) );
+						$list_price_excl_tax = wc_get_price_excluding_tax( $product, array( 'price' => $product->get_regular_price() ) );
 					}
 				}
 
@@ -430,26 +465,28 @@ class Clerk_Rest_Api extends WP_REST_Server {
 				} else {
 					$product_image = $product_image[0];
 				}
-				$product_array['id']             = $product->get_id();
-				$product_array['name']           = $product->get_name();
-				$product_array['description']    = get_post_field( 'post_content', $product->get_id() );
-				$product_array['price']          = (float) $price;
-				$product_array['list_price']     = (float) $list_price;
-				$product_array['image']          = $product_image;
-				$product_array['url']            = $product->get_permalink();
-				$product_array['categories']     = wp_list_pluck( $categories, 'term_id' );
-				$product_array['sku']            = $product->get_sku();
-				$product_array['on_sale']        = $on_sale;
-				$product_array['all_images']     = array();
-				$product_array['type']           = $product->get_type();
-				$product_array['visibility']     = $product->get_catalog_visibility();
-				$product_array['created_at']     = strtotime( $product->get_date_created() );
-				$product_array['stock']          = ( is_numeric( $stock_quantity ) ) ? $stock_quantity : 1;
-				$product_array['managing_stock'] = $product->managing_stock();
-				$product_array['backorders']     = $product->get_backorders();
-				$product_array['stock_status']   = $product->get_stock_status();
+				$product_array['id']                  = $product->get_id();
+				$product_array['name']                = $product->get_name();
+				$product_array['description']         = get_post_field( 'post_content', $product->get_id() );
+				$product_array['price']               = (float) $price;
+				$product_array['list_price']          = (float) $list_price;
+				$product_array['price_excl_tax']      = (float) $price_excl_tax;
+				$product_array['list_price_excl_tax'] = (float) $list_price_excl_tax;
+				$product_array['image']               = $product_image;
+				$product_array['url']                 = $product->get_permalink();
+				$product_array['categories']          = wp_list_pluck( $categories, 'term_id' );
+				$product_array['sku']                 = $product->get_sku();
+				$product_array['on_sale']             = $on_sale;
+				$product_array['all_images']          = array();
+				$product_array['type']                = $product->get_type();
+				$product_array['visibility']          = $product->get_catalog_visibility();
+				$product_array['created_at']          = strtotime( $product->get_date_created() );
+				$product_array['stock']               = ( is_numeric( $stock_quantity ) ) ? $stock_quantity : 1;
+				$product_array['managing_stock']      = $product->managing_stock();
+				$product_array['backorders']          = $product->get_backorders();
+				$product_array['stock_status']        = $product->get_stock_status();
 
-				$exempted_fields = ( array ) $this->get_additional_fields_raw();
+				$exempted_fields = (array) $this->get_additional_fields_raw();
 
 				foreach ( $this->get_additional_fields() as $field ) {
 
@@ -474,12 +511,11 @@ class Clerk_Rest_Api extends WP_REST_Server {
 					if ( $product->get_attribute( $field ) || isset( $product->$field ) ) {
 						if ( ! isset( $product_array[ $this->clerk_friendly_attributes( $field ) ] ) ) {
 
-							if ( ! in_array( $field, $exempted_fields ) ) {
+							if ( ! in_array( $field, $exempted_fields, true ) ) {
 								$product_array[ str_replace( '-', '_', $this->clerk_friendly_attributes( $field ) ) ] = array_walk( explode( ',', $product->get_attribute( $field ) ), array( $this, 'trim_whitespace_in_attribute' ) );
 							} else {
 								$product_array[ str_replace( '-', '_', $this->clerk_friendly_attributes( $field ) ) ] = $product->get_attribute( $field );
 							}
-
 						}
 
 						if ( $product->is_type( 'variable' ) ) {
@@ -489,10 +525,10 @@ class Clerk_Rest_Api extends WP_REST_Server {
 								$collectinfo   = '';
 								$variation_obj = new WC_Product_variation( $v['variation_id'] );
 
-								if ( ! in_array( $field, $exempted_fields ) ) {
-									$atribute      = array_walk( explode( ',', $variation_obj->get_attribute( $field ) ), array( $this, 'trim_whitespace_in_attribute' ) );
+								if ( ! in_array( $field, $exempted_fields, true ) ) {
+									$atribute = array_walk( explode( ',', $variation_obj->get_attribute( $field ) ), array( $this, 'trim_whitespace_in_attribute' ) );
 								} else {
-									$atribute      = $variation_obj->get_attribute( $field );
+									$atribute = $variation_obj->get_attribute( $field );
 								}
 
 								if ( is_array( $atribute ) ) {
@@ -518,12 +554,11 @@ class Clerk_Rest_Api extends WP_REST_Server {
 								$collectinfo  = '';
 								$childproduct = wc_get_product( $child_id );
 
-								if ( ! in_array( $field, $exempted_fields ) ) {
-									$atribute     = array_walk( explode( ',', $childproduct->get_attribute( $field ) ), array( $this, 'trim_whitespace_in_attribute' ) );
+								if ( ! in_array( $field, $exempted_fields, true ) ) {
+									$atribute = array_walk( explode( ',', $childproduct->get_attribute( $field ) ), array( $this, 'trim_whitespace_in_attribute' ) );
 								} else {
-									$atribute     = $childproduct->get_attribute( $field );
+									$atribute = $childproduct->get_attribute( $field );
 								}
-
 
 								if ( is_array( $atribute ) ) {
 									$collectinfo = $atribute[0];
@@ -1316,13 +1351,13 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 			$options = get_option( 'clerk_options' );
 
-			if( ! is_array($options) ){
+			if ( ! is_array( $options ) ) {
 				return array();
 			}
 
-			if ( array_key_exists('additional_fields_raw', $options) ) {
+			if ( array_key_exists( 'additional_fields_raw', $options ) ) {
 				$additional_fields = $options['additional_fields_raw'];
-				$fields = explode( ',', $additional_fields );
+				$fields            = explode( ',', $additional_fields );
 			} else {
 				$fields = array();
 			}
@@ -1340,28 +1375,28 @@ class Clerk_Rest_Api extends WP_REST_Server {
 	/**
 	 * Trim whitespace from product attributes
 	 *
+	 * @param string|void $attribute_value Attribute Value.
 	 * @return string|void
 	 */
-	private function trim_whitespace_in_attribute($attribute_value = null) {
+	private function trim_whitespace_in_attribute( $attribute_value = null ) {
 
 		try {
 
 			$options = get_option( 'clerk_options' );
 
-			if ( ! is_array($options) ){
+			if ( ! is_array( $options ) ) {
 				return;
 			}
 
-			if ( ! is_string($attribute_value) ) {
+			if ( ! is_string( $attribute_value ) ) {
 				return $attribute_value;
 			}
 
-			if ( isset($options['additional_fields_trim']) ) {
-				return trim($attribute_value);
+			if ( isset( $options['additional_fields_trim'] ) ) {
+				return trim( $attribute_value );
 			} else {
-				return str_replace( ' ', '', $attribute_value);
+				return str_replace( ' ', '', $attribute_value );
 			}
-
 		} catch ( Exception $e ) {
 
 			$this->logger->error( 'ERROR trim_whitespace_in_attribute', array( 'error' => $e->getMessage() ) );
