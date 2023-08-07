@@ -6,7 +6,7 @@ License URI: https://opensource.org/licenses/MIT
 Tested up to: 6.1.1
 WC requires at least: 4.4.0
 WC tested up to: 7.1.0
-Stable Tag: 4.1.0
+Stable Tag: 4.1.1
 
 == Description ==
 Clerk.io is a software that helps your customers buy more from your webshop, through 4 amazing feature:
@@ -30,6 +30,10 @@ Once signed up, simply login to your my.clerk.io backend, which will guide you t
 
 
 == Changelog ==
+= 4.1.1 - 2023-08-06
+* Added all prices both as Exc VAT and Inc VAT
+* Improved Attribute Split Handling from String
+
 = 4.1.0 - 2023-08-01
 * Added support for currency conversion for clients using aelia_currency_convert.
 * Fixed variant id param getting trimmed with non ajax powerstep page for some users.
