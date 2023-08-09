@@ -493,16 +493,15 @@ class Clerk_Product_Sync {
 					if ( ! isset( $product_array[ $this->clerk_friendly_attributes( $field ) ] ) ) {
 
 						if ( ! in_array( $field, $exempted_fields, true ) ) {
-							$product_attribute_split = explode( ',', $product->get_attribute( $field ) );
+							$product_attribute_split                                     = explode( ',', $product->get_attribute( $field ) );
 							$product_array[ $this->clerk_friendly_attributes( $field ) ] = array_map( array( $this, 'trim_whitespace_in_attribute' ), $product_attribute_split );
 						} else {
 							$product_array[ $this->clerk_friendly_attributes( $field ) ] = $product->get_attribute( $field );
 						}
 					}
 
-					// 21-10-2021 KKY - Additional Fields for Configurable and Grouped Products - additional fields.
-
 					if ( $product->is_type( 'variable' ) ) {
+
 						$variations       = $product->get_available_variations();
 						$child_attributes = array();
 
@@ -511,8 +510,8 @@ class Clerk_Product_Sync {
 							$variation_obj = new WC_Product_variation( $v['variation_id'] );
 
 							if ( ! in_array( $field, $exempted_fields, true ) ) {
-								$atribute_split = explode( ',', $variation_obj->get_attribute( $field ) );
-								$attribute = array_map( array( $this, 'trim_whitespace_in_attribute' ), $atribute_split );
+								$attribute_split = explode( ',', $variation_obj->get_attribute( $field ) );
+								$attribute       = array_map( array( $this, 'trim_whitespace_in_attribute' ), $attribute_split );
 							} else {
 								$attribute = $variation_obj->get_attribute( $field );
 							}
@@ -542,8 +541,8 @@ class Clerk_Product_Sync {
 							$childproduct = wc_get_product( $child_id );
 
 							if ( ! in_array( $field, $exempted_fields, true ) ) {
-								$atribute_split = explode( ',', $childproduct->get_attribute( $field ) );
-								$attribute = array_map( array( $this, 'trim_whitespace_in_attribute' ), $atribute_split );
+								$attribute_split = explode( ',', $childproduct->get_attribute( $field ) );
+								$attribute       = array_map( array( $this, 'trim_whitespace_in_attribute' ), $attribute_split );
 							} else {
 								$attribute = $childproduct->get_attribute( $field );
 							}
@@ -563,14 +562,9 @@ class Clerk_Product_Sync {
 
 						$product_array[ 'child_' . $this->clerk_friendly_attributes( $field ) . 's' ] = $child_attributes;
 					}
-
-					// 21-10-2021 KKY - Additional Fields for Configurable and Grouped Products - additional fields.
-
 				} elseif ( get_post_meta( $product->get_id(), $field, true ) ) {
 
 					$product_array[ str_replace( '-', '_', $this->clerk_friendly_attributes( $field ) ) ] = get_post_meta( $product->get_id(), $field, true );
-
-					// 21-10-2021 KKY - Additional Fields for Configurable and Grouped Products - additional fields.
 
 					if ( $product->is_type( 'variable' ) ) {
 						$variations       = $product->get_available_variations( 'objects' );
@@ -620,9 +614,6 @@ class Clerk_Product_Sync {
 
 						$product_array[ 'child_' . $this->clerk_friendly_attributes( $field ) . 's' ] = $child_attributes;
 					}
-
-					// 21-10-2021 KKY - Additional Fields for Configurable and Grouped Products - additional fields.
-
 				} elseif ( wp_get_post_terms( $product->get_id(), strtolower( $field ), array( 'fields' => 'names' ) ) ) {
 
 					$attribute_field = wp_get_post_terms( $product->get_id(), strtolower( $field ), array( 'fields' => 'names' ) );
@@ -639,8 +630,6 @@ class Clerk_Product_Sync {
 
 						$product_array[ strtolower( $this->clerk_friendly_attributes( $field ) ) ] = $attribute_field;
 
-						// 21-10-2021 KKY - Additional Fields for Configurable and Grouped Products - additional fields.
-
 						if ( $product->is_type( 'variable' ) ) {
 							$variations       = $product->get_available_variations( 'objects' );
 							$child_attributes = array();
@@ -656,12 +645,10 @@ class Clerk_Product_Sync {
 
 								if ( ! array_key_exists( 'errors', $attribute_field ) ) {
 
-									$attribute = $attribute_field;
-
-									if ( is_array( $atribute ) && count( $atribute ) > 0 ) {
-										$collectinfo = $attribute[0];
+									if ( is_array( $attribute_field ) && ! empty( $attribute_field ) ) {
+										$collectinfo = $attribute_field[0];
 									} else {
-										$collectinfo = $attribute;
+										$collectinfo = $attribute_field;
 									}
 
 									if ( '' === $collectinfo && isset( $variation->get_data()[ $field ] ) ) {
@@ -673,7 +660,7 @@ class Clerk_Product_Sync {
 									}
 								}
 							}
-							if ( ! empty( $child_atributes ) ) {
+							if ( ! empty( $child_attributes ) ) {
 								$product_array[ 'child_' . strtolower( $this->clerk_friendly_attributes( $field ) ) . 's' ] = $child_attributes;
 							}
 						}
@@ -688,10 +675,10 @@ class Clerk_Product_Sync {
 
 								$attribute_field = wp_get_post_terms( $childproduct->get_id(), strtolower( $field ), array( 'fields' => 'names' ) );
 
-								if ( is_array( $atribute ) && count( $atribute ) > 0 ) {
-									$collectinfo = $attribute[0];
+								if ( is_array( $attribute_field ) && ! empty( $attribute_field ) ) {
+									$collectinfo = $attribute_field[0];
 								} else {
-									$collectinfo = $attribute;
+									$collectinfo = $attribute_field;
 								}
 
 								if ( '' === $collectinfo && isset( $childproduct->$field ) ) {
@@ -701,15 +688,13 @@ class Clerk_Product_Sync {
 									$child_attributes[] = $collectinfo;
 								}
 							}
-							if ( ! empty( $child_atributes ) ) {
+							if ( ! empty( $child_attributes ) ) {
 								$product_array[ 'child_' . strtolower( $this->clerk_friendly_attributes( $field ) ) . 's' ] = $child_attributes;
 							}
 						}
 					}
 				}
 			}
-
-			// 22-10-2021 KKY.
 
 			$params = '';
 

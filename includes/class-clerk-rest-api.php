@@ -520,119 +520,119 @@ class Clerk_Rest_Api extends WP_REST_Server {
 						}
 
 						if ( $product->is_type( 'variable' ) ) {
-							$variations      = $product->get_available_variations();
-							$child_atributes = array();
+							$variations       = $product->get_available_variations();
+							$child_attributes = array();
 							foreach ( $variations as $v ) {
 								$collectinfo   = '';
 								$variation_obj = new WC_Product_variation( $v['variation_id'] );
 
 								if ( ! in_array( $field, $exempted_fields, true ) ) {
-									$atribute_split = explode( ',', $variation_obj->get_attribute( $field ) );
-									$atribute = array_map( array( $this, 'trim_whitespace_in_attribute' ), $atribute_split );
+									$attribute_split = explode( ',', $variation_obj->get_attribute( $field ) );
+									$attribute       = array_map( array( $this, 'trim_whitespace_in_attribute' ), $attribute_split );
 								} else {
-									$atribute = $variation_obj->get_attribute( $field );
+									$attribute = $variation_obj->get_attribute( $field );
 								}
 
-								if ( is_array( $atribute ) ) {
-									$collectinfo = $atribute[0];
+								if ( is_array( $attribute ) ) {
+									$collectinfo = $attribute[0];
 								} else {
-									$collectinfo = $atribute;
+									$collectinfo = $attribute;
 								}
 
 								if ( '' === $collectinfo && isset( $variation_obj->get_data()[ $field ] ) ) {
 									$collectinfo = $variation_obj->get_data()[ $field ];
 								}
 
-								$child_atributes[] = $collectinfo;
+								$child_attributes[] = $collectinfo;
 							}
 
-							$product_array[ 'child_' . $this->clerk_friendly_attributes( $field ) . 's' ] = $child_atributes;
+							$product_array[ 'child_' . $this->clerk_friendly_attributes( $field ) . 's' ] = $child_attributes;
 						}
 
 						if ( $product->is_type( 'grouped' ) ) {
 							$child_product_ids = $product->get_children();
-							$child_atributes   = array();
+							$child_attributes  = array();
 							foreach ( $child_product_ids as $child_id ) {
 								$collectinfo  = '';
 								$childproduct = wc_get_product( $child_id );
 
 								if ( ! in_array( $field, $exempted_fields, true ) ) {
-									$atribute_split = explode( ',', $childproduct->get_attribute( $field ) );
-									$atribute = array_map( array( $this, 'trim_whitespace_in_attribute' ), $atribute_split );
+									$attribute_split = explode( ',', $childproduct->get_attribute( $field ) );
+									$attribute       = array_map( array( $this, 'trim_whitespace_in_attribute' ), $attribute_split );
 								} else {
-									$atribute = $childproduct->get_attribute( $field );
+									$attribute = $childproduct->get_attribute( $field );
 								}
 
-								if ( is_array( $atribute ) ) {
-									$collectinfo = $atribute[0];
+								if ( is_array( $attribute ) ) {
+									$collectinfo = $attribute[0];
 								} else {
-									$collectinfo = $atribute;
+									$collectinfo = $attribute;
 								}
 
 								if ( '' === $collectinfo && isset( $childproduct->$field ) ) {
 									$collectinfo = $childproduct->$field;
 								}
 
-								$child_atributes[] = $collectinfo;
+								$child_attributes[] = $collectinfo;
 							}
 
-							$product_array[ 'child_' . str_replace( '-', '_', $this->clerk_friendly_attributes( $field ) ) . 's' ] = $child_atributes;
+							$product_array[ 'child_' . str_replace( '-', '_', $this->clerk_friendly_attributes( $field ) ) . 's' ] = $child_attributes;
 						}
 					} elseif ( get_post_meta( $product->get_id(), $field, true ) ) {
 
 						$product_array[ $this->clerk_friendly_attributes( $field ) ] = get_post_meta( $product->get_id(), $field, true );
 
 						if ( $product->is_type( 'variable' ) ) {
-							$variations      = $product->get_available_variations();
-							$child_atributes = array();
+							$variations       = $product->get_available_variations();
+							$child_attributes = array();
 
 							foreach ( $variations as $v ) {
 								$collectinfo   = '';
 								$variation_obj = new WC_Product_variation( $v['variation_id'] );
 
-								$atribute = get_post_meta( $variation_obj->get_id(), $field, true );
+								$attribute = get_post_meta( $variation_obj->get_id(), $field, true );
 
-								if ( is_array( $atribute ) ) {
-									$collectinfo = $atribute[0];
+								if ( is_array( $attribute ) ) {
+									$collectinfo = $attribute[0];
 								} else {
-									$collectinfo = $atribute;
+									$collectinfo = $attribute;
 								}
 
 								if ( '' === $collectinfo && isset( $variation_obj->get_data()[ $field ] ) ) {
 									$collectinfo = $variation_obj->get_data()[ $field ];
 								}
 
-								$child_atributes[] = $collectinfo;
+								$child_attributes[] = $collectinfo;
 
 							}
 
-							$product_array[ 'child_' . str_replace( '-', '_', $this->clerk_friendly_attributes( $field ) ) . 's' ] = $child_atributes;
+							$product_array[ 'child_' . str_replace( '-', '_', $this->clerk_friendly_attributes( $field ) ) . 's' ] = $child_attributes;
 						}
 
 						if ( $product->is_type( 'grouped' ) ) {
 							$child_product_ids = $product->get_children();
-							$child_atributes   = array();
+							$child_attributes  = array();
 
 							foreach ( $child_product_ids as $child_id ) {
 								$collectinfo  = '';
 								$childproduct = wc_get_product( $child_id );
-								$atribute     = get_post_meta( $childproduct->get_id(), $field, true );
+								$attribute    = get_post_meta( $childproduct->get_id(), $field, true );
 
-								if ( is_array( $atribute ) ) {
-									$collectinfo = $atribute[0];
+								if ( is_array( $attribute ) ) {
+									$collectinfo = $attribute[0];
 								} else {
-									$collectinfo = $atribute;
+									$collectinfo = $attribute;
 								}
 
 								if ( '' === $collectinfo && isset( $childproduct->$field ) ) {
 									$collectinfo = $childproduct->$field;
 								}
 
-								$child_atributes[] = $collectinfo;
+								$child_attributes[] = $collectinfo;
 
 							}
 
-							$product_array[ 'child_' . str_replace( '-', '_', $this->clerk_friendly_attributes( $field ) ) . 's' ] = $child_atributes;
+							$product_array[ 'child_' . str_replace( '-', '_', $this->clerk_friendly_attributes( $field ) ) . 's' ] = $child_attributes;
 						}
 					} elseif ( wp_get_post_terms( $product->get_id(), strtolower( $field ), array( 'fields' => 'names' ) ) ) {
 
@@ -651,8 +651,8 @@ class Clerk_Rest_Api extends WP_REST_Server {
 							$product_array[ strtolower( $this->clerk_friendly_attributes( $field ) ) ] = $attributefield;
 
 							if ( $product->is_type( 'variable' ) ) {
-								$variations      = $product->get_available_variations();
-								$child_atributes = array();
+								$variations       = $product->get_available_variations();
+								$child_attributes = array();
 
 								foreach ( $variations as $v ) {
 									$collectinfo   = '';
@@ -670,12 +670,10 @@ class Clerk_Rest_Api extends WP_REST_Server {
 											$attributefield = (array) $attributefield;
 										}
 
-										$atribute = $attributefield;
-
-										if ( is_array( $atribute ) && count( $atribute ) > 0 ) {
-											$collectinfo = $atribute[0];
+										if ( is_array( $attributefield ) && ! empty( $attributefield ) ) {
+											$collectinfo = $attributefield[0];
 										} else {
-											$collectinfo = $atribute;
+											$collectinfo = $attributefield;
 										}
 
 										if ( '' === $collectinfo && isset( $variation_obj->get_data()[ $field ] ) ) {
@@ -683,39 +681,38 @@ class Clerk_Rest_Api extends WP_REST_Server {
 										}
 
 										if ( $collectinfo ) {
-											$child_atributes[] = $collectinfo;
+											$child_attributes[] = $collectinfo;
 										}
 									}
 								}
-								if ( ! empty( $child_atributes ) ) {
-									$product_array[ 'child_' . strtolower( str_replace( '-', '_', $this->clerk_friendly_attributes( $field ) ) ) . 's' ] = $child_atributes;
+								if ( ! empty( $child_attributes ) ) {
+									$product_array[ 'child_' . strtolower( str_replace( '-', '_', $this->clerk_friendly_attributes( $field ) ) ) . 's' ] = $child_attributes;
 								}
 							}
 
 							if ( $product->is_type( 'grouped' ) ) {
 								$child_product_ids = $product->get_children();
-								$child_atributes   = array();
+								$child_attributes  = array();
 								foreach ( $child_product_ids as $child_id ) {
 									$collectinfo    = '';
 									$childproduct   = wc_get_product( $child_id );
 									$attributefield = wp_get_post_terms( $childproduct->get_id(), strtolower( $field ), array( 'fields' => 'names' ) );
-									$atribute       = $attributefield;
 
-									if ( is_array( $atribute ) && count( $atribute ) > 0 ) {
-										$collectinfo = $atribute[0];
+									if ( is_array( $attributefield ) && ! empty( $attributefield ) ) {
+										$collectinfo = $attributefield[0];
 									} else {
-										$collectinfo = $atribute;
+										$collectinfo = $attributefield;
 									}
 
 									if ( '' === $collectinfo && isset( $childproduct->$field ) ) {
 										$collectinfo = $childproduct->$field;
 									}
 									if ( $collectinfo ) {
-										$child_atributes[] = $collectinfo;
+										$child_attributes[] = $collectinfo;
 									}
 								}
-								if ( ! empty( $child_atributes ) ) {
-									$product_array[ 'child_' . strtolower( str_replace( '-', '_', $this->clerk_friendly_attributes( $field ) ) ) . 's' ] = $child_atributes;
+								if ( ! empty( $child_attributes ) ) {
+									$product_array[ 'child_' . strtolower( str_replace( '-', '_', $this->clerk_friendly_attributes( $field ) ) ) . 's' ] = $child_attributes;
 								}
 							}
 						}
