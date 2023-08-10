@@ -717,6 +717,7 @@ class Clerk_Product_Sync {
 		$attribute = str_replace( 'æ', 'ae', $attribute );
 		$attribute = str_replace( 'ø', 'oe', $attribute );
 		$attribute = str_replace( 'å', 'aa', $attribute );
+		$attribute = str_replace( '-', '_', $attribute );
 		return rawurlencode( $attribute );
 	}
 
