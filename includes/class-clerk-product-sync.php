@@ -488,6 +488,17 @@ class Clerk_Product_Sync {
 					continue;
 				}
 
+				if ( 'gallery_images' === $field ) {
+					$product_image_ids = $product->get_gallery_image_ids();
+					if ( ! empty( $product_image_ids ) ) {
+						$product_array['gallery_images'] = array();
+						foreach ( $product_image_ids as $product_img_id ) {
+							array_push( $product_array['gallery_images'], wp_get_attachment_url( $product_img_id ) );
+						}
+					}
+					continue;
+				}
+
 				if ( $product->get_attribute( $field ) || isset( $product->$field ) ) {
 
 					if ( ! isset( $product_array[ $this->clerk_friendly_attributes( $field ) ] ) ) {

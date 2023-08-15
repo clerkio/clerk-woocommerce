@@ -477,7 +477,6 @@ class Clerk_Rest_Api extends WP_REST_Server {
 				$product_array['categories']          = wp_list_pluck( $categories, 'term_id' );
 				$product_array['sku']                 = $product->get_sku();
 				$product_array['on_sale']             = $on_sale;
-				$product_array['all_images']          = array();
 				$product_array['type']                = $product->get_type();
 				$product_array['visibility']          = $product->get_catalog_visibility();
 				$product_array['created_at']          = strtotime( $product->get_date_created() );
@@ -500,9 +499,21 @@ class Clerk_Rest_Api extends WP_REST_Server {
 					}
 
 					if ( 'all_images' === $field ) {
+						$product_array['all_images'] = array();
 						foreach ( get_intermediate_image_sizes() as $key => $image_size ) {
 							if ( ! in_array( wp_get_attachment_image_src( $product->get_image_id(), $image_size )[0], $product_array['all_images'], true ) ) {
 								array_push( $product_array['all_images'], wp_get_attachment_image_src( $product->get_image_id(), $image_size )[0] );
+							}
+						}
+						continue;
+					}
+
+					if ( 'gallery_images' === $field ) {
+						$product_image_ids = $product->get_gallery_image_ids();
+						if ( ! empty( $product_image_ids ) ) {
+							$product_array['gallery_images'] = array();
+							foreach ( $product_image_ids as $product_img_id ) {
+								array_push( $product_array['gallery_images'], wp_get_attachment_url( $product_img_id ) );
 							}
 						}
 						continue;
