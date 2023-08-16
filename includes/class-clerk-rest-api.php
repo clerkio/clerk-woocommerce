@@ -1170,6 +1170,10 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 						$_customer[ $customer_additional_field ] = $user->data->{ $customer_additional_field};
 
+					} elseif ( isset( $user->{ $customer_additional_field} ) ) {
+
+						$_customer[ $customer_additional_field ] = $user->{ $customer_additional_field};
+
 					}
 				}
 
