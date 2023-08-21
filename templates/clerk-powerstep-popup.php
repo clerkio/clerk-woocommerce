@@ -45,7 +45,6 @@ if ( isset( $options['powerstep_custom_text_enabled'] ) ) {
 }
 ?>
 <div id="clerk_powerstep" class="clerk-popup" style="display: none;">
-	<span class="clerk-popup-close">×</span>
 	<div class="clerk_powerstep_header">
 		<h2 class="clerk_powerstep_headline">
 			<?php echo wp_kses_post( $title_html ); ?>
