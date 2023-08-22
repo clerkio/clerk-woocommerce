@@ -1164,22 +1164,13 @@ class Clerk_Rest_Api extends WP_REST_Server {
 				$_customer['id']    = $user->data->ID;
 				$_customer['email'] = $user->data->user_email;
 
-				foreach ( $customer_additional_fields as $customer_additional_field ) {
-
-					$user_data = is_object( $user->data ) ? (array) $user->data : (is_array( $user->data ) ? $user->data : array());
-
-					$user = is_object( $user ) ? (array) $user : (is_array( $user ) ? $user : array());
-
-					if ( array_key_exists( $customer_additional_field, $user_data ) && isset( $user_data[ $customer_additional_field ] ) ) {
-
-						$_customer[ $customer_additional_field ] = $user_data[ $customer_additional_field ];
-
-					} elseif ( array_key_exists( $customer_additional_field, $user ) && isset( $user[ $customer_additional_field ] ) ) {
-
-						$_customer[ $customer_additional_field ] = $user[ $customer_additional_field ];
-
+				$user_meta = get_user_meta($user->ID);
+				
+				foreach ($customer_additional_fields as $customer_additional_field) {
+					if (isset($user_meta[$customer_additional_field]) && !empty($user_meta[$customer_additional_field])) {
+						$_customer[$customer_additional_field] = $user_meta[$customer_additional_field][0];
 					}
-				}
+				}	
 
 				$final_customer_array[] = apply_filters( 'clerk_customer_array', $_customer, $user );
 
