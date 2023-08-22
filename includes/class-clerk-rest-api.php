@@ -1166,9 +1166,9 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 				foreach ( $customer_additional_fields as $customer_additional_field ) {
 
-					$user_data = is_object( $user->data ) ? (array) $user->data : is_array( $user->data ) ? $user->data : array();
+					$user_data = is_object( $user->data ) ? (array) $user->data : (is_array( $user->data ) ? $user->data : array());
 
-					$user = is_object( $user ) ? (array) $user : is_array( $user ) ? $user : array();
+					$user = is_object( $user ) ? (array) $user : (is_array( $user ) ? $user : array());
 
 					if ( array_key_exists( $customer_additional_field, $user_data ) && isset( $user_data[ $customer_additional_field ] ) ) {
 
