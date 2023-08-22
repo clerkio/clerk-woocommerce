@@ -1165,12 +1165,12 @@ class Clerk_Rest_Api extends WP_REST_Server {
 				$_customer['email'] = $user->data->user_email;
 
 				$user_meta = get_user_meta($user->ID);
-				
+
 				foreach ($customer_additional_fields as $customer_additional_field) {
 					if (isset($user_meta[$customer_additional_field]) && !empty($user_meta[$customer_additional_field])) {
 						$_customer[$customer_additional_field] = $user_meta[$customer_additional_field][0];
 					}
-				}	
+				}
 
 				$final_customer_array[] = apply_filters( 'clerk_customer_array', $_customer, $user );
 
