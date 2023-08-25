@@ -125,6 +125,12 @@ class Clerk_Visitor_Tracking {
 
 			$options = get_option( 'clerk_options' );
 
+			// Add a filter so we can disable clerk programmatically or check if public key is set
+			$clerk_enabled = apply_filters( 'clerk_enabled', true );
+			if (!$clerk_enabled || !$options['public_key']) {
+				return false;
+			}
+
 			// Default to true.
 			if ( ! isset( $options['collect_emails'] ) ) {
 				$options['collect_emails'] = true;
