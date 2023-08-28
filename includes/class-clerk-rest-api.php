@@ -1167,7 +1167,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 				$user_meta = get_user_meta($user->ID);
 
 				foreach ($customer_additional_fields as $customer_additional_field) {
-					if (isset($user_meta[$customer_additional_field]) && !empty($user_meta[$customer_additional_field])) {
+					if (isset($user_meta[$customer_additional_field])) {
 						$_customer[$customer_additional_field] = $user_meta[$customer_additional_field][0];
 					}
 				}
