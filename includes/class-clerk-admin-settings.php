@@ -997,6 +997,18 @@ class Clerk_Admin_Settings {
 			)
 		);
 
+		add_settings_field(
+			'powerstep_keep_atc_param',
+			__( 'Filter Duplicates', 'clerk' ),
+			array( $this, 'add_checkbox_field' ),
+			'clerk',
+			'clerk_section_powerstep',
+			array(
+				'label_for'   => 'powerstep_keep_atc_param',
+				'checked'     => 0,
+				'description' => 'Keep add to cart params when redirecting for powerstep.',
+			)
+		);
 		// Add exit intent section.
 		add_settings_section(
 			'clerk_section_exit_intent',

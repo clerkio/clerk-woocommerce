@@ -148,6 +148,11 @@ class Clerk_Powerstep {
 						'product_id'      => $product_id,
 						'clerk_powerstep' => true,
 					);
+
+					if ( isset( $options['powerstep_keep_atc_param'] ) && $options['powerstep_keep_atc_param'] ) {
+						$params['add-to-cart'] = $product_id;
+					}
+
 					if ( is_numeric( $variant_id ) ) {
 						$params['variation_id'] = $variant_id;
 					}
