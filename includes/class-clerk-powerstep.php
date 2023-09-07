@@ -73,8 +73,8 @@ class Clerk_Powerstep {
 
 		try {
 			$add_to_cart_param = false;
-			$add_to_cart_param = ( null !== filter_input( INPUT_POST, 'add-to-cart', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_POST, 'add-to-cart', FILTER_SANITIZE_STRING ) : $add_to_cart_param;
-			$add_to_cart_param = ( null !== filter_input( INPUT_GET, 'add-to-cart', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_GET, 'add-to-cart', FILTER_SANITIZE_STRING ) : $add_to_cart_param;
+			$add_to_cart_param = ( null !== filter_input( INPUT_POST, 'add-to-cart' ) ) ? filter_input( INPUT_POST, 'add-to-cart' ) : $add_to_cart_param;
+			$add_to_cart_param = ( null !== filter_input( INPUT_GET, 'add-to-cart' ) ) ? filter_input( INPUT_GET, 'add-to-cart' ) : $add_to_cart_param;
 			if ( $add_to_cart_param ) {
 				if ( ! is_numeric( $add_to_cart_param ) ) {
 					return $url;
@@ -119,17 +119,16 @@ class Clerk_Powerstep {
 		try {
 
 			$add_to_cart_param = false;
-			$add_to_cart_param = ( null !== filter_input( INPUT_POST, 'add-to-cart', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_POST, 'add-to-cart', FILTER_SANITIZE_STRING ) : $add_to_cart_param;
-			$add_to_cart_param = ( null !== filter_input( INPUT_GET, 'add-to-cart', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_GET, 'add-to-cart', FILTER_SANITIZE_STRING ) : $add_to_cart_param;
+			$add_to_cart_param = ( null !== filter_input( INPUT_POST, 'add-to-cart' ) ) ? filter_input( INPUT_POST, 'add-to-cart' ) : $add_to_cart_param;
+			$add_to_cart_param = ( null !== filter_input( INPUT_GET, 'add-to-cart' ) ) ? filter_input( INPUT_GET, 'add-to-cart' ) : $add_to_cart_param;
 
 			$variant_id = false;
-			$variant_id = ( null !== filter_input( INPUT_POST, 'variation_id', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_POST, 'variation_id', FILTER_SANITIZE_STRING ) : $variant_id;
-			$variant_id = ( null !== filter_input( INPUT_GET, 'variation_id', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_GET, 'variation_id', FILTER_SANITIZE_STRING ) : $variant_id;
+			$variant_id = ( null !== filter_input( INPUT_POST, 'variation_id' ) ) ? filter_input( INPUT_POST, 'variation_id' ) : $variant_id;
+			$variant_id = ( null !== filter_input( INPUT_GET, 'variation_id' ) ) ? filter_input( INPUT_GET, 'variation_id' ) : $variant_id;
 
 			$product_qty = false;
-			$product_qty = ( null !== filter_input( INPUT_POST, 'quantity', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_POST, 'quantity', FILTER_SANITIZE_STRING ) : $product_qty;
-			$product_qty = ( null !== filter_input( INPUT_GET, 'quantity', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_GET, 'quantity', FILTER_SANITIZE_STRING ) : $product_qty;
-
+			$product_qty = ( null !== filter_input( INPUT_POST, 'quantity' ) ) ? filter_input( INPUT_POST, 'quantity' ) : $product_qty;
+			$product_qty = ( null !== filter_input( INPUT_GET, 'quantity' ) ) ? filter_input( INPUT_GET, 'quantity' ) : $product_qty;
 
 			if ( $add_to_cart_param ) {
 				if ( ! is_numeric( $add_to_cart_param ) ) {
@@ -144,7 +143,7 @@ class Clerk_Powerstep {
 
 			if ( ! $options['powerstep_enabled'] || self::TYPE_PAGE !== $options['powerstep_type'] ) {
 
-				if ( null === filter_input( INPUT_GET, 'clerk_powerstep', FILTER_SANITIZE_STRING ) ) {
+				if ( null === filter_input( INPUT_GET, 'clerk_powerstep' ) ) {
 					$_uri        = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
 					$_host       = isset( $_SERVER['HTTP_HOST'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) ) : '';
 					$actual_link = ( isset( $_SERVER['HTTPS'] ) && 'on' === sanitize_text_field( wp_unslash( $_SERVER['HTTPS'] ) ) ? 'https' : 'http' ) . "://$_host$_uri";
