@@ -126,6 +126,11 @@ class Clerk_Powerstep {
 			$variant_id = ( null !== filter_input( INPUT_POST, 'variation_id', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_POST, 'variation_id', FILTER_SANITIZE_STRING ) : $variant_id;
 			$variant_id = ( null !== filter_input( INPUT_GET, 'variation_id', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_GET, 'variation_id', FILTER_SANITIZE_STRING ) : $variant_id;
 
+			$product_qty = false;
+			$product_qty = ( null !== filter_input( INPUT_POST, 'quantity', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_POST, 'quantity', FILTER_SANITIZE_STRING ) : $product_qty;
+			$product_qty = ( null !== filter_input( INPUT_GET, 'quantity', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_GET, 'quantity', FILTER_SANITIZE_STRING ) : $product_qty;
+
+
 			if ( $add_to_cart_param ) {
 				if ( ! is_numeric( $add_to_cart_param ) ) {
 					return $url;
@@ -155,6 +160,10 @@ class Clerk_Powerstep {
 
 					if ( is_numeric( $variant_id ) ) {
 						$params['variation_id'] = $variant_id;
+					}
+
+					if ( is_numeric( $product_qty ) ) {
+						$params['quantity'] = $product_qty;
 					}
 
 					$_url = $actual_link . '?' . http_build_query( $params );
