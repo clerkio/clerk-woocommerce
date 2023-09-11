@@ -70,6 +70,12 @@ class Clerk_Powerstep {
 	 * @param string $url Powerstep Url.
 	 */
 	public function redirect_to_powerstep( $url ) {
+		$powerstep_enabled = apply_filters( 'clerk_powerstep_enabled' , true );
+
+		// Check a filter so we can disable clerk popup programmatically
+		if (!$powerstep_enabled) {
+			return false;
+		}
 
 		try {
 			$add_to_cart_param = false;
@@ -115,6 +121,12 @@ class Clerk_Powerstep {
 	 * @param string $url Powerstep Url.
 	 */
 	public function redirect_to_powerstep_no_ajax( $url ) {
+		$powerstep_enabled = apply_filters( 'clerk_powerstep_enabled' , true );
+
+		// Check a filter so we can disable clerk popup programmatically
+		if (!$powerstep_enabled) {
+			return false;
+		}
 
 		try {
 
