@@ -70,10 +70,10 @@ class Clerk_Powerstep {
 	 * @param string $url Powerstep Url.
 	 */
 	public function redirect_to_powerstep( $url ) {
-		$powerstep_enabled = apply_filters( 'clerk_powerstep_enabled' , true );
+		$powerstep_enabled = apply_filters( 'clerk_powerstep_enabled', true );
 
-		// Check a filter so we can disable clerk popup programmatically
-		if (!$powerstep_enabled) {
+		// Check a filter so we can disable clerk popup programmatically.
+		if ( ! $powerstep_enabled ) {
 			return false;
 		}
 
@@ -121,10 +121,10 @@ class Clerk_Powerstep {
 	 * @param string $url Powerstep Url.
 	 */
 	public function redirect_to_powerstep_no_ajax( $url ) {
-		$powerstep_enabled = apply_filters( 'clerk_powerstep_enabled' , true );
+		$powerstep_enabled = apply_filters( 'clerk_powerstep_enabled', true );
 
-		// Check a filter so we can disable clerk popup programmatically
-		if (!$powerstep_enabled) {
+		// Check a filter so we can disable clerk popup programmatically.
+		if ( ! $powerstep_enabled ) {
 			return false;
 		}
 
