@@ -127,7 +127,8 @@ class Clerk_Visitor_Tracking {
 
 			// Add a filter so we can disable clerk programmatically or check if public key is set
 			$clerk_enabled = apply_filters( 'clerk_enabled', true );
-			if (!$clerk_enabled || !$options['public_key']) {
+			$public_key_not_set = ! isset( $options['public_key'] ) || ( isset( $options['public_key'] ) && ! $options['public_key'] );
+			if (!$clerk_enabled || $public_key_not_set) {
 				return false;
 			}
 
