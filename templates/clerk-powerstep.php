@@ -33,7 +33,7 @@ if ( isset( $options['powerstep_custom_text_enabled'] ) ) {
 			$translated_array = explode( 'PRODUCT_NAME', $options['powerstep_custom_text_title'] );
 			$pre_trans        = $translated_array[0];
 			$post_trans       = $translated_array[1];
-			$title_html       = "$pre_trans<span class='clerk_powerstep_product_name'>$product_name</span>$post_trans";
+			$title_html       = "<div class='clerk_powerstep_product_name_wrap'>$pre_trans<span class='clerk_powerstep_product_name'>$product_name</span>$post_trans</div>";
 		}
 	}
 	if ( isset( $options['powerstep_custom_text_back'] ) ) {
