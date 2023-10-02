@@ -220,7 +220,7 @@ class Clerk_Product_Sync {
 		try {
 			$options = get_option( 'clerk_options' );
 
-			if ( ! is_array( $options ) ) {
+			if ( ! is_array( $options ) || ! isset( $options['realtime_updates'] ) ) {
 				return;
 			}
 
