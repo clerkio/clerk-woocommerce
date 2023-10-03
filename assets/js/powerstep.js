@@ -13,129 +13,129 @@
  * @package clerkio/clerk-woocommerce
  */
 
-jQuery( document ).ready(
-	function ($) {
-		var getUrlParameter = function getUrlParameter(sParam)
-		{
-			var sPageURL       = window.location.search.substring( 1 ),
-			sURLVariables      = sPageURL.split( '&' ),
-			sURLVariablesCount = sURLVariables.length,
-			sParameterName,
-			i;
+function ready(fn) {
+	if (document.readyState !== 'loading') {
+		fn();
+		return;
+	}
+	document.addEventListener('DOMContentLoaded', fn);
+}
+ready(() => {
+	const getUrlParameter = (sParam) => {
+		const sPageURL = window.location.search.substring(1);
+		for (const parameter of sPageURL.split('&')) {
+			const [key, value] = parameter.split('=');
 
-			for (i = 0; i < sURLVariablesCount; i++) {
-				sParameterName = sURLVariables[i].split( '=' );
-
-				if (sParameterName[0] === sParam) {
-					return sParameterName[1] === undefined ? true : decodeURIComponent( sParameterName[1] );
-				}
+			if (key === sParam) {
+				return value === undefined ? true : decodeURIComponent(value);
 			}
-		};
+		}
+	};
+	const popup = document.getElementById("clerk_powerstep");
+	if (popup) {
+		console.log("Popup HTML:", popup.outerHTML);
 
-		$( "body" ).on(
-			"added_to_cart",
-			function (e, fragments, hash, button) {
-				// Attempt to get product id from data attribute.
-				var product_id = $( button ).data( 'product_id' );
+		const initialDisplayStyle = window.getComputedStyle(popup).display;
+		console.log("Popup initial display style:", initialDisplayStyle);
 
-				if (product_id) {
-					// Redirect to powerstep page if type is page.
-					if (variables.type === 'page') {
-						window.location.replace( variables.powerstep_url + "?product_id=" + encodeURIComponent( product_id ) );
-					}
+		if (initialDisplayStyle === "none" || initialDisplayStyle === "") {
+			popup.style.display = "block";
 
-					var data = {
-						'action': 'clerk_powerstep',
-						'product_id': product_id
-					};
-
-					$.ajax(
-						{
-							url: variables.ajax_url,
-							method: 'post',
-							data: data,
-							success: function (res) {
-								$( 'body' ).append( res );
-								var popup = $( "#clerk_powerstep" );
-
-								$( ".clerk-popup-close" ).on(
-									"click",
-									function () {
-										popup.hide();
-									}
-								);
-								$( ".clerk-powerstep-close" ).on(
-									"click",
-									function () {
-										popup.hide();
-									}
-								);
-								popup.show();
-
-								Clerk( 'content','.clerk_powerstep_templates .clerk' );
-							}
-						}
-					);
-					$( 'body' ).trigger( 'post-load' );
-				}
-			}
-		);
-
-		$(
-			function () {
-
-				var clerk_powerstep = getUrlParameter( 'clerk_powerstep' );
-				var product_id      = getUrlParameter( 'product_id' );
-
-				if (clerk_powerstep) {
-
-					if (product_id) {
-						// Redirect to powerstep page if type is page.
-						if (variables.type === 'page') {
-							window.location.replace( variables.powerstep_url + "?product_id=" + encodeURIComponent( product_id ) );
-						}
-
-						var data = {
-							'action': 'clerk_powerstep',
-							'product_id': product_id
-						};
-
-						$.ajax(
-							{
-								url: variables.ajax_url,
-								method: 'post',
-								data: data,
-								success: function (res) {
-									$( 'body' ).append( res );
-									var popup = $( "#clerk_powerstep" );
-
-									$( ".clerk-popup-close" ).on(
-										"click",
-										function () {
-											popup.hide();
-											window.history.pushState( {}, document.title, window.location.href.split( "?" )[0] );
-										}
-									);
-
-									$( ".clerk-powerstep-close" ).on(
-										"click",
-										function () {
-											popup.hide();
-											window.history.pushState( {}, document.title, window.location.href.split( "?" )[0] );
-										}
-									);
-									popup.show();
-
-									Clerk( 'content','.clerk_powerstep_templates .clerk' );
-								}
-							}
-						);
-						$( 'body' ).trigger( 'post-load' );
-					}
-
-				}
-			}
-		);
+			const updatedDisplayStyle = window.getComputedStyle(popup).display;
+			console.log("Popup display after setting to block:", updatedDisplayStyle);
+		}
 
 	}
-);
+
+	// Function to show popup
+	const showPopup = (res) => {
+		document.body.insertAdjacentHTML('beforeend', res);
+		const popup = document.getElementById('clerk_powerstep');
+
+		var closeButtons = document.querySelectorAll('.clerk-popup-close, .clerk-powerstep-close');
+		if (closeButtons.length < 2) {
+			if (!popup.querySelector(".clerk-popup-close")) {
+				console.debug("No close button found, adding one");
+				const closeButton = document.createElement("span");
+				closeButton.className = "clerk-popup-close";
+				closeButton.innerHTML = "&times;";
+				// closeButton.addEventListener("click", (e) => {
+				// 	e.stopPropagation();
+				// 	popup.style.display = "none";
+				// });
+				popup.prepend(closeButton);
+			}
+		}
+
+		var closeButtons = document.querySelectorAll('.clerk-popup-close, .clerk-powerstep-close');
+		console.log('Close buttons:', closeButtons);
+		closeButtons.forEach((button) => {
+			button.addEventListener('click', () => {
+				console.log('Close button clicked');
+				popup.style.display = 'none';
+				window.history.pushState({}, document.title, window.location.href.split('?')[0]);
+			});
+		});
+
+		popup.style.display = 'block';
+		Clerk('content', '.clerk_powerstep_templates .clerk');
+	};
+
+	// Event listener for "added_to_cart" event
+	document.body.addEventListener('added_to_cart', async (e, fragments, hash, button) => {
+		console.log('Product added to cart:', button);
+
+		const productId = button.dataset.product_id;
+		if (productId) {
+			if (variables.type === 'page') {
+				window.location.replace(variables.powerstep_url + '?product_id=' + encodeURIComponent(productId));
+				return;
+			}
+
+			const data = {
+				'action': 'clerk_powerstep',
+				'product_id': productId
+			};
+
+			const response = await fetch(variables.ajax_url, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+				body: new URLSearchParams(data)
+			});
+
+			if (response.ok) {
+				const res = await response.text();
+				console.log('Response:', res);
+				showPopup(res);
+
+				const afterAjaxDisplayStyle = window.getComputedStyle(popup).display;
+				console.log('Popup display style after AJAX:', afterAjaxDisplayStyle);
+			} else {
+				console.error('Failed to fetch:', response.statusText);
+			}
+		}
+	});
+
+	// Check if the URL has the clerk_powerstep parameter
+	if (getUrlParameter('clerk_powerstep') && getUrlParameter('product_id')) {
+		const productId = getUrlParameter('product_id');
+		if (variables.type === 'page') {
+			window.location.replace(variables.powerstep_url + '?product_id=' + encodeURIComponent(productId));
+			return;
+		}
+
+		const data = {
+			'action': 'clerk_powerstep',
+			'product_id': productId
+		};
+
+		fetch(variables.ajax_url, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+			body: new URLSearchParams(data)
+		})
+			.then(response => response.text())
+			.then(res => showPopup(res))
+			.catch(error => console.error('Error:', error));
+	}
+});
