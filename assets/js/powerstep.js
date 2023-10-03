@@ -33,16 +33,13 @@ ready(() => {
 	};
 	const popup = document.getElementById("clerk_powerstep");
 	if (popup) {
-		console.log("Popup HTML:", popup.outerHTML);
 
 		const initialDisplayStyle = window.getComputedStyle(popup).display;
-		console.log("Popup initial display style:", initialDisplayStyle);
 
 		if (initialDisplayStyle === "none" || initialDisplayStyle === "") {
 			popup.style.display = "block";
 
 			const updatedDisplayStyle = window.getComputedStyle(popup).display;
-			console.log("Popup display after setting to block:", updatedDisplayStyle);
 		}
 
 	}
@@ -68,10 +65,8 @@ ready(() => {
 		}
 
 		var closeButtons = document.querySelectorAll('.clerk-popup-close, .clerk-powerstep-close');
-		console.log('Close buttons:', closeButtons);
 		closeButtons.forEach((button) => {
 			button.addEventListener('click', () => {
-				console.log('Close button clicked');
 				popup.style.display = 'none';
 				window.history.pushState({}, document.title, window.location.href.split('?')[0]);
 			});
@@ -83,7 +78,6 @@ ready(() => {
 
 	// Event listener for "added_to_cart" event
 	document.body.addEventListener('added_to_cart', async (e, fragments, hash, button) => {
-		console.log('Product added to cart:', button);
 
 		const productId = button.dataset.product_id;
 		if (productId) {
@@ -105,11 +99,9 @@ ready(() => {
 
 			if (response.ok) {
 				const res = await response.text();
-				console.log('Response:', res);
 				showPopup(res);
 
 				const afterAjaxDisplayStyle = window.getComputedStyle(popup).display;
-				console.log('Popup display style after AJAX:', afterAjaxDisplayStyle);
 			} else {
 				console.error('Failed to fetch:', response.statusText);
 			}
