@@ -253,8 +253,14 @@ class Clerk_Product_Sync {
 			if ( 1 !== (int) $options['realtime_updates'] ) {
 				return;
 			}
-
-			$categories = wp_get_post_terms( $product->get_id(), 'product_cat' );
+			$taxonomies = array( 'product_cat', 'product_brand', 'pwb-brand' );
+			$categories = array();
+			foreach ( $taxonomies as $taxonomy ) {
+				if ( taxonomy_exists( $taxonomy ) ) {
+					$taxa_term_array = wp_list_pluck( wp_get_post_terms( $product->get_id(), $taxonomy ), 'term_id' );
+					  $categories    = array_merge( $categories, $taxa_term_array );
+				}
+			}
 
 			$on_sale             = $product->is_on_sale();
 			$price               = 0;
@@ -445,7 +451,7 @@ class Clerk_Product_Sync {
 			$product_array['list_price_excl_tax'] = (float) $list_price_excl_tax;
 			$product_array['image']               = $product_image;
 			$product_array['url']                 = $product->get_permalink();
-			$product_array['categories']          = wp_list_pluck( $categories, 'term_id' );
+			$product_array['categories']          = $categories;
 			$product_array['sku']                 = $product->get_sku();
 			$product_array['on_sale']             = $on_sale;
 			$product_array['type']                = $product->get_type();
