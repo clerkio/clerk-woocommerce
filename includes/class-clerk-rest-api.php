@@ -290,7 +290,10 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 			$final_products_array = array();
 
+			$image_size_setting = isset( $options['data_sync_image_size'] ) ? $options['data_sync_image_size'] : 'medium';
+
 			foreach ( $products->products as $product ) {
+
 				$taxonomies = array( 'product_cat', 'product_brand', 'pwb-brand' );
 				$categories = array();
 				foreach ( $taxonomies as $taxonomy ) {
@@ -373,7 +376,18 @@ class Clerk_Rest_Api extends WP_REST_Server {
 						$variant_price_excl_tax      = wc_get_price_excluding_tax( $variation_obj, array( 'price' => $variant_price ) );
 						$variant_list_price_excl_tax = wc_get_price_excluding_tax( $variation_obj, array( 'price' => $variant_list_price ) );
 
-						$product_array['variant_images'][]               = $variation['image']['url'];
+						$variant_image = wp_get_attachment_image_src( $variation_obj->get_image_id(), $image_size_setting );
+						if ( ! $variant_image ) {
+							if ( function_exists( 'wc_placeholder_img_src' ) ) {
+								$variant_image = wc_placeholder_img_src( $image_size_setting );
+							} else {
+								$variant_image = '';
+							}
+						} else {
+							$variant_image = $variant_image[0];
+						}
+
+						$product_array['variant_images'][]               = $variant_image;
 						$product_array['variant_skus'][]                 = $variation['sku'];
 						$product_array['variant_ids'][]                  = $variation['variation_id'];
 						$product_array['variant_stocks'][]               = ( null !== $variation_obj->get_stock_quantity() ) ? $variation_obj->get_stock_quantity() : 0;
@@ -461,8 +475,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 					}
 				}
 
-				$image_size_setting = isset( $options['data_sync_image_size'] ) ? $options['data_sync_image_size'] : 'medium';
-				$product_image      = wp_get_attachment_image_src( $product->get_image_id(), $image_size_setting );
+				$product_image = wp_get_attachment_image_src( $product->get_image_id(), $image_size_setting );
 				if ( ! $product_image ) {
 					if ( function_exists( 'wc_placeholder_img_src' ) ) {
 						$product_image = wc_placeholder_img_src( $image_size_setting );

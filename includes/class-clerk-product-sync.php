@@ -253,6 +253,9 @@ class Clerk_Product_Sync {
 			if ( 1 !== (int) $options['realtime_updates'] ) {
 				return;
 			}
+
+				$image_size_setting = isset( $options['data_sync_image_size'] ) ? $options['data_sync_image_size'] : 'medium';
+
 			$taxonomies = array( 'product_cat', 'product_brand', 'pwb-brand' );
 			$categories = array();
 			foreach ( $taxonomies as $taxonomy ) {
@@ -334,7 +337,18 @@ class Clerk_Product_Sync {
 					$variant_price_excl_tax      = wc_get_price_excluding_tax( $variation, array( 'price' => $variant_price ) );
 					$variant_list_price_excl_tax = wc_get_price_excluding_tax( $variation, array( 'price' => $variant_list_price ) );
 
-					$product_array['variant_images'][]               = wp_get_attachment_image_url( $variation->get_image_id() );
+					$variant_image = wp_get_attachment_image_src( $variation->get_image_id(), $image_size_setting );
+					if ( ! $variant_image ) {
+						if ( function_exists( 'wc_placeholder_img_src' ) ) {
+							$variant_image = wc_placeholder_img_src( $image_size_setting );
+						} else {
+							$variant_image = '';
+						}
+					} else {
+						$variant_image = $variant_image[0];
+					}
+
+					$product_array['variant_images'][]               = $variant_image;
 					$product_array['variant_skus'][]                 = $variation->get_sku();
 					$product_array['variant_ids'][]                  = $variant_id;
 					$product_array['variant_stocks'][]               = ( null !== $variation->get_stock_quantity() ) ? $variation->get_stock_quantity() : 0;
@@ -428,8 +442,6 @@ class Clerk_Product_Sync {
 					return;
 				}
 			}
-
-			$image_size_setting = isset( $options['data_sync_image_size'] ) ? $options['data_sync_image_size'] : 'medium';
 
 			$product_image = wp_get_attachment_image_src( $product->get_image_id(), $image_size_setting );
 			if ( ! $product_image ) {
