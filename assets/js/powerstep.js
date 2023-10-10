@@ -18,101 +18,106 @@ function ready(fn) {
 		fn();
 		return;
 	}
-	document.addEventListener('DOMContentLoaded', fn);
+	document.addEventListener( 'DOMContentLoaded', fn );
 }
-ready(() => {
-	const getUrlParameter = (sParam) => {
-		const sPageURL = window.location.search.substring(1);
-		for (const parameter of sPageURL.split('&')) {
-			const [key, value] = parameter.split('=');
+ready(
+	() => {
+    const getUrlParameter = (sParam) => {
+			const sPageURL            = window.location.search.substring( 1 );
+			for (const parameter of sPageURL.split( '&' )) {
+				const [key, value] = parameter.split( '=' );
 
-			if (key === sParam) {
-				return value === undefined ? true : decodeURIComponent(value);
+				if (key === sParam) {
+					return value === undefined ? true : decodeURIComponent( value );
+				}
 			}
-		}
-	};
-	const popup = document.getElementById("clerk_powerstep");
-	if (popup) {
+    };
+    const popup = document.getElementById( "clerk_powerstep" );
+    if (popup) {
 
-		const initialDisplayStyle = window.getComputedStyle(popup).display;
+        const initialDisplayStyle = window.getComputedStyle( popup ).display;
 
-		if (initialDisplayStyle === "none" || initialDisplayStyle === "") {
-			popup.style.display = "block";
+        if (initialDisplayStyle === "none" || initialDisplayStyle === "") {
+            popup.style.display = "block";
 
-			const updatedDisplayStyle = window.getComputedStyle(popup).display;
-		}
+            const updatedDisplayStyle = window.getComputedStyle( popup ).display;
+        }
 
-	}
-
-	// Function to show popup
-	const showPopup = (res) => {
-		document.body.insertAdjacentHTML('beforeend', res);
-		const popup = document.getElementById('clerk_powerstep');
-
-		var closeButtons = document.querySelectorAll('.clerk-popup-close, .clerk-powerstep-close');
-		if (closeButtons.length < 2) {
-			if (!popup.querySelector(".clerk-popup-close")) {
-				console.debug("No close button found, adding one");
-				const closeButton = document.createElement("span");
-				closeButton.className = "clerk-popup-close";
-				closeButton.innerHTML = "&times;";
-				// closeButton.addEventListener("click", (e) => {
-				// 	e.stopPropagation();
-				// 	popup.style.display = "none";
-				// });
-				popup.prepend(closeButton);
+    }
+		// Function to show popup
+		const showPopup      = (res) => {
+    document.body.insertAdjacentHTML( 'beforeend', res );
+    const popup      = document.getElementById( 'clerk_powerstep' );
+    var closeButtons = document.querySelectorAll( '.clerk-popup-close, .clerk-powerstep-close' );
+    if (closeButtons.length < 2) {
+        if ( ! popup.querySelector( ".clerk-popup-close" )) {
+            console.debug( "No close button found, adding one" );
+            const closeButton     = document.createElement( "span" );
+            closeButton.className = "clerk-popup-close";
+            closeButton.innerHTML = "&times;";
+            // closeButton.addEventListener("click", (e) => {
+            // e.stopPropagation();
+            // popup.style.display = "none";
+            // });
+            popup.prepend( closeButton );
+        }
+    }
+    var closeButtons        = document.querySelectorAll( '.clerk-popup-close, .clerk-powerstep-close' );
+    closeButtons.forEach(
+			(button) => {
+				button.addEventListener(
+                    'click',
+                    () => {
+					popup.style.display = 'none';
+					window.history.pushState( {}, document.title, window.location.href.split( '?' )[0] );
+					}
+                );
 			}
-		}
-
-		var closeButtons = document.querySelectorAll('.clerk-popup-close, .clerk-powerstep-close');
-		closeButtons.forEach((button) => {
-			button.addEventListener('click', () => {
-				popup.style.display = 'none';
-				window.history.pushState({}, document.title, window.location.href.split('?')[0]);
-			});
-		});
-
+		);
 		popup.style.display = 'block';
-		Clerk('content', '.clerk_powerstep_templates .clerk');
-	};
+		Clerk( 'content', '.clerk_powerstep_templates .clerk' );
+		};
+		// Event listener for "added_to_cart" event
+		document.body.addEventListener(
+			'added_to_cart',
+			async( e, fragments, hash, button ) => {
+				const productId = button.dataset.product_id;
+				if (productId) {
+					if (variables.type === 'page') {
+						window.location.replace( variables.powerstep_url + '?product_id=' + encodeURIComponent( productId ) );
+						return;
+					}
 
-	// Event listener for "added_to_cart" event
-	document.body.addEventListener('added_to_cart', async (e, fragments, hash, button) => {
+					const data = {
+						'action': 'clerk_powerstep',
+						'product_id': productId
+					};
 
-		const productId = button.dataset.product_id;
-		if (productId) {
-			if (variables.type === 'page') {
-				window.location.replace(variables.powerstep_url + '?product_id=' + encodeURIComponent(productId));
-				return;
+					const response = await fetch(
+					variables.ajax_url,
+					{
+						method: 'POST',
+						headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+						body: new URLSearchParams( data )
+						}
+					);
+
+					if (response.ok) {
+						const res = await response.text();
+						showPopup( res );
+
+						const afterAjaxDisplayStyle = window.getComputedStyle( popup ).display;
+					} else {
+						console.error( 'Failed to fetch:', response.statusText );
+					}
+				}
 			}
-
-			const data = {
-				'action': 'clerk_powerstep',
-				'product_id': productId
-			};
-
-			const response = await fetch(variables.ajax_url, {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-				body: new URLSearchParams(data)
-			});
-
-			if (response.ok) {
-				const res = await response.text();
-				showPopup(res);
-
-				const afterAjaxDisplayStyle = window.getComputedStyle(popup).display;
-			} else {
-				console.error('Failed to fetch:', response.statusText);
-			}
-		}
-	});
-
+		);
 	// Check if the URL has the clerk_powerstep parameter
-	if (getUrlParameter('clerk_powerstep') && getUrlParameter('product_id')) {
-		const productId = getUrlParameter('product_id');
+	if (getUrlParameter( 'clerk_powerstep' ) && getUrlParameter( 'product_id' )) {
+		const productId = getUrlParameter( 'product_id' );
 		if (variables.type === 'page') {
-			window.location.replace(variables.powerstep_url + '?product_id=' + encodeURIComponent(productId));
+			window.location.replace( variables.powerstep_url + '?product_id=' + encodeURIComponent( productId ) );
 			return;
 		}
 
@@ -121,13 +126,17 @@ ready(() => {
 			'product_id': productId
 		};
 
-		fetch(variables.ajax_url, {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-			body: new URLSearchParams(data)
-		})
-			.then(response => response.text())
-			.then(res => showPopup(res))
-			.catch(error => console.error('Error:', error));
+		fetch(
+			variables.ajax_url,
+			{
+				method: 'POST',
+				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+				body: new URLSearchParams( data )
+			}
+		)
+			.then( response => response.text() )
+			.then( res => showPopup( res ) )
+			.catch( error => console.error( 'Error:', error ) );
 	}
-});
+	}
+);

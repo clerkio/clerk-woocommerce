@@ -1437,12 +1437,22 @@ class Clerk_Rest_Api extends WP_REST_Server {
 			$orderby = $request->get_param( 'orderby' ) ? $request->get_param( 'orderby' ) : 'date';
 			$order   = $request->get_param( 'order' ) ? $request->get_param( 'order' ) : 'DESC';
 
+			$taxonomies  = array( 'product_cat' );
+			$plugin_taxa = array( 'product_brand', 'pwb-brand' );
+
+			foreach ( $plugin_taxa as $taxonomy ) {
+				if ( taxonomy_exists( $taxonomy ) ) {
+					$taxonomies[] = $taxonomy;
+				}
+			}
+
 			$args = array(
 				'number'     => $limit,
 				'orderby'    => $orderby,
 				'order'      => $order,
 				'offset'     => $offset,
 				'hide_empty' => true,
+				'taxonomy'   => $taxonomies,
 			);
 
 			$product_categories = get_terms( 'product_cat', $args );
