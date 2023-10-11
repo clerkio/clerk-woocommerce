@@ -1178,14 +1178,14 @@ class Clerk_Rest_Api extends WP_REST_Server {
 			}
 
 			foreach ( $users as $user ) {
-        
-        $_customerClass = new WP_User( $user->ID );
+
+				$_customerClass = new WP_User( $user->ID );
 
 				$_customer          = array();
 				$_customer['name']  = $user->data->display_name;
 				$_customer['id']    = $user->data->ID;
 				$_customer['email'] = $user->data->user_email;
-        $_customer['roles'] = $_customerClass->roles;
+				$_customer['roles'] = $_customerClass->roles;
 
 				$user_meta = get_user_meta( $user->ID );
 

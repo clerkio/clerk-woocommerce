@@ -62,16 +62,16 @@ ready(
             popup.prepend( closeButton );
         }
     }
-    var closeButtons                = document.querySelectorAll( '.clerk-popup-close, .clerk-powerstep-close' );
+    var closeButtons        = document.querySelectorAll( '.clerk-popup-close, .clerk-powerstep-close' );
     closeButtons.forEach(
 			(button) => {
-			button.addEventListener(
-            'click',
-            () => {
-            popup.style.display = 'none';
-            window.history.pushState( {}, document.title, window.location.href.split( '?' )[0] );
-						}
-        );
+				button.addEventListener(
+                    'click',
+                    () => {
+					popup.style.display = 'none';
+					window.history.pushState( {}, document.title, window.location.href.split( '?' )[0] );
+					}
+                );
 			}
 		);
 		popup.style.display = 'block';
