@@ -220,7 +220,7 @@ class Clerk_Product_Sync {
 		try {
 			$options = get_option( 'clerk_options' );
 
-			if ( ! is_array( $options ) ) {
+			if ( ! is_array( $options ) || ! isset( $options['realtime_updates'] ) ) {
 				return;
 			}
 
@@ -285,18 +285,17 @@ class Clerk_Product_Sync {
 				$product_array['variant_ids']                  = array();
 				$product_array['variant_options']              = array();
 				$product_array['variant_stocks']               = array();
-				$variations                                    = $product->get_available_variations( 'objects' );
 				$stock_quantity                                = 0;
 				$display_price                                 = array();
 				$regular_price                                 = array();
 				$display_price_excl_tax                        = array();
 				$regular_price_excl_tax                        = array();
+				$variations                                    = $product->get_available_variations();
 
 				foreach ( $variations as $variation ) {
 
-					$variation = (array) $variation;
-
 					$is_available = false;
+
 					if ( array_key_exists( 'is_in_stock', $variation ) && array_key_exists( 'is_purchasable', $variation ) && array_key_exists( 'backorders_allowed', $variation ) ) {
 						$is_available = ( $variation['is_in_stock'] && $variation['is_purchasable'] ) || ( $variation['backorders_allowed'] && $variation['is_purchasable'] ) ? true : false;
 					}
@@ -514,7 +513,7 @@ class Clerk_Product_Sync {
 				}
 			}
 
-			$product_array = $this->query_custom_fields($product, $this->get_additional_fields(), $product_array);
+			$product_array = $this->query_custom_fields($product, $additional_fields, $product_array);
 
 			$product_array = apply_filters( 'clerk_product_sync_array', $product_array, $product );
 
