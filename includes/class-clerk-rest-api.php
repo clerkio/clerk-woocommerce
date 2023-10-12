@@ -621,6 +621,9 @@ class Clerk_Rest_Api extends WP_REST_Server {
 		if(is_object( $attribute_value )){
 			$attribute_value = (array) $attribute_value;
 		}
+		if(is_array( $attribute_value ) && count( $attribute_value ) === 1 ){
+			$attribute_value = $attribute_value[0];
+		}
 		if(is_string( $attribute_value ) && ! in_array( $field, $this->get_additional_fields_raw(), true ) ){
 			$attribute_value = array_map( array( $this, 'trim_whitespace_in_attribute' ), explode(',', $attribute_value ) );
 		}
