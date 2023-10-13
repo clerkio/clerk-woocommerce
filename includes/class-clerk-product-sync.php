@@ -261,7 +261,7 @@ class Clerk_Product_Sync {
 			foreach ( $taxonomies as $taxonomy ) {
 				if ( taxonomy_exists( $taxonomy ) ) {
 					$taxa_term_array = wp_list_pluck( wp_get_post_terms( $product->get_id(), $taxonomy ), 'term_id' );
-					  $categories    = array_merge( $categories, $taxa_term_array );
+					$categories      = array_merge( $categories, $taxa_term_array );
 				}
 			}
 
@@ -525,11 +525,13 @@ class Clerk_Product_Sync {
 		}
 	}
 
-		/**
-		 * @param WC_Product $product
-		 * @param array      $fields
-		 * @param array      $product_data
-		 */
+	/**
+	 * Get Custom Fields for Product
+	 *
+	 * @param WC_Product $product Product Object.
+	 * @param array      $fields Fields Array.
+	 * @param array      $product_data Product Data Array.
+	 */
 	private function query_custom_fields( $product, $fields, $product_data ) {
 		$product_type = $product->get_type();
 		$fields       = array_diff( $fields, array_keys( $product_data ) );
@@ -541,7 +543,7 @@ class Clerk_Product_Sync {
 			}
 		}
 
-		if ( $product_type === 'variable' ) {
+		if ( 'variable' === $product_type ) {
 			$variations = $product->get_available_variations();
 			foreach ( $variations as $variation ) {
 				$variant = new WC_Product_variation( $variation['variation_id'] );
@@ -563,7 +565,7 @@ class Clerk_Product_Sync {
 				}
 			}
 		}
-		if ( $product_type === 'grouped' ) {
+		if ( 'grouped' === $product_type ) {
 			$child_product_ids = $product->get_children();
 			foreach ( $child_product_ids as $child_id ) {
 				$child = wc_get_product( $child_id );
@@ -584,6 +586,12 @@ class Clerk_Product_Sync {
 		return $product_data;
 	}
 
+	/**
+	 * Format Attribute Value
+	 *
+	 * @param mixed  $attribute_value Product Attribute Value.
+	 * @param string $field Field Slug.
+	 */
 	private function format_attribute( $attribute_value, $field ) {
 		if ( is_object( $attribute_value ) ) {
 			$attribute_value = (array) $attribute_value;
@@ -600,6 +608,14 @@ class Clerk_Product_Sync {
 		return $attribute_value;
 	}
 
+	/**
+	 * Get Attribute Value with Valid Method
+	 *
+	 * @param WC_Product|WC_Product_variation $product Product Object.
+	 * @param string                          $field Field Slug.
+	 *
+	 * @return mixed Attribute Value.
+	 */
 	private function resolve_attribute_product( $product, $field ) {
 		if ( $product->get_attribute( $field ) ) {
 			return $product->get_attribute( $field );

@@ -623,7 +623,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 	/**
 	 * Format Attribute Value
 	 *
-	 * @param mixed $attribute_value Product Attribute Value.
+	 * @param mixed  $attribute_value Product Attribute Value.
 	 * @param string $field Field Slug.
 	 */
 	public function format_attribute( $attribute_value, $field ) {
@@ -646,7 +646,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 	 * Get Attribute Value with Valid Method
 	 *
 	 * @param WC_Product|WC_Product_variation $product Product Object.
-	 * @param string $field Field Slug.
+	 * @param string                          $field Field Slug.
 	 *
 	 * @return mixed Attribute Value.
 	 */
