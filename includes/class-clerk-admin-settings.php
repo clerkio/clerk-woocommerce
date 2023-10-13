@@ -999,7 +999,7 @@ class Clerk_Admin_Settings {
 
 		add_settings_field(
 			'powerstep_keep_atc_param',
-			__( 'Filter Duplicates', 'clerk' ),
+			__( 'Keep Add To Cart Params', 'clerk' ),
 			array( $this, 'add_checkbox_field' ),
 			'clerk',
 			'clerk_section_powerstep',
