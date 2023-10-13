@@ -125,7 +125,7 @@ class ClerkPowerstep {
 			close_buttons = document.querySelectorAll( '.clerk-popup-close, .clerk-powerstep-close' );
 		}
 
-		const close_btn_length = close_buttons.length ? ? 0;
+		const close_btn_length = close_buttons?.length ?? 0;
 
 		for (let i = 0; i < close_btn_length; i++) {
 			const btn = close_buttons[i];
