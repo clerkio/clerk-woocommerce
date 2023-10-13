@@ -559,9 +559,11 @@ class Clerk_Rest_Api extends WP_REST_Server {
 	}
 
 	/**
-	 * @param WC_Product $product
-	 * @param array      $fields
-	 * @param array      $product_data
+	 * Get Custom Fields for Product
+	 *
+	 * @param WC_Product $product Product Object.
+	 * @param array      $fields Fields Array.
+	 * @param array      $product_data Product Data Array.
 	 */
 	public function query_custom_fields( $product, $fields, $product_data ) {
 		$product_type = $product->get_type();
@@ -574,7 +576,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 			}
 		}
 
-		if ( $product_type === 'variable' ) {
+		if ( 'variable' === $product_type ) {
 			$variations = $product->get_available_variations();
 			foreach ( $variations as $variation ) {
 				$variant = new WC_Product_variation( $variation['variation_id'] );
@@ -596,7 +598,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 				}
 			}
 		}
-		if ( $product_type === 'grouped' ) {
+		if ( 'grouped' === $product_type ) {
 			$child_product_ids = $product->get_children();
 			foreach ( $child_product_ids as $child_id ) {
 				$child = wc_get_product( $child_id );
@@ -617,6 +619,13 @@ class Clerk_Rest_Api extends WP_REST_Server {
 		return $product_data;
 	}
 
+
+	/**
+	 * Format Attribute Value
+	 *
+	 * @param mixed $attribute_value Product Attribute Value.
+	 * @param string $field Field Slug.
+	 */
 	public function format_attribute( $attribute_value, $field ) {
 		if ( is_object( $attribute_value ) ) {
 			$attribute_value = (array) $attribute_value;
@@ -633,6 +642,14 @@ class Clerk_Rest_Api extends WP_REST_Server {
 		return $attribute_value;
 	}
 
+	/**
+	 * Get Attribute Value with Valid Method
+	 *
+	 * @param WC_Product|WC_Product_variation $product Product Object.
+	 * @param string $field Field Slug.
+	 *
+	 * @return mixed Attribute Value.
+	 */
 	public function resolve_attribute_product( $product, $field ) {
 		if ( $product->get_attribute( $field ) ) {
 			return $product->get_attribute( $field );
@@ -1060,13 +1077,13 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 			foreach ( $users as $user ) {
 
-				$_customerClass = new WP_User( $user->ID );
+				$_customer_class = new WP_User( $user->ID );
 
 				$_customer          = array();
 				$_customer['name']  = $user->data->display_name;
 				$_customer['id']    = $user->data->ID;
 				$_customer['email'] = $user->data->user_email;
-				$_customer['roles'] = $_customerClass->roles;
+				$_customer['roles'] = $_customer_class->roles;
 
 				$user_meta = get_user_meta( $user->ID );
 
