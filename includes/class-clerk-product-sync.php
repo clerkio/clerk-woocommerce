@@ -254,14 +254,14 @@ class Clerk_Product_Sync {
 				return;
 			}
 
-				$image_size_setting = isset( $options['data_sync_image_size'] ) ? $options['data_sync_image_size'] : 'medium';
+			$image_size_setting = isset( $options['data_sync_image_size'] ) ? $options['data_sync_image_size'] : 'medium';
 
 			$taxonomies = array( 'product_cat', 'product_brand', 'pwb-brand' );
 			$categories = array();
 			foreach ( $taxonomies as $taxonomy ) {
 				if ( taxonomy_exists( $taxonomy ) ) {
 					$taxa_term_array = wp_list_pluck( wp_get_post_terms( $product->get_id(), $taxonomy ), 'term_id' );
-					  $categories    = array_merge( $categories, $taxa_term_array );
+					$categories      = array_merge( $categories, $taxa_term_array );
 				}
 			}
 
@@ -285,18 +285,17 @@ class Clerk_Product_Sync {
 				$product_array['variant_ids']                  = array();
 				$product_array['variant_options']              = array();
 				$product_array['variant_stocks']               = array();
-				$variations                                    = $product->get_available_variations( 'objects' );
 				$stock_quantity                                = 0;
 				$display_price                                 = array();
 				$regular_price                                 = array();
 				$display_price_excl_tax                        = array();
 				$regular_price_excl_tax                        = array();
+				$variations                                    = $product->get_available_variations();
 
 				foreach ( $variations as $variation ) {
 
-					$variation = (array) $variation;
-
 					$is_available = false;
+
 					if ( array_key_exists( 'is_in_stock', $variation ) && array_key_exists( 'is_purchasable', $variation ) && array_key_exists( 'backorders_allowed', $variation ) ) {
 						$is_available = ( $variation['is_in_stock'] && $variation['is_purchasable'] ) || ( $variation['backorders_allowed'] && $variation['is_purchasable'] ) ? true : false;
 					}
@@ -476,265 +475,164 @@ class Clerk_Product_Sync {
 			$product_array['stock_status']        = $product->get_stock_status();
 
 			if ( ! empty( $product->get_stock_quantity() ) ) {
-
 				$product_array['stock'] = ( null !== $product->get_stock_quantity() ) ? $product->get_stock_quantity() : 1;
 			} elseif ( isset( $stock_quantity ) ) {
 
 				$product_array['stock'] = $stock_quantity;
 			}
 
-			$exempted_fields = (array) $this->get_additional_fields_raw();
+			$additional_fields = $this->get_additional_fields();
 
-			// Append additional fields.
-			foreach ( $this->get_additional_fields() as $field ) {
+			if ( in_array( 'short_description', $additional_fields, true ) ) {
+				$product_array['short_description'] = $product->get_short_description();
+			}
 
-				if ( '' === $field ) {
-					continue;
-				}
-
-				if ( 'short_description' === $field ) {
-					$product_array['short_description'] = $product->get_short_description();
-					continue;
-				}
-
-				if ( 'all_images' === $field ) {
-					foreach ( get_intermediate_image_sizes() as $key => $image_size ) {
-						if ( ! in_array( wp_get_attachment_image_src( $product->get_image_id(), $image_size )[0], $product_array['all_images'], true ) ) {
-							array_push( $product_array['all_images'], wp_get_attachment_image_src( $product->get_image_id(), $image_size )[0] );
-						}
-					}
-					continue;
-				}
-
-				if ( 'gallery_images' === $field ) {
-					$product_image_ids = $product->get_gallery_image_ids();
-					if ( ! empty( $product_image_ids ) ) {
-						$product_array['gallery_images'] = array();
-						foreach ( $product_image_ids as $product_img_id ) {
-							array_push( $product_array['gallery_images'], wp_get_attachment_url( $product_img_id ) );
-						}
-					}
-					continue;
-				}
-
-				if ( $product->get_attribute( $field ) || isset( $product->$field ) ) {
-
-					if ( ! isset( $product_array[ $this->clerk_friendly_attributes( $field ) ] ) ) {
-
-						if ( ! in_array( $field, $exempted_fields, true ) ) {
-							$product_attribute_split                                     = explode( ',', $product->get_attribute( $field ) );
-							$product_array[ $this->clerk_friendly_attributes( $field ) ] = array_map( array( $this, 'trim_whitespace_in_attribute' ), $product_attribute_split );
-						} else {
-							$product_array[ $this->clerk_friendly_attributes( $field ) ] = $product->get_attribute( $field );
-						}
-					}
-
-					if ( $product->is_type( 'variable' ) ) {
-
-						$variations       = $product->get_available_variations();
-						$child_attributes = array();
-
-						foreach ( $variations as $v ) {
-							$collectinfo   = '';
-							$variation_obj = new WC_Product_variation( $v['variation_id'] );
-
-							if ( ! in_array( $field, $exempted_fields, true ) ) {
-								$attribute_split = explode( ',', $variation_obj->get_attribute( $field ) );
-								$attribute       = array_map( array( $this, 'trim_whitespace_in_attribute' ), $attribute_split );
-							} else {
-								$attribute = $variation_obj->get_attribute( $field );
-							}
-
-							if ( is_array( $attribute ) ) {
-								$collectinfo = $attribute[0];
-							} else {
-								$collectinfo = $attribute;
-							}
-
-							if ( '' === $collectinfo && isset( $variation_obj->get_data()[ $field ] ) ) {
-								$collectinfo = $variation_obj->get_data()[ $field ];
-							}
-
-							$child_attributes[] = $collectinfo;
-						}
-
-						$product_array[ 'child_' . $this->clerk_friendly_attributes( $field ) . 's' ] = $child_attributes;
-					}
-
-					if ( $product->is_type( 'grouped' ) ) {
-						$child_product_ids = $product->get_children();
-						$child_attributes  = array();
-
-						foreach ( $child_product_ids as $child_id ) {
-							$collectinfo  = '';
-							$childproduct = wc_get_product( $child_id );
-
-							if ( ! in_array( $field, $exempted_fields, true ) ) {
-								$attribute_split = explode( ',', $childproduct->get_attribute( $field ) );
-								$attribute       = array_map( array( $this, 'trim_whitespace_in_attribute' ), $attribute_split );
-							} else {
-								$attribute = $childproduct->get_attribute( $field );
-							}
-
-							if ( is_array( $attribute ) ) {
-								$collectinfo = $attribute[0];
-							} else {
-								$collectinfo = $attribute;
-							}
-
-							if ( '' === $collectinfo && isset( $childproduct->$field ) ) {
-								$collectinfo = $childproduct->$field;
-							}
-
-							$child_attributes[] = $collectinfo;
-						}
-
-						$product_array[ 'child_' . $this->clerk_friendly_attributes( $field ) . 's' ] = $child_attributes;
-					}
-				} elseif ( get_post_meta( $product->get_id(), $field, true ) ) {
-
-					$product_array[ str_replace( '-', '_', $this->clerk_friendly_attributes( $field ) ) ] = get_post_meta( $product->get_id(), $field, true );
-
-					if ( $product->is_type( 'variable' ) ) {
-						$variations       = $product->get_available_variations( 'objects' );
-						$child_attributes = array();
-						foreach ( $variations as $variation ) {
-							$collectinfo = '';
-							$attribute   = get_post_meta( $variation->get_id(), $field, true );
-
-							if ( is_array( $attribute ) ) {
-								$collectinfo = $attribute[0];
-							} else {
-								$collectinfo = $attribute;
-							}
-
-							if ( '' === $collectinfo && isset( $variation->get_data()[ $field ] ) ) {
-								$collectinfo = $variation->get_data()[ $field ];
-							}
-
-							$child_attributes[] = $collectinfo;
-						}
-
-						$product_array[ 'child_' . $this->clerk_friendly_attributes( $field ) . 's' ] = $child_attributes;
-					}
-
-					if ( $product->is_type( 'grouped' ) ) {
-						$child_product_ids = $product->get_children();
-						$child_attributes  = array();
-
-						foreach ( $child_product_ids as $child_id ) {
-							$collectinfo  = '';
-							$childproduct = wc_get_product( $child_id );
-
-							$attribute = get_post_meta( $childproduct->get_id(), $field, true );
-
-							if ( is_array( $attribute ) ) {
-								$collectinfo = $attribute[0];
-							} else {
-								$collectinfo = $attribute;
-							}
-
-							if ( '' === $collectinfo && isset( $childproduct->$field ) ) {
-								$collectinfo = $childproduct->$field;
-							}
-
-							$child_attributes[] = $collectinfo;
-						}
-
-						$product_array[ 'child_' . $this->clerk_friendly_attributes( $field ) . 's' ] = $child_attributes;
-					}
-				} elseif ( wp_get_post_terms( $product->get_id(), strtolower( $field ), array( 'fields' => 'names' ) ) ) {
-
-					$attribute_field = wp_get_post_terms( $product->get_id(), strtolower( $field ), array( 'fields' => 'names' ) );
-
-					if ( is_object( $attribute_field ) ) {
-						$attribute_field = (array) $attribute_field;
-					}
-
-					if ( ! array_key_exists( 'errors', $attribute_field ) ) {
-
-						if ( is_array( $attribute_field ) ) {
-							$attribute_field = array_values( $attribute_field );
-						}
-
-						$product_array[ strtolower( $this->clerk_friendly_attributes( $field ) ) ] = $attribute_field;
-
-						if ( $product->is_type( 'variable' ) ) {
-							$variations       = $product->get_available_variations( 'objects' );
-							$child_attributes = array();
-
-							foreach ( $variations as $variation ) {
-								$collectinfo = '';
-
-								$attribute_field = wp_get_post_terms( $variation->get_id(), strtolower( $field ), array( 'fields' => 'names' ) );
-
-								if ( is_object( $attribute_field ) ) {
-									$attribute_field = (array) $attribute_field;
-								}
-
-								if ( ! array_key_exists( 'errors', $attribute_field ) ) {
-
-									if ( is_array( $attribute_field ) && ! empty( $attribute_field ) ) {
-										$collectinfo = $attribute_field[0];
-									} else {
-										$collectinfo = $attribute_field;
-									}
-
-									if ( '' === $collectinfo && isset( $variation->get_data()[ $field ] ) ) {
-										$collectinfo = $variation->get_data()[ $field ];
-									}
-
-									if ( $$collectinfo ) {
-										$child_attributes[] = $collectinfo;
-									}
-								}
-							}
-							if ( ! empty( $child_attributes ) ) {
-								$product_array[ 'child_' . strtolower( $this->clerk_friendly_attributes( $field ) ) . 's' ] = $child_attributes;
-							}
-						}
-
-						if ( $product->is_type( 'grouped' ) ) {
-							$child_product_ids = $product->get_children();
-							$child_attributes  = array();
-
-							foreach ( $child_product_ids as $child_id ) {
-								$collectinfo  = '';
-								$childproduct = wc_get_product( $child_id );
-
-								$attribute_field = wp_get_post_terms( $childproduct->get_id(), strtolower( $field ), array( 'fields' => 'names' ) );
-
-								if ( is_array( $attribute_field ) && ! empty( $attribute_field ) ) {
-									$collectinfo = $attribute_field[0];
-								} else {
-									$collectinfo = $attribute_field;
-								}
-
-								if ( '' === $collectinfo && isset( $childproduct->$field ) ) {
-									$collectinfo = $childproduct->$field;
-								}
-								if ( $collectinfo ) {
-									$child_attributes[] = $collectinfo;
-								}
-							}
-							if ( ! empty( $child_attributes ) ) {
-								$product_array[ 'child_' . strtolower( $this->clerk_friendly_attributes( $field ) ) . 's' ] = $child_attributes;
-							}
+			if ( in_array( 'all_images', $additional_fields, true ) ) {
+				$product_array['all_images'] = array();
+				foreach ( get_intermediate_image_sizes() as $key => $image_size_setting ) {
+					$image_path = wp_get_attachment_image_src( $product->get_image_id(), $image_size_setting );
+					if ( ! is_wp_error( $image_path ) && is_array( $image_path ) && ! empty( $image_path ) ) {
+						$image_path = $image_path[0];
+						if ( ! in_array( $product_array['all_images'], $image_path, true ) ) {
+							array_push( $product_array['all_images'], $image_path );
 						}
 					}
 				}
 			}
 
-			$params = '';
+			if ( in_array( 'gallery_images', $additional_fields, true ) ) {
+				$product_array['gallery_images'] = array();
+				$product_image_ids               = $product->get_gallery_image_ids();
+				if ( ! empty( $product_image_ids ) ) {
+					foreach ( $product_image_ids as $product_img_id ) {
+						$image_path = wp_get_attachment_url( $product_img_id );
+						if ( ! is_wp_error( $image_path ) && $image_path ) {
+							array_push( $product_array['gallery_images'], $image_path );
+						}
+					}
+				}
+			}
 
-			$params = apply_filters( 'clerk_product_sync_array', $product_array, $product );
-			$this->api->add_product( $params );
+			$product_array = $this->query_custom_fields( $product, $additional_fields, $product_array );
+
+			$product_array = apply_filters( 'clerk_product_sync_array', $product_array, $product );
+
+			$this->api->add_product( $product_array );
+
 		} catch ( Exception $e ) {
 
 			$this->logger->error( 'ERROR add_product', array( 'error' => $e->getMessage() ) );
 		}
 	}
 
+	/**
+	 * Get Custom Fields for Product
+	 *
+	 * @param WC_Product $product Product Object.
+	 * @param array      $fields Fields Array.
+	 * @param array      $product_data Product Data Array.
+	 */
+	private function query_custom_fields( $product, $fields, $product_data ) {
+		$product_type = $product->get_type();
+		$fields       = array_diff( $fields, array_keys( $product_data ) );
+
+		foreach ( $fields as $field ) {
+			$attribute_value = $this->resolve_attribute_product( $product, $field );
+			if ( isset( $attribute_value ) ) {
+				$product_data[ $this->clerk_friendly_attributes( $field ) ] = $this->format_attribute( $attribute_value, $field );
+			}
+		}
+
+		if ( 'variable' === $product_type ) {
+			$variations = $product->get_available_variations();
+			foreach ( $variations as $variation ) {
+				$variant = new WC_Product_variation( $variation['variation_id'] );
+				foreach ( $fields as $field ) {
+					$attribute_value = $this->format_attribute( $this->resolve_attribute_product( $variant, $field ), $field );
+					if ( ! isset( $attribute_value ) || empty( $attribute_value ) ) {
+						if ( ! array_key_exists( $field, $variation ) ) {
+							continue;
+						} else {
+							$attribute_value = $this->format_attribute( $variation[ $field ], $field );
+						}
+					}
+					if ( ! isset( $product_data[ 'child_' . $this->clerk_friendly_attributes( $field ) . 's' ] ) ) {
+						$product_data[ 'child_' . $this->clerk_friendly_attributes( $field ) . 's' ]   = array();
+						$product_data[ 'child_' . $this->clerk_friendly_attributes( $field ) . 's' ][] = $attribute_value;
+					} else {
+						$product_data[ 'child_' . $this->clerk_friendly_attributes( $field ) . 's' ][] = $attribute_value;
+					}
+				}
+			}
+		}
+		if ( 'grouped' === $product_type ) {
+			$child_product_ids = $product->get_children();
+			foreach ( $child_product_ids as $child_id ) {
+				$child = wc_get_product( $child_id );
+				foreach ( $fields as $field ) {
+					$attribute_value = $this->format_attribute( $this->resolve_attribute_product( $child, $field ), $field );
+					if ( ! isset( $attribute_value ) || empty( $attribute_value ) ) {
+						continue;
+					}
+					if ( ! isset( $product_data[ 'child_' . $this->clerk_friendly_attributes( $field ) . 's' ] ) ) {
+						$product_data[ 'child_' . $this->clerk_friendly_attributes( $field ) . 's' ]   = array();
+						$product_data[ 'child_' . $this->clerk_friendly_attributes( $field ) . 's' ][] = $attribute_value;
+					} else {
+						$product_data[ 'child_' . $this->clerk_friendly_attributes( $field ) . 's' ][] = $attribute_value;
+					}
+				}
+			}
+		}
+		return $product_data;
+	}
+
+	/**
+	 * Format Attribute Value
+	 *
+	 * @param mixed  $attribute_value Product Attribute Value.
+	 * @param string $field Field Slug.
+	 */
+	private function format_attribute( $attribute_value, $field ) {
+		if ( is_object( $attribute_value ) ) {
+			$attribute_value = (array) $attribute_value;
+		}
+		if ( is_array( $attribute_value ) && count( $attribute_value ) === 1 ) {
+			$attribute_value = $attribute_value[0];
+		}
+		if ( is_string( $attribute_value ) && ! in_array( $field, $this->get_additional_fields_raw(), true ) ) {
+			$attribute_value = array_map( array( $this, 'trim_whitespace_in_attribute' ), explode( ',', $attribute_value ) );
+		}
+		if ( is_array( $attribute_value ) && count( $attribute_value ) === 1 ) {
+			$attribute_value = $attribute_value[0];
+		}
+		return $attribute_value;
+	}
+
+	/**
+	 * Get Attribute Value with Valid Method
+	 *
+	 * @param WC_Product|WC_Product_variation $product Product Object.
+	 * @param string                          $field Field Slug.
+	 *
+	 * @return mixed Attribute Value.
+	 */
+	private function resolve_attribute_product( $product, $field ) {
+		if ( $product->get_attribute( $field ) ) {
+			return $product->get_attribute( $field );
+		}
+		if ( isset( $product->$field ) ) {
+			return $product->$field;
+		}
+		if ( get_post_meta( $product->get_id(), $field, true ) ) {
+			return get_post_meta( $product->get_id(), $field, true );
+		}
+		if ( ! is_wp_error( wp_get_post_terms( $product->get_id(), strtolower( $field ), array( 'fields' => 'names' ) ) ) ) {
+			return wp_get_post_terms( $product->get_id(), strtolower( $field ), array( 'fields' => 'names' ) );
+		}
+		if ( isset( $product->get_data()[ $field ] ) ) {
+			return $product->get_data()[ $field ];
+		}
+	}
 
 	/**
 	 * Check URL for Danish Language Characters and handle-ize

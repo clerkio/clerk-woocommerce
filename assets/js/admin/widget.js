@@ -11,11 +11,15 @@
  * License: MIT
  *
  * @package clerkio/clerk-woocommerce
- *
  * @file Handles front end content get.
  * Ajax handler.
  */
 
+/**
+ * Check Page for Clerk Embedded Content
+ *
+ * @param {Node} el
+ */
 function clerkGetContent(el)
 {
 	var data = {
