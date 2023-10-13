@@ -507,37 +507,37 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 				$additional_fields = $this->get_additional_fields();
 
-				if ( in_array('short_description', $additional_fields, true) ) {
+				if ( in_array( 'short_description', $additional_fields, true ) ) {
 					$product_array['short_description'] = $product->get_short_description();
 				}
 
-				if ( in_array('all_images', $additional_fields, true) ) {
+				if ( in_array( 'all_images', $additional_fields, true ) ) {
 					$product_array['all_images'] = array();
 					foreach ( get_intermediate_image_sizes() as $key => $image_size ) {
 						$image_path = wp_get_attachment_image_src( $product->get_image_id(), $image_size );
-						if(! is_wp_error($image_path) && is_array($image_path) && !empty($image_path)){
+						if ( ! is_wp_error( $image_path ) && is_array( $image_path ) && ! empty( $image_path ) ) {
 							$image_path = $image_path[0];
-							if(! in_array($product_array['all_images'], $image_path, true)){
+							if ( ! in_array( $product_array['all_images'], $image_path, true ) ) {
 								array_push( $product_array['all_images'], $image_path );
 							}
 						}
 					}
 				}
 
-				if ( in_array('gallery_images', $additional_fields, true) ) {
+				if ( in_array( 'gallery_images', $additional_fields, true ) ) {
 					$product_array['gallery_images'] = array();
-					$product_image_ids = $product->get_gallery_image_ids();
+					$product_image_ids               = $product->get_gallery_image_ids();
 					if ( ! empty( $product_image_ids ) ) {
 						foreach ( $product_image_ids as $product_img_id ) {
 							$image_path = wp_get_attachment_url( $product_img_id );
-							if(! is_wp_error( $image_path ) && $image_path){
+							if ( ! is_wp_error( $image_path ) && $image_path ) {
 								array_push( $product_array['gallery_images'], $image_path );
 							}
 						}
 					}
 				}
 
-				$product_array = $this->query_custom_fields($product, $this->get_additional_fields(), $product_array);
+				$product_array = $this->query_custom_fields( $product, $this->get_additional_fields(), $product_array );
 
 				$product_array = apply_filters( 'clerk_product_array', $product_array, $product );
 
@@ -560,35 +560,35 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 	/**
 	 * @param WC_Product $product
-	 * @param array $fields
-	 * @param array $product_data
+	 * @param array      $fields
+	 * @param array      $product_data
 	 */
-	public function query_custom_fields( $product, $fields, $product_data ){
+	public function query_custom_fields( $product, $fields, $product_data ) {
 		$product_type = $product->get_type();
-		$fields = array_diff($fields, array_keys($product_data));
+		$fields       = array_diff( $fields, array_keys( $product_data ) );
 
-		foreach($fields as $field){
-			$attribute_value = $this->resolve_attribute_product($product, $field);
-			if(isset($attribute_value)){
+		foreach ( $fields as $field ) {
+			$attribute_value = $this->resolve_attribute_product( $product, $field );
+			if ( isset( $attribute_value ) ) {
 				$product_data[ $this->clerk_friendly_attributes( $field ) ] = $this->format_attribute( $attribute_value, $field );
 			}
 		}
 
-		if($product_type === 'variable'){
-			$variations       = $product->get_available_variations();
+		if ( $product_type === 'variable' ) {
+			$variations = $product->get_available_variations();
 			foreach ( $variations as $variation ) {
 				$variant = new WC_Product_variation( $variation['variation_id'] );
-				foreach($fields as $field){
-					$attribute_value = $this->format_attribute($this->resolve_attribute_product($variant, $field), $field);
-					if(!isset($attribute_value) || empty($attribute_value)){
-						if(!array_key_exists($field, $variation)){
+				foreach ( $fields as $field ) {
+					$attribute_value = $this->format_attribute( $this->resolve_attribute_product( $variant, $field ), $field );
+					if ( ! isset( $attribute_value ) || empty( $attribute_value ) ) {
+						if ( ! array_key_exists( $field, $variation ) ) {
 							continue;
 						} else {
-							$attribute_value = $this->format_attribute($variation[$field], $field);
+							$attribute_value = $this->format_attribute( $variation[ $field ], $field );
 						}
 					}
-					if(!isset($product_data[ 'child_' . $this->clerk_friendly_attributes( $field ) . 's' ])){
-						$product_data[ 'child_' . $this->clerk_friendly_attributes( $field ) . 's' ] = array();
+					if ( ! isset( $product_data[ 'child_' . $this->clerk_friendly_attributes( $field ) . 's' ] ) ) {
+						$product_data[ 'child_' . $this->clerk_friendly_attributes( $field ) . 's' ]   = array();
 						$product_data[ 'child_' . $this->clerk_friendly_attributes( $field ) . 's' ][] = $attribute_value;
 					} else {
 						$product_data[ 'child_' . $this->clerk_friendly_attributes( $field ) . 's' ][] = $attribute_value;
@@ -596,17 +596,17 @@ class Clerk_Rest_Api extends WP_REST_Server {
 				}
 			}
 		}
-		if($product_type === 'grouped'){
+		if ( $product_type === 'grouped' ) {
 			$child_product_ids = $product->get_children();
-			foreach( $child_product_ids as $child_id ){
+			foreach ( $child_product_ids as $child_id ) {
 				$child = wc_get_product( $child_id );
-				foreach($fields as $field){
-					$attribute_value = $this->format_attribute($this->resolve_attribute_product($child, $field), $field);
-					if(!isset($attribute_value) || empty($attribute_value)){
+				foreach ( $fields as $field ) {
+					$attribute_value = $this->format_attribute( $this->resolve_attribute_product( $child, $field ), $field );
+					if ( ! isset( $attribute_value ) || empty( $attribute_value ) ) {
 						continue;
 					}
-					if(!isset($product_data[ 'child_' . $this->clerk_friendly_attributes( $field ) . 's' ])){
-						$product_data[ 'child_' . $this->clerk_friendly_attributes( $field ) . 's' ] = array();
+					if ( ! isset( $product_data[ 'child_' . $this->clerk_friendly_attributes( $field ) . 's' ] ) ) {
+						$product_data[ 'child_' . $this->clerk_friendly_attributes( $field ) . 's' ]   = array();
 						$product_data[ 'child_' . $this->clerk_friendly_attributes( $field ) . 's' ][] = $attribute_value;
 					} else {
 						$product_data[ 'child_' . $this->clerk_friendly_attributes( $field ) . 's' ][] = $attribute_value;
@@ -617,36 +617,36 @@ class Clerk_Rest_Api extends WP_REST_Server {
 		return $product_data;
 	}
 
-	public function format_attribute( $attribute_value, $field ){
-		if(is_object( $attribute_value )){
+	public function format_attribute( $attribute_value, $field ) {
+		if ( is_object( $attribute_value ) ) {
 			$attribute_value = (array) $attribute_value;
 		}
-		if(is_array( $attribute_value ) && count( $attribute_value ) === 1 ){
+		if ( is_array( $attribute_value ) && count( $attribute_value ) === 1 ) {
 			$attribute_value = $attribute_value[0];
 		}
-		if(is_string( $attribute_value ) && ! in_array( $field, $this->get_additional_fields_raw(), true ) ){
-			$attribute_value = array_map( array( $this, 'trim_whitespace_in_attribute' ), explode(',', $attribute_value ) );
+		if ( is_string( $attribute_value ) && ! in_array( $field, $this->get_additional_fields_raw(), true ) ) {
+			$attribute_value = array_map( array( $this, 'trim_whitespace_in_attribute' ), explode( ',', $attribute_value ) );
 		}
-		if(is_array( $attribute_value ) && count( $attribute_value ) === 1 ){
+		if ( is_array( $attribute_value ) && count( $attribute_value ) === 1 ) {
 			$attribute_value = $attribute_value[0];
 		}
 		return $attribute_value;
 	}
 
-	public function resolve_attribute_product( $product, $field ){
-		if($product->get_attribute( $field )){
+	public function resolve_attribute_product( $product, $field ) {
+		if ( $product->get_attribute( $field ) ) {
 			return $product->get_attribute( $field );
 		}
-		if(isset( $product->$field )){
+		if ( isset( $product->$field ) ) {
 			return $product->$field;
 		}
-		if(get_post_meta( $product->get_id(), $field, true )){
+		if ( get_post_meta( $product->get_id(), $field, true ) ) {
 			return get_post_meta( $product->get_id(), $field, true );
 		}
-		if(!is_wp_error(wp_get_post_terms( $product->get_id(), strtolower( $field ), array( 'fields' => 'names' ) ))){
+		if ( ! is_wp_error( wp_get_post_terms( $product->get_id(), strtolower( $field ), array( 'fields' => 'names' ) ) ) ) {
 			return wp_get_post_terms( $product->get_id(), strtolower( $field ), array( 'fields' => 'names' ) );
 		}
-		if(isset( $product->get_data()[ $field ] ) ){
+		if ( isset( $product->get_data()[ $field ] ) ) {
 			return $product->get_data()[ $field ];
 		}
 	}
@@ -1236,7 +1236,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 			$fields = explode( ',', $additional_fields );
 
 			foreach ( $fields as $key => $field ) {
-				if(!empty($field)){
+				if ( ! empty( $field ) ) {
 					$fields[ $key ] = str_replace( ' ', '_', $field );
 				}
 			}
