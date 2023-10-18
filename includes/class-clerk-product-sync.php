@@ -392,6 +392,24 @@ class Clerk_Product_Sync {
 				$price_excl_tax      = wc_get_price_excluding_tax( $product, array( 'price' => $product->get_price() ) );
 				$list_price_excl_tax = wc_get_price_excluding_tax( $product, array( 'price' => $product->get_regular_price() ) );
 
+				if ( $product->is_type( 'grouped' ) ) {
+					if ( $price === $list_price ) {
+						$tmp_children_prices = array();
+						$child_ids           = $product->get_children();
+						foreach ( $child_ids as $key => $value ) {
+							$child                 = wc_get_product( $value );
+							$tmp_children_prices[] = $child->get_regular_price();
+						}
+						if ( ! empty( $tmp_children_prices ) ) {
+							$raw_regular_price = min( $tmp_children_prices );
+							if ( is_numeric( $raw_regular_price ) ) {
+								  $list_price_excl_tax = wc_get_price_excluding_tax( $product, array( 'price' => $raw_regular_price ) );
+								  $list_price          = wc_get_price_including_tax( $product, array( 'price' => $raw_regular_price ) );
+							}
+						}
+					}
+				}
+
 				$stock_quantity = $product->get_stock_quantity();
 			}
 
