@@ -70,6 +70,26 @@ class Clerk_Admin_Settings {
 		wp_enqueue_style( 'wp-jquery-ui-dialog' );
 
 	}
+
+
+	public function is_wpml_enabled() {
+		$wpml_loaded = has_action('wpml_loaded', false);
+		$wpml_setup = has_action('wpml_setting', false);
+		if ( $wpml_loaded && $wpml_setup ) {
+			return apply_filters( 'wpml_setting', false, 'setup_complete' );
+		}
+		return false;
+	}
+
+
+	public function wpml_get_languages() {
+		if ( ! has_action( 'wpml_active_languages', false ) ) {
+			return array();
+		} else {
+			return apply_filters( 'wpml_active_languages', NULL, array ('skip_missing' => 0 ) );
+		}
+	}
+
 	/**
 	 * Init Admin Panel settings fieldsset
 	 */
