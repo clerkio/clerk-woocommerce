@@ -71,23 +71,49 @@ class Clerk_Admin_Settings {
 
 	}
 
-
+	/**
+	 * Check whether WPML is installed and loaded
+	 */
 	public function is_wpml_enabled() {
+
 		$wpml_loaded = has_action('wpml_loaded', false);
 		$wpml_setup = has_action('wpml_setting', false);
 		if ( $wpml_loaded && $wpml_setup ) {
 			return apply_filters( 'wpml_setting', false, 'setup_complete' );
 		}
 		return false;
+
 	}
 
-
+	/**
+	 * Get WPML Active Languages
+	 */
 	public function wpml_get_languages() {
+
 		if ( ! has_action( 'wpml_active_languages', false ) ) {
 			return array();
 		} else {
 			return apply_filters( 'wpml_active_languages', NULL, array ('skip_missing' => 0 ) );
 		}
+
+	}
+
+	/**
+	 * Get WPML Active Language
+	 */
+	public function wpml_get_language() {
+
+		if( $this->is_wpml_enabled() ) {
+			$languages = $this->wpml_get_languages();
+			if ( ! empty( $languages ) ) {
+				foreach ( $languages as $lang_iso => $lang_info ) {
+					if ( 1 === $lang_info['active']) {
+						return $lang_info;
+					}
+				}
+			}
+		}
+
 	}
 
 	/**
