@@ -1411,11 +1411,11 @@ class Clerk_Admin_Settings {
 				}
 
 				echo '
-                <tr id="facets_lines">
-                    <td><input type="text" id="facets_facet" value="' . esc_html( $attribute->attribute ) . '" readonly></td>
-                    <td><input type="text" id="facets_title" value="' . esc_html( $attribute->title ) . '"></td>
-                    <td><input type="text" id="facets_position" value="' . esc_html( $attribute->position ) . '"></td>
-                    <td><input id="faceted_enabled" type="checkbox" ' . esc_html( $checked ) . '></td>
+                <tr class="facets_lines">
+                    <td><input type="text" class="facets_facet" value="' . esc_html( $attribute->attribute ) . '" readonly></td>
+                    <td><input type="text" class="facets_title" value="' . esc_html( $attribute->title ) . '"></td>
+                    <td><input type="text" class="facets_position" value="' . esc_html( $attribute->position ) . '"></td>
+                    <td><input class="faceted_enabled" type="checkbox" ' . esc_html( $checked ) . '></td>
                 </tr>
                 ';
 
@@ -1429,12 +1429,12 @@ class Clerk_Admin_Settings {
 				$count++;
 
 				echo '
-                    <tr id="facets_lines">
-                        <td><input type="text" id="facets_facet" value="' . esc_html( $attribute ) . '" readonly></td>
-                        <td><input type="text" id="facets_title" value=""></td>
-                        <td><input type="text" id="facets_position" value="' . esc_html( $count ) . '"></td>
-                        <td><input id="faceted_enabled" type="checkbox"></td>
-                    </tr>
+					<tr class="facets_lines">
+						<td><input type="text" class="facets_facet" value="' . esc_html( $attribute ) . '" readonly></td>
+						<td><input type="text" class="facets_title" value=""></td>
+						<td><input type="text" class="facets_position" value="' . esc_html( $count ) . '"></td>
+						<td><input class="faceted_enabled" type="checkbox"></td>
+					</tr>
                     ';
 
 			}

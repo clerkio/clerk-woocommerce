@@ -73,16 +73,16 @@ function CollectAttributes() {
 	Attributes = [];
 
 	count = 0;
-	countFacets = jQuery('input[id^=facets_facet]').length;
+	countFacets = jQuery('input[class^=facets_facet]').length;
 
 	while ((count + 1) <= countFacets) {
 
 		var data = {
 
-			attribute: jQuery('input[id^=facets_facet]:eq(' + count + ')').val(),
-			title: jQuery('input[id^=facets_title]:eq(' + count + ')').val(),
-			position: jQuery('input[id^=facets_position]:eq(' + count + ')').val(),
-			checked: jQuery('input[id^=faceted_enabled]:eq(' + count + ')').is(':checked')
+			attribute: jQuery('input[class^=facets_facet]:eq(' + count + ')').val(),
+			title: jQuery('input[class^=facets_title]:eq(' + count + ')').val(),
+			position: jQuery('input[class^=facets_position]:eq(' + count + ')').val(),
+			checked: jQuery('input[class^=faceted_enabled]:eq(' + count + ')').is(':checked')
 
 		};
 
