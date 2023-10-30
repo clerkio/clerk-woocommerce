@@ -60,6 +60,7 @@ class Clerk_Admin_Settings {
 		add_action( 'admin_init', array( $this, 'settings_init' ) );
 		add_action( 'admin_menu', array( $this, 'clerk_options_page' ) );
 		add_action( 'admin_menu', array( $this, 'load_jquery_ui' ) );
+		add_action( 'admin_menu', array( $this, 'load_custom_css' ) );
 
 	}
 	/**
@@ -69,6 +70,14 @@ class Clerk_Admin_Settings {
 
 		wp_enqueue_script( 'jquery-ui-dialog' );
 		wp_enqueue_style( 'wp-jquery-ui-dialog' );
+	}
+
+	/**
+	 * Load Custom Styles
+	 */
+	public function load_custom_css() {
+
+		wp_enqueue_style( 'clerk_admin_css', plugins_url( '../assets/css/admin.css', __FILE__ ), array(), get_bloginfo( 'version' ) );
 
 	}
 
@@ -1539,163 +1548,6 @@ class Clerk_Admin_Settings {
 					jQuery(".alert").remove();
 				});
 			</script>
-			<style>
-				.alert.info {
-					background-color: #2196F3;
-					border-radius: 6px;
-				}
-
-				.alert {
-					padding: 20px;
-					background-color: #f44336;
-					color: white;
-					opacity: 0.83;
-					transition: opacity 0.6s;
-					margin-bottom: 15px;
-				}
-
-				.closebtn {
-					padding-left: 15px;
-					color: white;
-					font-weight: bold;
-					float: right;
-					font-size: 20px;
-					line-height: 18px;
-					cursor: pointer;
-					transition: 0.3s;
-				}
-
-				.close {
-					position: absolute;
-					width: 32px;
-					height: 32px;
-					opacity: 0.4;
-				}
-
-				.close:hover {
-					opacity: 1;
-				}
-
-				.close:before, .close:after {
-					position: absolute;
-					left: 15px;
-					content: ' ';
-					height: 20px;
-					width: 2px;
-					background-color: #f44336;
-				}
-
-				.close:before {
-					transform: rotate(45deg);
-				}
-
-				.close:after {
-					transform: rotate(-45deg);
-				}
-
-				#wpcontent {
-					background-color: #f8f8f2;
-					padding-left: 0.7rem;
-				}
-				#wpcontent h1 {
-					max-width: fit-content;
-					font-weight: 900;
-					font-family: roboto;
-					padding: 1rem 1.5rem 1rem 2.5rem;
-					transform: translateX(-1.5rem);
-					background-color: #004576;
-					border-radius: 5px;
-					color: #f8f8f2;
-					box-shadow: 0 3px 3px rgba(0,0,0,0.2);
-					filter: blur(0);
-					transition: all 0.3s ease-in-out;
-					-webkit-touch-callout: none;
-					-webkit-user-select: none;
-					-khtml-user-select: none;
-					-moz-user-select: none;
-					-ms-user-select: none;
-					user-select: none;
-				}
-
-				#clerkLogoHeader {
-					position: absolute;
-					top: 32%;
-					left: 0.5rem;
-					transition:all 1s ease;
-				}
-
-				#wpcontent h1:hover {
-					background-color: #ff5c28;
-				}
-				#wpcontent h1:hover #clerkLogoHeader{
-					left:1.4rem;
-					filter: drop-shadow(0 0 0.75rem white);
-				}
-				#wpbody {
-					background-color: #DEDEDE;
-					padding-left: 1rem;
-					border-left: 1px solid #1d2327;
-				}
-
-				#wpbody form {
-					background-color: #eee;
-					padding: 0rem 1rem 1rem 1rem;
-					border: 1px solid #1d2327;
-					border-radius: 5px;
-					margin-top: 1rem;
-					box-shadow: 0 3px 3px rgba(0,0,0,0.2);
-				}
-				#wpbody label {
-					cursor: default;
-				}
-
-				#wpbody input[type="text"]{
-					width: 100%;
-					width: -moz-available;          /* WebKit-based browsers will ignore this. */
-					width: -webkit-fill-available;  /* Mozilla-based browsers will ignore this. */
-					width: fill-available;
-					max-width: clamp(300px, 50%, 100%);
-				}
-
-				#wpbody h2 {
-					background: #1d2327;
-					padding: 1rem;
-					margin: 0 -1rem;
-					color: white;
-				}
-
-				#clerkFloatingSaveBtn {
-					position: fixed;
-					right: 3rem;
-					top: 3rem;
-					background: #2271b1;
-					padding: 1rem;
-					border-radius: 5px;
-					box-shadow: 0 3px 3px rgb(0 0 0 / 20%);
-					transition: all 0.3s ease;
-					color: white;
-					font-size: 14px;
-					text-transform: uppercase;
-					font-weight: 900;
-					cursor: pointer;
-					z-index: 99;
-				}
-				#clerkFloatingSaveBtn:hover {
-					background-color: #135e96;
-				}
-				#submit {
-					padding: 1rem;
-					border-radius: 5px;
-					box-shadow: 0 3px 3px rgb(0 0 0 / 20%);
-					transition: all 0.3s ease;
-					color: white;
-					font-size: 14px;
-					text-transform: uppercase;
-					font-weight: 900;
-					cursor: pointer;
-				}
-			</style>
-
 			<?php
 
 	}
