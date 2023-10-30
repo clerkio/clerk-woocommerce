@@ -693,7 +693,7 @@ class Clerk_Product_Sync {
 	/**
 	 * Get additional fields for product export
 	 *
-	 * @return array
+	 * @return array | void
 	 */
 	private function get_additional_fields() {
 		try {
@@ -718,7 +718,7 @@ class Clerk_Product_Sync {
 	/**
 	 * Get additional fields for product export
 	 *
-	 * @return array
+	 * @return array | void
 	 */
 	private function get_additional_fields_raw() {
 		try {

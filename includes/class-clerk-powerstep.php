@@ -214,7 +214,7 @@ class Clerk_Powerstep {
 	 *
 	 * @param array $vars Product Info and Display data array.
 	 *
-	 * @return array
+	 * @return array | void
 	 */
 	public function add_powerstep_vars( $vars ) {
 
@@ -228,7 +228,6 @@ class Clerk_Powerstep {
 		} catch ( Exception $e ) {
 
 			$this->logger->error( 'ERROR add_powerstep_vars', array( 'error' => $e->getMessage() ) );
-
 		}
 
 	}
@@ -236,7 +235,7 @@ class Clerk_Powerstep {
 	/**
 	 * Output clerk-powerstep shortcode
 	 *
-	 * @return html
+	 * @return html | void
 	 */
 	public function handle_shortcode() {
 

@@ -2417,33 +2417,6 @@ class Clerk_Admin_Settings {
 		<?php
 	}
 
-	/**
-	 * Get Embeded Dashboard Url
-	 *
-	 * @param string $type Type of embed showcase.
-	 * @return string Url.
-	 */
-	private function get_embed_url( $type ) {
-		$options = get_option( 'clerk_options' );
-
-		$public_key  = $options['public_key'];
-		$private_key = $options['private_key'];
-		$store_part  = $this->get_store_part( $public_key );
-
-		return sprintf( 'https://my.clerk.io/#/store/%s/analytics/%s?key=%s&private_key=%s&embed=yes', $store_part, $type, $public_key, $private_key );
-	}
-
-	/**
-	 * Get first 8 characters of public key
-	 *
-	 * @param string $public_key Public Key.
-	 *
-	 * @return string Partial key
-	 */
-	private function get_store_part( $public_key ) {
-		return substr( $public_key, 0, 8 );
-	}
-
 }
 
 new Clerk_Admin_Settings();
