@@ -202,7 +202,7 @@ class Clerk_Widget_Content extends WP_Widget {
 	 * Get parameters for content endpoint
 	 */
 	public function get_parameters_for_content() {
-		$content_param = ( null !== filter_input( INPUT_POST, 'content', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_POST, 'content', FILTER_SANITIZE_STRING ) : '';
+		$content_param = ( null !== filter_input( INPUT_POST, 'content' ) ) ? filter_input( INPUT_POST, 'content' ) : '';
 
 		$contents = $this->api->get_content();
 

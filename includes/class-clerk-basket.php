@@ -39,7 +39,7 @@ class Clerk_Basket {
 		$this->init_hooks();
 		include_once __DIR__ . '/class-clerk-logger.php';
 		include_once __DIR__ . '/clerk-multi-lang-helpers.php';
-		if ( clerk_is_wpml_enabled() ){
+		if ( clerk_is_wpml_enabled() ) {
 			do_action( 'wpml_multilingual_options', 'clerk_options' );
 		}
 		$this->logger = new Clerk_Logger();
@@ -79,16 +79,16 @@ class Clerk_Basket {
 			$email = (string) $current_user->user_email;
 
 			$add_to_cart_param = false;
-			$add_to_cart_param = ( null !== filter_input( INPUT_POST, 'add-to-cart', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_POST, 'add-to-cart', FILTER_SANITIZE_STRING ) : $add_to_cart_param;
-			$add_to_cart_param = ( null !== filter_input( INPUT_GET, 'add-to-cart', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_GET, 'add-to-cart', FILTER_SANITIZE_STRING ) : $add_to_cart_param;
+			$add_to_cart_param = ( null !== filter_input( INPUT_POST, 'add-to-cart' ) ) ? filter_input( INPUT_POST, 'add-to-cart' ) : $add_to_cart_param;
+			$add_to_cart_param = ( null !== filter_input( INPUT_GET, 'add-to-cart' ) ) ? filter_input( INPUT_GET, 'add-to-cart' ) : $add_to_cart_param;
 
 			$removed_item_param = false;
-			$removed_item_param = ( null !== filter_input( INPUT_POST, 'removed_item', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_POST, 'removed_item', FILTER_SANITIZE_STRING ) : $removed_item_param;
-			$removed_item_param = ( null !== filter_input( INPUT_GET, 'removed_item', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_GET, 'removed_item', FILTER_SANITIZE_STRING ) : $removed_item_param;
+			$removed_item_param = ( null !== filter_input( INPUT_POST, 'removed_item' ) ) ? filter_input( INPUT_POST, 'removed_item' ) : $removed_item_param;
+			$removed_item_param = ( null !== filter_input( INPUT_GET, 'removed_item' ) ) ? filter_input( INPUT_GET, 'removed_item' ) : $removed_item_param;
 
 			$product_id_param = false;
-			$product_id_param = ( null !== filter_input( INPUT_POST, 'product_id', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_POST, 'product_id', FILTER_SANITIZE_STRING ) : $product_id_param;
-			$product_id_param = ( null !== filter_input( INPUT_GET, 'product_id', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_GET, 'product_id', FILTER_SANITIZE_STRING ) : $product_id_param;
+			$product_id_param = ( null !== filter_input( INPUT_POST, 'product_id' ) ) ? filter_input( INPUT_POST, 'product_id' ) : $product_id_param;
+			$product_id_param = ( null !== filter_input( INPUT_GET, 'product_id' ) ) ? filter_input( INPUT_GET, 'product_id' ) : $product_id_param;
 
 			if ( false === $add_to_cart_param || false === $removed_item_param || false === $product_id_param ) {
 				return $url;

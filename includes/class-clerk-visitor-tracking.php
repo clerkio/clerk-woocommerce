@@ -38,7 +38,7 @@ class Clerk_Visitor_Tracking {
 		$this->init_hooks();
 		include_once __DIR__ . '/class-clerk-logger.php';
 		include_once __DIR__ . '/clerk-multi-lang-helpers.php';
-		if ( clerk_is_wpml_enabled() ){
+		if ( clerk_is_wpml_enabled() ) {
 			do_action( 'wpml_multilingual_options', 'clerk_options' );
 		}
 		$this->logger = new Clerk_Logger();

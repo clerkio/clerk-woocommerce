@@ -43,7 +43,7 @@ class Clerk_Admin_Settings {
 	public function __construct() {
 		require_once __DIR__ . '/class-clerk-logger.php';
 		require_once __DIR__ . '/clerk-multi-lang-helpers.php';
-		if ( clerk_is_wpml_enabled() ){
+		if ( clerk_is_wpml_enabled() ) {
 			do_action( 'wpml_multilingual_options', 'clerk_options' );
 		}
 		$this->init_hooks();
@@ -153,7 +153,7 @@ class Clerk_Admin_Settings {
 			add_option( 'disable_order_sync_initiated', 0, '', $autoload );
 		}
 
-		if ( $wpml_enabled ){
+		if ( $wpml_enabled ) {
 			do_action( 'wpml_multilingual_options', 'livesearch_initiated' );
 			do_action( 'wpml_multilingual_options', 'search_initiated' );
 			do_action( 'wpml_multilingual_options', 'powerstep_initiated' );
@@ -312,7 +312,7 @@ class Clerk_Admin_Settings {
 		register_setting( 'clerk', 'clerk_options' );
 
 		$wpml_enabled = clerk_is_wpml_enabled();
-		if ( $wpml_enabled ){
+		if ( $wpml_enabled ) {
 			$site_info = clerk_wpml_get_active_scope();
 		}
 
@@ -337,7 +337,7 @@ class Clerk_Admin_Settings {
 			)
 		);
 
-		if($wpml_enabled){
+		if ( $wpml_enabled ) {
 			add_settings_field(
 				'multi_lang_info',
 				__( 'Multi Language Scope', 'clerk' ),
@@ -1374,12 +1374,12 @@ class Clerk_Admin_Settings {
 
 	}
 
-	public function add_wpml_info(){
+	public function add_wpml_info() {
 		$wpml_info = clerk_wpml_get_active_scope()
 		?>
 		<span>
 			<p>
-				<?php echo $wpml_info['native_name'] ?> (<?php echo $wpml_info['translated_name'] ?>)
+				<?php echo $wpml_info['native_name']; ?> (<?php echo $wpml_info['translated_name']; ?>)
 			</p>
 		</span>
 		<?php
@@ -2584,7 +2584,7 @@ class Clerk_Admin_Settings {
 
 		// check if the user have submitted the settings.
 		// WordPress will add the "settings-updated" $_GET parameter to the url.
-		if ( null !== filter_input( INPUT_GET, 'settings-updated', FILTER_SANITIZE_STRING ) ) {
+		if ( null !== filter_input( INPUT_GET, 'settings-updated' ) ) {
 			delete_transient( 'clerk_api_contents' );
 			// add settings saved message with the class of "updated".
 			add_settings_error( 'wporg_messages', 'wporg_message', __( 'Settings Saved', 'wporg' ), 'updated' );

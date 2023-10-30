@@ -41,7 +41,7 @@ class Clerk_Powerstep {
 		$this->init_hooks();
 		include_once __DIR__ . '/class-clerk-logger.php';
 		require_once __DIR__ . '/clerk-multi-lang-helpers.php';
-		if ( clerk_is_wpml_enabled() ){
+		if ( clerk_is_wpml_enabled() ) {
 			do_action( 'wpml_multilingual_options', 'clerk_options' );
 		}
 		$this->logger = new Clerk_Logger();
@@ -310,7 +310,7 @@ class Clerk_Powerstep {
 		try {
 
 			$add_to_cart_param = false;
-			$add_to_cart_param = ( null !== filter_input( INPUT_POST, 'product_id', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_POST, 'product_id', FILTER_SANITIZE_STRING ) : $add_to_cart_param;
+			$add_to_cart_param = ( null !== filter_input( INPUT_POST, 'product_id' ) ) ? filter_input( INPUT_POST, 'product_id' ) : $add_to_cart_param;
 
 			if ( ! $add_to_cart_param ) {
 				return;

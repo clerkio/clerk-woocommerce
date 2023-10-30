@@ -37,7 +37,7 @@ class Clerk_Content {
 		add_filter( 'wc_get_template', array( $this, 'clerk_wc_get_template' ), 99, 2 );
 		include_once __DIR__ . '/class-clerk-logger.php';
 		include_once __DIR__ . '/clerk-multi-lang-helpers.php';
-		if ( clerk_is_wpml_enabled() ){
+		if ( clerk_is_wpml_enabled() ) {
 			do_action( 'wpml_multilingual_options', 'clerk_options' );
 		}
 		$this->logger = new Clerk_Logger();
@@ -52,7 +52,7 @@ class Clerk_Content {
 
 			$category = get_queried_object();
 
-			$options  = get_option( 'clerk_options' );
+			$options = get_option( 'clerk_options' );
 
 			if ( isset( $options['category_enabled'] ) && $options['category_enabled'] && property_exists( $category, 'term_id' ) ) :
 

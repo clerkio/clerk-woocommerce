@@ -64,16 +64,16 @@ class Clerk_Logger {
 	public function __construct() {
 
 		include_once __DIR__ . '/clerk-multi-lang-helpers.php';
-		if ( clerk_is_wpml_enabled() ){
+		if ( clerk_is_wpml_enabled() ) {
 			do_action( 'wpml_multilingual_options', 'clerk_options' );
 		}
 		$this->platform = 'WordPress';
 		if ( ! empty( $this->options ) ) {
 			$this->key = $this->options['public_key'];
 		}
-		$this->date = new DateTime();
-		$this->time = $this->date->getTimestamp();
-		$this->options  = get_option( 'clerk_options' );
+		$this->date    = new DateTime();
+		$this->time    = $this->date->getTimestamp();
+		$this->options = get_option( 'clerk_options' );
 	}
 
 	/**
@@ -97,13 +97,13 @@ class Clerk_Logger {
 
 		}
 
-		if ( filter_input_array( INPUT_GET, FILTER_SANITIZE_STRING ) ) {
+		if ( filter_input_array( INPUT_GET ) ) {
 
-			$metadata['params'] = filter_input_array( INPUT_GET, FILTER_SANITIZE_STRING );
+			$metadata['params'] = filter_input_array( INPUT_GET );
 
-		} elseif ( filter_input_array( INPUT_POST, FILTER_SANITIZE_STRING ) ) {
+		} elseif ( filter_input_array( INPUT_POST ) ) {
 
-			$metadata['params'] = filter_input_array( INPUT_POST, FILTER_SANITIZE_STRING );
+			$metadata['params'] = filter_input_array( INPUT_POST );
 
 		}
 
@@ -161,13 +161,13 @@ class Clerk_Logger {
 			$metadata['uri'] = get_site_url() . $request_uri;
 		}
 
-		if ( filter_input_array( INPUT_GET, FILTER_SANITIZE_STRING ) ) {
+		if ( filter_input_array( INPUT_GET ) ) {
 
-			$metadata['params'] = filter_input_array( INPUT_GET, FILTER_SANITIZE_STRING );
+			$metadata['params'] = filter_input_array( INPUT_GET );
 
-		} elseif ( filter_input_array( INPUT_POST, FILTER_SANITIZE_STRING ) ) {
+		} elseif ( filter_input_array( INPUT_POST ) ) {
 
-			$metadata['params'] = filter_input_array( INPUT_POST, FILTER_SANITIZE_STRING );
+			$metadata['params'] = filter_input_array( INPUT_POST );
 
 		}
 
@@ -224,13 +224,13 @@ class Clerk_Logger {
 
 		}
 
-		if ( filter_input_array( INPUT_GET, FILTER_SANITIZE_STRING ) ) {
+		if ( filter_input_array( INPUT_GET ) ) {
 
-			$metadata['params'] = filter_input_array( INPUT_GET, FILTER_SANITIZE_STRING );
+			$metadata['params'] = filter_input_array( INPUT_GET );
 
-		} elseif ( filter_input_array( INPUT_POST, FILTER_SANITIZE_STRING ) ) {
+		} elseif ( filter_input_array( INPUT_POST ) ) {
 
-			$metadata['params'] = filter_input_array( INPUT_POST, FILTER_SANITIZE_STRING );
+			$metadata['params'] = filter_input_array( INPUT_POST );
 
 		}
 
