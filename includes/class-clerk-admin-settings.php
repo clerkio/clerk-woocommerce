@@ -44,6 +44,7 @@ class Clerk_Admin_Settings {
 
 		$this->init_hooks();
 		require_once __DIR__ . '/class-clerk-logger.php';
+		require_once __DIR__ . '/clerk-multi-lang-helpers.php';
 		$this->logger  = new Clerk_Logger();
 		$this->version = '4.1.2';
 
@@ -72,65 +73,15 @@ class Clerk_Admin_Settings {
 	}
 
 	/**
-	 * Check whether WPML is installed and loaded
-	 */
-	public function is_wpml_enabled() {
-
-		$wpml_loaded = has_action('wpml_loaded', false);
-		$wpml_setup = has_action('wpml_setting', false);
-		if ( $wpml_loaded && $wpml_setup ) {
-			return apply_filters( 'wpml_setting', false, 'setup_complete' );
-		}
-		return false;
-
-	}
-
-	/**
-	 * Get WPML Active Languages
-	 */
-	public function wpml_get_languages() {
-
-		if ( ! has_action( 'wpml_active_languages', false ) ) {
-			return array();
-		} else {
-			return apply_filters( 'wpml_active_languages', NULL, array ('skip_missing' => 0 ) );
-		}
-
-	}
-
-	/**
-	 * Get WPML Active Language
-	 */
-	public function wpml_get_active_scope() {
-
-		if( $this->is_wpml_enabled() ) {
-			$languages = $this->wpml_get_languages();
-			if ( ! empty( $languages ) ) {
-				foreach ( $languages as $lang_iso => $lang_info ) {
-					if ( 1 === $lang_info['active']) {
-						return $lang_info;
-					}
-				}
-			}
-		} else {
-			$locale = get_locale();
-			$site_url = get_site_url();
-			return [
-
-			];
-		}
-
-	}
-
-
-	public function get_sync_url(){
-
-	}
-
-	/**
 	 * Init Admin Panel settings fieldsset
 	 */
 	public function initialize_settings() {
+
+		$wpml_enabled = clerk_is_wpml_enabled();
+
+		if ( $wpml_enabled ){
+			do_action( 'wpml_multilingual_options', 'clerk_options' );
+		}
 
 		$options = get_option( 'clerk_options' );
 
@@ -204,6 +155,18 @@ class Clerk_Admin_Settings {
 			// The option hasn't been added yet. We'll add it with $autoload set to 'no'.
 			$autoload = 'no';
 			add_option( 'disable_order_sync_initiated', 0, '', $autoload );
+		}
+
+		if ( $wpml_enabled ){
+			do_action( 'wpml_multilingual_options', 'livesearch_initiated' );
+			do_action( 'wpml_multilingual_options', 'search_initiated' );
+			do_action( 'wpml_multilingual_options', 'powerstep_initiated' );
+			do_action( 'wpml_multilingual_options', 'exit_intent_initiated' );
+			do_action( 'wpml_multilingual_options', 'category_initiated' );
+			do_action( 'wpml_multilingual_options', 'product_initiated' );
+			do_action( 'wpml_multilingual_options', 'cart_initiated' );
+			do_action( 'wpml_multilingual_options', 'sync_mails_initiated' );
+			do_action( 'wpml_multilingual_options', 'disable_order_sync_initiated' );
 		}
 
 		$livesearch_initiated                   = get_option( 'livesearch_initiated' );
@@ -349,8 +312,16 @@ class Clerk_Admin_Settings {
 	 */
 	public function settings_init() {
 
+		$wpml_enabled = clerk_is_wpml_enabled();
+
 		// register a new setting.
 		register_setting( 'clerk', 'clerk_options' );
+
+		if ( $wpml_enabled ){
+			do_action( 'wpml_multilingual_options', 'clerk_options' );
+			$site_info = clerk_wpml_get_active_scope();
+		}
+
 		$options = get_option( 'clerk_options' );
 
 		// Add general section.
@@ -371,6 +342,19 @@ class Clerk_Admin_Settings {
 				'label_for' => 'version',
 			)
 		);
+
+		if($wpml_enabled){
+			add_settings_field(
+				'multi_lang_info',
+				__( 'Multi Language Scope', 'clerk' ),
+				array( $this, 'add_wpml_info' ),
+				'clerk',
+				'clerk_section_general',
+				array(
+					'label_for' => 'multi_lang_info',
+				)
+			);
+		}
 
 		add_settings_field(
 			'public_key',
@@ -416,7 +400,7 @@ class Clerk_Admin_Settings {
 				'label_for'   => 'import_url',
 				'description' => 'Use this url to configure an importer from my.clerk.io',
 				'readonly'    => true,
-				'value'       => get_site_url(),
+				'value'       => $site_info['url'],
 			)
 		);
 
@@ -943,22 +927,18 @@ class Clerk_Admin_Settings {
 			'clerk_section_powerstep',
 			__( 'Powerstep Settings', 'clerk' ),
 			null,
-			'clerk'
-		);
-
-		add_settings_field(
-			'powerstep_enabled',
-			__( 'Enabled', 'clerk' ),
-			array( $this, 'add_checkbox_field' ),
 			'clerk',
-			'clerk_section_powerstep',
+			'clerk_section_livesearch',
 			array(
-				'label_for' => 'powerstep_enabled',
+				'label_for' => 'livesearch_enabled',
 				'checked'   => 0,
 			)
 		);
 
 		add_settings_field(
+			'livesearch_include_suggestions',
+			__( 'Include Suggestions', 'clerk' ),
+			array( $this, 'add_checkbox_field' ),
 			'powerstep_type',
 			__( 'Powerstep Type', 'clerk' ),
 			array( $this, 'add_powerstep_type_dropdown' ),
@@ -1398,6 +1378,17 @@ class Clerk_Admin_Settings {
 			</span>
 		<?php
 
+	}
+
+	public function add_wpml_info(){
+		$wpml_info = clerk_wpml_get_active_scope()
+		?>
+		<span>
+			<p>
+				<?php echo $wpml_info['native_name'] ?> (<?php echo $wpml_info['translated_name'] ?>)
+			</p>
+		</span>
+		<?php
 	}
 
 	/**
@@ -2637,7 +2628,7 @@ class Clerk_Admin_Settings {
 				});
 			</script>
 			<div id="clerkFloatingSaveBtn" onclick="clerkSubmitAdminForm();"><?php echo esc_html( __( 'Save Settings', 'clerk' ) ); ?></div>
-			<h1><img id="clerkLogoHeader" src="<?php echo esc_html( plugin_dir_url( CLERK_PLUGIN_FILE ) . 'assets/img/clerk.png' ); ?>"><?php echo esc_html( get_admin_page_title() ); ?></h1>
+			<h1 style="font-family: Arial;"><img id="clerkLogoHeader" src="<?php echo esc_html( plugin_dir_url( CLERK_PLUGIN_FILE ) . 'assets/img/clerk.png' ); ?>"><?php echo esc_html( get_admin_page_title() ); ?></h1>
 			<form id="clerkAdminForm" action="options.php" method="post">
 				<?php
 				// output security fields for the registered setting "wporg".

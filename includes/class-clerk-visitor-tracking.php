@@ -50,6 +50,7 @@ class Clerk_Visitor_Tracking {
 		add_action( 'init', array( $this, 'clerk_add_custom_shortcodes' ) );
 
 		$options = get_option( 'clerk_options' );
+
 		if ( isset( $options['collect_emails'] ) ) {
 			add_action( 'woocommerce_review_order_before_submit', array( $this, 'clerk_woocommerce_review_order_before_submit' ), 99 );
 		}
