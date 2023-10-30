@@ -41,10 +41,12 @@ class Clerk_Admin_Settings {
 	 * Clerk_Admin_Settings constructor.
 	 */
 	public function __construct() {
-
-		$this->init_hooks();
 		require_once __DIR__ . '/class-clerk-logger.php';
 		require_once __DIR__ . '/clerk-multi-lang-helpers.php';
+		if ( clerk_is_wpml_enabled() ){
+			do_action( 'wpml_multilingual_options', 'clerk_options' );
+		}
+		$this->init_hooks();
 		$this->logger  = new Clerk_Logger();
 		$this->version = '4.1.2';
 
@@ -76,12 +78,6 @@ class Clerk_Admin_Settings {
 	 * Init Admin Panel settings fieldsset
 	 */
 	public function initialize_settings() {
-
-		$wpml_enabled = clerk_is_wpml_enabled();
-
-		if ( $wpml_enabled ){
-			do_action( 'wpml_multilingual_options', 'clerk_options' );
-		}
 
 		$options = get_option( 'clerk_options' );
 
@@ -312,13 +308,11 @@ class Clerk_Admin_Settings {
 	 */
 	public function settings_init() {
 
-		$wpml_enabled = clerk_is_wpml_enabled();
-
 		// register a new setting.
 		register_setting( 'clerk', 'clerk_options' );
 
+		$wpml_enabled = clerk_is_wpml_enabled();
 		if ( $wpml_enabled ){
-			do_action( 'wpml_multilingual_options', 'clerk_options' );
 			$site_info = clerk_wpml_get_active_scope();
 		}
 

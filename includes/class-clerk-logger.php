@@ -63,14 +63,17 @@ class Clerk_Logger {
 	 */
 	public function __construct() {
 
-		$this->options  = get_option( 'clerk_options' );
+		include_once __DIR__ . '/clerk-multi-lang-helpers.php';
+		if ( clerk_is_wpml_enabled() ){
+			do_action( 'wpml_multilingual_options', 'clerk_options' );
+		}
 		$this->platform = 'WordPress';
 		if ( ! empty( $this->options ) ) {
 			$this->key = $this->options['public_key'];
 		}
 		$this->date = new DateTime();
 		$this->time = $this->date->getTimestamp();
-
+		$this->options  = get_option( 'clerk_options' );
 	}
 
 	/**

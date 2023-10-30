@@ -44,6 +44,10 @@ class Clerk_Api {
 	public function __construct() {
 
 		include_once __DIR__ . '/class-clerk-logger.php';
+		include_once __DIR__ . '/clerk-multi-lang-helpers.php';
+		if ( clerk_is_wpml_enabled() ){
+			do_action( 'wpml_multilingual_options', 'clerk_options' );
+		}
 		$this->logger = new Clerk_Logger();
 
 	}

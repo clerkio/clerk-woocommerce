@@ -18,6 +18,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
+include_once __DIR__ . '../includes/clerk-multi-lang-helpers.php';
+if ( clerk_is_wpml_enabled() ){
+	do_action( 'wpml_multilingual_options', 'clerk_options' );
+}
+
 $options   = get_option( 'clerk_options' );
 $unique_id = esc_attr( uniqid( 'clerk-search-form-' ) );
 ?>

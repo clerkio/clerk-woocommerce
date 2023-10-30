@@ -38,6 +38,10 @@ class Clerk_Basket {
 	public function __construct() {
 		$this->init_hooks();
 		include_once __DIR__ . '/class-clerk-logger.php';
+		include_once __DIR__ . '/clerk-multi-lang-helpers.php';
+		if ( clerk_is_wpml_enabled() ){
+			do_action( 'wpml_multilingual_options', 'clerk_options' );
+		}
 		$this->logger = new Clerk_Logger();
 	}
 
@@ -47,6 +51,7 @@ class Clerk_Basket {
 	private function init_hooks() {
 
 		$options = get_option( 'clerk_options' );
+
 		if ( ! isset( $options['collect_baskets'] ) ) {
 			return;
 		}
