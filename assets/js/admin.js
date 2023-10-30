@@ -99,3 +99,29 @@ function CollectAttributes() {
 jQuery(".closebtn").click(function () {
 	jQuery(".alert").remove();
 });
+
+const clerkSubmitAdminForm = () => {
+    document.querySelector('#submit').click();
+}
+document.addEventListener('DOMContentLoaded', function(){
+    document.querySelector('#powerstep_custom_text_enabled').addEventListener('click', function(e){
+        switch(e.target.checked){
+            case true:
+                document.querySelector('#powerstep_custom_text_back').removeAttribute('disabled');
+                document.querySelector('#powerstep_custom_text_title').removeAttribute('disabled');
+                document.querySelector('#powerstep_custom_text_cart').removeAttribute('disabled');
+                break;
+            case false:
+                document.querySelector('#powerstep_custom_text_back').setAttribute('disabled', true);
+                document.querySelector('#powerstep_custom_text_title').setAttribute('disabled', true);
+                document.querySelector('#powerstep_custom_text_cart').setAttribute('disabled', true);
+                break;
+        }
+    });
+    let customPowerstepTexts = document.querySelector('#powerstep_custom_text_enabled').checked;
+    if(!customPowerstepTexts){
+        document.querySelector('#powerstep_custom_text_back').setAttribute('disabled', true);
+        document.querySelector('#powerstep_custom_text_title').setAttribute('disabled', true);
+        document.querySelector('#powerstep_custom_text_cart').setAttribute('disabled', true);
+    }
+});
