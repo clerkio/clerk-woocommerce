@@ -55,13 +55,12 @@ if ( ! function_exists( 'clerk_wpml_all_scope_is_active' ) ) {
 		}
 		$langs_active = clerk_wpml_get_languages();
 		foreach ( $langs_active as $language ) {
-			if( 1 === $language['active'] || true === $language['active'] ){
+			if ( 1 === $language['active'] || true === $language['active'] ) {
 				return false;
 			}
 		}
 		return true;
 	}
-
 }
 if ( ! function_exists( 'clerk_wpml_get_languages' ) ) {
 	/**
@@ -83,10 +82,10 @@ if ( ! function_exists( 'clerk_wpml_get_active_scope' ) ) {
 	 * Get WPML Active Language
 	 */
 	function clerk_wpml_get_active_scope() {
- 		$locale      = get_locale();
-		$lang_iso    = explode( '_', str_replace( '-', '_', $locale ) )[0];
-		$site_url    = get_site_url();
-		$result      = array(
+		$locale   = get_locale();
+		$lang_iso = explode( '_', str_replace( '-', '_', $locale ) )[0];
+		$site_url = get_site_url();
+		$result   = array(
 			'id'               => 0,
 			'active'           => 1,
 			'default_locale'   => $locale,
@@ -119,7 +118,7 @@ if ( ! function_exists( 'clerk_wpml_get_product_id_equal' ) ) {
 	 * Get Equivalent product_id from other language
 	 */
 	function clerk_wpml_get_product_id_equal( $product_id, $lang_code ) {
-		if ( ! clerk_is_wpml_enabled() || ! has_action('wpml_object_id') ) {
+		if ( ! clerk_is_wpml_enabled() || ! has_action( 'wpml_object_id' ) ) {
 			return $product_id;
 		}
 		return apply_filters( 'wpml_object_id', $product_id, 'product', false, $lang_code );
@@ -131,10 +130,10 @@ if ( ! function_exists( 'clerk_wpml_get_product_lang' ) ) {
 	 * Get Equivalent product_id from other language
 	 */
 	function clerk_wpml_get_product_lang( $product_id ) {
-		if ( ! clerk_is_wpml_enabled() || ! has_action('wpml_post_language_details') ) {
+		if ( ! clerk_is_wpml_enabled() || ! has_action( 'wpml_post_language_details' ) ) {
 			return false;
 		}
-		return apply_filters( 'wpml_post_language_details', NULL, $product_id );
+		return apply_filters( 'wpml_post_language_details', null, $product_id );
 	}
 }
 

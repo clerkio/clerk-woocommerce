@@ -50,8 +50,6 @@ class Clerk_Admin_Settings {
 		$this->logger  = new Clerk_Logger();
 		$this->version = '4.1.2';
 
-		$this->initialize_settings();
-
 	}
 
 	/**
@@ -71,235 +69,6 @@ class Clerk_Admin_Settings {
 
 		wp_enqueue_script( 'jquery-ui-dialog' );
 		wp_enqueue_style( 'wp-jquery-ui-dialog' );
-
-	}
-
-	/**
-	 * Init Admin Panel settings fieldsset
-	 */
-	public function initialize_settings() {
-
-		$options = get_option( 'clerk_options' );
-
-		if ( ! isset( $options['log_to'] ) || ( isset( $options['log_to'] ) && false === $options['log_to'] ) ) {
-			// The option hasn't been added yet. We'll add it with $autoload set to 'no'.
-			$autoload = 'no';
-			add_option( 'log_to', 'my.clerk.io', '', $autoload );
-		}
-
-		if ( ! isset( $options['log_level'] ) || ( isset( $options['log_level'] ) && false === $options['log_level'] ) ) {
-			// The option hasn't been added yet. We'll add it with $autoload set to 'no'.
-			$autoload = 'no';
-			add_option( 'log_level', 'Error + Warn', '', $autoload );
-		}
-
-		if ( ! isset( $options['log_enabled'] ) || ( isset( $options['log_enabled'] ) && false === $options['log_enabled'] ) ) {
-			// The option hasn't been added yet. We'll add it with $autoload set to 'no'.
-			$autoload = 'no';
-			add_option( 'log_enabled', 1, '', $autoload );
-		}
-
-		if ( null !== get_option( 'livesearch_initiated' ) || false === get_option( 'livesearch_initiated' ) ) {
-			// The option hasn't been added yet. We'll add it with $autoload set to 'no'.
-			$autoload = 'no';
-			add_option( 'livesearch_initiated', 0, '', $autoload );
-		}
-
-		if ( null !== get_option( 'powerstep_initiated' ) || false === get_option( 'powerstep_initiated' ) ) {
-			// The option hasn't been added yet. We'll add it with $autoload set to 'no'.
-			$autoload = 'no';
-			add_option( 'powerstep_initiated', 0, '', $autoload );
-		}
-
-		if ( null !== get_option( 'search_initiated' ) || false === get_option( 'search_initiated' ) ) {
-			// The option hasn't been added yet. We'll add it with $autoload set to 'no'.
-			$autoload = 'no';
-			add_option( 'search_initiated', 0, '', $autoload );
-		}
-
-		if ( null !== get_option( 'exit_intent_initiated' ) || false === get_option( 'exit_intent_initiated' ) ) {
-			// The option hasn't been added yet. We'll add it with $autoload set to 'no'.
-			$autoload = 'no';
-			add_option( 'exit_intent_initiated', 0, '', $autoload );
-		}
-
-		if ( null !== get_option( 'category_initiated' ) || false === get_option( 'category_initiated' ) ) {
-			// The option hasn't been added yet. We'll add it with $autoload set to 'no'.
-			$autoload = 'no';
-			add_option( 'category_initiated', 0, '', $autoload );
-		}
-
-		if ( null !== get_option( 'product_initiated' ) || false === get_option( 'product_initiated' ) ) {
-			// The option hasn't been added yet. We'll add it with $autoload set to 'no'.
-			$autoload = 'no';
-			add_option( 'product_initiated', 0, '', $autoload );
-		}
-
-		if ( null !== get_option( 'cart_initiated' ) || false === get_option( 'cart_initiated' ) ) {
-			// The option hasn't been added yet. We'll add it with $autoload set to 'no'.
-			$autoload = 'no';
-			add_option( 'cart_initiated', 0, '', $autoload );
-		}
-
-		if ( null !== get_option( 'sync_mails_initiated' ) || false === get_option( 'sync_mails_initiated' ) ) {
-			// The option hasn't been added yet. We'll add it with $autoload set to 'no'.
-			$autoload = 'no';
-			add_option( 'sync_mails_initiated', 0, '', $autoload );
-		}
-
-		if ( null !== get_option( 'disable_order_sync_initiated' ) || false === get_option( 'disable_order_sync_initiated' ) ) {
-			// The option hasn't been added yet. We'll add it with $autoload set to 'no'.
-			$autoload = 'no';
-			add_option( 'disable_order_sync_initiated', 0, '', $autoload );
-		}
-
-		if ( $wpml_enabled ) {
-			do_action( 'wpml_multilingual_options', 'livesearch_initiated' );
-			do_action( 'wpml_multilingual_options', 'search_initiated' );
-			do_action( 'wpml_multilingual_options', 'powerstep_initiated' );
-			do_action( 'wpml_multilingual_options', 'exit_intent_initiated' );
-			do_action( 'wpml_multilingual_options', 'category_initiated' );
-			do_action( 'wpml_multilingual_options', 'product_initiated' );
-			do_action( 'wpml_multilingual_options', 'cart_initiated' );
-			do_action( 'wpml_multilingual_options', 'sync_mails_initiated' );
-			do_action( 'wpml_multilingual_options', 'disable_order_sync_initiated' );
-		}
-
-		$livesearch_initiated                   = get_option( 'livesearch_initiated' );
-		$search_initiated                       = get_option( 'search_initiated' );
-		$powerstep_initiated                    = get_option( 'powerstep_initiated' );
-		$exit_intent_initiated                  = get_option( 'exit_intent_initiated' );
-		$category_initiated                     = get_option( 'category_initiated' );
-		$product_initiated                      = get_option( 'product_initiated' );
-		$cart_initiated                         = get_option( 'cart_initiated' );
-		$sync_mails_initiated_initiated         = get_option( 'sync_mails_initiated' );
-		$disable_order_sync_initiated_initiated = get_option( 'disable_order_sync_initiated' );
-
-		if ( isset( $options['collect_emails'] ) && 1 !== $sync_mails_initiated_initiated ) {
-
-			update_option( 'sync_mails_initiated', 1 );
-			$this->logger->log( 'Sync Mails initiated', array( '' => '' ) );
-
-		}
-
-		if ( ! isset( $options['collect_emails'] ) && 1 === $sync_mails_initiated_initiated ) {
-
-			update_option( 'sync_mails_initiated', 0 );
-			$this->logger->log( 'Sync Mails uninitiated', array( '' => '' ) );
-
-		}
-
-		if ( isset( $options['cart_enabled'] ) && ! $cart_initiated ) {
-
-			update_option( 'cart_initiated', 1 );
-			$this->logger->log( 'Cart Settings initiated', array( '' => '' ) );
-
-		}
-
-		if ( ! isset( $options['cart_enabled'] ) && $cart_initiated ) {
-
-			update_option( 'cart_initiated', 0 );
-			$this->logger->log( 'Cart Settings uninitiated', array( '' => '' ) );
-
-		}
-
-		if ( isset( $options['disable_order_synchronization'] ) && ! $disable_order_sync_initiated_initiated ) {
-
-			update_option( 'disable_order_sync_initiated', 1 );
-			$this->logger->log( 'Disable Order Sync initiated', array( '' => '' ) );
-
-		}
-
-		if ( ! isset( $options['disable_order_synchronization'] ) && $disable_order_sync_initiated_initiated ) {
-
-			update_option( 'disable_order_sync_initiated', 0 );
-			$this->logger->log( 'Disable Order Sync uninitiated', array( '' => '' ) );
-
-		}
-
-		if ( isset( $options['product_enabled'] ) && ! $product_initiated ) {
-
-			update_option( 'product_initiated', 1 );
-			$this->logger->log( 'Product Settings initiated', array( '' => '' ) );
-
-		}
-
-		if ( ! isset( $options['product_enabled'] ) && $product_initiated ) {
-
-			update_option( 'product_initiated', 0 );
-			$this->logger->log( 'Product Settings uninitiated', array( '' => '' ) );
-
-		}
-
-		if ( isset( $options['category_enabled'] ) && ! $category_initiated ) {
-
-			update_option( 'category_initiated', 1 );
-			$this->logger->log( 'Category Settings initiated', array( '' => '' ) );
-
-		}
-
-		if ( ! isset( $options['category_enabled'] ) && $category_initiated ) {
-
-			update_option( 'category_initiated', 0 );
-			$this->logger->log( 'Category Settings uninitiated', array( '' => '' ) );
-
-		}
-
-		if ( isset( $options['exit_intent_enabled'] ) && ! $exit_intent_initiated ) {
-
-			update_option( 'exit_intent_initiated', 1 );
-			$this->logger->log( 'Exit Intent initiated', array( '' => '' ) );
-
-		}
-
-		if ( ! isset( $options['exit_intent_enabled'] ) && $exit_intent_initiated ) {
-
-			update_option( 'exit_intent_initiated', 0 );
-			$this->logger->log( 'Exit Intent uninitiated', array( '' => '' ) );
-
-		}
-
-		if ( isset( $options['search_enabled'] ) && ! $search_initiated ) {
-
-			update_option( 'search_initiated', 1 );
-			$this->logger->log( 'Search initiated', array( '' => '' ) );
-
-		}
-
-		if ( ! isset( $options['search_enabled'] ) && $search_initiated ) {
-
-			update_option( 'search_initiated', 0 );
-			$this->logger->log( 'Search uninitiated', array( '' => '' ) );
-
-		}
-
-		if ( isset( $options['livesearch_enabled'] ) && ! $livesearch_initiated ) {
-
-			update_option( 'livesearch_initiated', 1 );
-			$this->logger->log( 'Live Search initiated', array( '' => '' ) );
-
-		}
-
-		if ( ! isset( $options['livesearch_enabled'] ) && $livesearch_initiated ) {
-
-			update_option( 'livesearch_initiated', 0 );
-			$this->logger->log( 'Live Search uninitiated', array( '' => '' ) );
-
-		}
-
-		if ( isset( $options['powerstep_enabled'] ) && $options['powerstep_enabled'] && ! $powerstep_initiated ) {
-
-			update_option( 'powerstep_initiated', 1 );
-			$this->logger->log( 'Powerstep initiated', array( '' => '' ) );
-
-		}
-
-		if ( isset( $options['powerstep_enabled'] ) && ! $options['powerstep_enabled'] && $powerstep_initiated ) {
-
-			update_option( 'powerstep_initiated', 0 );
-			$this->logger->log( 'Powerstep uninitiated', array( '' => '' ) );
-
-		}
 
 	}
 
@@ -1374,12 +1143,15 @@ class Clerk_Admin_Settings {
 
 	}
 
-	public function add_wpml_info() {
-		$wpml_info = clerk_wpml_get_active_scope()
+	/**
+	 * Add wpml multi language info
+	 */
+	public function add_wpml_info(){
+		$wpml_info = clerk_wpml_get_active_scope();
 		?>
 		<span>
 			<p>
-				<?php echo $wpml_info['native_name']; ?> (<?php echo $wpml_info['translated_name']; ?>)
+				<?php echo $wpml_info['native_name']; ?>  <code><?php echo $wpml_info['language_code']; ?></code>
 			</p>
 		</span>
 		<?php

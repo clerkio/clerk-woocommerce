@@ -57,7 +57,7 @@ class Clerk_Product_Sync {
 		include_once __DIR__ . '/class-clerk-api.php';
 		include_once __DIR__ . '/class-clerk-logger.php';
 		include_once __DIR__ . '/clerk-multi-lang-helpers.php';
-		if ( clerk_is_wpml_enabled() ){
+		if ( clerk_is_wpml_enabled() ) {
 			do_action( 'wpml_multilingual_options', 'clerk_options' );
 		}
 	}
@@ -126,7 +126,7 @@ class Clerk_Product_Sync {
 			return;
 		}
 
-		if (clerk_wpml_all_scope_is_active() && clerk_wpml_get_product_lang( $product_id ) ) {
+		if ( clerk_wpml_all_scope_is_active() && clerk_wpml_get_product_lang( $product_id ) ) {
 			$lang_info = clerk_wpml_get_product_lang( $product_id );
 			// Get Clerk Settings for Scope of Product.
 			$options = get_option( 'clerk_options_' . $lang_info['language_code'] );
@@ -232,7 +232,7 @@ class Clerk_Product_Sync {
 				return;
 			}
 
-			if (clerk_wpml_all_scope_is_active() && clerk_wpml_get_product_lang( $product_id ) ) {
+			if ( clerk_wpml_all_scope_is_active() && clerk_wpml_get_product_lang( $product_id ) ) {
 				$lang_info = clerk_wpml_get_product_lang( $product_id );
 				// Get Clerk Settings for Scope of Product.
 				$options = get_option( 'clerk_options_' . $lang_info['language_code'] );
@@ -266,7 +266,7 @@ class Clerk_Product_Sync {
 
 		try {
 
-			if (clerk_wpml_all_scope_is_active() && clerk_wpml_get_product_lang( $product->get_id() ) ) {
+			if ( clerk_wpml_all_scope_is_active() && clerk_wpml_get_product_lang( $product->get_id() ) ) {
 				$lang_info = clerk_wpml_get_product_lang( $product->get_id() );
 				// Get Clerk Settings for Scope of Product.
 				$options = get_option( 'clerk_options_' . $lang_info['language_code'] );
