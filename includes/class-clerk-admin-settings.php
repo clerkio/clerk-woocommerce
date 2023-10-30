@@ -101,7 +101,7 @@ class Clerk_Admin_Settings {
 	/**
 	 * Get WPML Active Language
 	 */
-	public function wpml_get_language() {
+	public function wpml_get_active_scope() {
 
 		if( $this->is_wpml_enabled() ) {
 			$languages = $this->wpml_get_languages();
@@ -112,7 +112,18 @@ class Clerk_Admin_Settings {
 					}
 				}
 			}
+		} else {
+			$locale = get_locale();
+			$site_url = get_site_url();
+			return [
+
+			];
 		}
+
+	}
+
+
+	public function get_sync_url(){
 
 	}
 
