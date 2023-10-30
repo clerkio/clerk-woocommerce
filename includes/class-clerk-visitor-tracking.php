@@ -232,7 +232,11 @@ class Clerk_Visitor_Tracking {
 				} else {
 					$script_js = '';
 				}
-				echo "<script id='clerk_additional_header_scripts'>" . html_entity_decode( esc_attr( $script_js ), ENT_QUOTES ) . '</script>';
+				?>
+				<script id='clerk_additional_header_scripts'>
+				<?php html_entity_decode( esc_attr( $script_js ), ENT_QUOTES ); ?>
+				</script>
+				<?php
 			}
 
 			if ( isset( $options['livesearch_enabled'] ) && $options['livesearch_enabled'] ) :

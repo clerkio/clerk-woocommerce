@@ -48,6 +48,8 @@ if ( ! function_exists( 'clerk_get_lang_iso_status' ) ) {
 if ( ! function_exists( 'clerk_wpml_all_scope_is_active' ) ) {
 	/**
 	 * Check if all scope WPML all languages admin scope is active
+	 *
+	 * @return bool
 	 */
 	function clerk_wpml_all_scope_is_active() {
 		if ( ! clerk_is_wpml_enabled() ) {
@@ -116,6 +118,11 @@ if ( ! function_exists( 'clerk_wpml_get_active_scope' ) ) {
 if ( ! function_exists( 'clerk_wpml_get_product_id_equal' ) ) {
 	/**
 	 * Get Equivalent product_id from other language
+	 *
+	 * @param int    $product_id Product id.
+	 * @param string $lang_code Language 2 letter code.
+	 *
+	 * @return int | void
 	 */
 	function clerk_wpml_get_product_id_equal( $product_id, $lang_code ) {
 		if ( ! clerk_is_wpml_enabled() || ! has_action( 'wpml_object_id' ) ) {
@@ -128,10 +135,14 @@ if ( ! function_exists( 'clerk_wpml_get_product_id_equal' ) ) {
 if ( ! function_exists( 'clerk_wpml_get_product_lang' ) ) {
 	/**
 	 * Get Equivalent product_id from other language
+	 *
+	 * @param int $product_id Product id.
+	 *
+	 * @return array | void
 	 */
 	function clerk_wpml_get_product_lang( $product_id ) {
 		if ( ! clerk_is_wpml_enabled() || ! has_action( 'wpml_post_language_details' ) ) {
-			return false;
+			return;
 		}
 		return apply_filters( 'wpml_post_language_details', null, $product_id );
 	}

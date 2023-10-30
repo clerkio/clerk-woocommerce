@@ -1146,12 +1146,12 @@ class Clerk_Admin_Settings {
 	/**
 	 * Add wpml multi language info
 	 */
-	public function add_wpml_info(){
+	public function add_wpml_info() {
 		$wpml_info = clerk_wpml_get_active_scope();
 		?>
 		<span>
 			<p>
-				<?php echo $wpml_info['native_name']; ?>  <code><?php echo $wpml_info['language_code']; ?></code>
+				<?php echo esc_attr( $wpml_info['native_name'] ); ?>  <code><?php echo esc_attr( $wpml_info['language_code'] ); ?></code>
 			</p>
 		</span>
 		<?php
@@ -1847,9 +1847,9 @@ class Clerk_Admin_Settings {
 			'tr_TR' => 'Turkish',
 		);
 
-		if( clerk_is_wpml_enabled() && ! clerk_wpml_all_scope_is_active()){
+		if ( clerk_is_wpml_enabled() && ! clerk_wpml_all_scope_is_active() ) {
 			$scope_info = clerk_wpml_get_active_scope();
-			$locale = $scope_info['default_locale'];
+			$locale     = $scope_info['default_locale'];
 		} else {
 			$locale = get_locale();
 		}
@@ -2222,7 +2222,7 @@ class Clerk_Admin_Settings {
 		wp_dropdown_pages(
 			array(
 				'selected' => esc_attr( $selection ),
-				'name'     => sprintf( 'clerk_options[%s]', $label_for ),
+				'name'     => sprintf( 'clerk_options[%s]', esc_attr( $label_for ) ),
 			)
 		);
 	}

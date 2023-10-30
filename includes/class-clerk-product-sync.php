@@ -427,8 +427,8 @@ class Clerk_Product_Sync {
 						if ( ! empty( $tmp_children_prices ) ) {
 							$raw_regular_price = min( $tmp_children_prices );
 							if ( is_numeric( $raw_regular_price ) ) {
-								  $list_price_excl_tax = wc_get_price_excluding_tax( $product, array( 'price' => $raw_regular_price ) );
-								  $list_price          = wc_get_price_including_tax( $product, array( 'price' => $raw_regular_price ) );
+								$list_price_excl_tax = wc_get_price_excluding_tax( $product, array( 'price' => $raw_regular_price ) );
+								$list_price          = wc_get_price_including_tax( $product, array( 'price' => $raw_regular_price ) );
 							}
 						}
 					}
