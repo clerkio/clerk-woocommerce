@@ -1389,10 +1389,10 @@ class Clerk_Admin_Settings {
 			<table>
 
 				<tbody id="facets_content">
-				<th>Attribute</th>
-				<th>Title</th>
-				<th>Position</th>
-				<th>Show</th>
+				<div class="w-fit">Attribute</div>
+				<div class="w-fit">Title</div>
+				<div class="w-fit">Position</div>
+				<div class="w-fit">Show</div>
 				<?php
 
 		}
@@ -1441,7 +1441,6 @@ class Clerk_Admin_Settings {
 		}
 
 		?>
-
 				<input
 				name="clerk_options[<?php echo esc_attr( $args['label_for'] ); ?>]"
 				id="faceted_navigation"
