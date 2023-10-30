@@ -57,7 +57,7 @@ class Clerk_Product_Sync {
 		include_once __DIR__ . '/class-clerk-api.php';
 		include_once __DIR__ . '/class-clerk-logger.php';
 		include_once __DIR__ . '/clerk-multi-lang-helpers.php';
-		if ( clerk_is_wpml_enabled() ) {
+		if ( clerk_is_wpml_enabled() ){
 			do_action( 'wpml_multilingual_options', 'clerk_options' );
 		}
 	}
@@ -121,26 +121,31 @@ class Clerk_Product_Sync {
 	 * @param integer $product_id Product ID.
 	 */
 	public function save_product( $product_id = null ) {
-		$options = get_option( 'clerk_options' );
 
-		if ( ! is_array( $options ) ) {
+		if ( ! is_int( $product_id ) ) {
+			return;
+		}
+
+		if (clerk_wpml_all_scope_is_active() && clerk_wpml_get_product_lang( $product_id ) ) {
+			$lang_info = clerk_wpml_get_product_lang( $product_id );
+			// Get Clerk Settings for Scope of Product.
+			$options = get_option( 'clerk_options_' . $lang_info['language_code'] );
+		} else {
+			$options = get_option( 'clerk_options' );
+		}
+
+		if ( ! is_array( $options ) || ! isset( $options ) ) {
+			return;
+		}
+
+		if ( ! array_key_exists( 'realtime_updates', $options ) ) {
 			return;
 		}
 
 		try {
 
-			if ( isset( $options ) ) {
-				if ( ! array_key_exists( 'realtime_updates', $options ) ) {
-					return;
-				}
-			}
-
-			if ( is_int( $product_id ) ) {
-				$product = wc_get_product( $product_id );
-				if ( ! is_a( $product, 'WC_Product' ) ) {
-					return;
-				}
-			} else {
+			$product = wc_get_product( $product_id );
+			if ( ! is_a( $product, 'WC_Product' ) ) {
 				return;
 			}
 
@@ -218,11 +223,22 @@ class Clerk_Product_Sync {
 	/**
 	 * Remove product from Clerk
 	 *
-	 * @param integer $post_id Post Id.
+	 * @param integer $product_id Post Id.
 	 */
-	public function remove_product( $post_id ) {
+	public function remove_product( $product_id ) {
 		try {
-			$options = get_option( 'clerk_options' );
+
+			if ( ! is_int( $product_id ) ) {
+				return;
+			}
+
+			if (clerk_wpml_all_scope_is_active() && clerk_wpml_get_product_lang( $product_id ) ) {
+				$lang_info = clerk_wpml_get_product_lang( $product_id );
+				// Get Clerk Settings for Scope of Product.
+				$options = get_option( 'clerk_options_' . $lang_info['language_code'] );
+			} else {
+				$options = get_option( 'clerk_options' );
+			}
 
 			if ( ! is_array( $options ) || ! isset( $options['realtime_updates'] ) ) {
 				return;
@@ -232,7 +248,7 @@ class Clerk_Product_Sync {
 				return;
 			}
 			// Remove product from Clerk.
-			$this->api->remove_product( $post_id );
+			$this->api->remove_product( $product_id );
 		} catch ( Exception $e ) {
 
 			$this->logger->error( 'ERROR remove_product', array( 'error' => $e->getMessage() ) );
@@ -245,16 +261,20 @@ class Clerk_Product_Sync {
 	 * @param WC_Product $product Product Object.
 	 */
 	private function add_product( WC_Product $product ) {
+
 		$product_array = array();
 
 		try {
-			$options = get_option( 'clerk_options' );
 
-			if ( ! is_array( $options ) ) {
-				return;
+			if (clerk_wpml_all_scope_is_active() && clerk_wpml_get_product_lang( $product->get_id() ) ) {
+				$lang_info = clerk_wpml_get_product_lang( $product->get_id() );
+				// Get Clerk Settings for Scope of Product.
+				$options = get_option( 'clerk_options_' . $lang_info['language_code'] );
+			} else {
+				$options = get_option( 'clerk_options' );
 			}
 
-			if ( 1 !== (int) $options['realtime_updates'] ) {
+			if ( ! is_array( $options ) ) {
 				return;
 			}
 
