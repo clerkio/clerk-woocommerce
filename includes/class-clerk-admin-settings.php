@@ -1847,10 +1847,17 @@ class Clerk_Admin_Settings {
 			'tr_TR' => 'Turkish',
 		);
 
-		if ( isset( $langs_auto[ get_locale() ] ) ) {
+		if( clerk_is_wpml_enabled() && ! clerk_wpml_all_scope_is_active()){
+			$scope_info = clerk_wpml_get_active_scope();
+			$locale = $scope_info['default_locale'];
+		} else {
+			$locale = get_locale();
+		}
+
+		if ( isset( $langs_auto[ $locale ] ) ) {
 
 			$auto_lang = array(
-				'Label' => sprintf( 'Auto (%s)', $langs_auto[ get_locale() ] ),
+				'Label' => sprintf( 'Auto (%s)', $langs_auto[ $locale ] ),
 				'Value' => 'auto',
 			);
 

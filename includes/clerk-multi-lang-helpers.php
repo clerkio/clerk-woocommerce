@@ -55,7 +55,7 @@ if ( ! function_exists( 'clerk_wpml_all_scope_is_active' ) ) {
 		}
 		$langs_active = clerk_wpml_get_languages();
 		foreach ( $langs_active as $language ) {
-			if ( 1 === $language['active'] || true === $language['active'] ) {
+			if ( $language['active'] ) {
 				return false;
 			}
 		}
@@ -103,7 +103,7 @@ if ( ! function_exists( 'clerk_wpml_get_active_scope' ) ) {
 		$languages = clerk_wpml_get_languages();
 		if ( ! empty( $languages ) ) {
 			foreach ( $languages as $lang_iso => $lang_info ) {
-				if ( 1 === $lang_info['active'] || true === $lang_info['active'] ) {
+				if ( $lang_info['active'] ) {
 					$result = $lang_info;
 				}
 			}
