@@ -2125,7 +2125,10 @@ class Clerk_Admin_Settings {
 		?>
 		<div class="wrap">
 			<div id="clerkFloatingSaveBtn" onclick="clerkSubmitAdminForm();"><?php echo esc_html( __( 'Save Settings', 'clerk' ) ); ?></div>
-			<h1 style="font-family: Arial;"><img id="clerkLogoHeader" src="<?php echo esc_html( plugin_dir_url( CLERK_PLUGIN_FILE ) . 'assets/img/clerk.png' ); ?>"><?php echo esc_html( get_admin_page_title() ); ?></h1>
+			<h1 style="font-family: Arial;">
+				<img id="clerkLogoHeader" src="<?php echo esc_html( plugin_dir_url( CLERK_PLUGIN_FILE ) . 'assets/img/clerk.png' ); ?>">
+				<span><?php echo esc_html( get_admin_page_title() ); ?></span>
+			</h1>
 			<form id="clerkAdminForm" action="options.php" method="post">
 				<?php
 				// output security fields for the registered setting "wporg".
