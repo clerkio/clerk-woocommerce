@@ -39,7 +39,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 		$this->init_hooks();
 		include_once __DIR__ . '/class-clerk-logger.php';
 		$this->logger = new Clerk_Logger();
-		$this->api = new Clerk_Api();
+		$this->api    = new Clerk_Api();
 	}
 
 	/**
@@ -331,7 +331,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 					foreach ( $variations as $variation ) {
 
-						$variation = ( array ) $variation;
+						$variation = (array) $variation;
 
 						if ( ! array_key_exists( 'variation_id', $variation ) ) {
 							continue;
@@ -418,14 +418,14 @@ class Clerk_Rest_Api extends WP_REST_Server {
 					'simple',
 					'grouped',
 					'bundle',
-					'variable'
+					'variable',
 				);
 
-				if( ! in_array( $product->get_type(), $supported_product_types ) ) {
-					if(method_exists($product, 'get_price')){
+				if ( ! in_array( $product->get_type(), $supported_product_types ) ) {
+					if ( method_exists( $product, 'get_price' ) ) {
 						$price = $product->get_price();
 					}
-					if(method_exists($product, 'get_regular_price')){
+					if ( method_exists( $product, 'get_regular_price' ) ) {
 						$list_price = $product->get_regular_price();
 					}
 				}
@@ -460,7 +460,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 				$product_array['backorders']     = $product->get_backorders();
 				$product_array['stock_status']   = $product->get_stock_status();
 
-				$exempted_fields = ( array ) $this->get_additional_fields_raw();
+				$exempted_fields = (array) $this->get_additional_fields_raw();
 
 				foreach ( $this->get_additional_fields() as $field ) {
 
@@ -490,7 +490,6 @@ class Clerk_Rest_Api extends WP_REST_Server {
 							} else {
 								$product_array[ str_replace( '-', '_', $this->clerk_friendly_attributes( $field ) ) ] = $product->get_attribute( $field );
 							}
-
 						}
 
 						if ( $product->is_type( 'variable' ) ) {
@@ -501,9 +500,9 @@ class Clerk_Rest_Api extends WP_REST_Server {
 								$variation_obj = new WC_Product_variation( $v['variation_id'] );
 
 								if ( ! in_array( $field, $exempted_fields ) ) {
-									$atribute      = array_walk( explode( ',', $variation_obj->get_attribute( $field ) ), array( $this, 'trim_whitespace_in_attribute' ) );
+									$atribute = array_walk( explode( ',', $variation_obj->get_attribute( $field ) ), array( $this, 'trim_whitespace_in_attribute' ) );
 								} else {
-									$atribute      = $variation_obj->get_attribute( $field );
+									$atribute = $variation_obj->get_attribute( $field );
 								}
 
 								if ( is_array( $atribute ) ) {
@@ -530,11 +529,10 @@ class Clerk_Rest_Api extends WP_REST_Server {
 								$childproduct = wc_get_product( $child_id );
 
 								if ( ! in_array( $field, $exempted_fields ) ) {
-									$atribute     = array_walk( explode( ',', $childproduct->get_attribute( $field ) ), array( $this, 'trim_whitespace_in_attribute' ) );
+									$atribute = array_walk( explode( ',', $childproduct->get_attribute( $field ) ), array( $this, 'trim_whitespace_in_attribute' ) );
 								} else {
-									$atribute     = $childproduct->get_attribute( $field );
+									$atribute = $childproduct->get_attribute( $field );
 								}
-
 
 								if ( is_array( $atribute ) ) {
 									$collectinfo = $atribute[0];
@@ -1104,7 +1102,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 			// Array with all Clerk setttings (68) attributes without public_key & private_key.
 			$settings_arguments = array(
-				'private_key'
+				'private_key',
 			);
 
 			if ( $body ) {
@@ -1114,10 +1112,10 @@ class Clerk_Rest_Api extends WP_REST_Server {
 				// Check if the recent json decoded value is a JSON type.
 				if ( json_last_error() === JSON_ERROR_NONE ) {
 
-					$clerk_private_key = $body_array['clerk_private_key'];
+					$clerk_private_key       = $body_array['clerk_private_key'];
 					$settings['private_key'] = $clerk_private_key;
 
-					$update_array = $options;
+					$update_array                = $options;
 					$update_array['private_key'] = $clerk_private_key;
 
 					// Update the database with the all new and old Clerk settings inclusive public_key & private_key.
@@ -1231,7 +1229,6 @@ class Clerk_Rest_Api extends WP_REST_Server {
 		}
 
 		return true;
-
 	}
 
 	/**
@@ -1254,14 +1251,14 @@ class Clerk_Rest_Api extends WP_REST_Server {
 				return false;
 			}
 
-			$public_key  = '';
+			$public_key = '';
 
 			$token = $this->get_header_token( $request );
 
 			$body = json_decode( $request->get_body(), true );
 			if ( $body ) {
 				if ( is_array( $body ) ) {
-					$public_key  = array_key_exists( 'key', $body ) ? $body['key'] : '';
+					$public_key = array_key_exists( 'key', $body ) ? $body['key'] : '';
 				}
 			} else {
 				$this->logger->warn( 'Failed to validate API Keys', array( 'response' => false ) );
@@ -1281,76 +1278,78 @@ class Clerk_Rest_Api extends WP_REST_Server {
 			$this->logger->error( 'ERROR validate_request', array( 'error' => $e->getMessage() ) );
 
 		}
-
 	}
 
-    /**
-     * Validate token from request.
+	/**
+	 * Validate token from request.
+	 *
 	 * @param string|null $request Request.
-     * @return boolean
-     */
-    private function validate_jwt( $token_string = null )
-    {
+	 * @return boolean
+	 */
+	private function validate_jwt( $token_string = null ) {
 
-        if( ! $token_string || ! is_string( $token_string ) ) {
-            return false;
-        }
+		if ( ! $token_string || ! is_string( $token_string ) ) {
+			return false;
+		}
 
 		$options = get_option( 'clerk_options' );
 
+		$query_params = array(
+			'token' => $token_string,
+			'key'   => $options['public_key'],
+		);
 
-        $query_params = array(
-            'token' => $token_string,
-			'key' => $options['public_key']
-        );
+		$rsp_array = $this->api->verify_token( $query_params );
 
-		$rsp_array = $this->api->verify_token($query_params);
+		if ( ! $rsp_array ) {
+			return false;
+		}
 
-        if( ! $rsp_array ) {
-            return false;
-        }
+		try {
+			$rsp_body = json_decode( $rsp_array['body'], true );
 
-        try {
-			$rsp_body= json_decode($rsp_array['body'], true);
+			if ( isset( $rsp_body['status'] ) && $rsp_body['status'] == 'ok' ) {
+				return true;
+			}
 
-            if( isset($rsp_body['status']) && $rsp_body['status'] == 'ok') {
-                return true;
-            }
+			return false;
 
-            return false;
+		} catch ( \Exception $e ) {
 
-        } catch (\Exception $e) {
+			$this->logger->error( 'validate_jwt ERROR', array( 'error' => $e->getMessage() ) );
 
-            $this->logger->error( 'validate_jwt ERROR', [ 'error' => $e->getMessage() ] );
+		}
+	}
 
-        }
-
-    }
-
-    /**
-     * Get Token from Request Header
+	/**
+	 * Get Token from Request Header
+	 *
 	 * @param WP_REST_Request|void|null $request Request.
-     * @return string
-     */
-    private function get_header_token( $request )
-    {
-        try {
+	 * @return string
+	 */
+	private function get_header_token( $request ) {
+		try {
 
-            $token = '';
-            $auth_header = $request->get_header('Authorized');
+			$token       = '';
+			$auth_header = $request->get_header( 'Authorized' );
 
-            if( null !== $auth_header && is_string( $auth_header ) ) {
-                $token = count( explode( ' ', $auth_header ) ) > 1 ? explode( ' ', $auth_header )[1] : $token;
-            }
+			if ( null !== $auth_header && is_string( $auth_header ) ) {
+				$prefix = explode( ' ', $auth_header )[0];
+				if ( 'Bearer' !== $prefix ) {
+					throw new Exception( 'Invalid token prefix' );
+				}
 
-            return $token;
+				$token = count( explode( ' ', $auth_header ) ) > 1 ? explode( ' ', $auth_header )[1] : $token;
+			}
 
-        } catch ( Exception $e ) {
+			return $token;
 
-            $this->logger->error( 'ERROR validate_request', array( 'error' => $e->getMessage() ) );
+		} catch ( Exception $e ) {
 
-        }
-    }
+			$this->logger->error( 'ERROR validate_request', array( 'error' => $e->getMessage() ) );
+
+		}
+	}
 
 	/**
 	 * Compare Request Token with Settings Token in time-safe manner
@@ -1406,7 +1405,6 @@ class Clerk_Rest_Api extends WP_REST_Server {
 			$this->logger->error( 'ERROR get_unathorized_response', array( 'error' => $e->getMessage() ) );
 
 		}
-
 	}
 
 	/**
@@ -1441,7 +1439,6 @@ class Clerk_Rest_Api extends WP_REST_Server {
 			$this->logger->error( 'ERROR get_additional_fields', array( 'error' => $e->getMessage() ) );
 
 		}
-
 	}
 
 	/**
@@ -1455,13 +1452,13 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 			$options = get_option( 'clerk_options' );
 
-			if( ! is_array($options) ){
+			if ( ! is_array( $options ) ) {
 				return array();
 			}
 
-			if ( array_key_exists('additional_fields_raw', $options) ) {
+			if ( array_key_exists( 'additional_fields_raw', $options ) ) {
 				$additional_fields = $options['additional_fields_raw'];
-				$fields = explode( ',', $additional_fields );
+				$fields            = explode( ',', $additional_fields );
 			} else {
 				$fields = array();
 			}
@@ -1473,7 +1470,6 @@ class Clerk_Rest_Api extends WP_REST_Server {
 			$this->logger->error( 'ERROR get_additional_fields_raw', array( 'error' => $e->getMessage() ) );
 
 		}
-
 	}
 
 	/**
@@ -1481,32 +1477,30 @@ class Clerk_Rest_Api extends WP_REST_Server {
 	 *
 	 * @return string|void
 	 */
-	private function trim_whitespace_in_attribute($attribute_value = null) {
+	private function trim_whitespace_in_attribute( $attribute_value = null ) {
 
 		try {
 
 			$options = get_option( 'clerk_options' );
 
-			if ( ! is_array($options) ){
+			if ( ! is_array( $options ) ) {
 				return;
 			}
 
-			if ( ! is_string($attribute_value) ) {
+			if ( ! is_string( $attribute_value ) ) {
 				return $attribute_value;
 			}
 
-			if ( isset($options['additional_fields_trim']) ) {
-				return trim($attribute_value);
+			if ( isset( $options['additional_fields_trim'] ) ) {
+				return trim( $attribute_value );
 			} else {
-				return str_replace( ' ', '', $attribute_value);
+				return str_replace( ' ', '', $attribute_value );
 			}
-
 		} catch ( Exception $e ) {
 
 			$this->logger->error( 'ERROR trim_whitespace_in_attribute', array( 'error' => $e->getMessage() ) );
 
 		}
-
 	}
 
 	/**
@@ -1713,7 +1707,6 @@ class Clerk_Rest_Api extends WP_REST_Server {
 			$this->logger->error( 'ERROR version_endpoint_callback', array( 'error' => $e->getMessage() ) );
 
 		}
-
 	}
 
 	/**
@@ -1745,9 +1738,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 			$this->logger->error( 'ERROR plugin_endpoint_callback', array( 'error' => $e->getMessage() ) );
 
 		}
-
 	}
-
 }
 
 new Clerk_Rest_Api();
