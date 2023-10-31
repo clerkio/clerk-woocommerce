@@ -62,8 +62,6 @@ class Clerk_Admin_Settings {
 		add_action( 'admin_menu', array( $this, 'load_jquery_ui' ) );
 		add_action( 'admin_menu', array( $this, 'load_admin_assets' ) );
 
-
-
 	}
 	/**
 	 * Load jQuery Lib and Styles
@@ -1300,7 +1298,7 @@ class Clerk_Admin_Settings {
 
 					foreach ( $response as $attribute => $value ) {
 
-						if ( $attribute === 'status' && $value === 'error' ) {
+						if ( 'status' === $attribute && 'error' === $value ) {
 							$dynamic_attr_success = false;
 						}
 
@@ -1359,7 +1357,7 @@ class Clerk_Admin_Settings {
 				}
 			}
 
-			if ( count( $new_dynamic_attributes ) > 0 && $dynamic_attr_success) {
+			if ( count( $new_dynamic_attributes ) > 0 && $dynamic_attr_success ) {
 				$commacounter   = 0;
 				$attribute_text = 'attributes';
 
@@ -1423,7 +1421,7 @@ class Clerk_Admin_Settings {
                     <div><input type="text" class="facets_facet" value="' . esc_html( $attribute->attribute ) . '" readonly></div>
                     <div><input type="text" class="facets_title" value="' . esc_html( $attribute->title ) . '"></div>
                     <div><input type="text" class="facets_position" value="' . esc_html( $attribute->position ) . '"></div>
-                    <div><input class="faceted_enabled" type="checkbox" ' . esc_html( $checked ) . '><div class="close" onclick="remove_facet_line(\''. esc_html( $attribute->attribute ) .'\')"></div></div>
+                    <div><input class="faceted_enabled" type="checkbox" ' . esc_html( $checked ) . '><div class="close" onclick="remove_facet_line(\'' . esc_html( $attribute->attribute ) . '\')"></div></div>
                 </div>
                 ';
 
@@ -1441,7 +1439,7 @@ class Clerk_Admin_Settings {
 						<div><input type="text" class="facets_facet" value="' . esc_html( $attribute ) . '" readonly></div>
 						<div><input type="text" class="facets_title" value=""></div>
 						<div><input type="text" class="facets_position" value="' . esc_html( $count ) . '"></div>
-						<div><input class="faceted_enabled" type="checkbox"><div class="close" onclick="remove_facet_line(\''. esc_html( $attribute ) .'\')"></div></div>
+						<div><input class="faceted_enabled" type="checkbox"><div class="close" onclick="remove_facet_line(\'' . esc_html( $attribute ) . '\')"></div></div>
 					</div>
                     ';
 
