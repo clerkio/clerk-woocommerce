@@ -31,7 +31,8 @@
     display: block;
     min-width: 1rem;
     margin-left: 5px;
-    margin-bottom: 2px
+    margin-bottom: 2px;
+    cursor: pointer;
 }
 
 .close:hover {
