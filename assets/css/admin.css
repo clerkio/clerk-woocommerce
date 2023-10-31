@@ -159,7 +159,12 @@
 
 .facets_content_title_wrapper, .facets_lines {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    -ms-grid-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) 40px;
+    -ms-grid-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) 40px;
     padding: 5px 0px;
+}
+
+.facets_lines > div {
+    display: flex;
+
 }
