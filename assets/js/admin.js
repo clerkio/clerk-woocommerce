@@ -1,9 +1,26 @@
+/**
+ * Plugin Name: Clerk
+ * Plugin URI: https://clerk.io/
+ * Description: Clerk.io Turns More Browsers Into Buyers
+ * Version: 4.1.2
+ * Author: Clerk.io
+ * Author URI: https://clerk.io
+ *
+ * Text Domain: clerk
+ * Domain Path: /i18n/languages/
+ * License: MIT
+ *
+ * @package clerkio/clerk-woocommerce
+ * @file Handles front end content get.
+ * Ajax handler.
+ */
+
 const admin_form = document.querySelector( 'form#clerkAdminForm' );
 if (admin_form) {
 	admin_form.addEventListener(
 		'submit',
 		(e) => {
-			collect_attributes();
+		collect_attributes();
 		}
 	);
 }
@@ -13,7 +30,7 @@ function remove_facet_line(data_value) {
 	const elements   = admin_form.querySelectorAll( `[data = "${data_value}"]` );
 	elements.forEach(
 		el => {
-			el.remove();
+        el.remove();
 		}
 	);
 }
@@ -27,7 +44,7 @@ if (close_btn) {
 	close_btn.addEventListener(
 		'click',
 		(e) => {
-			admin_form.querySelector( '.alert' ).remove();
+        admin_form.querySelector( '.alert' ).remove();
 		}
 	)
 }
@@ -36,10 +53,10 @@ if (custom_facet_input) {
 	custom_facet_input.addEventListener(
 		'keydown',
 		(e) => {
-			if (e.keyCode == 13) {
-				e.preventDefault();
-				add_facet();
-			}
+        if (e.keyCode == 13) {
+            e.preventDefault();
+            add_facet();
+        }
 		}
 	)
 }
