@@ -24,9 +24,11 @@
 }
 
 .close {
+    position: relative;
     width: 1rem;
     height: 1rem;
     opacity: 0.4;
+    display: block;
 }
 
 .close:hover {
@@ -35,7 +37,7 @@
 
 .close:before, .close:after {
     position: absolute;
-    left: 15px;
+    left: 0.5rem;
     content: ' ';
     height: 20px;
     width: 2px;
