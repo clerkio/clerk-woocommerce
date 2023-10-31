@@ -156,3 +156,10 @@
     font-weight: 900;
     cursor: pointer;
 }
+
+.facets_content_title_wrapper, .facets_lines {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    -ms-grid-columns: repeat(4, minmax(0, 1fr));
+    padding: 5px 0px;
+}
