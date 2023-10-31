@@ -78,7 +78,7 @@ class Clerk_Content {
 						$filter_string .= ', ';
 					}
 					$filter_string .= '.' . $class_string . (string) $index;
-					$index++;
+					++$index;
 				}
 			endif;
 
@@ -87,7 +87,6 @@ class Clerk_Content {
 			$this->logger->error( 'ERROR clerk_woocommerce_archive_description', array( 'error' => $e->getMessage() ) );
 
 		}
-
 	}
 
 	/**
@@ -138,7 +137,7 @@ class Clerk_Content {
 						$filter_string .= ', ';
 					}
 					$filter_string .= '.' . $class_string . (string) $index;
-					$index++;
+					++$index;
 				}
 			}
 		} catch ( Exception $e ) {
@@ -175,7 +174,6 @@ class Clerk_Content {
 			$this->logger->error( 'ERROR clerk_wc_get_template', array( 'error' => $e->getMessage() ) );
 
 		}
-
 	}
 }
 
