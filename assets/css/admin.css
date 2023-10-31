@@ -186,3 +186,8 @@
 .facets_content_title_wrapper > div {
     font-weight: 800;
 }
+
+.facets_table {
+    min-width: fit-content;
+    max-width: clamp(300px, 50%, 100%);
+}
