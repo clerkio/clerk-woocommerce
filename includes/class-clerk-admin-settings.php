@@ -1212,6 +1212,8 @@ class Clerk_Admin_Settings {
 		$saved_attributes       = array();
 		$new_dynamic_attributes = array();
 
+		$dynamic_attr_success = true;
+
 		$options = get_option( 'clerk_options' );
 
 		if ( ! empty( $options['public_key'] ) ) {
@@ -1298,6 +1300,10 @@ class Clerk_Admin_Settings {
 
 					foreach ( $response as $attribute => $value ) {
 
+						if ( $attribute === 'status' && $value === 'error' ) {
+							$dynamic_attr_success = false;
+						}
+
 						if ( ! in_array( $attribute, $exclude_attributes, true ) ) {
 
 							if ( ! empty( $attribute ) ) {
@@ -1353,7 +1359,7 @@ class Clerk_Admin_Settings {
 				}
 			}
 
-			if ( count( $new_dynamic_attributes ) > 0 ) {
+			if ( count( $new_dynamic_attributes ) > 0 && $dynamic_attr_success) {
 				$commacounter   = 0;
 				$attribute_text = 'attributes';
 
