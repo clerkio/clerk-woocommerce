@@ -7,6 +7,7 @@ if(admin_form){
 }
 
 function remove_facet_line(data_value) {
+	const admin_form = document.querySelector('form#clerkAdminForm');
 	const elements = admin_form.querySelectorAll(`[data="${data_value}"]`);
 	elements.forEach(el => {
 		el.remove();
