@@ -72,7 +72,7 @@ function add_facet() {
 	checkbox.setAttribute("value", "1");
 
 
-	const remove = document.createElement("a");
+	const remove = document.createElement("div");
 	remove.setAttribute("class", "close");
 	remove.setAttribute("onclick", `remove_facet_line('${facet_value}');`);
 
