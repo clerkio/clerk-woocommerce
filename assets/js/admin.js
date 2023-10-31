@@ -23,6 +23,16 @@ if(close_btn){
 		admin_form.querySelector('.alert').remove();
 	})
 }
+const custom_facet_input = document.querySelector('#faceted_navigation_custom');
+if(custom_facet_input){
+	custom_facet_input.addEventListener('keydown', (e) => {
+		if(e.keyCode == 13){
+			e.preventDefault();
+			add_facet();
+		}
+	})
+}
+
 
 function add_facet() {
 	let linescount = document.querySelectorAll('.facets_content .facets_lines').length;
