@@ -182,3 +182,7 @@
     margin-right: 0px !important;
     margin-top: 0px !important;
 }
+
+.facets_content_title_wrapper > div {
+    font-weight: 800;
+}
