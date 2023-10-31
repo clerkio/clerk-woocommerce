@@ -29,6 +29,9 @@
     height: 1rem;
     opacity: 0.4;
     display: block;
+    min-width: 1rem;
+    margin-left: 5px;
+    margin-bottom: 2px
 }
 
 .close:hover {
@@ -168,5 +171,10 @@
 .facets_lines > div {
     display: flex;
     align-items: center;
+    justify-content: flex-start;
     padding: 8px;
+}
+
+.faceted_enabled {
+    margin: 0 !important;
 }
