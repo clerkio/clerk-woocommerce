@@ -1120,46 +1120,6 @@ class Clerk_Rest_Api extends WP_REST_Server {
 					$update_array = $options;
 					$update_array['private_key'] = $clerk_private_key;
 
-
-					//! Don't understand why it would be neccesary to do this.
-					// // We will find the settings names that has not been send with the body request and add them to an array.
-					// // so we can send the origin name values to the database as well.
-
-					// // only update 'clerk_private_key'
-					// // $settings['clerk_private_key'] = $body_array['clerk_private_key'];
-
-
-					// $arr_diff = array_diff_key( $options, $body_array ); // Array: Compare the keys of two arrays, and return the differences.
-
-					// // Add the arguments not in the body to the settings array.
-					// foreach ( $arr_diff as $key => $value ) {
-
-					// 	if ( 'public_key' !== $key && 'private_key' !== $key ) {
-
-					// 		$settings[ $key ] = $value;
-
-					// 	}
-					// }
-
-					// // Add the arguments from the request body data to the settings array.
-					// foreach ( $body_array as $key => $value ) {
-
-					// 	// Check if attributes from body data is a Clerk setting attribute.
-					// 	if ( in_array( $key, $settings_arguments, true ) ) {
-
-					// 		$settings[ $key ] = $value;
-
-					// 	}
-					// }
-
-					// // Final updated settings array.
-					// $update_array = $settings;
-
-					// // Add public_key & private_key before updating options.
-					// $update_array['public_key']  = $options['public_key'];
-					//! =======================================================
-
-
 					// Update the database with the all new and old Clerk settings inclusive public_key & private_key.
 					update_option( 'clerk_options', $update_array );
 
