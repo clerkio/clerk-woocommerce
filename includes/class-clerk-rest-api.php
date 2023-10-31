@@ -1258,7 +1258,6 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 			$token = $this->get_header_token( $request );
 
-
 			$body = json_decode( $request->get_body(), true );
 			if ( $body ) {
 				if ( is_array( $body ) ) {
