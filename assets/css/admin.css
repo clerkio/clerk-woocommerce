@@ -159,8 +159,8 @@
 
 .facets_content_title_wrapper, .facets_lines {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) 40px;
-    -ms-grid-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) 40px;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 60px 40px;
+    -ms-grid-columns: minmax(0, 1fr) minmax(0, 1fr) 60px 40px;
     padding: 5px 0px;
 }
 
