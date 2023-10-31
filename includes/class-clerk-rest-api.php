@@ -171,6 +171,17 @@ class Clerk_Rest_Api extends WP_REST_Server {
 				'permission_callback' => '__return_true',
 			)
 		);
+
+		// Rotatekey endpoint.
+		register_rest_route(
+			'clerk',
+			'/rotatekey',
+			array(
+				'methods'             => array( 'POST' ),
+				'callback'            => array( $this, 'rotatekey_endpoint_callback' ),
+				'permission_callback' => '__return_true',
+			)
+		);
 	}
 
 	/**
@@ -1103,37 +1114,51 @@ class Clerk_Rest_Api extends WP_REST_Server {
 				// Check if the recent json decoded value is a JSON type.
 				if ( json_last_error() === JSON_ERROR_NONE ) {
 
-					// We will find the settings names that has not been send with the body request and add them to an array.
-					// so we can send the origin name values to the database as well.
+					$clerk_private_key = $body_array['clerk_private_key'];
+					$settings['private_key'] = $clerk_private_key;
 
-					$arr_diff = array_diff_key( $options, $body_array ); // Array: Compare the keys of two arrays, and return the differences.
+					$update_array = $options;
+					$update_array['private_key'] = $clerk_private_key;
 
-					// Add the arguments not in the body to the settings array.
-					foreach ( $arr_diff as $key => $value ) {
 
-						if ( 'public_key' !== $key && 'private_key' !== $key ) {
+					//! Don't understand why it would be neccesary to do this.
+					// // We will find the settings names that has not been send with the body request and add them to an array.
+					// // so we can send the origin name values to the database as well.
 
-							$settings[ $key ] = $value;
+					// // only update 'clerk_private_key'
+					// // $settings['clerk_private_key'] = $body_array['clerk_private_key'];
 
-						}
-					}
 
-					// Add the arguments from the request body data to the settings array.
-					foreach ( $body_array as $key => $value ) {
+					// $arr_diff = array_diff_key( $options, $body_array ); // Array: Compare the keys of two arrays, and return the differences.
 
-						// Check if attributes from body data is a Clerk setting attribute.
-						if ( in_array( $key, $settings_arguments, true ) ) {
+					// // Add the arguments not in the body to the settings array.
+					// foreach ( $arr_diff as $key => $value ) {
 
-							$settings[ $key ] = $value;
+					// 	if ( 'public_key' !== $key && 'private_key' !== $key ) {
 
-						}
-					}
+					// 		$settings[ $key ] = $value;
 
-					// Final updated settings array.
-					$update_array = $settings;
+					// 	}
+					// }
 
-					// Add public_key & private_key before updating options.
-					$update_array['public_key']  = $options['public_key'];
+					// // Add the arguments from the request body data to the settings array.
+					// foreach ( $body_array as $key => $value ) {
+
+					// 	// Check if attributes from body data is a Clerk setting attribute.
+					// 	if ( in_array( $key, $settings_arguments, true ) ) {
+
+					// 		$settings[ $key ] = $value;
+
+					// 	}
+					// }
+
+					// // Final updated settings array.
+					// $update_array = $settings;
+
+					// // Add public_key & private_key before updating options.
+					// $update_array['public_key']  = $options['public_key'];
+					//! =======================================================
+
 
 					// Update the database with the all new and old Clerk settings inclusive public_key & private_key.
 					update_option( 'clerk_options', $update_array );
@@ -1273,6 +1298,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 			$token = $this->get_header_token( $request );
 
+
 			$body = json_decode( $request->get_body(), true );
 			if ( $body ) {
 				if ( is_array( $body ) ) {
@@ -1284,7 +1310,6 @@ class Clerk_Rest_Api extends WP_REST_Server {
 			}
 
 			if ( $this->timing_safe_equals( $options['public_key'], $public_key ) && $this->validate_jwt( $token ) ) {
-
 				return true;
 			}
 
@@ -1312,21 +1337,24 @@ class Clerk_Rest_Api extends WP_REST_Server {
             return false;
         }
 
-        $body_params = array(
-            'token' => $token_string
+		$options = get_option( 'clerk_options' );
+
+
+        $query_params = array(
+            'token' => $token_string,
+			'key' => $options['public_key']
         );
 
-        $response = $this->api->verify_token($body_params);
+		$rsp_array = $this->api->verify_token($query_params);
 
-        if( ! $response ) {
+        if( ! $rsp_array ) {
             return false;
         }
 
         try {
+			$rsp_body= json_decode($rsp_array['body'], true);
 
-            $rsp_array = json_decode($response, true);
-
-            if( isset($rsp_array['status']) && $rsp_array['status'] == 'ok') {
+            if( isset($rsp_body['status']) && $rsp_body['status'] == 'ok') {
                 return true;
             }
 

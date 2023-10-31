@@ -61,9 +61,14 @@ class Clerk_Api {
 
 		try {
 
+			$options = get_option( 'clerk_options' );
+			$public_key = $options['public_key'];
+
 			$endpoint = 'token/verify';
 
-			$response = $this->post($endpoint, $data);
+			$data['key'] = $public_key;
+
+			$response = $this->get($endpoint, $data);
 
 			if( ! $response ) {
 				return array();
