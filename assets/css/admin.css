@@ -172,9 +172,12 @@
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    padding: 8px;
+    padding: 8px 0px;
 }
 
 .faceted_enabled {
-    margin: 0 !important;
+    margin-bottom: 0px;
+    margin-left: 5px;
+    margin-right: 0px;
+    margin-top: 0px;
 }
