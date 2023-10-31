@@ -33,7 +33,7 @@ function add_facet() {
 	facets_lines.setAttribute("class", "facets_lines");
 	facets_lines.setAttribute("data", facet_value);
 
-	const facet_td = document.createElement("td");
+	const facet_td = document.createElement("div");
 
 	const facet = document.createElement("input");
 	facet.setAttribute("class", "facets_facet");
