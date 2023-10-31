@@ -74,7 +74,7 @@ function add_facet() {
 
 	const remove = document.createElement("a");
 	remove.setAttribute("class", "close");
-	remove.setAttribute("onclick", `remove_facet_line("${facet_value}");`);
+	remove.setAttribute("onclick", `remove_facet_line('${facet_value}');`);
 
 	facet_td.append(facet)
 	facets_lines.append(facet_td);
