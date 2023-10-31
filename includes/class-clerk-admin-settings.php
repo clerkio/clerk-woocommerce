@@ -1423,7 +1423,7 @@ class Clerk_Admin_Settings {
                     <div><input type="text" class="facets_facet" value="' . esc_html( $attribute->attribute ) . '" readonly></div>
                     <div><input type="text" class="facets_title" value="' . esc_html( $attribute->title ) . '"></div>
                     <div><input type="text" class="facets_position" value="' . esc_html( $attribute->position ) . '"></div>
-                    <div><input class="faceted_enabled" type="checkbox" ' . esc_html( $checked ) . '></div>
+                    <div><input class="faceted_enabled" type="checkbox" ' . esc_html( $checked ) . '><div class="close" onclick="remove_facet_line(\''. esc_html( $attribute->attribute ) .'\')"></div></div>
                 </div>
                 ';
 
@@ -1441,7 +1441,7 @@ class Clerk_Admin_Settings {
 						<div><input type="text" class="facets_facet" value="' . esc_html( $attribute ) . '" readonly></div>
 						<div><input type="text" class="facets_title" value=""></div>
 						<div><input type="text" class="facets_position" value="' . esc_html( $count ) . '"></div>
-						<div><input class="faceted_enabled" type="checkbox"></div>
+						<div><input class="faceted_enabled" type="checkbox"><div class="close" onclick="remove_facet_line(\''. esc_html( $attribute->attribute ) .'\')"></div></div>
 					</div>
                     ';
 
