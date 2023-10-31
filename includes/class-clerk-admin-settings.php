@@ -1395,10 +1395,12 @@ class Clerk_Admin_Settings {
 			<div class='facets_table'>
 
 				<div class="facets_content">
-				<div class="w-fit">Attribute</div>
-				<div class="w-fit">Title</div>
-				<div class="w-fit">Position</div>
-				<div class="w-fit">Show</div>
+					<div class="facets_content_title_wrapper">
+						<div class="w-fit">Attribute</div>
+						<div class="w-fit">Title</div>
+						<div class="w-fit">Position</div>
+						<div class="w-fit">Show</div>
+					</div>
 				<?php
 
 		}
