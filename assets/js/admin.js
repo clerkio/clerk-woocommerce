@@ -29,7 +29,7 @@ function add_facet() {
 	const custom_facet_input = document.querySelector('#faceted_navigation_custom');
 	const facet_value = custom_facet_input.value;
 
-	const facets_lines = document.createElement("tr");
+	const facets_lines = document.createElement("div");
 	facets_lines.setAttribute("class", "facets_lines");
 	facets_lines.setAttribute("data", facet_value);
 
@@ -41,20 +41,20 @@ function add_facet() {
 	facet.setAttribute("value", facet_value);
 	facet.setAttribute("readonly", '');
 
-	const title_td = document.createElement("td");
+	const title_td = document.createElement("div");
 	const title = document.createElement("input");
 	title.setAttribute("class", "facets_title");
 	title.setAttribute("type", "text");
 	title.setAttribute("value", '');
 
 
-	const position_td = document.createElement("td");
+	const position_td = document.createElement("div");
 	const position = document.createElement("input");
 	position.setAttribute("class", "facets_position");
 	position.setAttribute("type", "text");
 	position.setAttribute("value", linescount + 1);
 
-	const checkbox_td = document.createElement("td");
+	const checkbox_td = document.createElement("div");
 
 	const checkbox = document.createElement("input");
 	checkbox.setAttribute("type", "checkbox");

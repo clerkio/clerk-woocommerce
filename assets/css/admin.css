@@ -43,6 +43,10 @@
     background-color: #f44336;
 }
 
+.red {
+    color: #f44336;
+}
+
 .close:before {
     transform: rotate(45deg);
 }

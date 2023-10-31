@@ -1411,12 +1411,12 @@ class Clerk_Admin_Settings {
 				}
 
 				echo '
-                <tr class="facets_lines">
-                    <td><input type="text" class="facets_facet" value="' . esc_html( $attribute->attribute ) . '" readonly></td>
-                    <td><input type="text" class="facets_title" value="' . esc_html( $attribute->title ) . '"></td>
-                    <td><input type="text" class="facets_position" value="' . esc_html( $attribute->position ) . '"></td>
-                    <td><input class="faceted_enabled" type="checkbox" ' . esc_html( $checked ) . '></td>
-                </tr>
+                <div class="facets_lines">
+                    <div><input type="text" class="facets_facet" value="' . esc_html( $attribute->attribute ) . '" readonly></div>
+                    <div><input type="text" class="facets_title" value="' . esc_html( $attribute->title ) . '"></div>
+                    <div><input type="text" class="facets_position" value="' . esc_html( $attribute->position ) . '"></div>
+                    <div><input class="faceted_enabled" type="checkbox" ' . esc_html( $checked ) . '></div>
+                </div>
                 ';
 
 			}
@@ -1429,12 +1429,12 @@ class Clerk_Admin_Settings {
 				$count++;
 
 				echo '
-					<tr class="facets_lines">
-						<td><input type="text" class="facets_facet" value="' . esc_html( $attribute ) . '" readonly></td>
-						<td><input type="text" class="facets_title" value=""></td>
-						<td><input type="text" class="facets_position" value="' . esc_html( $count ) . '"></td>
-						<td><input class="faceted_enabled" type="checkbox"></td>
-					</tr>
+					<div class="facets_lines">
+						<div><input type="text" class="facets_facet" value="' . esc_html( $attribute ) . '" readonly></div>
+						<div><input type="text" class="facets_title" value=""></div>
+						<div><input type="text" class="facets_position" value="' . esc_html( $count ) . '"></div>
+						<div><input class="faceted_enabled" type="checkbox"></div>
+					</div>
                     ';
 
 			}
@@ -1755,14 +1755,14 @@ class Clerk_Admin_Settings {
 
 		if ( WP_DEBUG ) {
 			?>
-			<hr><p style="color: red;"><strong>WordPress Debug Mode is enabled</strong></p>
+			<hr><p class="red"><strong>WordPress Debug Mode is enabled</strong></p>
 			<ul>
-				<li style="color: red;">Caching is disabled.</li>
-				<li style="color: red;">Errors will be visible.</li>
-				<li style="color: red;">Clerk logger can catch all errors.</li>
-				<li style="color: red;">Remember to disable it again after use!</li>
-				<li style="color: red;">It's not best practice to have it enabled in production.</li>
-				<li style="color: red;">It's only recommended for at very short period af time for debug use.</li>
+				<li class="red">Caching is disabled.</li>
+				<li class="red">Errors will be visible.</li>
+				<li class="red">Clerk logger can catch all errors.</li>
+				<li class="red">Remember to disable it again after use!</li>
+				<li class="red">It's not best practice to have it enabled in production.</li>
+				<li class="red">It's only recommended for at very short period af time for debug use.</li>
 			</ul>
 			<br>
 			<p><strong>Step By Step Guide to disable debug mode</strong></p>
