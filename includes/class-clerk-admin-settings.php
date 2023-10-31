@@ -1419,7 +1419,7 @@ class Clerk_Admin_Settings {
 				}
 
 				echo '
-                <div class="facets_lines">
+                <div class="facets_lines" data="' . esc_html( $attribute->attribute ) . '">
                     <div><input type="text" class="facets_facet" value="' . esc_html( $attribute->attribute ) . '" readonly></div>
                     <div><input type="text" class="facets_title" value="' . esc_html( $attribute->title ) . '"></div>
                     <div><input type="text" class="facets_position" value="' . esc_html( $attribute->position ) . '"></div>
@@ -1437,7 +1437,7 @@ class Clerk_Admin_Settings {
 				$count++;
 
 				echo '
-					<div class="facets_lines">
+					<div class="facets_lines" data="' . esc_html( $attribute ) . '">
 						<div><input type="text" class="facets_facet" value="' . esc_html( $attribute ) . '" readonly></div>
 						<div><input type="text" class="facets_title" value=""></div>
 						<div><input type="text" class="facets_position" value="' . esc_html( $count ) . '"></div>
