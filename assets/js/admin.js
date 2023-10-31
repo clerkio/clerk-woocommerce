@@ -1,55 +1,70 @@
 
-jQuery('.wrap form').submit(function () {
-
-	CollectAttributes();
-
-});
+const admin_form = document.querySelector('form#clerkAdminForm');
+if(admin_form){
+	admin_form.addEventListener('submit', (e) => {
+		collect_attributes();
+	});
+}
 
 function remove_facet_line(data_value) {
+	const elements = admin_form.querySelectorAll(`[data="${data_value}"]`);
+	elements.forEach(el => {
+		el.remove();
+	});
+}
 
-	jQuery("[data=" + data_value + "]").remove();
+const clerk_submit_admin_form = () => {
+    document.querySelector('#submit').click();
+}
 
+const close_btn = admin_form.querySelector('.closebtn');
+if(close_btn){
+	close_btn.addEventListener('click', (e) => {
+		admin_form.querySelector('.alert').remove();
+	})
 }
 
 function add_facet() {
-	var linescount = jQuery('#facets_content #facets_lines').length;
+	let linescount = document.querySelectorAll('.facets_content .facets_lines').length;
+	const custom_facet_input = document.querySelector('#faceted_navigation_custom');
+	const facet_value = custom_facet_input.value;
 
-	facets_lines = document.createElement("tr");
-	facets_lines.setAttribute("id", "facets_lines");
-	facets_lines.setAttribute("data", jQuery('#faceted_navigation_custom').val());
+	const facets_lines = document.createElement("tr");
+	facets_lines.setAttribute("class", "facets_lines");
+	facets_lines.setAttribute("data", facet_value);
 
-	facet_td = document.createElement("td");
+	const facet_td = document.createElement("td");
 
-	facet = document.createElement("input");
-	facet.setAttribute("id", "facets_facet");
+	const facet = document.createElement("input");
+	facet.setAttribute("class", "facets_facet");
 	facet.setAttribute("type", "text");
-	facet.setAttribute("value", jQuery('#faceted_navigation_custom').val());
+	facet.setAttribute("value", facet_value);
 	facet.setAttribute("readonly", '');
 
-	title_td = document.createElement("td");
-	title = document.createElement("input");
-	title.setAttribute("id", "facets_title");
+	const title_td = document.createElement("td");
+	const title = document.createElement("input");
+	title.setAttribute("class", "facets_title");
 	title.setAttribute("type", "text");
 	title.setAttribute("value", '');
 
 
-	position_td = document.createElement("td");
-	position = document.createElement("input");
-	position.setAttribute("id", "facets_position");
+	const position_td = document.createElement("td");
+	const position = document.createElement("input");
+	position.setAttribute("class", "facets_position");
 	position.setAttribute("type", "text");
 	position.setAttribute("value", linescount + 1);
 
-	checkbox_td = document.createElement("td");
+	const checkbox_td = document.createElement("td");
 
-	checkbox = document.createElement("input");
+	const checkbox = document.createElement("input");
 	checkbox.setAttribute("type", "checkbox");
-	checkbox.setAttribute("id", "faceted_enabled");
+	checkbox.setAttribute("class", "faceted_enabled");
 	checkbox.setAttribute("value", "1");
 
 
-	remove = document.createElement("a");
+	const remove = document.createElement("a");
 	remove.setAttribute("class", "close");
-	remove.setAttribute("onclick", 'remove_facet_line("' + jQuery("#faceted_navigation_custom").val() + '");');
+	remove.setAttribute("onclick", `remove_facet_line("${facet_value}");`);
 
 	facet_td.append(facet)
 	facets_lines.append(facet_td);
@@ -61,67 +76,54 @@ function add_facet() {
 	checkbox_td.append(remove);
 	facets_lines.append(checkbox_td);
 
-	jQuery('#facets_content').append(facets_lines);
+	document.querySelector('.facets_content').append(facets_lines);
 
-	jQuery('#faceted_navigation_custom').val('')
-
+	custom_facet_input.value = '';
 }
 
 
-function CollectAttributes() {
+function collect_attributes() {
 
-	Attributes = [];
+	let attribute_reference = [];
 
-	count = 0;
-	countFacets = jQuery('input[class^=facets_facet]').length;
+	let count = 0;
+	const countFacets = document.querySelectorAll('input[class^=facets_facet]').length;
+	const facet_attributes_value_holder = document.querySelector('#faceted_navigation');
 
 	while ((count + 1) <= countFacets) {
 
-		var data = {
+		attribute_reference.push({
+			attribute: document.querySelector(`input[class^=facets_facet]:eq(${count})`).value,
+			title: document.querySelector(`input[class^=facets_title]:eq(${count})`).value,
+			position: document.querySelector(`input[class^=facets_position]:eq(${count})`).value,
+			checked: document.querySelector(`input[class^=faceted_enabled]:eq(${count})`)?.checked
+		});
 
-			attribute: jQuery('input[class^=facets_facet]:eq(' + count + ')').val(),
-			title: jQuery('input[class^=facets_title]:eq(' + count + ')').val(),
-			position: jQuery('input[class^=facets_position]:eq(' + count + ')').val(),
-			checked: jQuery('input[class^=faceted_enabled]:eq(' + count + ')').is(':checked')
-
-		};
-
-		Attributes.push(data);
-
-		count = count + 1;
+		count += 1;
 
 	}
 
-	jQuery('#faceted_navigation').val(JSON.stringify(Attributes));
+	facet_attributes_value_holder.value = JSON.stringify(attribute_reference);
 
 }
 
-jQuery(".closebtn").click(function () {
-	jQuery(".alert").remove();
+document.querySelector('#powerstep_custom_text_enabled').addEventListener('click', function(e){
+	switch(e.target.checked){
+		case true:
+			document.querySelector('#powerstep_custom_text_back').removeAttribute('disabled');
+			document.querySelector('#powerstep_custom_text_title').removeAttribute('disabled');
+			document.querySelector('#powerstep_custom_text_cart').removeAttribute('disabled');
+			break;
+		case false:
+			document.querySelector('#powerstep_custom_text_back').setAttribute('disabled', true);
+			document.querySelector('#powerstep_custom_text_title').setAttribute('disabled', true);
+			document.querySelector('#powerstep_custom_text_cart').setAttribute('disabled', true);
+			break;
+	}
 });
-
-const clerkSubmitAdminForm = () => {
-    document.querySelector('#submit').click();
+const customPowerstepTexts = document.querySelector('#powerstep_custom_text_enabled').checked;
+if(!customPowerstepTexts){
+	document.querySelector('#powerstep_custom_text_back').setAttribute('disabled', true);
+	document.querySelector('#powerstep_custom_text_title').setAttribute('disabled', true);
+	document.querySelector('#powerstep_custom_text_cart').setAttribute('disabled', true);
 }
-document.addEventListener('DOMContentLoaded', function(){
-    document.querySelector('#powerstep_custom_text_enabled').addEventListener('click', function(e){
-        switch(e.target.checked){
-            case true:
-                document.querySelector('#powerstep_custom_text_back').removeAttribute('disabled');
-                document.querySelector('#powerstep_custom_text_title').removeAttribute('disabled');
-                document.querySelector('#powerstep_custom_text_cart').removeAttribute('disabled');
-                break;
-            case false:
-                document.querySelector('#powerstep_custom_text_back').setAttribute('disabled', true);
-                document.querySelector('#powerstep_custom_text_title').setAttribute('disabled', true);
-                document.querySelector('#powerstep_custom_text_cart').setAttribute('disabled', true);
-                break;
-        }
-    });
-    let customPowerstepTexts = document.querySelector('#powerstep_custom_text_enabled').checked;
-    if(!customPowerstepTexts){
-        document.querySelector('#powerstep_custom_text_back').setAttribute('disabled', true);
-        document.querySelector('#powerstep_custom_text_title').setAttribute('disabled', true);
-        document.querySelector('#powerstep_custom_text_cart').setAttribute('disabled', true);
-    }
-});

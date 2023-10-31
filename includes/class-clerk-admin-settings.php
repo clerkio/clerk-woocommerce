@@ -1386,9 +1386,9 @@ class Clerk_Admin_Settings {
 			}
 
 			?>
-			<table>
+			<div class='facets_table'>
 
-				<tbody id="facets_content">
+				<div class="facets_content">
 				<div class="w-fit">Attribute</div>
 				<div class="w-fit">Title</div>
 				<div class="w-fit">Position</div>
@@ -1444,9 +1444,9 @@ class Clerk_Admin_Settings {
 				<input
 				name="clerk_options[<?php echo esc_attr( $args['label_for'] ); ?>]"
 				id="faceted_navigation"
-				type="hidden">
-				</tbody>
-			</table>
+				type="hidden"/>
+			</div>
+			</div>
 			<?php
 
 	}
@@ -2124,7 +2124,7 @@ class Clerk_Admin_Settings {
 		settings_errors( 'wporg_messages' );
 		?>
 		<div class="wrap">
-			<div id="clerkFloatingSaveBtn" onclick="clerkSubmitAdminForm();"><?php echo esc_html( __( 'Save Settings', 'clerk' ) ); ?></div>
+			<div id="clerkFloatingSaveBtn" onclick="clerk_submit_admin_form();"><?php echo esc_html( __( 'Save Settings', 'clerk' ) ); ?></div>
 			<h1 style="font-family: Arial;">
 				<img id="clerkLogoHeader" src="<?php echo esc_html( plugin_dir_url( CLERK_PLUGIN_FILE ) . 'assets/img/clerk.png' ); ?>">
 				<span><?php echo esc_html( get_admin_page_title() ); ?></span>
