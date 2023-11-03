@@ -23,7 +23,7 @@ if (admin_form) {
 		collect_attributes();
 		}
   );
-  const lang_data_container = admin_form.querySelector('multi-lang-data')
+  const lang_data_container = admin_form.querySelector('#multi-lang-data')
   if (lang_data_container) {
     const lang_data = JSON.parse(lang_data_container.textContent);
     if ( lang_data ) {
