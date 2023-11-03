@@ -2129,7 +2129,7 @@ class Clerk_Admin_Settings {
 		// show error/update messages.
     settings_errors( 'wporg_messages' );
 
-    $language_info = clerk_wpml_get_active_scope();
+    $language_info = json_encode(clerk_wpml_get_active_scope());
 
 		?>
 		<div class="wrap">
@@ -2139,11 +2139,7 @@ class Clerk_Admin_Settings {
 				<span><?php echo esc_html( get_admin_page_title() ); ?></span>
 			</h1>
       <form id="clerkAdminForm" action="options.php" method="post">
-        <div id="multi-lang-data">
-          <?php
-            echo 
-          ?>
-        </div>
+        <div id="multi-lang-data"><?php echo esc_html( $language_info ); ?></div>
         <?php
 
 				// output security fields for the registered setting "wporg".
