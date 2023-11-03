@@ -191,3 +191,7 @@
 	min-width: fit-content;
 	max-width: clamp(300px, 50%, 100%);
 }
+
+#multi-lang-data {
+  display: none !important;
+}

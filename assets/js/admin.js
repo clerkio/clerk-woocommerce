@@ -22,7 +22,14 @@ if (admin_form) {
 		(e) => {
 		collect_attributes();
 		}
-	);
+  );
+  const lang_data_container = admin_form.querySelector('multi-lang-data')
+  if (lang_data_container) {
+    const lang_data = JSON.parse(lang_data_container.textContent);
+    if ( lang_data ) {
+      admin_form.querySelector('#import_url').value = lang_data['url']
+    }
+  }
 }
 
 function remove_facet_line(data_value) {
