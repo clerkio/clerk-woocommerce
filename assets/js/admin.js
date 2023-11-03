@@ -27,7 +27,7 @@ if (admin_form) {
 
 function remove_facet_line(data_value) {
 	const admin_form = document.querySelector( 'form#clerkAdminForm' );
-	const elements   = admin_form.querySelectorAll( `[data = "${data_value}"]` );
+	const elements   = admin_form.querySelectorAll( `[data="${data_value}"]` );
 	elements.forEach(
 		el => {
         el.remove();
@@ -130,10 +130,10 @@ function collect_attributes() {
 
 		attribute_reference.push(
 			{
-				attribute: document.querySelector( `input[class ^ = facets_facet]:eq( ${count} )` ).value,
-				title: document.querySelector( `input[class ^ = facets_title]:eq( ${count} )` ).value,
-				position: document.querySelector( `input[class ^ = facets_position]:eq( ${count} )` ).value,
-				checked: document.querySelector( `input[class ^ = faceted_enabled]:eq( ${count} )` ) ? .checked
+				attribute: document.querySelector( `input[class^=facets_facet]:eq( ${count} )` ).value,
+				title: document.querySelector( `input[class^=facets_title]:eq( ${count} )` ).value,
+				position: document.querySelector( `input[class^=facets_position]:eq( ${count} )` ).value,
+				checked: document.querySelector( `input[class^=faceted_enabled]:eq( ${count} )` )?.checked
 			}
 		);
 
