@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-require_once __DIR__ . '../includes/clerk-multi-lang-helpers.php';
+require_once dirname( dirname( __FILE__ ) ) . '/includes/clerk-multi-lang-helpers.php';
 if ( clerk_is_wpml_enabled() ) {
 	do_action( 'wpml_multilingual_options', 'clerk_options' );
 }
