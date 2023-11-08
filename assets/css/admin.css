@@ -1,9 +1,9 @@
-.alert.info {
+.toplevel_page_clerk .alert.info {
 	background-color: #2196F3;
 	border-radius: 6px;
 }
 
-.alert {
+.toplevel_page_clerk .alert {
 	padding: 20px;
 	background-color: #f44336;
 	color: white;
@@ -12,7 +12,7 @@
 	margin-bottom: 15px;
 }
 
-.closebtn {
+.toplevel_page_clerk .closebtn {
 	padding-left: 15px;
 	color: white;
 	font-weight: bold;
@@ -23,7 +23,7 @@
 	transition: 0.3s;
 }
 
-.close {
+.toplevel_page_clerk .close {
 	position: relative;
 	width: 1rem;
 	height: 1rem;
@@ -35,11 +35,11 @@
 	cursor: pointer;
 }
 
-.close:hover {
+.toplevel_page_clerk .close:hover {
 	opacity: 1;
 }
 
-.close:before, .close:after {
+.toplevel_page_clerk .close:before, .toplevel_page_clerk .close:after {
 	position: absolute;
 	left: 0.5rem;
 	content: ' ';
@@ -48,23 +48,23 @@
 	background-color: #f44336;
 }
 
-.red {
+.toplevel_page_clerk .red {
 	color: #f44336;
 }
 
-.close:before {
+.toplevel_page_clerk .close:before {
 	transform: rotate(45deg);
 }
 
-.close:after {
+.toplevel_page_clerk .close:after {
 	transform: rotate(-45deg);
 }
 
-#wpcontent {
+.toplevel_page_clerk #wpcontent {
 	background-color: #f8f8f2;
 	padding-left: 0.7rem;
 }
-#wpcontent h1 {
+.toplevel_page_clerk #wpcontent h1 {
 	max-width: fit-content;
 	font-weight: 900;
 	font-family: roboto;
@@ -84,27 +84,27 @@
 	user-select: none;
 }
 
-#clerkLogoHeader {
+.toplevel_page_clerk #clerkLogoHeader {
 	position: absolute;
 	top: 32%;
 	left: 0.5rem;
 	transition:all 1s ease;
 }
 
-#wpcontent h1:hover {
+.toplevel_page_clerk #wpcontent h1:hover {
 	background-color: #ff5c28;
 }
-#wpcontent h1:hover #clerkLogoHeader{
+.toplevel_page_clerk #wpcontent h1:hover #clerkLogoHeader{
 	left:1.4rem;
 	filter: drop-shadow(0 0 0.75rem white);
 }
-#wpbody {
+.toplevel_page_clerk #wpbody {
 	background-color: #DEDEDE;
 	padding-left: 1rem;
 	border-left: 1px solid #1d2327;
 }
 
-#wpbody form {
+.toplevel_page_clerk #wpbody form {
 	background-color: #eee;
 	padding: 0rem 1rem 1rem 1rem;
 	border: 1px solid #1d2327;
@@ -112,11 +112,11 @@
 	margin-top: 1rem;
 	box-shadow: 0 3px 3px rgba(0,0,0,0.2);
 }
-#wpbody label {
+.toplevel_page_clerk #wpbody label {
 	cursor: default;
 }
 
-#wpbody input[type="text"]{
+.toplevel_page_clerk #wpbody input[type="text"]{
 	width: 100%;
 	width: -moz-available;          /* WebKit-based browsers will ignore this. */
 	width: -webkit-fill-available;  /* Mozilla-based browsers will ignore this. */
@@ -124,14 +124,14 @@
 	max-width: clamp(300px, 50%, 100%);
 }
 
-#wpbody h2 {
+.toplevel_page_clerk #wpbody h2 {
 	background: #1d2327;
 	padding: 1rem;
 	margin: 0 -1rem;
 	color: white;
 }
 
-#clerkFloatingSaveBtn {
+.toplevel_page_clerk #clerkFloatingSaveBtn {
 	position: fixed;
 	right: 3rem;
 	top: 3rem;
@@ -147,10 +147,10 @@
 	cursor: pointer;
 	z-index: 99;
 }
-#clerkFloatingSaveBtn:hover {
+.toplevel_page_clerk #clerkFloatingSaveBtn:hover {
 	background-color: #135e96;
 }
-#submit {
+.toplevel_page_clerk #submit {
 	padding: 1rem;
 	border-radius: 5px;
 	box-shadow: 0 3px 3px rgb(0 0 0 / 20%);
@@ -162,36 +162,36 @@
 	cursor: pointer;
 }
 
-.facets_content_title_wrapper, .facets_lines {
+.toplevel_page_clerk .facets_content_title_wrapper, .facets_lines {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 60px 40px;
 	-ms-grid-columns: minmax(0, 1fr) minmax(0, 1fr) 60px 40px;
 	padding: 5px 0px;
 }
 
-.facets_lines > div {
+.toplevel_page_clerk .facets_lines > div {
 	display: flex;
 	align-items: center;
 	justify-content: flex-start;
 	padding: 8px 0px;
 }
 
-.faceted_enabled {
+.toplevel_page_clerk .faceted_enabled {
 	margin-bottom: 0px !important;
 	margin-left: 5px !important;
 	margin-right: 0px !important;
 	margin-top: 0px !important;
 }
 
-.facets_content_title_wrapper > div {
+.toplevel_page_clerk .facets_content_title_wrapper > div {
 	font-weight: 800;
 }
 
-.facets_table {
+.toplevel_page_clerk .facets_table {
 	min-width: fit-content;
 	max-width: clamp(300px, 50%, 100%);
 }
 
-#multi-lang-data {
+.toplevel_page_clerk #multi-lang-data {
   display: none !important;
 }
