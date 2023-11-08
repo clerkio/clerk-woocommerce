@@ -127,26 +127,24 @@ function add_facet() {
 
 function collect_attributes() {
 
-	let attribute_reference = [];
+    let attribute_reference = [];
+    
+    const facet_attributes_value_holder = document.querySelector( '#faceted_navigation' );
+    const facet_slugs = document.querySelectorAll( 'input.facets_facet' );
+    const facet_titles = document.querySelectorAll( 'input.facets_title' );
+    const facet_position = document.querySelectorAll( 'input.facets_position' );
+    const facet_in_use = document.querySelectorAll( 'input.faceted_enabled' );
+      
+    for(i=0;i<facet_slugs.length;i++){
+        attribute_reference.push({
+              attribute: facet_slugs[i].value,
+              title: facet_titles[i].value,
+              position: facet_position[i].value,
+              checked: facet_in_use[i]?.checked
+          })
+    }
 
-	let count                           = 0;
-	const countFacets                   = document.querySelectorAll( 'input[class^=facets_facet]' ).length;
-	const facet_attributes_value_holder = document.querySelector( '#faceted_navigation' );
 
-	while ((count + 1) <= countFacets) {
-
-		attribute_reference.push(
-			{
-				attribute: document.querySelector( `input[class^=facets_facet]:eq( ${count} )` ).value,
-				title: document.querySelector( `input[class^=facets_title]:eq( ${count} )` ).value,
-				position: document.querySelector( `input[class^=facets_position]:eq( ${count} )` ).value,
-				checked: document.querySelector( `input[class^=faceted_enabled]:eq( ${count} )` )?.checked
-			}
-		);
-
-		count += 1;
-
-		}
 
 		facet_attributes_value_holder.value = JSON.stringify( attribute_reference );
 
