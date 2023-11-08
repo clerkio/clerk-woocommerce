@@ -14,12 +14,14 @@
  * @file Handles front end content get.
  * Ajax handler.
  */
-
+const clerk_submit_admin_form = () => {
+  document.querySelector( '#submit' ).click();
+}
 const admin_form = document.querySelector( 'form#clerkAdminForm' );
 if (admin_form) {
   admin_form.addEventListener(
     'submit',
-  (e) => {
+    (e) => {
       collect_attributes();
     }
   );
@@ -40,15 +42,11 @@ if (admin_form) {
     );
   }
 
-  const clerk_submit_admin_form = () => {
-    document.querySelector( '#submit' ).click();
-  }
-
   const close_btn = admin_form.querySelector( '.closebtn' );
   if (close_btn) {
     close_btn.addEventListener(
       'click',
-    (e) => {
+      (e) => {
         admin_form.querySelector( '.alert' ).remove();
       }
     )
@@ -57,7 +55,7 @@ if (admin_form) {
   if (custom_facet_input) {
     custom_facet_input.addEventListener(
       'keydown',
-    (e) => {
+      (e) => {
         if (e.keyCode == 13) {
           e.preventDefault();
           add_facet();
@@ -156,12 +154,12 @@ if (admin_form) {
           document.querySelector( '#powerstep_custom_text_back' ).removeAttribute( 'disabled' );
           document.querySelector( '#powerstep_custom_text_title' ).removeAttribute( 'disabled' );
           document.querySelector( '#powerstep_custom_text_cart' ).removeAttribute( 'disabled' );
-        break;
+          break;
         case false:
           document.querySelector( '#powerstep_custom_text_back' ).setAttribute( 'disabled', true );
           document.querySelector( '#powerstep_custom_text_title' ).setAttribute( 'disabled', true );
           document.querySelector( '#powerstep_custom_text_cart' ).setAttribute( 'disabled', true );
-        break;
+          break;
       }
     }
   );
