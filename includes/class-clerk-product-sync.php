@@ -414,10 +414,10 @@ class Clerk_Product_Sync {
 			}
 
 			if ( $product->is_type( 'bundle' ) ) {
-				$price               = $product->min_raw_price ? wc_get_price_including_tax( $product, array( 'price' => $product->min_raw_price ) ) : null;
-				$list_price          = $product->min_raw_regular_price ? wc_get_price_including_tax( $product, array( 'price' => $product->min_raw_regular_price ) ) : null;
-				$price_excl_tax      = $product->min_raw_price ? wc_get_price_excluding_tax( $product, array( 'price' => $product->min_raw_price ) ) : null;
-				$list_price_excl_tax = $product->min_raw_regular_price ? wc_get_price_excluding_tax( $product, array( 'price' => $product->min_raw_regular_price ) ) : null;
+				$price               = $product->get_min_raw_price() ? wc_get_price_including_tax( $product, array( 'price' => $product->get_min_raw_price() ) ) : null;
+				$list_price          = $product->get_min_raw_regular_price() ? wc_get_price_including_tax( $product, array( 'price' => $product->get_min_raw_regular_price() ) ) : null;
+				$price_excl_tax      = $product->get_min_raw_price() ? wc_get_price_excluding_tax( $product, array( 'price' => $product->get_min_raw_price() ) ) : null;
+				$list_price_excl_tax = $product->get_min_raw_regular_price() ? wc_get_price_excluding_tax( $product, array( 'price' => $product->get_min_raw_regular_price() ) ) : null;
 				$bundled_items       = $product->get_bundled_items();
 				$stock_quantity      = $product->get_stock_quantity();
 				if ( ! $price || ! $list_price ) {
