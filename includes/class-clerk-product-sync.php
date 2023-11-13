@@ -256,6 +256,25 @@ class Clerk_Product_Sync {
 
 			$image_size_setting = isset( $options['data_sync_image_size'] ) ? $options['data_sync_image_size'] : 'medium';
 
+			$product_tax_classes  = WC_Tax::get_tax_classes();
+			$product_tax_rates = array();
+
+			if( $product_tax_classes ){
+			  if ( ! in_array( "", $product_tax_classes ) ) {
+				array_unshift( $product_tax_classes, "" );
+			  }
+
+			  foreach( $product_tax_classes as $tax_class ) {
+				$taxes = WC_Tax::get_rates_for_tax_class( $tax_class );
+				if( ! empty( $taxes ) ) {
+					foreach( $taxes as $key => $tax ) {
+						$product_tax_rates[] = (array) $tax;
+					}
+				}
+			  }
+
+			}
+
 			$taxonomies = array( 'product_cat', 'product_brand', 'pwb-brand' );
 			$categories = array();
 			foreach ( $taxonomies as $taxonomy ) {
@@ -491,6 +510,14 @@ class Clerk_Product_Sync {
 			$product_array['managing_stock']      = $product->managing_stock();
 			$product_array['backorders']          = $product->get_backorders();
 			$product_array['stock_status']        = $product->get_stock_status();
+
+			if ( ! empty( $product_tax_rates ) ){
+				foreach( $product_tax_rates as $tax_rate ){
+					if ( $tax_rate['tax_rate_class'] == $product->get_tax_class() ){
+						$product_array['tax_rate'] = (float) $tax_rate['tax_rate'];
+					}
+				}
+			}
 
 			if ( ! empty( $product->get_stock_quantity() ) ) {
 				$product_array['stock'] = ( null !== $product->get_stock_quantity() ) ? $product->get_stock_quantity() : 1;
