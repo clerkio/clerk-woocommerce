@@ -576,9 +576,10 @@ class Clerk_Product_Sync {
 	 */
 	private function query_custom_fields( $product, $fields, $product_data ) {
 		$product_type = $product->get_type();
-		$fields       = array_diff( $fields, array_keys( $product_data ) );
+		$fields       = array_values( array_filter( array_diff( $fields, array_keys( $product_data ) ) ) );
 
-		foreach ( $fields as $field ) {
+
+    foreach ( $fields as $field ) {
 			$attribute_value = $this->resolve_attribute_product( $product, $field );
 			if ( isset( $attribute_value ) ) {
 				$product_data[ $this->clerk_friendly_attributes( $field ) ] = $this->format_attribute( $attribute_value, $field );

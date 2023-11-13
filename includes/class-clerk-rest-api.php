@@ -596,7 +596,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 	 */
 	public function query_custom_fields( $product, $fields, $product_data ) {
 		$product_type = $product->get_type();
-		$fields       = array_diff( $fields, array_keys( $product_data ) );
+		$fields       = array_values( array_filter( array_diff( $fields, array_keys( $product_data ) ) ) );
 
 		foreach ( $fields as $field ) {
 			$attribute_value = $this->resolve_attribute_product( $product, $field );
