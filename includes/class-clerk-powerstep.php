@@ -61,7 +61,6 @@ class Clerk_Powerstep {
 		add_action( 'wp_enqueue_scripts', array( $this, 'add_powerstep_files' ) );
 		add_action( 'wp_ajax_clerk_powerstep', array( $this, 'powerstep_ajax' ) );
 		add_action( 'wp_ajax_nopriv_clerk_powerstep', array( $this, 'powerstep_ajax' ) );
-
 	}
 
 	/**
@@ -106,7 +105,6 @@ class Clerk_Powerstep {
 			$this->logger->error( 'ERROR redirect_to_powerstep', array( 'error' => $e->getMessage() ) );
 
 		}
-
 	}
 
 	/**
@@ -145,14 +143,14 @@ class Clerk_Powerstep {
 					$actual_link = ( isset( $_SERVER['HTTPS'] ) && 'on' === sanitize_text_field( wp_unslash( $_SERVER['HTTPS'] ) ) ? 'https' : 'http' ) . "://$_host$_uri";
 
 					$params = array(
-						'product_id' => $product_id,
-						'clerk_powerstep' => true
+						'product_id'      => $product_id,
+						'clerk_powerstep' => true,
 					);
-					if( is_numeric( $variant_id ) ) {
+					if ( is_numeric( $variant_id ) ) {
 						$params['variation_id'] = $variant_id;
 					}
 
-					$_url = $actual_link . '?' . http_build_query($params);
+					$_url = $actual_link . '?' . http_build_query( $params );
 
 					header( 'Location: ' . $_url );
 					return $url;
@@ -177,7 +175,6 @@ class Clerk_Powerstep {
 			$this->logger->error( 'ERROR redirect_to_powerstep_no_ajax', array( 'error' => $e->getMessage() ) );
 
 		}
-
 	}
 
 	/**
@@ -201,7 +198,6 @@ class Clerk_Powerstep {
 			$this->logger->error( 'ERROR add_powerstep_vars', array( 'error' => $e->getMessage() ) );
 
 		}
-
 	}
 
 	/**
@@ -234,7 +230,6 @@ class Clerk_Powerstep {
 			$this->logger->error( 'ERROR handle_shortcode', array( 'error' => $e->getMessage() ) );
 
 		}
-
 	}
 
 	/**
@@ -270,7 +265,6 @@ class Clerk_Powerstep {
 			$this->logger->error( 'ERROR add_powerstep_files', array( 'error' => $e->getMessage() ) );
 
 		}
-
 	}
 
 	/**
@@ -300,9 +294,7 @@ class Clerk_Powerstep {
 			$this->logger->error( 'ERROR powerstep_ajax', array( 'error' => $e->getMessage() ) );
 
 		}
-
 	}
-
 }
 
 new Clerk_Powerstep();

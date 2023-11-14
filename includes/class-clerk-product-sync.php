@@ -66,7 +66,7 @@ class Clerk_Product_Sync {
 		add_action( 'woocommerce_new_product', array( $this, 'save_product' ), 100, 3 );
 		// This hook will run before the price is updated if there is a module modifying the price via a hook.
 		// save_post with a high enough prio defer score.
-		//add_action( 'woocommerce_update_product', array( $this, 'save_product' ), 1000, 3 );
+		// add_action( 'woocommerce_update_product', array( $this, 'save_product' ), 1000, 3 );
 		add_action( 'save_post', array( $this, 'pre_save_post' ), 1000, 3 );
 		add_action( 'woocommerce_product_import_inserted_product_object', array( $this, 'pre_save_product' ), 10, 3 );
 		add_action( 'before_delete_post', array( $this, 'remove_product' ) );
@@ -94,9 +94,9 @@ class Clerk_Product_Sync {
 	/**
 	 * Update Product from Import
 	 *
-	 * @param int|void $post_id Product Id.
+	 * @param int|void     $post_id Product Id.
 	 * @param WP_Post|void $post Post Object.
-	 * @param bool|void $update Whether an existing post is being updated.
+	 * @param bool|void    $update Whether an existing post is being updated.
 	 */
 	public function pre_save_post( $post_id = null, $post = null, $update = null ) {
 		try {
@@ -119,7 +119,7 @@ class Clerk_Product_Sync {
 	public function save_product( $product_id = null ) {
 		$options = get_option( 'clerk_options' );
 
-		if(!is_array($options)){
+		if ( ! is_array( $options ) ) {
 			return;
 		}
 
@@ -220,7 +220,7 @@ class Clerk_Product_Sync {
 		try {
 			$options = get_option( 'clerk_options' );
 
-			if(!is_array($options)){
+			if ( ! is_array( $options ) ) {
 				return;
 			}
 
@@ -246,7 +246,7 @@ class Clerk_Product_Sync {
 		try {
 			$options = get_option( 'clerk_options' );
 
-			if(!is_array($options)){
+			if ( ! is_array( $options ) ) {
 				return;
 			}
 
@@ -279,7 +279,7 @@ class Clerk_Product_Sync {
 
 				foreach ( $variations as $variation ) {
 
-					$variation = ( array ) $variation;
+					$variation = (array) $variation;
 
 					$is_available = false;
 					if ( array_key_exists( 'is_in_stock', $variation ) && array_key_exists( 'is_purchasable', $variation ) && array_key_exists( 'backorders_allowed', $variation ) ) {
@@ -366,16 +366,16 @@ class Clerk_Product_Sync {
 				'simple',
 				'grouped',
 				'bundle',
-				'variable'
+				'variable',
 			);
 
 			// Use default method for getting price if type is custom.
 
-			if( ! in_array( $product->get_type(), $supported_product_types ) ) {
-				if(method_exists($product, 'get_price')){
+			if ( ! in_array( $product->get_type(), $supported_product_types ) ) {
+				if ( method_exists( $product, 'get_price' ) ) {
 					$price = $product->get_price();
 				}
-				if(method_exists($product, 'get_regular_price')){
+				if ( method_exists( $product, 'get_regular_price' ) ) {
 					$list_price = $product->get_regular_price();
 				}
 			}
@@ -426,7 +426,7 @@ class Clerk_Product_Sync {
 				$product_array['stock'] = $stock_quantity;
 			}
 
-			$exempted_fields = ( array ) $this->get_additional_fields_raw();
+			$exempted_fields = (array) $this->get_additional_fields_raw();
 
 			// Append additional fields.
 			foreach ( $this->get_additional_fields() as $field ) {
@@ -458,7 +458,6 @@ class Clerk_Product_Sync {
 						} else {
 							$product_array[ $this->clerk_friendly_attributes( $field ) ] = $product->get_attribute( $field );
 						}
-
 					}
 
 					// 21-10-2021 KKY - Additional Fields for Configurable and Grouped Products - additional fields.
@@ -472,9 +471,9 @@ class Clerk_Product_Sync {
 							$variation_obj = new WC_Product_variation( $v['variation_id'] );
 
 							if ( ! in_array( $field, $exempted_fields ) ) {
-								$attribute     = array_walk( explode( ',', $variation_obj->get_attribute( $field ) ), array( $this, 'trim_whitespace_in_attribute' ) );
+								$attribute = array_walk( explode( ',', $variation_obj->get_attribute( $field ) ), array( $this, 'trim_whitespace_in_attribute' ) );
 							} else {
-								$attribute     = $variation_obj->get_attribute( $field );
+								$attribute = $variation_obj->get_attribute( $field );
 							}
 
 							if ( is_array( $attribute ) ) {
@@ -704,7 +703,7 @@ class Clerk_Product_Sync {
 
 			$options = get_option( 'clerk_options' );
 
-			if(!is_array($options)){
+			if ( ! is_array( $options ) ) {
 				return array();
 			}
 
@@ -729,13 +728,13 @@ class Clerk_Product_Sync {
 
 			$options = get_option( 'clerk_options' );
 
-			if( ! is_array( $options ) ){
+			if ( ! is_array( $options ) ) {
 				return array();
 			}
 
-			if ( array_key_exists('additional_fields_raw', $options) ) {
+			if ( array_key_exists( 'additional_fields_raw', $options ) ) {
 				$additional_fields = $options['additional_fields_raw'];
-				$fields = explode( ',', $additional_fields );
+				$fields            = explode( ',', $additional_fields );
 			} else {
 				$fields = array();
 			}
@@ -752,34 +751,31 @@ class Clerk_Product_Sync {
 	 *
 	 * @return string|void
 	 */
-	private function trim_whitespace_in_attribute($attribute_value = null) {
+	private function trim_whitespace_in_attribute( $attribute_value = null ) {
 
 		try {
 
 			$options = get_option( 'clerk_options' );
 
-			if ( ! is_array($options) ){
+			if ( ! is_array( $options ) ) {
 				return '';
 			}
 
-			if ( ! is_string($attribute_value) ) {
+			if ( ! is_string( $attribute_value ) ) {
 				return $attribute_value;
 			}
 
-			if ( isset($options['additional_fields_trim']) ) {
-				return trim($attribute_value);
+			if ( isset( $options['additional_fields_trim'] ) ) {
+				return trim( $attribute_value );
 			} else {
-				return str_replace( ' ', '', $attribute_value);
+				return str_replace( ' ', '', $attribute_value );
 			}
-
 		} catch ( Exception $e ) {
 
 			$this->logger->error( 'ERROR trim_whitespace_in_attribute', array( 'error' => $e->getMessage() ) );
 
 		}
-
 	}
-
 }
 
 $clerk_product_sync = new Clerk_Product_Sync();

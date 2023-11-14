@@ -70,7 +70,6 @@ class Clerk_Logger {
 		}
 		$this->date = new DateTime();
 		$this->time = $this->date->getTimestamp();
-
 	}
 
 	/**
@@ -265,5 +264,4 @@ class Clerk_Logger {
 			}
 		}
 	}
-
 }

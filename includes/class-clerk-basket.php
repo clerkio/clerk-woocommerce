@@ -53,7 +53,6 @@ class Clerk_Basket {
 
 		add_filter( 'woocommerce_add_to_cart_redirect', array( $this, 'update_basket' ) );
 		add_filter( 'template_redirect', array( $this, 'update_basket' ) );
-
 	}
 
 	/**
@@ -133,9 +132,7 @@ class Clerk_Basket {
 			$this->logger->error( 'ERROR update_basket', array( 'error' => $e->getMessage() ) );
 
 		}
-
 	}
-
 }
 
 new Clerk_Basket();

@@ -91,7 +91,7 @@ if ( isset( $options['powerstep_custom_text_enabled'] ) ) {
 				$filter_string .= ', ';
 			}
 			$filter_string .= '.' . $class_string . (string) $index;
-			$index++;
+			++$index;
 		endforeach;
 		?>
 	</div>

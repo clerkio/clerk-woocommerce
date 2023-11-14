@@ -45,7 +45,6 @@ class Clerk_Api {
 
 		include_once __DIR__ . '/class-clerk-logger.php';
 		$this->logger = new Clerk_Logger();
-
 	}
 
 	/**
@@ -55,27 +54,29 @@ class Clerk_Api {
 	 */
 	public function verify_token( $data = null ) {
 
-        if( ! $data ) {
-            return false;
-        }
+		if ( ! $data ) {
+			return false;
+		}
 
 		try {
 
+			$options    = get_option( 'clerk_options' );
+			$public_key = $options['public_key'];
+
 			$endpoint = 'token/verify';
 
-			$response = $this->post($endpoint, $data);
+			$data['key'] = $public_key;
 
-			if( ! $response ) {
+			$response = $this->get( $endpoint, $data );
+
+			if ( ! $response ) {
 				return array();
 			} else {
 				return $response;
 			}
-
-
 		} catch ( Exception $e ) {
 			$this->logger->error( 'ERROR verify_token', array( 'error' => $e->getMessage() ) );
 		}
-
 	}
 
 	/**
@@ -103,7 +104,6 @@ class Clerk_Api {
 			$this->logger->error( 'ERROR remove_product', array( 'error' => $e->getMessage() ) );
 
 		}
-
 	}
 
 	/**
@@ -132,7 +132,6 @@ class Clerk_Api {
 			$this->logger->error( 'ERROR add_product', array( 'error' => $e->getMessage() ) );
 
 		}
-
 	}
 
 	/**
@@ -177,7 +176,6 @@ class Clerk_Api {
 			$this->logger->error( 'ERROR get_content', array( 'error' => $e->getMessage() ) );
 
 		}
-
 	}
 
 	/**
@@ -211,7 +209,6 @@ class Clerk_Api {
 			$this->logger->error( 'GET request failed', array( 'error' => $e->getMessage() ) );
 
 		}
-
 	}
 
 	/**
@@ -248,6 +245,5 @@ class Clerk_Api {
 			$this->logger->error( 'POST request failed', array( 'error' => $e->getMessage() ) );
 
 		}
-
 	}
 }
