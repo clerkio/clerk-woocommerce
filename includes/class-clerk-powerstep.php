@@ -40,6 +40,10 @@ class Clerk_Powerstep {
 	public function __construct() {
 		$this->init_hooks();
 		include_once __DIR__ . '/class-clerk-logger.php';
+		require_once __DIR__ . '/clerk-multi-lang-helpers.php';
+		if ( clerk_is_wpml_enabled() ) {
+			do_action( 'wpml_multilingual_options', 'clerk_options' );
+		}
 		$this->logger = new Clerk_Logger();
 	}
 
@@ -210,7 +214,7 @@ class Clerk_Powerstep {
 	 *
 	 * @param array $vars Product Info and Display data array.
 	 *
-	 * @return array
+	 * @return array | void
 	 */
 	public function add_powerstep_vars( $vars ) {
 
@@ -224,7 +228,6 @@ class Clerk_Powerstep {
 		} catch ( Exception $e ) {
 
 			$this->logger->error( 'ERROR add_powerstep_vars', array( 'error' => $e->getMessage() ) );
-
 		}
 
 	}
@@ -232,7 +235,7 @@ class Clerk_Powerstep {
 	/**
 	 * Output clerk-powerstep shortcode
 	 *
-	 * @return html
+	 * @return html | void
 	 */
 	public function handle_shortcode() {
 
@@ -306,7 +309,7 @@ class Clerk_Powerstep {
 		try {
 
 			$add_to_cart_param = false;
-			$add_to_cart_param = ( null !== filter_input( INPUT_POST, 'product_id', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_POST, 'product_id', FILTER_SANITIZE_STRING ) : $add_to_cart_param;
+			$add_to_cart_param = ( null !== filter_input( INPUT_POST, 'product_id' ) ) ? filter_input( INPUT_POST, 'product_id' ) : $add_to_cart_param;
 
 			if ( ! $add_to_cart_param ) {
 				return;

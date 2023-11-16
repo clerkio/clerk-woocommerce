@@ -36,6 +36,10 @@ class Clerk_Content {
 		add_action( 'woocommerce_after_cart', array( $this, 'clerk_woocommerce_after_cart_table' ), 99 );
 		add_filter( 'wc_get_template', array( $this, 'clerk_wc_get_template' ), 99, 2 );
 		include_once __DIR__ . '/class-clerk-logger.php';
+		include_once __DIR__ . '/clerk-multi-lang-helpers.php';
+		if ( clerk_is_wpml_enabled() ) {
+			do_action( 'wpml_multilingual_options', 'clerk_options' );
+		}
 		$this->logger = new Clerk_Logger();
 	}
 
@@ -47,7 +51,8 @@ class Clerk_Content {
 		try {
 
 			$category = get_queried_object();
-			$options  = get_option( 'clerk_options' );
+
+			$options = get_option( 'clerk_options' );
 
 			if ( isset( $options['category_enabled'] ) && $options['category_enabled'] && property_exists( $category, 'term_id' ) ) :
 
@@ -161,6 +166,7 @@ class Clerk_Content {
 		try {
 
 			if ( 'single-product/related.php' === $template_name ) {
+
 				$options = get_option( 'clerk_options' );
 
 				if ( isset( $options['product_enabled'] ) && $options['product_enabled'] ) :

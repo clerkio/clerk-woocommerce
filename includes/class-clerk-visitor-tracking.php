@@ -37,6 +37,10 @@ class Clerk_Visitor_Tracking {
 	public function __construct() {
 		$this->init_hooks();
 		include_once __DIR__ . '/class-clerk-logger.php';
+		include_once __DIR__ . '/clerk-multi-lang-helpers.php';
+		if ( clerk_is_wpml_enabled() ) {
+			do_action( 'wpml_multilingual_options', 'clerk_options' );
+		}
 		$this->logger = new Clerk_Logger();
 	}
 
@@ -50,6 +54,7 @@ class Clerk_Visitor_Tracking {
 		add_action( 'init', array( $this, 'clerk_add_custom_shortcodes' ) );
 
 		$options = get_option( 'clerk_options' );
+
 		if ( isset( $options['collect_emails'] ) ) {
 			add_action( 'woocommerce_review_order_before_submit', array( $this, 'clerk_woocommerce_review_order_before_submit' ), 99 );
 		}
@@ -227,7 +232,11 @@ class Clerk_Visitor_Tracking {
 				} else {
 					$script_js = '';
 				}
-				echo "<script id='clerk_additional_header_scripts'>" . html_entity_decode( esc_attr( $script_js ), ENT_QUOTES ) . '</script>';
+				?>
+				<script id='clerk_additional_header_scripts'>
+				<?php html_entity_decode( esc_attr( $script_js ), ENT_QUOTES ); ?>
+				</script>
+				<?php
 			}
 
 			if ( isset( $options['livesearch_enabled'] ) && $options['livesearch_enabled'] ) :

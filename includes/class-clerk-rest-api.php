@@ -33,11 +33,22 @@ class Clerk_Rest_Api extends WP_REST_Server {
 	protected $api;
 
 	/**
+	 * Clerk Api Interface
+	 *
+	 * @var Clerk_Logger
+	 */
+	protected $logger;
+
+	/**
 	 * Clerk_Rest_Api constructor.
 	 */
 	public function __construct() {
 		$this->init_hooks();
 		include_once __DIR__ . '/class-clerk-logger.php';
+		include_once __DIR__ . '/clerk-multi-lang-helpers.php';
+		if ( clerk_is_wpml_enabled() ) {
+			do_action( 'wpml_multilingual_options', 'clerk_options' );
+		}
 		$this->logger = new Clerk_Logger();
 
 	}
@@ -628,7 +639,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 	 */
 	public function query_custom_fields( $product, $fields, $product_data ) {
 		$product_type = $product->get_type();
-		$fields       = array_diff( $fields, array_keys( $product_data ) );
+		$fields       = array_values( array_filter( array_diff( $fields, array_keys( $product_data ) ) ) );
 
 		foreach ( $fields as $field ) {
 			$attribute_value = $this->resolve_attribute_product( $product, $field );

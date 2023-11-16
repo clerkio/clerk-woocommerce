@@ -1,12 +1,79 @@
 <wpml-config>
-    <admin-texts>
-        <key name="clerk_options">
-            <key name="public_key"/>
-            <key name="private_key"/>
-            <key name="additional_fields"/>
-            <key name="search_template"/>
-            <key name="livesearch_template"/>
-            <key name="powerstep_template"/>
-        </key>
-    </admin-texts>
+  <admin-texts>
+    <key name="clerk_options">
+      <key name="public_key"/>
+      <key name="private_key"/>
+      <key name="lang"/>
+      <key name="customer_sync_enabled"/>
+      <key name="customer_sync_customer_fields"/>
+      <key name="realtime_updates"/>
+      <key name="include_pages"/>
+      <key name="page_additional_fields"/>
+      <key name="page_additional_types"/>
+      <key name="outofstock_products"/>
+      <key name="collect_emails"/>
+      <key name="collect_emails_signup_message"/>
+      <key name="collect_baskets"/>
+      <key name="additional_fields"/>
+      <key name="additional_fields_trim"/>
+      <key name="additional_fields_raw"/>
+      <key name="disable_order_synchronization"/>
+      <key name="data_sync_image_size"/>
+      <key name="livesearch_enabled"/>
+      <key name="livesearch_include_suggestions"/>
+      <key name="livesearch_suggestions"/>
+      <key name="livesearch_include_categories"/>
+      <key name="livesearch_categories"/>
+      <key name="livesearch_include_pages"/>
+      <key name="livesearch_pages"/>
+      <key name="livesearch_pages_type"/>
+      <key name="livesearch_dropdown_position"/>
+      <key name="livesearch_field_selector"/>
+      <key name="livesearch_form_selector"/>
+      <key name="livesearch_template"/>
+      <key name="search_enabled"/>
+      <key name="search_page"/>
+      <key name="search_include_categories"/>
+      <key name="search_categories"/>
+      <key name="search_include_pages"/>
+      <key name="search_pages"/>
+      <key name="search_pages_type"/>
+      <key name="search_template"/>
+      <key name="search_no_results_text"/>
+      <key name="search_load_more_button"/>
+      <key name="faceted_navigation_enabled"/>
+      <key name="faceted_navigation_custom"/>
+      <key name="faceted_navigation"/>
+      <key name="faceted_navigation_design"/>
+      <key name="powerstep_enabled"/>
+      <key name="powerstep_type"/>
+      <key name="powerstep_page"/>
+      <key name="powerstep_templates"/>
+      <key name="powerstep_excl_duplicates"/>
+      <key name="powerstep_custom_text_enabled"/>
+      <key name="powerstep_custom_text_back"/>
+      <key name="powerstep_custom_text_cart"/>
+      <key name="powerstep_custom_text_title"/>
+      <key name="powerstep_keep_atc_param"/>
+      <key name="exit_intent_enabled"/>
+      <key name="exit_intent_template"/>
+      <key name="category_enabled"/>
+      <key name="category_content"/>
+      <key name="category_excl_duplicates"/>
+      <key name="clerk_category_shortcode"/>
+      <key name="product_enabled"/>
+      <key name="product_content"/>
+      <key name="product_excl_duplicates"/>
+      <key name="clerk_product_shortcode"/>
+      <key name="cart_enabled"/>
+      <key name="cart_content"/>
+      <key name="cart_excl_duplicates"/>
+      <key name="clerk_cart_shortcode"/>
+      <key name="clerk_additional_scripts_enabled"/>
+      <key name="clerk_additional_scripts_content"/>
+      <key name="log_enabled"/>
+      <key name="log_level"/>
+      <key name="log_to"/>
+    </key>
+  </admin-texts>
 </wpml-config>
