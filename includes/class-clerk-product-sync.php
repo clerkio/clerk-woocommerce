@@ -256,23 +256,22 @@ class Clerk_Product_Sync {
 
 			$image_size_setting = isset( $options['data_sync_image_size'] ) ? $options['data_sync_image_size'] : 'medium';
 
-			$product_tax_classes  = WC_Tax::get_tax_classes();
-			$product_tax_rates = array();
+			$product_tax_classes = WC_Tax::get_tax_classes();
+			$product_tax_rates   = array();
 
-			if( $product_tax_classes ){
-			  if ( ! in_array( "", $product_tax_classes ) ) {
-				array_unshift( $product_tax_classes, "" );
-			  }
+			if ( $product_tax_classes ) {
+				if ( ! in_array( '', $product_tax_classes, true ) ) {
+					array_unshift( $product_tax_classes, '' );
+				}
 
-			  foreach( $product_tax_classes as $tax_class ) {
-				$taxes = WC_Tax::get_rates_for_tax_class( $tax_class );
-				if( ! empty( $taxes ) ) {
-					foreach( $taxes as $key => $tax ) {
-						$product_tax_rates[] = (array) $tax;
+				foreach ( $product_tax_classes as $tax_class ) {
+					$taxes = WC_Tax::get_rates_for_tax_class( $tax_class );
+					if ( ! empty( $taxes ) ) {
+						foreach ( $taxes as $key => $tax ) {
+							$product_tax_rates[] = (array) $tax;
+						}
 					}
 				}
-			  }
-
 			}
 
 			$taxonomies = array( 'product_cat', 'product_brand', 'pwb-brand' );
@@ -422,8 +421,8 @@ class Clerk_Product_Sync {
 						if ( ! empty( $tmp_children_prices ) ) {
 							$raw_regular_price = min( $tmp_children_prices );
 							if ( is_numeric( $raw_regular_price ) ) {
-								  $list_price_excl_tax = wc_get_price_excluding_tax( $product, array( 'price' => $raw_regular_price ) );
-								  $list_price          = wc_get_price_including_tax( $product, array( 'price' => $raw_regular_price ) );
+								$list_price_excl_tax = wc_get_price_excluding_tax( $product, array( 'price' => $raw_regular_price ) );
+								$list_price          = wc_get_price_including_tax( $product, array( 'price' => $raw_regular_price ) );
 							}
 						}
 					}
@@ -445,10 +444,17 @@ class Clerk_Product_Sync {
 					$price_excl_tax      = 0;
 					$list_price_excl_tax = 0;
 					foreach ( $bundled_items as $item ) {
-						$price               += wc_get_price_including_tax( $item, array( 'price' => $item->get_price() ) );
-						$list_price          += wc_get_price_including_tax( $item, array( 'price' => $item->get_regular_price() ) );
-						$price_excl_tax      += wc_get_price_excluding_tax( $item, array( 'price' => $item->get_price() ) );
-						$list_price_excl_tax += wc_get_price_excluding_tax( $item, array( 'price' => $item->get_regular_price() ) );
+						if ( method_exists( $item, 'is_taxable' ) ) {
+							$price               += wc_get_price_including_tax( $item, array( 'price' => $item->get_price() ) );
+							$list_price          += wc_get_price_including_tax( $item, array( 'price' => $item->get_regular_price() ) );
+							$price_excl_tax      += wc_get_price_excluding_tax( $item, array( 'price' => $item->get_price() ) );
+							$list_price_excl_tax += wc_get_price_excluding_tax( $item, array( 'price' => $item->get_regular_price() ) );
+						} else {
+							$price               += $item->get_price();
+							$list_price          += $item->get_regular_price();
+							$price_excl_tax      += $item->get_price();
+							$list_price_excl_tax += $item->get_regular_price();
+						}
 					}
 				}
 			}
@@ -461,15 +467,24 @@ class Clerk_Product_Sync {
 			);
 
 			// Use default method for getting price if type is custom.
-
 			if ( ! in_array( $product->get_type(), $supported_product_types, true ) ) {
 				if ( method_exists( $product, 'get_price' ) ) {
-					$price          = wc_get_price_including_tax( $product, array( 'price' => $product->get_price() ) );
-					$price_excl_tax = wc_get_price_excluding_tax( $product, array( 'price' => $product->get_price() ) );
+					if ( method_exists( $product, 'is_taxable' ) ) {
+								$price          = wc_get_price_including_tax( $product, array( 'price' => $product->get_price() ) );
+								$price_excl_tax = wc_get_price_excluding_tax( $product, array( 'price' => $product->get_price() ) );
+					} else {
+						$price          = $product->get_price();
+						$price_excl_tax = $product->get_price();
+					}
 				}
 				if ( method_exists( $product, 'get_regular_price' ) ) {
-					$list_price          = wc_get_price_including_tax( $product, array( 'price' => $product->get_regular_price() ) );
-					$list_price_excl_tax = wc_get_price_excluding_tax( $product, array( 'price' => $product->get_regular_price() ) );
+					if ( method_exists( $product, 'is_taxable' ) ) {
+								$list_price          = wc_get_price_including_tax( $product, array( 'price' => $product->get_regular_price() ) );
+								$list_price_excl_tax = wc_get_price_excluding_tax( $product, array( 'price' => $product->get_regular_price() ) );
+					} else {
+						$list_price          = $product->get_regular_price();
+						$list_price_excl_tax = $product->get_regular_price();
+					}
 				}
 			}
 
@@ -511,9 +526,9 @@ class Clerk_Product_Sync {
 			$product_array['backorders']          = $product->get_backorders();
 			$product_array['stock_status']        = $product->get_stock_status();
 
-			if ( ! empty( $product_tax_rates ) ){
-				foreach( $product_tax_rates as $tax_rate ){
-					if ( $tax_rate['tax_rate_class'] == $product->get_tax_class() ){
+			if ( ! empty( $product_tax_rates ) ) {
+				foreach ( $product_tax_rates as $tax_rate ) {
+					if ( $tax_rate['tax_rate_class'] === $product->get_tax_class() ) {
 						$product_array['tax_rate'] = (float) $tax_rate['tax_rate'];
 					}
 				}
