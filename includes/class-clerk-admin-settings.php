@@ -2127,9 +2127,9 @@ class Clerk_Admin_Settings {
 		}
 
 		// show error/update messages.
-    settings_errors( 'wporg_messages' );
+		settings_errors( 'wporg_messages' );
 
-    $language_info = json_encode(clerk_wpml_get_active_scope());
+		$language_info = wp_json_encode( clerk_wpml_get_active_scope() );
 
 		?>
 		<div class="wrap">
@@ -2138,23 +2138,21 @@ class Clerk_Admin_Settings {
 				<img id="clerkLogoHeader" src="<?php echo esc_html( plugin_dir_url( CLERK_PLUGIN_FILE ) . 'assets/img/clerk.png' ); ?>">
 				<span><?php echo esc_html( get_admin_page_title() ); ?></span>
 			</h1>
-      <form id="clerkAdminForm" action="options.php" method="post">
-        <div id="multi-lang-data"><?php echo esc_html( $language_info ); ?></div>
-        <?php
-
-				// output security fields for the registered setting "wporg".
-				settings_fields( 'clerk' );
-				// output setting sections and their fields.
-				// (sections are registered for "wporg", each field is registered to a specific section).
-				do_settings_sections( 'clerk' );
-				// output save settings button.
-				submit_button( 'Save Settings' );
-				?>
-			</form>
-		</div>
+	<form id="clerkAdminForm" action="options.php" method="post">
+		<div id="multi-lang-data"><?php echo esc_html( $language_info ); ?></div>
+		<?php
+		// output security fields for the registered setting "wporg".
+		settings_fields( 'clerk' );
+		// output setting sections and their fields.
+		// (sections are registered for "wporg", each field is registered to a specific section).
+		do_settings_sections( 'clerk' );
+		// output save settings button.
+		submit_button( 'Save Settings' );
+		?>
+	</form>
+</div>
 		<?php
 	}
-
 }
 
 new Clerk_Admin_Settings();
