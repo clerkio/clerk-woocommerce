@@ -529,6 +529,14 @@ class Clerk_Product_Sync {
 				$product_image = $product_image[0];
 			}
 
+			$product_tags_data = get_the_terms( $product->get_id(), 'product_tag' );
+			$product_tags      = array();
+			if ( ! empty( $product_tags_data ) && ! is_wp_error( $product_tags_data ) ) {
+				foreach ( $product_tags_data as $tag ) {
+					$product_tags[] = $tag->slug;
+				}
+			}
+
 			$product_array['id']                  = $product->get_id();
 			$product_array['name']                = $product->get_name();
 			$product_array['description']         = get_post_field( 'post_content', $product->get_id() );
@@ -549,6 +557,7 @@ class Clerk_Product_Sync {
 			$product_array['managing_stock']      = $product->managing_stock();
 			$product_array['backorders']          = $product->get_backorders();
 			$product_array['stock_status']        = $product->get_stock_status();
+			$product_array['tags']                = $product_tags;
 
 			if ( ! empty( $product_tax_rates ) ) {
 				foreach ( $product_tax_rates as $tax_rate ) {
@@ -745,7 +754,7 @@ class Clerk_Product_Sync {
 					$product_data['unit_label']            = $unit_price_data[ $unit_type ]['pricing']['label'];
 					$product_data['unit_type']             = $unit_type;
 					$product_data['unit_type_description'] = $unit_price_data[ $unit_type ][ $unit_type ]['label'];
-					$product_data['unit_enabled']          = ( $unit_price_data[ $unit_type ]['pricing']['enabled'] == 'yes' ) ? true : false;
+					$product_data['unit_enabled']          = ( 'yes' === $unit_price_data[ $unit_type ]['pricing']['enabled'] ) ? true : false;
 				}
 			}
 		} catch ( Exception $e ) {
