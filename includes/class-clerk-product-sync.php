@@ -545,7 +545,7 @@ class Clerk_Product_Sync {
 			$product_array['visibility']          = $product->get_catalog_visibility();
 			$product_array['created_at']          = strtotime( $product->get_date_created() );
 			$product_array['all_images']          = array();
-			$product_array['stock']               = ( null !== $stock_quantity ) ? $stock_quantity : 1;
+			$product_array['stock']               = $stock_quantity ?? 0;
 			$product_array['managing_stock']      = $product->managing_stock();
 			$product_array['backorders']          = $product->get_backorders();
 			$product_array['stock_status']        = $product->get_stock_status();
