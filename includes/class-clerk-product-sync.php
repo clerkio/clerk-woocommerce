@@ -565,6 +565,8 @@ class Clerk_Product_Sync {
 				$product_array['stock'] = $stock_quantity;
 			}
 
+			$product_array = $this->resolve_unit_measure( $product, $product_array );
+
 			$additional_fields = $this->get_additional_fields();
 
 			if ( in_array( 'short_description', $additional_fields, true ) ) {
@@ -716,6 +718,37 @@ class Clerk_Product_Sync {
 		if ( isset( $product->get_data()[ $field ] ) ) {
 			return $product->get_data()[ $field ];
 		}
+	}
+
+	/**
+	 * Get Product Unit Measure Data
+	 *
+	 * @param WC_Product|WC_Product_variation $product Product Object.
+	 * @param array                           $product_data Product Data.
+	 *
+	 * @return array $product_data Product Data.
+	 */
+	private function resolve_unit_measure( $product, $product_data ) {
+		try {
+
+			$unit_price_data = get_post_meta( $product->get_id(), '_wc_price_calculator', true );
+			$unit_type       = null;
+			if ( ! empty( $unit_price_data ) ) {
+				if ( array_key_exists( 'calculator_type', $unit_price_data ) ) {
+					$unit_type = $unit_price_data['calculator_type'];
+				}
+				if ( $unit_type && array_key_exists( $unit_type, $unit_price_data ) ) {
+					$product_data['unit']                  = $unit_price_data[ $unit_type ]['pricing']['unit'];
+					$product_data['unit_label']            = $unit_price_data[ $unit_type ]['pricing']['label'];
+					$product_data['unit_type']             = $unit_type;
+					$product_data['unit_type_description'] = $unit_price_data[ $unit_type ][ $unit_type ]['label'];
+					$product_data['unit_enabled']          = ( $unit_price_data[ $unit_type ]['pricing']['enabled'] == 'yes' ) ? true : false;
+				}
+			}
+		} catch ( Exception $e ) {
+				$this->logger->error( 'ERROR resolve_unit_measure', array( 'error' => $e->getMessage() ) );
+		}
+		return $product_data;
 	}
 
 	/**
