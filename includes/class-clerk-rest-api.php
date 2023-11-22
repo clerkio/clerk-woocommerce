@@ -756,6 +756,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 	 * @return mixed Attribute Value.
 	 */
 	public function resolve_attribute_product( $product, $field ) {
+
 		if ( $product->get_attribute( $field ) ) {
 			return $product->get_attribute( $field );
 		}
@@ -764,6 +765,9 @@ class Clerk_Rest_Api extends WP_REST_Server {
 		}
 		if ( get_post_meta( $product->get_id(), $field, true ) ) {
 			return get_post_meta( $product->get_id(), $field, true );
+		}
+		if ( function_exists( 'get_field' ) && null !== get_field( $field, $product->get_id() ) ) {
+			return get_field( $field, $product->get_id() );
 		}
 		if ( ! is_wp_error( wp_get_post_terms( $product->get_id(), strtolower( $field ), array( 'fields' => 'names' ) ) ) ) {
 			return wp_get_post_terms( $product->get_id(), strtolower( $field ), array( 'fields' => 'names' ) );
