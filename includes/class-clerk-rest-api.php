@@ -323,9 +323,9 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 			foreach ( $products->products as $product ) {
 
-				$taxonomies = array( 'product_cat', 'product_brand', 'pwb-brand' );
-				$categories = array();
-        $category_names = array();
+				$taxonomies     = array( 'product_cat', 'product_brand', 'pwb-brand' );
+				$categories     = array();
+				$category_names = array();
 				foreach ( $taxonomies as $taxonomy ) {
 					if ( taxonomy_exists( $taxonomy ) ) {
 						$taxa_term_array = wp_get_post_terms( $product->get_id(), $taxonomy );
