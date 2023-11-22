@@ -325,10 +325,12 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 				$taxonomies = array( 'product_cat', 'product_brand', 'pwb-brand' );
 				$categories = array();
+        $category_names = array();
 				foreach ( $taxonomies as $taxonomy ) {
 					if ( taxonomy_exists( $taxonomy ) ) {
-						$taxa_term_array = wp_list_pluck( wp_get_post_terms( $product->get_id(), $taxonomy ), 'term_id' );
-						$categories      = array_merge( $categories, $taxa_term_array );
+						$taxa_term_array = wp_get_post_terms( $product->get_id(), $taxonomy );
+						$categories      = array_merge( $categories, wp_list_pluck( $taxa_term_array, 'term_id' ) );
+						$category_names  = array_merge( $category_names, wp_list_pluck( $taxa_term_array, 'name' ) );
 					}
 				}
 
@@ -568,6 +570,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 				$product_array['image']               = $product_image;
 				$product_array['url']                 = $product->get_permalink();
 				$product_array['categories']          = $categories;
+				$product_array['category_names']      = $category_names;
 				$product_array['sku']                 = $product->get_sku();
 				$product_array['on_sale']             = $on_sale;
 				$product_array['type']                = $product->get_type();
@@ -1495,7 +1498,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 				'taxonomy'   => $taxonomies,
 			);
 
-			$product_categories = get_terms( 'product_cat', $args );
+			$product_categories = get_terms( $args );
 
 			$categories = array();
 
