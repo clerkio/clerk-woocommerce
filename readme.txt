@@ -30,7 +30,23 @@ Once signed up, simply login to your my.clerk.io backend, which will guide you t
 
 
 == Changelog ==
-= 4.1.3 - 2023-08-09
+= 4.1.3 - 2023-11-27
+* Added ability to programatically disable powerstep
+* Added better custom attribute support for customer endpoint
+* Added roles default field to customer endpoint
+* Added option to not strip url params when redirecting for Powerstep
+* Added WooCommerce Brands and PBW Brands to Category Data.
+* Variant Images conform to selected dimensions in admin
+* Reduced product and variant instanciation count during full sync
+* Separated JS and CSS resources for admin
+* Added support for WPML.
+* Fixed access of min_raw_price to use method instead of property
+* Added category names to product default data
+* Added product tags to product default data
+* Added support for getting product attributes created using Advanced Custom Fields
+
+
+= 4.1.2 - 2023-08-09
 * Cleaned up variable names for product attribute import
 * Fixed json encoding to removing products via realtime updates
 
