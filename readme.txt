@@ -44,6 +44,7 @@ Once signed up, simply login to your my.clerk.io backend, which will guide you t
 * Added category names to product default data
 * Added product tags to product default data
 * Added support for getting product attributes created using Advanced Custom Fields
+* Added JWT token to sync authorization
 
 
 = 4.1.2 - 2023-08-09
