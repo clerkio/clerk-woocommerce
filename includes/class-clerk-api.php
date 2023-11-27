@@ -97,7 +97,7 @@ class Clerk_Api {
 				'products'    => array( $product_params ),
 			);
 
-			$this->post( 'product/add', $params );
+			$this->post( 'products', $params );
 			$name = $params['products']['name'] ?? '';
 			$this->logger->log( 'Created products ' . $name, array( 'params' => $params['products'] ) );
 
