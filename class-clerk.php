@@ -80,7 +80,7 @@ if ( ! class_exists( 'Clerk' ) ) {
 			add_action(
 				'plugins_loaded',
 				function () {
-					load_plugin_textdomain( 'clerk', false, plugin_basename( __DIR__ ) . '/i18n/languages' );
+					load_plugin_textdomain( 'clerk', false, plugin_basename( dirname( __FILE__ ) ) . '/i18n/languages' );
 				}
 			);
 		}

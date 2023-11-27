@@ -1331,7 +1331,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 		try {
 
 			$token       = '';
-			$auth_header = $request->get_header( 'Authorized' );
+			$auth_header = $request->get_header( 'X-Clerk-Authorization' );
 
 			if ( null !== $auth_header && is_string( $auth_header ) ) {
 				$prefix = explode( ' ', $auth_header )[0];
