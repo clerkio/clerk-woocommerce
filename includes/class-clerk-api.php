@@ -49,7 +49,38 @@ class Clerk_Api {
 			do_action( 'wpml_multilingual_options', 'clerk_options' );
 		}
 		$this->logger = new Clerk_Logger();
+	}
 
+	/**
+	 * Post Received Token for Verification
+	 *
+	 * @param array|void $data
+	 */
+	public function verify_token( $data = null ) {
+
+		if ( ! $data ) {
+			return false;
+		}
+
+		try {
+
+			$options    = get_option( 'clerk_options' );
+			$public_key = $options['public_key'];
+
+			$endpoint = 'token/verify';
+
+			$data['key'] = $public_key;
+
+			$response = $this->get( $endpoint, $data );
+
+			if ( ! $response ) {
+				return array();
+			} else {
+				return $response;
+			}
+		} catch ( Exception $e ) {
+			$this->logger->error( 'ERROR verify_token', array( 'error' => $e->getMessage() ) );
+		}
 	}
 
 	/**
@@ -77,7 +108,6 @@ class Clerk_Api {
 			$this->logger->error( 'ERROR remove_product', array( 'error' => $e->getMessage() ) );
 
 		}
-
 	}
 
 	/**
@@ -106,7 +136,6 @@ class Clerk_Api {
 			$this->logger->error( 'ERROR add_product', array( 'error' => $e->getMessage() ) );
 
 		}
-
 	}
 
 	/**
@@ -151,7 +180,6 @@ class Clerk_Api {
 			$this->logger->error( 'ERROR get_content', array( 'error' => $e->getMessage() ) );
 
 		}
-
 	}
 
 	/**
@@ -185,7 +213,6 @@ class Clerk_Api {
 			$this->logger->error( 'GET request failed', array( 'error' => $e->getMessage() ) );
 
 		}
-
 	}
 
 	/**
@@ -222,6 +249,5 @@ class Clerk_Api {
 			$this->logger->error( 'POST request failed', array( 'error' => $e->getMessage() ) );
 
 		}
-
 	}
 }

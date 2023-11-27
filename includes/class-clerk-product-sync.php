@@ -70,7 +70,6 @@ class Clerk_Product_Sync {
 		add_action( 'woocommerce_new_product', array( $this, 'save_product' ), 100, 3 );
 		// This hook will run before the price is updated if there is a module modifying the price via a hook.
 		// save_post with a high enough prio defer score.
-		// add_action( 'woocommerce_update_product', array( $this, 'save_product' ), 1000, 3 ); .
 		add_action( 'save_post', array( $this, 'pre_save_post' ), 1000, 3 );
 		add_action( 'woocommerce_product_import_inserted_product_object', array( $this, 'pre_save_product' ), 10, 3 );
 		add_action( 'before_delete_post', array( $this, 'remove_product' ) );
@@ -493,6 +492,7 @@ class Clerk_Product_Sync {
 			);
 
 			// Use default method for getting price if type is custom.
+
 			if ( ! in_array( $product->get_type(), $supported_product_types, true ) ) {
 				if ( method_exists( $product, 'get_price' ) ) {
 					if ( method_exists( $product, 'is_taxable' ) ) {
@@ -863,9 +863,7 @@ class Clerk_Product_Sync {
 			$this->logger->error( 'ERROR trim_whitespace_in_attribute', array( 'error' => $e->getMessage() ) );
 
 		}
-
 	}
-
 }
 
 $clerk_product_sync = new Clerk_Product_Sync();

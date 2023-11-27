@@ -268,5 +268,4 @@ class Clerk_Logger {
 			}
 		}
 	}
-
 }

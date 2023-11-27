@@ -52,7 +52,7 @@ if ( isset( $options['product_enabled'] ) && $options['product_enabled'] ) :
 			$filter_string .= ', ';
 		}
 		$filter_string .= '.' . $class_string . (string) $index;
-		$index++;
+		++$index;
 	endforeach;
 endif;
 ?>

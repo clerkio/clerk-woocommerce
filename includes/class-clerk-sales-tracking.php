@@ -115,7 +115,6 @@ class Clerk_Sales_Tracking {
 			$this->logger->error( 'ERROR add_sales_tracking', array( 'error' => $e->getMessage() ) );
 
 		}
-
 	}
 }
 

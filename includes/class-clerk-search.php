@@ -73,7 +73,6 @@ class Clerk_Search {
 			$this->logger->error( 'ERROR add_search_vars', array( 'error' => $e->getMessage() ) );
 
 		}
-
 	}
 
 	/**
@@ -132,7 +131,7 @@ class Clerk_Search {
 
 			foreach ( $sorted_attributes as $key => $attribute ) {
 
-				$count++;
+				++$count;
 
 				if ( count( $attributes ) === $count ) {
 
@@ -215,7 +214,6 @@ class Clerk_Search {
 			$this->logger->error( 'ERROR handle_shortcode', array( 'error' => $e->getMessage() ) );
 
 		}
-
 	}
 }
 

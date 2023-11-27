@@ -442,7 +442,6 @@ class Clerk_Visitor_Tracking {
 			$this->logger->error( 'ERROR add_tracking', array( 'error' => $e->getMessage() ) );
 
 		}
-
 	}
 
 	/**
@@ -487,7 +486,6 @@ class Clerk_Visitor_Tracking {
 			$this->logger->error( 'ERROR clerk_woocommerce_archive_description', array( 'error' => $e->getMessage() ) );
 
 		}
-
 	}
 
 	/**
@@ -509,7 +507,6 @@ class Clerk_Visitor_Tracking {
 		header( 'Content-Type: application/json' );
 		wp_die( wp_json_encode( $cart_ids ) );
 	}
-
 }
 
 new Clerk_Visitor_Tracking();

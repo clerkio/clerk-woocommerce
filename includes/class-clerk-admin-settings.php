@@ -49,7 +49,6 @@ class Clerk_Admin_Settings {
 		$this->init_hooks();
 		$this->logger  = new Clerk_Logger();
 		$this->version = '4.1.2';
-
 	}
 
 	/**
@@ -61,7 +60,7 @@ class Clerk_Admin_Settings {
 		add_action( 'admin_menu', array( $this, 'clerk_options_page' ) );
 		add_action( 'admin_menu', array( $this, 'load_jquery_ui' ) );
 		add_action( 'admin_menu', array( $this, 'load_admin_assets' ) );
-
+  
 	}
 	/**
 	 * Load jQuery Lib and Styles
@@ -79,6 +78,7 @@ class Clerk_Admin_Settings {
 
 		wp_enqueue_style( 'clerk_admin_css', plugins_url( '../assets/css/admin.css', __FILE__ ), array(), get_bloginfo( 'version' ) );
 		wp_enqueue_script( 'clerk_admin_js', plugins_url( '../assets/js/admin.js', __FILE__ ), array( 'jquery' ), get_bloginfo( 'version' ), true );
+
 	}
 
 	/**
@@ -1149,7 +1149,6 @@ class Clerk_Admin_Settings {
 				<p>v. <?php echo esc_textarea( $this->version ); ?></p>
 			</span>
 		<?php
-
 	}
 
 	/**
@@ -1374,7 +1373,7 @@ class Clerk_Admin_Settings {
 
 					<?php
 					foreach ( $new_dynamic_attributes as $attribute ) {
-						$commacounter++;
+						++$commacounter;
 						?>
 						<strong><?php echo esc_html( $attribute ); ?></strong>
 						<?php
@@ -1408,7 +1407,7 @@ class Clerk_Admin_Settings {
 			$count = 0;
 			foreach ( $saved_attributes as $attribute ) {
 
-				$count++;
+				++$count;
 				$checked = '';
 				if ( $attribute->checked ) {
 
@@ -1432,7 +1431,7 @@ class Clerk_Admin_Settings {
 			$count = 0;
 			foreach ( $new_dynamic_attributes as $attribute ) {
 
-				$count++;
+				++$count;
 
 				echo '
 					<div class="facets_lines" data="' . esc_html( $attribute ) . '">
@@ -1454,7 +1453,6 @@ class Clerk_Admin_Settings {
 			</div>
 			</div>
 			<?php
-
 	}
 
 	/**
@@ -1482,7 +1480,6 @@ class Clerk_Admin_Settings {
 		name="clerk_options[<?php echo esc_attr( $args['label_for'] ); ?>]"
 		value="1" <?php checked( '1', $label_for ); ?>>
 		<?php
-
 	}
 	/**
 	 * Build Search Page type selector
@@ -1514,7 +1511,6 @@ class Clerk_Admin_Settings {
 			<?php endforeach; ?>
 		</select>
 		<?php
-
 	}
 	/**
 	 * Build Instant Search position selector
@@ -1543,7 +1539,6 @@ class Clerk_Admin_Settings {
 			<?php endforeach; ?>
 		</select>
 		<?php
-
 	}
 	/**
 	 * Build 1 - 10 dropdown selector
@@ -1572,7 +1567,6 @@ class Clerk_Admin_Settings {
 			<?php endforeach; ?>
 		</select>
 		<?php
-
 	}
 	/**
 	 * Build Shop Language Selector
@@ -1705,7 +1699,6 @@ class Clerk_Admin_Settings {
 			<?php endforeach; ?>
 		</select>
 		<?php
-
 	}
 
 	/**
@@ -1723,7 +1716,6 @@ class Clerk_Admin_Settings {
 			<?php
 
 		}
-
 	}
 	/**
 	 * Build Warning Message
@@ -1752,7 +1744,6 @@ class Clerk_Admin_Settings {
 
 			}
 		}
-
 	}
 	/**
 	 * Build Debug Guide
@@ -1816,7 +1807,6 @@ class Clerk_Admin_Settings {
 			<?php
 
 		}
-
 	}
 
 	/**
@@ -1836,7 +1826,6 @@ class Clerk_Admin_Settings {
 			'</script>' .
 			'<div id="logger_view"' .
 			'style="background: black;color: white;padding: 20px; white-space:pre-wrap; overflow: scroll; height: 300px"></div>' );
-
 	}
 
 	/**
@@ -1852,17 +1841,13 @@ class Clerk_Admin_Settings {
 
 			$value = $options[ $args['label_for'] ];
 
-		} else {
-
-			if ( isset( $args['value'] ) ) {
+		} elseif ( isset( $args['value'] ) ) {
 
 				$value = $args['value'];
 
-			} else {
+		} else {
 
-				$value = '';
-
-			}
+			$value = '';
 		}
 		?>
 
@@ -1936,16 +1921,12 @@ class Clerk_Admin_Settings {
 
 			$value = $options[ $args['label_for'] ];
 
-		} else {
-
-			if ( isset( $args['value'] ) ) {
+		} elseif ( isset( $args['value'] ) ) {
 
 				$value = $args['value'];
-			} else {
+		} else {
 
-				$value = '';
-
-			}
+			$value = '';
 		}
 		?>
 		<textarea
@@ -2005,7 +1986,6 @@ class Clerk_Admin_Settings {
 			<?php endforeach; ?>
 		</select>
 		<?php
-
 	}
 
 	/**
@@ -2105,7 +2085,6 @@ class Clerk_Admin_Settings {
 				'clerk_options_page_html',
 			)
 		);
-
 	}
 	/**
 	 * Create options page html
