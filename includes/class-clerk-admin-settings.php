@@ -3,7 +3,7 @@
  * Plugin Name: Clerk
  * Plugin URI: https://clerk.io/
  * Description: Clerk.io Turns More Browsers Into Buyers
- * Version: 4.1.2
+ * Version: 4.1.3
  * Author: Clerk.io
  * Author URI: https://clerk.io
  *
@@ -48,7 +48,7 @@ class Clerk_Admin_Settings {
 		}
 		$this->init_hooks();
 		$this->logger  = new Clerk_Logger();
-		$this->version = '4.1.2';
+		$this->version = '4.1.3';
 	}
 
 	/**
@@ -60,7 +60,7 @@ class Clerk_Admin_Settings {
 		add_action( 'admin_menu', array( $this, 'clerk_options_page' ) );
 		add_action( 'admin_menu', array( $this, 'load_jquery_ui' ) );
 		add_action( 'admin_menu', array( $this, 'load_admin_assets' ) );
-  
+
 	}
 	/**
 	 * Load jQuery Lib and Styles
