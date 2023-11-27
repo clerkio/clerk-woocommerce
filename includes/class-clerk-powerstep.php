@@ -3,7 +3,7 @@
  * Plugin Name: Clerk
  * Plugin URI: https://clerk.io/
  * Description: Clerk.io Turns More Browsers Into Buyers
- * Version: 4.1.0
+ * Version: 4.1.2
  * Author: Clerk.io
  * Author URI: https://clerk.io
  *
@@ -40,6 +40,10 @@ class Clerk_Powerstep {
 	public function __construct() {
 		$this->init_hooks();
 		include_once __DIR__ . '/class-clerk-logger.php';
+		require_once __DIR__ . '/clerk-multi-lang-helpers.php';
+		if ( clerk_is_wpml_enabled() ) {
+			do_action( 'wpml_multilingual_options', 'clerk_options' );
+		}
 		$this->logger = new Clerk_Logger();
 	}
 
@@ -69,11 +73,17 @@ class Clerk_Powerstep {
 	 * @param string $url Powerstep Url.
 	 */
 	public function redirect_to_powerstep( $url ) {
+		$powerstep_enabled = apply_filters( 'clerk_powerstep_enabled', true );
+
+		// Check a filter so we can disable clerk popup programmatically.
+		if ( ! $powerstep_enabled ) {
+			return false;
+		}
 
 		try {
 			$add_to_cart_param = false;
-			$add_to_cart_param = ( null !== filter_input( INPUT_POST, 'add-to-cart', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_POST, 'add-to-cart', FILTER_SANITIZE_STRING ) : $add_to_cart_param;
-			$add_to_cart_param = ( null !== filter_input( INPUT_GET, 'add-to-cart', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_GET, 'add-to-cart', FILTER_SANITIZE_STRING ) : $add_to_cart_param;
+			$add_to_cart_param = ( null !== filter_input( INPUT_POST, 'add-to-cart' ) ) ? filter_input( INPUT_POST, 'add-to-cart' ) : $add_to_cart_param;
+			$add_to_cart_param = ( null !== filter_input( INPUT_GET, 'add-to-cart' ) ) ? filter_input( INPUT_GET, 'add-to-cart' ) : $add_to_cart_param;
 			if ( $add_to_cart_param ) {
 				if ( ! is_numeric( $add_to_cart_param ) ) {
 					return $url;
@@ -113,16 +123,26 @@ class Clerk_Powerstep {
 	 * @param string $url Powerstep Url.
 	 */
 	public function redirect_to_powerstep_no_ajax( $url ) {
+		$powerstep_enabled = apply_filters( 'clerk_powerstep_enabled', true );
+
+		// Check a filter so we can disable clerk popup programmatically.
+		if ( ! $powerstep_enabled ) {
+			return false;
+		}
 
 		try {
 
 			$add_to_cart_param = false;
-			$add_to_cart_param = ( null !== filter_input( INPUT_POST, 'add-to-cart', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_POST, 'add-to-cart', FILTER_SANITIZE_STRING ) : $add_to_cart_param;
-			$add_to_cart_param = ( null !== filter_input( INPUT_GET, 'add-to-cart', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_GET, 'add-to-cart', FILTER_SANITIZE_STRING ) : $add_to_cart_param;
+			$add_to_cart_param = ( null !== filter_input( INPUT_POST, 'add-to-cart' ) ) ? filter_input( INPUT_POST, 'add-to-cart' ) : $add_to_cart_param;
+			$add_to_cart_param = ( null !== filter_input( INPUT_GET, 'add-to-cart' ) ) ? filter_input( INPUT_GET, 'add-to-cart' ) : $add_to_cart_param;
 
 			$variant_id = false;
-			$variant_id = ( null !== filter_input( INPUT_POST, 'variation_id', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_POST, 'variation_id', FILTER_SANITIZE_STRING ) : $variant_id;
-			$variant_id = ( null !== filter_input( INPUT_GET, 'variation_id', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_GET, 'variation_id', FILTER_SANITIZE_STRING ) : $variant_id;
+			$variant_id = ( null !== filter_input( INPUT_POST, 'variation_id' ) ) ? filter_input( INPUT_POST, 'variation_id' ) : $variant_id;
+			$variant_id = ( null !== filter_input( INPUT_GET, 'variation_id' ) ) ? filter_input( INPUT_GET, 'variation_id' ) : $variant_id;
+
+			$product_qty = false;
+			$product_qty = ( null !== filter_input( INPUT_POST, 'quantity' ) ) ? filter_input( INPUT_POST, 'quantity' ) : $product_qty;
+			$product_qty = ( null !== filter_input( INPUT_GET, 'quantity' ) ) ? filter_input( INPUT_GET, 'quantity' ) : $product_qty;
 
 			if ( $add_to_cart_param ) {
 				if ( ! is_numeric( $add_to_cart_param ) ) {
@@ -137,7 +157,7 @@ class Clerk_Powerstep {
 
 			if ( ! $options['powerstep_enabled'] || self::TYPE_PAGE !== $options['powerstep_type'] ) {
 
-				if ( null === filter_input( INPUT_GET, 'clerk_powerstep', FILTER_SANITIZE_STRING ) ) {
+				if ( null === filter_input( INPUT_GET, 'clerk_powerstep' ) ) {
 					$_uri        = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
 					$_host       = isset( $_SERVER['HTTP_HOST'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) ) : '';
 					$actual_link = ( isset( $_SERVER['HTTPS'] ) && 'on' === sanitize_text_field( wp_unslash( $_SERVER['HTTPS'] ) ) ? 'https' : 'http' ) . "://$_host$_uri";
@@ -146,8 +166,18 @@ class Clerk_Powerstep {
 						'product_id'      => $product_id,
 						'clerk_powerstep' => true,
 					);
+
+					if ( isset( $options['powerstep_keep_atc_param'] ) && $options['powerstep_keep_atc_param'] ) {
+						$params['add-to-cart'] = $product_id;
+					}
+
 					if ( is_numeric( $variant_id ) ) {
 						$params['variation_id'] = $variant_id;
+					}
+
+
+					if ( is_numeric( $product_qty ) ) {
+						$params['quantity'] = $product_qty;
 					}
 
 					$_url = $actual_link . '?' . http_build_query( $params );
@@ -182,7 +212,7 @@ class Clerk_Powerstep {
 	 *
 	 * @param array $vars Product Info and Display data array.
 	 *
-	 * @return array
+	 * @return array | void
 	 */
 	public function add_powerstep_vars( $vars ) {
 
@@ -196,14 +226,13 @@ class Clerk_Powerstep {
 		} catch ( Exception $e ) {
 
 			$this->logger->error( 'ERROR add_powerstep_vars', array( 'error' => $e->getMessage() ) );
-
 		}
 	}
 
 	/**
 	 * Output clerk-powerstep shortcode
 	 *
-	 * @return html
+	 * @return html | void
 	 */
 	public function handle_shortcode() {
 
@@ -249,7 +278,7 @@ class Clerk_Powerstep {
 				wp_enqueue_style( 'clerk_powerstep_css', plugins_url( '../assets/css/powerstep.css', __FILE__ ), array(), get_bloginfo( 'version' ) );
 			}
 
-			wp_enqueue_script( 'clerk_powerstep_js', plugins_url( '../assets/js/powerstep.js', __FILE__ ), array( 'jquery' ), get_bloginfo( 'version' ), true );
+			wp_enqueue_script( 'clerk_powerstep_js', plugins_url( '../assets/js/powerstep.js', __FILE__ ), array(), get_bloginfo( 'version' ), true );
 			wp_localize_script(
 				'clerk_powerstep_js',
 				'variables',
@@ -275,7 +304,7 @@ class Clerk_Powerstep {
 		try {
 
 			$add_to_cart_param = false;
-			$add_to_cart_param = ( null !== filter_input( INPUT_POST, 'product_id', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_POST, 'product_id', FILTER_SANITIZE_STRING ) : $add_to_cart_param;
+			$add_to_cart_param = ( null !== filter_input( INPUT_POST, 'product_id' ) ) ? filter_input( INPUT_POST, 'product_id' ) : $add_to_cart_param;
 
 			if ( ! $add_to_cart_param ) {
 				return;

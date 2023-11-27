@@ -3,7 +3,7 @@
  * Plugin Name: Clerk
  * Plugin URI: https://clerk.io/
  * Description: Clerk.io Turns More Browsers Into Buyers
- * Version: 4.1.0
+ * Version: 4.1.2
  * Author: Clerk.io
  * Author URI: https://clerk.io
  *
@@ -16,6 +16,11 @@
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
+}
+
+require_once dirname( dirname( __FILE__ ) ) . '/includes/clerk-multi-lang-helpers.php';
+if ( clerk_is_wpml_enabled() ) {
+	do_action( 'wpml_multilingual_options', 'clerk_options' );
 }
 
 $cart_url     = wc_get_cart_url();
@@ -33,7 +38,7 @@ if ( isset( $options['powerstep_custom_text_enabled'] ) ) {
 			$translated_array = explode( 'PRODUCT_NAME', $options['powerstep_custom_text_title'] );
 			$pre_trans        = $translated_array[0];
 			$post_trans       = $translated_array[1];
-			$title_html       = "$pre_trans<span class='clerk_powerstep_product_name'>$product_name</span>$post_trans";
+			$title_html       = "<div class='clerk_powerstep_product_name_wrap'>$pre_trans<span class='clerk_powerstep_product_name'>$product_name</span>$post_trans</div>";
 		}
 	}
 	if ( isset( $options['powerstep_custom_text_back'] ) ) {
@@ -45,7 +50,6 @@ if ( isset( $options['powerstep_custom_text_enabled'] ) ) {
 }
 ?>
 <div id="clerk_powerstep" class="clerk-popup" style="display: none;">
-	<span class="clerk-popup-close">×</span>
 	<div class="clerk_powerstep_header">
 		<h2 class="clerk_powerstep_headline">
 			<?php echo wp_kses_post( $title_html ); ?>

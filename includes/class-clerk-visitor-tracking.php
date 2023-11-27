@@ -3,7 +3,7 @@
  * Plugin Name: Clerk
  * Plugin URI: https://clerk.io/
  * Description: Clerk.io Turns More Browsers Into Buyers
- * Version: 4.1.0
+ * Version: 4.1.2
  * Author: Clerk.io
  * Author URI: https://clerk.io
  *
@@ -37,6 +37,10 @@ class Clerk_Visitor_Tracking {
 	public function __construct() {
 		$this->init_hooks();
 		include_once __DIR__ . '/class-clerk-logger.php';
+		include_once __DIR__ . '/clerk-multi-lang-helpers.php';
+		if ( clerk_is_wpml_enabled() ) {
+			do_action( 'wpml_multilingual_options', 'clerk_options' );
+		}
 		$this->logger = new Clerk_Logger();
 	}
 
@@ -50,6 +54,7 @@ class Clerk_Visitor_Tracking {
 		add_action( 'init', array( $this, 'clerk_add_custom_shortcodes' ) );
 
 		$options = get_option( 'clerk_options' );
+
 		if ( isset( $options['collect_emails'] ) ) {
 			add_action( 'woocommerce_review_order_before_submit', array( $this, 'clerk_woocommerce_review_order_before_submit' ), 99 );
 		}
@@ -124,6 +129,13 @@ class Clerk_Visitor_Tracking {
 		try {
 
 			$options = get_option( 'clerk_options' );
+
+			// Add a filter so we can disable clerk programmatically or check if public key is set.
+			$clerk_enabled      = apply_filters( 'clerk_enabled', true );
+			$public_key_not_set = ! isset( $options['public_key'] ) || ( isset( $options['public_key'] ) && ! $options['public_key'] );
+			if ( ! $clerk_enabled || $public_key_not_set ) {
+				return false;
+			}
 
 			// Default to true.
 			if ( ! isset( $options['collect_emails'] ) ) {
@@ -203,8 +215,8 @@ class Clerk_Visitor_Tracking {
 					if ( $currency_iso && $currency_symbol ) :
 						?>
 					globals: {
-						currency_symbol: '<?php echo $currency_symbol; ?>',
-						currency_iso: '<?php echo $currency_iso; ?>'
+						currency_symbol: '<?php echo esc_attr( $currency_symbol ); ?>',
+						currency_iso: '<?php echo esc_attr( $currency_iso ); ?>'
 					}
 						<?php
 					endif;
@@ -220,7 +232,11 @@ class Clerk_Visitor_Tracking {
 				} else {
 					$script_js = '';
 				}
-				echo "<script id='clerk_additional_header_scripts'>" . html_entity_decode( esc_attr( $script_js ), ENT_QUOTES ) . '</script>';
+				?>
+				<script id='clerk_additional_header_scripts'>
+				<?php html_entity_decode( esc_attr( $script_js ), ENT_QUOTES ); ?>
+				</script>
+				<?php
 			}
 
 			if ( isset( $options['livesearch_enabled'] ) && $options['livesearch_enabled'] ) :

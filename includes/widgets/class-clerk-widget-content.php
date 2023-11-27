@@ -3,7 +3,7 @@
  * Plugin Name: Clerk
  * Plugin URI: https://clerk.io/
  * Description: Clerk.io Turns More Browsers Into Buyers
- * Version: 4.1.0
+ * Version: 4.1.2
  * Author: Clerk.io
  * Author URI: https://clerk.io
  *
@@ -202,7 +202,7 @@ class Clerk_Widget_Content extends WP_Widget {
 	 * Get parameters for content endpoint
 	 */
 	public function get_parameters_for_content() {
-		$content_param = ( null !== filter_input( INPUT_POST, 'content', FILTER_SANITIZE_STRING ) ) ? filter_input( INPUT_POST, 'content', FILTER_SANITIZE_STRING ) : '';
+		$content_param = ( null !== filter_input( INPUT_POST, 'content' ) ) ? filter_input( INPUT_POST, 'content' ) : '';
 
 		$contents = $this->api->get_content();
 

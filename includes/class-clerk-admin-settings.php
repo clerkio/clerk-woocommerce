@@ -3,7 +3,7 @@
  * Plugin Name: Clerk
  * Plugin URI: https://clerk.io/
  * Description: Clerk.io Turns More Browsers Into Buyers
- * Version: 4.1.0
+ * Version: 4.1.2
  * Author: Clerk.io
  * Author URI: https://clerk.io
  *
@@ -41,13 +41,14 @@ class Clerk_Admin_Settings {
 	 * Clerk_Admin_Settings constructor.
 	 */
 	public function __construct() {
-
-		$this->init_hooks();
 		require_once __DIR__ . '/class-clerk-logger.php';
+		require_once __DIR__ . '/clerk-multi-lang-helpers.php';
+		if ( clerk_is_wpml_enabled() ) {
+			do_action( 'wpml_multilingual_options', 'clerk_options' );
+		}
+		$this->init_hooks();
 		$this->logger  = new Clerk_Logger();
-		$this->version = '4.1.0';
-
-		$this->initialize_settings();
+		$this->version = '4.1.2';
 	}
 
 	/**
@@ -58,6 +59,8 @@ class Clerk_Admin_Settings {
 		add_action( 'admin_init', array( $this, 'settings_init' ) );
 		add_action( 'admin_menu', array( $this, 'clerk_options_page' ) );
 		add_action( 'admin_menu', array( $this, 'load_jquery_ui' ) );
+		add_action( 'admin_menu', array( $this, 'load_admin_assets' ) );
+  
 	}
 	/**
 	 * Load jQuery Lib and Styles
@@ -67,220 +70,15 @@ class Clerk_Admin_Settings {
 		wp_enqueue_script( 'jquery-ui-dialog' );
 		wp_enqueue_style( 'wp-jquery-ui-dialog' );
 	}
+
 	/**
-	 * Init Admin Panel settings fieldsset
+	 * Load Custom Styles and Scripts
 	 */
-	public function initialize_settings() {
+	public function load_admin_assets() {
 
-		$options = get_option( 'clerk_options' );
+		wp_enqueue_style( 'clerk_admin_css', plugins_url( '../assets/css/admin.css', __FILE__ ), array(), get_bloginfo( 'version' ) );
+		wp_enqueue_script( 'clerk_admin_js', plugins_url( '../assets/js/admin.js', __FILE__ ), array( 'jquery' ), get_bloginfo( 'version' ), true );
 
-		if ( ! isset( $options['log_to'] ) || ( isset( $options['log_to'] ) && false === $options['log_to'] ) ) {
-			// The option hasn't been added yet. We'll add it with $autoload set to 'no'.
-			$autoload = 'no';
-			add_option( 'log_to', 'my.clerk.io', '', $autoload );
-		}
-
-		if ( ! isset( $options['log_level'] ) || ( isset( $options['log_level'] ) && false === $options['log_level'] ) ) {
-			// The option hasn't been added yet. We'll add it with $autoload set to 'no'.
-			$autoload = 'no';
-			add_option( 'log_level', 'Error + Warn', '', $autoload );
-		}
-
-		if ( ! isset( $options['log_enabled'] ) || ( isset( $options['log_enabled'] ) && false === $options['log_enabled'] ) ) {
-			// The option hasn't been added yet. We'll add it with $autoload set to 'no'.
-			$autoload = 'no';
-			add_option( 'log_enabled', 1, '', $autoload );
-		}
-
-		if ( null !== get_option( 'livesearch_initiated' ) || false === get_option( 'livesearch_initiated' ) ) {
-			// The option hasn't been added yet. We'll add it with $autoload set to 'no'.
-			$autoload = 'no';
-			add_option( 'livesearch_initiated', 0, '', $autoload );
-		}
-
-		if ( null !== get_option( 'powerstep_initiated' ) || false === get_option( 'powerstep_initiated' ) ) {
-			// The option hasn't been added yet. We'll add it with $autoload set to 'no'.
-			$autoload = 'no';
-			add_option( 'powerstep_initiated', 0, '', $autoload );
-		}
-
-		if ( null !== get_option( 'search_initiated' ) || false === get_option( 'search_initiated' ) ) {
-			// The option hasn't been added yet. We'll add it with $autoload set to 'no'.
-			$autoload = 'no';
-			add_option( 'search_initiated', 0, '', $autoload );
-		}
-
-		if ( null !== get_option( 'exit_intent_initiated' ) || false === get_option( 'exit_intent_initiated' ) ) {
-			// The option hasn't been added yet. We'll add it with $autoload set to 'no'.
-			$autoload = 'no';
-			add_option( 'exit_intent_initiated', 0, '', $autoload );
-		}
-
-		if ( null !== get_option( 'category_initiated' ) || false === get_option( 'category_initiated' ) ) {
-			// The option hasn't been added yet. We'll add it with $autoload set to 'no'.
-			$autoload = 'no';
-			add_option( 'category_initiated', 0, '', $autoload );
-		}
-
-		if ( null !== get_option( 'product_initiated' ) || false === get_option( 'product_initiated' ) ) {
-			// The option hasn't been added yet. We'll add it with $autoload set to 'no'.
-			$autoload = 'no';
-			add_option( 'product_initiated', 0, '', $autoload );
-		}
-
-		if ( null !== get_option( 'cart_initiated' ) || false === get_option( 'cart_initiated' ) ) {
-			// The option hasn't been added yet. We'll add it with $autoload set to 'no'.
-			$autoload = 'no';
-			add_option( 'cart_initiated', 0, '', $autoload );
-		}
-
-		if ( null !== get_option( 'sync_mails_initiated' ) || false === get_option( 'sync_mails_initiated' ) ) {
-			// The option hasn't been added yet. We'll add it with $autoload set to 'no'.
-			$autoload = 'no';
-			add_option( 'sync_mails_initiated', 0, '', $autoload );
-		}
-
-		if ( null !== get_option( 'disable_order_sync_initiated' ) || false === get_option( 'disable_order_sync_initiated' ) ) {
-			// The option hasn't been added yet. We'll add it with $autoload set to 'no'.
-			$autoload = 'no';
-			add_option( 'disable_order_sync_initiated', 0, '', $autoload );
-		}
-
-		$livesearch_initiated                   = get_option( 'livesearch_initiated' );
-		$search_initiated                       = get_option( 'search_initiated' );
-		$powerstep_initiated                    = get_option( 'powerstep_initiated' );
-		$exit_intent_initiated                  = get_option( 'exit_intent_initiated' );
-		$category_initiated                     = get_option( 'category_initiated' );
-		$product_initiated                      = get_option( 'product_initiated' );
-		$cart_initiated                         = get_option( 'cart_initiated' );
-		$sync_mails_initiated_initiated         = get_option( 'sync_mails_initiated' );
-		$disable_order_sync_initiated_initiated = get_option( 'disable_order_sync_initiated' );
-
-		if ( isset( $options['collect_emails'] ) && 1 !== $sync_mails_initiated_initiated ) {
-
-			update_option( 'sync_mails_initiated', 1 );
-			$this->logger->log( 'Sync Mails initiated', array( '' => '' ) );
-
-		}
-
-		if ( ! isset( $options['collect_emails'] ) && 1 === $sync_mails_initiated_initiated ) {
-
-			update_option( 'sync_mails_initiated', 0 );
-			$this->logger->log( 'Sync Mails uninitiated', array( '' => '' ) );
-
-		}
-
-		if ( isset( $options['cart_enabled'] ) && ! $cart_initiated ) {
-
-			update_option( 'cart_initiated', 1 );
-			$this->logger->log( 'Cart Settings initiated', array( '' => '' ) );
-
-		}
-
-		if ( ! isset( $options['cart_enabled'] ) && $cart_initiated ) {
-
-			update_option( 'cart_initiated', 0 );
-			$this->logger->log( 'Cart Settings uninitiated', array( '' => '' ) );
-
-		}
-
-		if ( isset( $options['disable_order_synchronization'] ) && ! $disable_order_sync_initiated_initiated ) {
-
-			update_option( 'disable_order_sync_initiated', 1 );
-			$this->logger->log( 'Disable Order Sync initiated', array( '' => '' ) );
-
-		}
-
-		if ( ! isset( $options['disable_order_synchronization'] ) && $disable_order_sync_initiated_initiated ) {
-
-			update_option( 'disable_order_sync_initiated', 0 );
-			$this->logger->log( 'Disable Order Sync uninitiated', array( '' => '' ) );
-
-		}
-
-		if ( isset( $options['product_enabled'] ) && ! $product_initiated ) {
-
-			update_option( 'product_initiated', 1 );
-			$this->logger->log( 'Product Settings initiated', array( '' => '' ) );
-
-		}
-
-		if ( ! isset( $options['product_enabled'] ) && $product_initiated ) {
-
-			update_option( 'product_initiated', 0 );
-			$this->logger->log( 'Product Settings uninitiated', array( '' => '' ) );
-
-		}
-
-		if ( isset( $options['category_enabled'] ) && ! $category_initiated ) {
-
-			update_option( 'category_initiated', 1 );
-			$this->logger->log( 'Category Settings initiated', array( '' => '' ) );
-
-		}
-
-		if ( ! isset( $options['category_enabled'] ) && $category_initiated ) {
-
-			update_option( 'category_initiated', 0 );
-			$this->logger->log( 'Category Settings uninitiated', array( '' => '' ) );
-
-		}
-
-		if ( isset( $options['exit_intent_enabled'] ) && ! $exit_intent_initiated ) {
-
-			update_option( 'exit_intent_initiated', 1 );
-			$this->logger->log( 'Exit Intent initiated', array( '' => '' ) );
-
-		}
-
-		if ( ! isset( $options['exit_intent_enabled'] ) && $exit_intent_initiated ) {
-
-			update_option( 'exit_intent_initiated', 0 );
-			$this->logger->log( 'Exit Intent uninitiated', array( '' => '' ) );
-
-		}
-
-		if ( isset( $options['search_enabled'] ) && ! $search_initiated ) {
-
-			update_option( 'search_initiated', 1 );
-			$this->logger->log( 'Search initiated', array( '' => '' ) );
-
-		}
-
-		if ( ! isset( $options['search_enabled'] ) && $search_initiated ) {
-
-			update_option( 'search_initiated', 0 );
-			$this->logger->log( 'Search uninitiated', array( '' => '' ) );
-
-		}
-
-		if ( isset( $options['livesearch_enabled'] ) && ! $livesearch_initiated ) {
-
-			update_option( 'livesearch_initiated', 1 );
-			$this->logger->log( 'Live Search initiated', array( '' => '' ) );
-
-		}
-
-		if ( ! isset( $options['livesearch_enabled'] ) && $livesearch_initiated ) {
-
-			update_option( 'livesearch_initiated', 0 );
-			$this->logger->log( 'Live Search uninitiated', array( '' => '' ) );
-
-		}
-
-		if ( isset( $options['powerstep_enabled'] ) && $options['powerstep_enabled'] && ! $powerstep_initiated ) {
-
-			update_option( 'powerstep_initiated', 1 );
-			$this->logger->log( 'Powerstep initiated', array( '' => '' ) );
-
-		}
-
-		if ( isset( $options['powerstep_enabled'] ) && ! $options['powerstep_enabled'] && $powerstep_initiated ) {
-
-			update_option( 'powerstep_initiated', 0 );
-			$this->logger->log( 'Powerstep uninitiated', array( '' => '' ) );
-
-		}
 	}
 
 	/**
@@ -290,6 +88,12 @@ class Clerk_Admin_Settings {
 
 		// register a new setting.
 		register_setting( 'clerk', 'clerk_options' );
+
+		$wpml_enabled = clerk_is_wpml_enabled();
+		if ( $wpml_enabled ) {
+			$site_info = clerk_wpml_get_active_scope();
+		}
+
 		$options = get_option( 'clerk_options' );
 
 		// Add general section.
@@ -310,6 +114,19 @@ class Clerk_Admin_Settings {
 				'label_for' => 'version',
 			)
 		);
+
+		if ( $wpml_enabled ) {
+			add_settings_field(
+				'multi_lang_info',
+				__( 'Multi Language Scope', 'clerk' ),
+				array( $this, 'add_wpml_info' ),
+				'clerk',
+				'clerk_section_general',
+				array(
+					'label_for' => 'multi_lang_info',
+				)
+			);
+		}
 
 		add_settings_field(
 			'public_key',
@@ -355,7 +172,7 @@ class Clerk_Admin_Settings {
 				'label_for'   => 'import_url',
 				'description' => 'Use this url to configure an importer from my.clerk.io',
 				'readonly'    => true,
-				'value'       => get_site_url(),
+				'value'       => $site_info['url'],
 			)
 		);
 
@@ -882,22 +699,18 @@ class Clerk_Admin_Settings {
 			'clerk_section_powerstep',
 			__( 'Powerstep Settings', 'clerk' ),
 			null,
-			'clerk'
-		);
-
-		add_settings_field(
-			'powerstep_enabled',
-			__( 'Enabled', 'clerk' ),
-			array( $this, 'add_checkbox_field' ),
 			'clerk',
-			'clerk_section_powerstep',
+			'clerk_section_livesearch',
 			array(
-				'label_for' => 'powerstep_enabled',
+				'label_for' => 'livesearch_enabled',
 				'checked'   => 0,
 			)
 		);
 
 		add_settings_field(
+			'livesearch_include_suggestions',
+			__( 'Include Suggestions', 'clerk' ),
+			array( $this, 'add_checkbox_field' ),
 			'powerstep_type',
 			__( 'Powerstep Type', 'clerk' ),
 			array( $this, 'add_powerstep_type_dropdown' ),
@@ -993,6 +806,18 @@ class Clerk_Admin_Settings {
 			)
 		);
 
+		add_settings_field(
+			'powerstep_keep_atc_param',
+			__( 'Keep Add To Cart Params', 'clerk' ),
+			array( $this, 'add_checkbox_field' ),
+			'clerk',
+			'clerk_section_powerstep',
+			array(
+				'label_for'   => 'powerstep_keep_atc_param',
+				'checked'     => 0,
+				'description' => 'Keep add to cart params when redirecting for powerstep.',
+			)
+		);
 		// Add exit intent section.
 		add_settings_section(
 			'clerk_section_exit_intent',
@@ -1327,6 +1152,20 @@ class Clerk_Admin_Settings {
 	}
 
 	/**
+	 * Add wpml multi language info
+	 */
+	public function add_wpml_info() {
+		$wpml_info = clerk_wpml_get_active_scope();
+		?>
+		<span>
+			<p>
+				<?php echo esc_attr( $wpml_info['native_name'] ); ?>  <code><?php echo esc_attr( $wpml_info['language_code'] ); ?></code>
+			</p>
+		</span>
+		<?php
+	}
+
+	/**
 	 * Add facet attribute input interface
 	 */
 	public function add_field_and_button() {
@@ -1369,6 +1208,8 @@ class Clerk_Admin_Settings {
 		$dynamic_attributes     = array();
 		$saved_attributes       = array();
 		$new_dynamic_attributes = array();
+
+		$dynamic_attr_success = true;
 
 		$options = get_option( 'clerk_options' );
 
@@ -1456,6 +1297,10 @@ class Clerk_Admin_Settings {
 
 					foreach ( $response as $attribute => $value ) {
 
+						if ( 'status' === $attribute && 'error' === $value ) {
+							$dynamic_attr_success = false;
+						}
+
 						if ( ! in_array( $attribute, $exclude_attributes, true ) ) {
 
 							if ( ! empty( $attribute ) ) {
@@ -1511,7 +1356,7 @@ class Clerk_Admin_Settings {
 				}
 			}
 
-			if ( count( $new_dynamic_attributes ) > 0 ) {
+			if ( count( $new_dynamic_attributes ) > 0 && $dynamic_attr_success ) {
 				$commacounter   = 0;
 				$attribute_text = 'attributes';
 
@@ -1544,13 +1389,15 @@ class Clerk_Admin_Settings {
 			}
 
 			?>
-			<table>
+			<div class='facets_table'>
 
-				<tbody id="facets_content">
-				<th>Attribute</th>
-				<th>Title</th>
-				<th>Position</th>
-				<th>Show</th>
+				<div class="facets_content">
+					<div class="facets_content_title_wrapper">
+						<div class="w-fit">Attribute</div>
+						<div class="w-fit">Title</div>
+						<div class="w-fit">Position</div>
+						<div class="w-fit">Show</div>
+					</div>
 				<?php
 
 		}
@@ -1569,12 +1416,12 @@ class Clerk_Admin_Settings {
 				}
 
 				echo '
-                <tr id="facets_lines">
-                    <td><input type="text" id="facets_facet" value="' . esc_html( $attribute->attribute ) . '" readonly></td>
-                    <td><input type="text" id="facets_title" value="' . esc_html( $attribute->title ) . '"></td>
-                    <td><input type="text" id="facets_position" value="' . esc_html( $attribute->position ) . '"></td>
-                    <td><input id="faceted_enabled" type="checkbox" ' . esc_html( $checked ) . '></td>
-                </tr>
+                <div class="facets_lines" data="' . esc_html( $attribute->attribute ) . '">
+                    <div><input type="text" class="facets_facet" value="' . esc_html( $attribute->attribute ) . '" readonly></div>
+                    <div><input type="text" class="facets_title" value="' . esc_html( $attribute->title ) . '"></div>
+                    <div><input type="text" class="facets_position" value="' . esc_html( $attribute->position ) . '"></div>
+                    <div><input class="faceted_enabled" type="checkbox" ' . esc_html( $checked ) . '><div class="close" onclick="remove_facet_line(\'' . esc_html( $attribute->attribute ) . '\')"></div></div>
+                </div>
                 ';
 
 			}
@@ -1587,284 +1434,24 @@ class Clerk_Admin_Settings {
 				++$count;
 
 				echo '
-                    <tr id="facets_lines">
-                        <td><input type="text" id="facets_facet" value="' . esc_html( $attribute ) . '" readonly></td>
-                        <td><input type="text" id="facets_title" value=""></td>
-                        <td><input type="text" id="facets_position" value="' . esc_html( $count ) . '"></td>
-                        <td><input id="faceted_enabled" type="checkbox"></td>
-                    </tr>
+					<div class="facets_lines" data="' . esc_html( $attribute ) . '">
+						<div><input type="text" class="facets_facet" value="' . esc_html( $attribute ) . '" readonly></div>
+						<div><input type="text" class="facets_title" value=""></div>
+						<div><input type="text" class="facets_position" value="' . esc_html( $count ) . '"></div>
+						<div><input class="faceted_enabled" type="checkbox"><div class="close" onclick="remove_facet_line(\'' . esc_html( $attribute ) . '\')"></div></div>
+					</div>
                     ';
 
 			}
 		}
 
 		?>
-
 				<input
 				name="clerk_options[<?php echo esc_attr( $args['label_for'] ); ?>]"
 				id="faceted_navigation"
-				type="hidden">
-				</tbody>
-			</table>
-			<script>
-				jQuery('.wrap form').submit(function () {
-
-					CollectAttributes();
-
-				});
-
-				function remove_facet_line(data_value) {
-
-					jQuery("[data=" + data_value + "]").remove();
-
-				}
-
-				function add_facet() {
-					var linescount = jQuery('#facets_content #facets_lines').length;
-
-					facets_lines = document.createElement("tr");
-					facets_lines.setAttribute("id", "facets_lines");
-					facets_lines.setAttribute("data", jQuery('#faceted_navigation_custom').val());
-
-					facet_td = document.createElement("td");
-
-					facet = document.createElement("input");
-					facet.setAttribute("id", "facets_facet");
-					facet.setAttribute("type", "text");
-					facet.setAttribute("value", jQuery('#faceted_navigation_custom').val());
-					facet.setAttribute("readonly", '');
-
-					title_td = document.createElement("td");
-					title = document.createElement("input");
-					title.setAttribute("id", "facets_title");
-					title.setAttribute("type", "text");
-					title.setAttribute("value", '');
-
-
-					position_td = document.createElement("td");
-					position = document.createElement("input");
-					position.setAttribute("id", "facets_position");
-					position.setAttribute("type", "text");
-					position.setAttribute("value", linescount + 1);
-
-					checkbox_td = document.createElement("td");
-
-					checkbox = document.createElement("input");
-					checkbox.setAttribute("type", "checkbox");
-					checkbox.setAttribute("id", "faceted_enabled");
-					checkbox.setAttribute("value", "1");
-
-
-					remove = document.createElement("a");
-					remove.setAttribute("class", "close");
-					remove.setAttribute("onclick", 'remove_facet_line("' + jQuery("#faceted_navigation_custom").val() + '");');
-
-					facet_td.append(facet)
-					facets_lines.append(facet_td);
-					title_td.append(title);
-					facets_lines.append(title_td);
-					position_td.append(position);
-					facets_lines.append(position_td);
-					checkbox_td.append(checkbox);
-					checkbox_td.append(remove);
-					facets_lines.append(checkbox_td);
-
-					jQuery('#facets_content').append(facets_lines);
-
-					jQuery('#faceted_navigation_custom').val('')
-
-				}
-
-
-				function CollectAttributes() {
-
-					Attributes = [];
-
-					count = 0;
-					countFacets = jQuery('input[id^=facets_facet]').length;
-
-					while ((count + 1) <= countFacets) {
-
-						var data = {
-
-							attribute: jQuery('input[id^=facets_facet]:eq(' + count + ')').val(),
-							title: jQuery('input[id^=facets_title]:eq(' + count + ')').val(),
-							position: jQuery('input[id^=facets_position]:eq(' + count + ')').val(),
-							checked: jQuery('input[id^=faceted_enabled]:eq(' + count + ')').is(':checked')
-
-						};
-
-						Attributes.push(data);
-
-						count = count + 1;
-
-					}
-
-					jQuery('#faceted_navigation').val(JSON.stringify(Attributes));
-
-				}
-
-				jQuery(".closebtn").click(function () {
-					jQuery(".alert").remove();
-				});
-			</script>
-			<style>
-				.alert.info {
-					background-color: #2196F3;
-					border-radius: 6px;
-				}
-
-				.alert {
-					padding: 20px;
-					background-color: #f44336;
-					color: white;
-					opacity: 0.83;
-					transition: opacity 0.6s;
-					margin-bottom: 15px;
-				}
-
-				.closebtn {
-					padding-left: 15px;
-					color: white;
-					font-weight: bold;
-					float: right;
-					font-size: 20px;
-					line-height: 18px;
-					cursor: pointer;
-					transition: 0.3s;
-				}
-
-				.close {
-					position: absolute;
-					width: 32px;
-					height: 32px;
-					opacity: 0.4;
-				}
-
-				.close:hover {
-					opacity: 1;
-				}
-
-				.close:before, .close:after {
-					position: absolute;
-					left: 15px;
-					content: ' ';
-					height: 20px;
-					width: 2px;
-					background-color: #f44336;
-				}
-
-				.close:before {
-					transform: rotate(45deg);
-				}
-
-				.close:after {
-					transform: rotate(-45deg);
-				}
-
-				#wpcontent {
-					background-color: #f8f8f2;
-					padding-left: 0.7rem;
-				}
-				#wpcontent h1 {
-					max-width: fit-content;
-					font-weight: 900;
-					font-family: roboto;
-					padding: 1rem 1.5rem 1rem 2.5rem;
-					transform: translateX(-1.5rem);
-					background-color: #004576;
-					border-radius: 5px;
-					color: #f8f8f2;
-					box-shadow: 0 3px 3px rgba(0,0,0,0.2);
-					filter: blur(0);
-					transition: all 0.3s ease-in-out;
-					-webkit-touch-callout: none;
-					-webkit-user-select: none;
-					-khtml-user-select: none;
-					-moz-user-select: none;
-					-ms-user-select: none;
-					user-select: none;
-				}
-
-				#clerkLogoHeader {
-					position: absolute;
-					top: 32%;
-					left: 0.5rem;
-					transition:all 1s ease;
-				}
-
-				#wpcontent h1:hover {
-					background-color: #ff5c28;
-				}
-				#wpcontent h1:hover #clerkLogoHeader{
-					left:1.4rem;
-					filter: drop-shadow(0 0 0.75rem white);
-				}
-				#wpbody {
-					background-color: #DEDEDE;
-					padding-left: 1rem;
-					border-left: 1px solid #1d2327;
-				}
-
-				#wpbody form {
-					background-color: #eee;
-					padding: 0rem 1rem 1rem 1rem;
-					border: 1px solid #1d2327;
-					border-radius: 5px;
-					margin-top: 1rem;
-					box-shadow: 0 3px 3px rgba(0,0,0,0.2);
-				}
-				#wpbody label {
-					cursor: default;
-				}
-
-				#wpbody input[type="text"]{
-					width: 100%;
-					width: -moz-available;          /* WebKit-based browsers will ignore this. */
-					width: -webkit-fill-available;  /* Mozilla-based browsers will ignore this. */
-					width: fill-available;
-					max-width: clamp(300px, 50%, 100%);
-				}
-
-				#wpbody h2 {
-					background: #1d2327;
-					padding: 1rem;
-					margin: 0 -1rem;
-					color: white;
-				}
-
-				#clerkFloatingSaveBtn {
-					position: fixed;
-					right: 3rem;
-					top: 3rem;
-					background: #2271b1;
-					padding: 1rem;
-					border-radius: 5px;
-					box-shadow: 0 3px 3px rgb(0 0 0 / 20%);
-					transition: all 0.3s ease;
-					color: white;
-					font-size: 14px;
-					text-transform: uppercase;
-					font-weight: 900;
-					cursor: pointer;
-					z-index: 99;
-				}
-				#clerkFloatingSaveBtn:hover {
-					background-color: #135e96;
-				}
-				#submit {
-					padding: 1rem;
-					border-radius: 5px;
-					box-shadow: 0 3px 3px rgb(0 0 0 / 20%);
-					transition: all 0.3s ease;
-					color: white;
-					font-size: 14px;
-					text-transform: uppercase;
-					font-weight: 900;
-					cursor: pointer;
-				}
-			</style>
-
+				type="hidden"/>
+			</div>
+			</div>
 			<?php
 	}
 
@@ -2011,10 +1598,17 @@ class Clerk_Admin_Settings {
 			'tr_TR' => 'Turkish',
 		);
 
-		if ( isset( $langs_auto[ get_locale() ] ) ) {
+		if ( clerk_is_wpml_enabled() && ! clerk_wpml_all_scope_is_active() ) {
+			$scope_info = clerk_wpml_get_active_scope();
+			$locale     = $scope_info['default_locale'];
+		} else {
+			$locale = get_locale();
+		}
+
+		if ( isset( $langs_auto[ $locale ] ) ) {
 
 			$auto_lang = array(
-				'Label' => sprintf( 'Auto (%s)', $langs_auto[ get_locale() ] ),
+				'Label' => sprintf( 'Auto (%s)', $langs_auto[ $locale ] ),
 				'Value' => 'auto',
 			);
 
@@ -2158,14 +1752,14 @@ class Clerk_Admin_Settings {
 
 		if ( WP_DEBUG ) {
 			?>
-			<hr><p style="color: red;"><strong>WordPress Debug Mode is enabled</strong></p>
+			<hr><p class="red"><strong>WordPress Debug Mode is enabled</strong></p>
 			<ul>
-				<li style="color: red;">Caching is disabled.</li>
-				<li style="color: red;">Errors will be visible.</li>
-				<li style="color: red;">Clerk logger can catch all errors.</li>
-				<li style="color: red;">Remember to disable it again after use!</li>
-				<li style="color: red;">It's not best practice to have it enabled in production.</li>
-				<li style="color: red;">It's only recommended for at very short period af time for debug use.</li>
+				<li class="red">Caching is disabled.</li>
+				<li class="red">Errors will be visible.</li>
+				<li class="red">Clerk logger can catch all errors.</li>
+				<li class="red">Remember to disable it again after use!</li>
+				<li class="red">It's not best practice to have it enabled in production.</li>
+				<li class="red">It's only recommended for at very short period af time for debug use.</li>
 			</ul>
 			<br>
 			<p><strong>Step By Step Guide to disable debug mode</strong></p>
@@ -2360,13 +1954,13 @@ class Clerk_Admin_Settings {
 	public function add_page_dropdown( $args ) {
 		// Get settings value.
 		$options   = (array) get_option( 'clerk_options' );
-		$label_for = is_array( $args['label_for'] ) ? esc_attr( $args['label_for'] ) : ( is_string( $args['label_for'] ) ? esc_attr( $args['label_for'] ) : array() );
+		$label_for = is_string( $args['label_for'] ) || is_array( $args['label_for'] ) ? $args['label_for'] : array();
 		$selection = array_key_exists( $label_for, $options ) ? $options[ $label_for ] : '';
 		$selection = empty( $selection ) ? '' : $selection;
 		wp_dropdown_pages(
 			array(
 				'selected' => esc_attr( $selection ),
-				'name'     => sprintf( 'clerk_options[%s]', $label_for ),
+				'name'     => sprintf( 'clerk_options[%s]', esc_attr( $label_for ) ),
 			)
 		);
 	}
@@ -2505,7 +2099,7 @@ class Clerk_Admin_Settings {
 
 		// check if the user have submitted the settings.
 		// WordPress will add the "settings-updated" $_GET parameter to the url.
-		if ( null !== filter_input( INPUT_GET, 'settings-updated', FILTER_SANITIZE_STRING ) ) {
+		if ( null !== filter_input( INPUT_GET, 'settings-updated' ) ) {
 			delete_transient( 'clerk_api_contents' );
 			// add settings saved message with the class of "updated".
 			add_settings_error( 'wporg_messages', 'wporg_message', __( 'Settings Saved', 'wporg' ), 'updated' );
@@ -2513,77 +2107,30 @@ class Clerk_Admin_Settings {
 
 		// show error/update messages.
 		settings_errors( 'wporg_messages' );
+
+		$language_info = wp_json_encode( clerk_wpml_get_active_scope() );
+
 		?>
 		<div class="wrap">
-			<script id="clerkAdminAjaxFunc">
-				const clerkSubmitAdminForm = () => {
-					document.querySelector('#submit').click();
-				}
-				document.addEventListener('DOMContentLoaded', function(){
-					document.querySelector('#powerstep_custom_text_enabled').addEventListener('click', function(e){
-						switch(e.target.checked){
-							case true:
-								document.querySelector('#powerstep_custom_text_back').removeAttribute('disabled');
-								document.querySelector('#powerstep_custom_text_title').removeAttribute('disabled');
-								document.querySelector('#powerstep_custom_text_cart').removeAttribute('disabled');
-								break;
-							case false:
-								document.querySelector('#powerstep_custom_text_back').setAttribute('disabled', true);
-								document.querySelector('#powerstep_custom_text_title').setAttribute('disabled', true);
-								document.querySelector('#powerstep_custom_text_cart').setAttribute('disabled', true);
-								break;
-						}
-					});
-					let customPowerstepTexts = document.querySelector('#powerstep_custom_text_enabled').checked;
-					if(!customPowerstepTexts){
-						document.querySelector('#powerstep_custom_text_back').setAttribute('disabled', true);
-						document.querySelector('#powerstep_custom_text_title').setAttribute('disabled', true);
-						document.querySelector('#powerstep_custom_text_cart').setAttribute('disabled', true);
-					}
-				});
-			</script>
-			<div id="clerkFloatingSaveBtn" onclick="clerkSubmitAdminForm();"><?php echo esc_html( __( 'Save Settings', 'clerk' ) ); ?></div>
-			<h1><img id="clerkLogoHeader" src="<?php echo esc_html( plugin_dir_url( CLERK_PLUGIN_FILE ) . 'assets/img/clerk.png' ); ?>"><?php echo esc_html( get_admin_page_title() ); ?></h1>
-			<form id="clerkAdminForm" action="options.php" method="post">
-				<?php
-				// output security fields for the registered setting "wporg".
-				settings_fields( 'clerk' );
-				// output setting sections and their fields.
-				// (sections are registered for "wporg", each field is registered to a specific section).
-				do_settings_sections( 'clerk' );
-				// output save settings button.
-				submit_button( 'Save Settings' );
-				?>
-			</form>
-		</div>
+			<div id="clerkFloatingSaveBtn" onclick="clerk_submit_admin_form();"><?php echo esc_html( __( 'Save Settings', 'clerk' ) ); ?></div>
+			<h1 style="font-family: Arial;">
+				<img id="clerkLogoHeader" src="<?php echo esc_html( plugin_dir_url( CLERK_PLUGIN_FILE ) . 'assets/img/clerk.png' ); ?>">
+				<span><?php echo esc_html( get_admin_page_title() ); ?></span>
+			</h1>
+	<form id="clerkAdminForm" action="options.php" method="post">
+		<div id="multi-lang-data"><?php echo esc_html( $language_info ); ?></div>
 		<?php
-	}
-
-	/**
-	 * Get Embeded Dashboard Url
-	 *
-	 * @param string $type Type of embed showcase.
-	 * @return string Url.
-	 */
-	private function get_embed_url( $type ) {
-		$options = get_option( 'clerk_options' );
-
-		$public_key  = $options['public_key'];
-		$private_key = $options['private_key'];
-		$store_part  = $this->get_store_part( $public_key );
-
-		return sprintf( 'https://my.clerk.io/#/store/%s/analytics/%s?key=%s&private_key=%s&embed=yes', $store_part, $type, $public_key, $private_key );
-	}
-
-	/**
-	 * Get first 8 characters of public key
-	 *
-	 * @param string $public_key Public Key.
-	 *
-	 * @return string Partial key
-	 */
-	private function get_store_part( $public_key ) {
-		return substr( $public_key, 0, 8 );
+		// output security fields for the registered setting "wporg".
+		settings_fields( 'clerk' );
+		// output setting sections and their fields.
+		// (sections are registered for "wporg", each field is registered to a specific section).
+		do_settings_sections( 'clerk' );
+		// output save settings button.
+		submit_button( 'Save Settings' );
+		?>
+	</form>
+</div>
+		<?php
 	}
 }
 

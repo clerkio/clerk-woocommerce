@@ -3,7 +3,7 @@
  * Plugin Name: Clerk
  * Plugin URI: https://clerk.io/
  * Description: Clerk.io Turns More Browsers Into Buyers
- * Version: 4.1.0
+ * Version: 4.1.2
  * Author: Clerk.io
  * Author URI: https://clerk.io
  *
@@ -50,6 +50,7 @@ if ( ! class_exists( 'Clerk' ) ) {
 			include_once __DIR__ . '/includes/class-clerk-rest-api.php';
 			include_once __DIR__ . '/includes/clerk-legacy-helpers.php';
 			include_once __DIR__ . '/includes/class-clerk-logger.php';
+			include_once __DIR__ . '/includes/clerk-multi-lang-helpers.php';
 
 			// Frontend.
 			include_once __DIR__ . '/includes/clerk-template-functions.php';

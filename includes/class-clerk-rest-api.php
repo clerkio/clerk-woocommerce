@@ -3,7 +3,7 @@
  * Plugin Name: Clerk
  * Plugin URI: https://clerk.io/
  * Description: Clerk.io Turns More Browsers Into Buyers
- * Version: 4.1.0
+ * Version: 4.1.2
  * Author: Clerk.io
  * Author URI: https://clerk.io
  *
@@ -33,11 +33,22 @@ class Clerk_Rest_Api extends WP_REST_Server {
 	protected $api;
 
 	/**
+	 * Clerk Api Interface
+	 *
+	 * @var Clerk_Logger
+	 */
+	protected $logger;
+
+	/**
 	 * Clerk_Rest_Api constructor.
 	 */
 	public function __construct() {
 		$this->init_hooks();
 		include_once __DIR__ . '/class-clerk-logger.php';
+		include_once __DIR__ . '/clerk-multi-lang-helpers.php';
+		if ( clerk_is_wpml_enabled() ) {
+			do_action( 'wpml_multilingual_options', 'clerk_options' );
+		}
 		$this->logger = new Clerk_Logger();
 		$this->api    = new Clerk_Api();
 	}
@@ -301,13 +312,45 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 			$final_products_array = array();
 
+			$image_size_setting = isset( $options['data_sync_image_size'] ) ? $options['data_sync_image_size'] : 'medium';
+
+			$product_tax_classes = WC_Tax::get_tax_classes();
+			$product_tax_rates   = array();
+
+			if ( $product_tax_classes ) {
+				if ( ! in_array( '', $product_tax_classes, true ) ) {
+					array_unshift( $product_tax_classes, '' );
+				}
+
+				foreach ( $product_tax_classes as $tax_class ) {
+					$taxes = WC_Tax::get_rates_for_tax_class( $tax_class );
+					if ( ! empty( $taxes ) ) {
+						foreach ( $taxes as $key => $tax ) {
+							$product_tax_rates[] = (array) $tax;
+						}
+					}
+				}
+			}
+
 			foreach ( $products->products as $product ) {
 
-				$stock_quantity = null;
-				$product_array  = array();
-				$categories     = wp_get_post_terms( $product->get_id(), 'product_cat' );
-				$price          = 0;
-				$list_price     = 0;
+				$taxonomies     = array( 'product_cat', 'product_brand', 'pwb-brand' );
+				$categories     = array();
+				$category_names = array();
+				foreach ( $taxonomies as $taxonomy ) {
+					if ( taxonomy_exists( $taxonomy ) ) {
+						$taxa_term_array = wp_get_post_terms( $product->get_id(), $taxonomy );
+						$categories      = array_merge( $categories, wp_list_pluck( $taxa_term_array, 'term_id' ) );
+						$category_names  = array_merge( $category_names, wp_list_pluck( $taxa_term_array, 'name' ) );
+					}
+				}
+
+				$stock_quantity      = null;
+				$product_array       = array();
+				$price               = 0;
+				$list_price          = 0;
+				$price_excl_tax      = 0;
+				$list_price_excl_tax = 0;
 
 				$on_sale = $product->is_on_sale();
 
@@ -316,16 +359,20 @@ class Clerk_Rest_Api extends WP_REST_Server {
 					 * Variable product sync fields
 					 * Will sync the lowest price, and set the sale flag if that variant is on sale.
 					 */
-					$product_array['variant_images']      = array();
-					$product_array['variant_prices']      = array();
-					$product_array['variant_list_prices'] = array();
-					$product_array['variant_skus']        = array();
-					$product_array['variant_ids']         = array();
-					$product_array['variant_options']     = array();
-					$product_array['variant_stocks']      = array();
-					$display_price                        = array();
-					$regular_price                        = array();
-					$stock_quantity                       = 0;
+					$product_array['variant_images']               = array();
+					$product_array['variant_prices']               = array();
+					$product_array['variant_list_prices']          = array();
+					$product_array['variant_prices_excl_tax']      = array();
+					$product_array['variant_list_prices_excl_tax'] = array();
+					$product_array['variant_skus']                 = array();
+					$product_array['variant_ids']                  = array();
+					$product_array['variant_options']              = array();
+					$product_array['variant_stocks']               = array();
+					$display_price                                 = array();
+					$regular_price                                 = array();
+					$display_price_excl_tax                        = array();
+					$regular_price_excl_tax                        = array();
+					$stock_quantity                                = 0;
 
 					$variations = $product->get_available_variations();
 
@@ -362,25 +409,56 @@ class Clerk_Rest_Api extends WP_REST_Server {
 							$product_array['variant_options'][] = $options_string;
 						}
 
-						$product_array['variant_images'][]      = $variation['image']['url'];
-						$product_array['variant_skus'][]        = $variation['sku'];
-						$product_array['variant_ids'][]         = $variation['variation_id'];
-						$product_array['variant_stocks'][]      = ( null !== $variation_obj->get_stock_quantity() ) ? $variation_obj->get_stock_quantity() : 0;
-						$product_array['variant_prices'][]      = $variation['display_price'];
-						$product_array['variant_list_prices'][] = $variation['display_regular_price'];
+						$variant_price      = $variation_obj->get_price();
+						$variant_list_price = $variation_obj->get_regular_price();
 
-						$display_price[ $variant_id ] = $variation['display_price'];
-						$regular_price[ $variant_id ] = $variation['display_regular_price'];
+						$variant_price_incl_tax      = wc_get_price_including_tax( $variation_obj, array( 'price' => $variant_price ) );
+						$variant_list_price_incl_tax = wc_get_price_including_tax( $variation_obj, array( 'price' => $variant_list_price ) );
+
+						$variant_price_excl_tax      = wc_get_price_excluding_tax( $variation_obj, array( 'price' => $variant_price ) );
+						$variant_list_price_excl_tax = wc_get_price_excluding_tax( $variation_obj, array( 'price' => $variant_list_price ) );
+
+						$variant_image = wp_get_attachment_image_src( $variation_obj->get_image_id(), $image_size_setting );
+						if ( ! $variant_image ) {
+							if ( function_exists( 'wc_placeholder_img_src' ) ) {
+								$variant_image = wc_placeholder_img_src( $image_size_setting );
+							} else {
+								$variant_image = '';
+							}
+						} else {
+							$variant_image = $variant_image[0];
+						}
+
+						$product_array['variant_images'][]               = $variant_image;
+						$product_array['variant_skus'][]                 = $variation['sku'];
+						$product_array['variant_ids'][]                  = $variation['variation_id'];
+						$product_array['variant_stocks'][]               = ( null !== $variation_obj->get_stock_quantity() ) ? $variation_obj->get_stock_quantity() : 0;
+						$product_array['variant_prices'][]               = $variant_price_incl_tax;
+						$product_array['variant_list_prices'][]          = $variant_list_price_incl_tax;
+						$product_array['variant_prices_excl_tax'][]      = $variant_price_excl_tax;
+						$product_array['variant_list_prices_excl_tax'][] = $variant_list_price_excl_tax;
+
+						$display_price[ $variant_id ]          = $variant_price_incl_tax;
+						$regular_price[ $variant_id ]          = $variant_list_price_incl_tax;
+						$display_price_excl_tax[ $variant_id ] = $variant_price_excl_tax;
+						$regular_price_excl_tax[ $variant_id ] = $variant_list_price_excl_tax;
 					}
 
 					if ( ! empty( $display_price ) ) {
 						$lowest_display_price = array_keys( $display_price, min( $display_price ), true ); // Find the corresponding product ID.
 						$price                = $display_price[ $lowest_display_price[0] ]; // Get the lowest price.
 						$list_price           = $regular_price[ $lowest_display_price[0] ]; // Get the corresponding list price (regular price).
+
+						$lowest_display_price_excl_tax = array_keys( $display_price_excl_tax, min( $display_price_excl_tax ), true );
+						$price_excl_tax                = $display_price_excl_tax[ $lowest_display_price_excl_tax[0] ];
+						$list_price_excl_tax           = $regular_price_excl_tax[ $lowest_display_price_excl_tax[0] ];
 					}
 
-					$price      = ( $price > 0 ) ? $price : $product->get_price();
-					$list_price = ( $list_price > 0 ) ? $list_price : $product->get_regular_price();
+					$price      = ( $price > 0 ) ? $price : wc_get_price_including_tax( $product, array( 'price' => $product->get_price() ) );
+					$list_price = ( $list_price > 0 ) ? $list_price : wc_get_price_including_tax( $product, array( 'price' => $product->get_regular_price() ) );
+
+					$price_excl_tax      = ( $price_excl_tax > 0 ) ? $price_excl_tax : wc_get_price_excluding_tax( $product, array( 'price' => $product->get_price() ) );
+					$list_price_excl_tax = ( $list_price_excl_tax > 0 ) ? $list_price_excl_tax : wc_get_price_excluding_tax( $product, array( 'price' => $product->get_regular_price() ) );
 
 					if ( $price === $list_price ) {
 						$on_sale = false; // Remove the sale flag if the cheapest variant is not on sale.
@@ -390,26 +468,57 @@ class Clerk_Rest_Api extends WP_REST_Server {
 					/**
 					 * Default single / grouped product sync fields
 					 */
-					$price          = wc_get_price_including_tax( $product, array( 'price' => $product->get_price() ) );
-					$list_price     = wc_get_price_including_tax( $product, array( 'price' => $product->get_regular_price() ) );
+					$price      = wc_get_price_including_tax( $product, array( 'price' => $product->get_price() ) );
+					$list_price = wc_get_price_including_tax( $product, array( 'price' => $product->get_regular_price() ) );
+
+					$price_excl_tax      = wc_get_price_excluding_tax( $product, array( 'price' => $product->get_price() ) );
+					$list_price_excl_tax = wc_get_price_excluding_tax( $product, array( 'price' => $product->get_regular_price() ) );
+
+					if ( $product->is_type( 'grouped' ) ) {
+						if ( $price === $list_price ) {
+							$tmp_children_prices = array();
+							$child_ids           = $product->get_children();
+							foreach ( $child_ids as $key => $value ) {
+								$child                 = wc_get_product( $value );
+								$tmp_children_prices[] = $child->get_regular_price();
+							}
+							if ( ! empty( $tmp_children_prices ) ) {
+								$raw_regular_price = min( $tmp_children_prices );
+								if ( is_numeric( $raw_regular_price ) ) {
+									$list_price_excl_tax = wc_get_price_excluding_tax( $product, array( 'price' => $raw_regular_price ) );
+									$list_price          = wc_get_price_including_tax( $product, array( 'price' => $raw_regular_price ) );
+								}
+							}
+						}
+					}
+
 					$stock_quantity = $product->get_stock_quantity();
 				}
 
 				if ( $product->is_type( 'bundle' ) ) {
-					$price          = $product->min_raw_price;
-					$list_price     = $product->min_raw_regular_price;
-					$bundled_items  = $product->get_bundled_items();
-					$stock_quantity = $product->get_stock_quantity();
-					if ( ! $price ) {
-						$price = 0;
+					$price               = $product->get_min_raw_price() ? wc_get_price_including_tax( $product, array( 'price' => $product->get_min_raw_price() ) ) : null;
+					$list_price          = $product->get_min_raw_regular_price() ? wc_get_price_including_tax( $product, array( 'price' => $product->get_min_raw_regular_price() ) ) : null;
+					$price_excl_tax      = $product->get_min_raw_price() ? wc_get_price_excluding_tax( $product, array( 'price' => $product->get_min_raw_price() ) ) : null;
+					$list_price_excl_tax = $product->get_min_raw_regular_price() ? wc_get_price_excluding_tax( $product, array( 'price' => $product->get_min_raw_regular_price() ) ) : null;
+					$bundled_items       = $product->get_bundled_items();
+					$stock_quantity      = $product->get_stock_quantity();
+					if ( ! $price || ! $list_price ) {
+						$price               = 0;
+						$list_price          = 0;
+						$price_excl_tax      = 0;
+						$list_price_excl_tax = 0;
 						foreach ( $bundled_items as $item ) {
-							$price += $item->get_price();
-						}
-					}
-					if ( ! $list_price ) {
-						$list_price = 0;
-						foreach ( $bundled_items as $item ) {
-							$list_price += $item->get_regular_price();
+							if ( method_exists( $item, 'is_taxable' ) ) {
+								$price               += wc_get_price_including_tax( $item, array( 'price' => $item->get_price() ) );
+								$list_price          += wc_get_price_including_tax( $item, array( 'price' => $item->get_regular_price() ) );
+								$price_excl_tax      += wc_get_price_excluding_tax( $item, array( 'price' => $item->get_price() ) );
+								$list_price_excl_tax += wc_get_price_excluding_tax( $item, array( 'price' => $item->get_regular_price() ) );
+							} else {
+								$price               += $item->get_price();
+								$list_price          += $item->get_regular_price();
+								$price_excl_tax      += $item->get_price();
+								$list_price_excl_tax += $item->get_regular_price();
+							}
 						}
 					}
 				}
@@ -421,17 +530,29 @@ class Clerk_Rest_Api extends WP_REST_Server {
 					'variable',
 				);
 
-				if ( ! in_array( $product->get_type(), $supported_product_types ) ) {
+				// Fallback for getting price from custom created product types.
+				if ( ! in_array( $product->get_type(), $supported_product_types, true ) ) {
 					if ( method_exists( $product, 'get_price' ) ) {
-						$price = $product->get_price();
+						if ( method_exists( $product, 'is_taxable' ) ) {
+							$price          = wc_get_price_including_tax( $product, array( 'price' => $product->get_price() ) );
+							$price_excl_tax = wc_get_price_excluding_tax( $product, array( 'price' => $product->get_price() ) );
+						} else {
+							$price          = $product->get_price();
+							$price_excl_tax = $product->get_price();
+						}
 					}
 					if ( method_exists( $product, 'get_regular_price' ) ) {
-						$list_price = $product->get_regular_price();
+						if ( method_exists( $product, 'is_taxable' ) ) {
+							$list_price          = wc_get_price_including_tax( $product, array( 'price' => $product->get_regular_price() ) );
+							$list_price_excl_tax = wc_get_price_excluding_tax( $product, array( 'price' => $product->get_regular_price() ) );
+						} else {
+							$list_price          = $product->get_regular_price();
+							$list_price_excl_tax = $product->get_regular_price();
+						}
 					}
 				}
 
-				$image_size_setting = isset( $options['data_sync_image_size'] ) ? $options['data_sync_image_size'] : 'medium';
-				$product_image      = wp_get_attachment_image_src( $product->get_image_id(), $image_size_setting );
+				$product_image = wp_get_attachment_image_src( $product->get_image_id(), $image_size_setting );
 				if ( ! $product_image ) {
 					if ( function_exists( 'wc_placeholder_img_src' ) ) {
 						$product_image = wc_placeholder_img_src( $image_size_setting );
@@ -441,257 +562,80 @@ class Clerk_Rest_Api extends WP_REST_Server {
 				} else {
 					$product_image = $product_image[0];
 				}
-				$product_array['id']             = $product->get_id();
-				$product_array['name']           = $product->get_name();
-				$product_array['description']    = get_post_field( 'post_content', $product->get_id() );
-				$product_array['price']          = (float) $price;
-				$product_array['list_price']     = (float) $list_price;
-				$product_array['image']          = $product_image;
-				$product_array['url']            = $product->get_permalink();
-				$product_array['categories']     = wp_list_pluck( $categories, 'term_id' );
-				$product_array['sku']            = $product->get_sku();
-				$product_array['on_sale']        = $on_sale;
-				$product_array['all_images']     = array();
-				$product_array['type']           = $product->get_type();
-				$product_array['visibility']     = $product->get_catalog_visibility();
-				$product_array['created_at']     = strtotime( $product->get_date_created() );
-				$product_array['stock']          = ( is_numeric( $stock_quantity ) ) ? $stock_quantity : 1;
-				$product_array['managing_stock'] = $product->managing_stock();
-				$product_array['backorders']     = $product->get_backorders();
-				$product_array['stock_status']   = $product->get_stock_status();
 
-				$exempted_fields = (array) $this->get_additional_fields_raw();
-
-				foreach ( $this->get_additional_fields() as $field ) {
-
-					if ( '' === $field ) {
-						continue;
+				$product_tags_data = get_the_terms( $product->get_id(), 'product_tag' );
+				$product_tags      = array();
+				if ( ! empty( $product_tags_data ) && ! is_wp_error( $product_tags_data ) ) {
+					foreach ( $product_tags_data as $tag ) {
+						$product_tags[] = $tag->slug;
 					}
+				}
 
-					if ( 'short_description' === $field ) {
-						$product_array['short_description'] = $product->get_short_description();
-						continue;
+				$product_array['id']                  = $product->get_id();
+				$product_array['name']                = $product->get_name();
+				$product_array['description']         = get_post_field( 'post_content', $product->get_id() );
+				$product_array['price']               = (float) $price;
+				$product_array['list_price']          = (float) $list_price;
+				$product_array['price_excl_tax']      = (float) $price_excl_tax;
+				$product_array['list_price_excl_tax'] = (float) $list_price_excl_tax;
+				$product_array['image']               = $product_image;
+				$product_array['url']                 = $product->get_permalink();
+				$product_array['categories']          = $categories;
+				$product_array['category_names']      = $category_names;
+				$product_array['sku']                 = $product->get_sku();
+				$product_array['on_sale']             = $on_sale;
+				$product_array['type']                = $product->get_type();
+				$product_array['visibility']          = $product->get_catalog_visibility();
+				$product_array['created_at']          = strtotime( $product->get_date_created() );
+				$product_array['stock']               = ( is_numeric( $stock_quantity ) ) ? $stock_quantity : 1;
+				$product_array['managing_stock']      = $product->managing_stock();
+				$product_array['backorders']          = $product->get_backorders();
+				$product_array['stock_status']        = $product->get_stock_status();
+				$product_array['tags']                = $product_tags;
+
+				if ( ! empty( $product_tax_rates ) ) {
+					foreach ( $product_tax_rates as $tax_rate ) {
+						if ( $tax_rate['tax_rate_class'] === $product->get_tax_class() ) {
+							$product_array['tax_rate'] = (float) $tax_rate['tax_rate'];
+						}
 					}
+				}
 
-					if ( 'all_images' === $field ) {
-						foreach ( get_intermediate_image_sizes() as $key => $image_size ) {
-							if ( ! in_array( wp_get_attachment_image_src( $product->get_image_id(), $image_size )[0], $product_array['all_images'], true ) ) {
-								array_push( $product_array['all_images'], wp_get_attachment_image_src( $product->get_image_id(), $image_size )[0] );
-							}
-						}
-						continue;
-					}
+				$product_array = $this->resolve_unit_measure( $product, $product_array );
 
-					if ( $product->get_attribute( $field ) || isset( $product->$field ) ) {
-						if ( ! isset( $product_array[ $this->clerk_friendly_attributes( $field ) ] ) ) {
+				$additional_fields = $this->get_additional_fields();
 
-							if ( ! in_array( $field, $exempted_fields ) ) {
-								$product_array[ str_replace( '-', '_', $this->clerk_friendly_attributes( $field ) ) ] = array_walk( explode( ',', $product->get_attribute( $field ) ), array( $this, 'trim_whitespace_in_attribute' ) );
-							} else {
-								$product_array[ str_replace( '-', '_', $this->clerk_friendly_attributes( $field ) ) ] = $product->get_attribute( $field );
-							}
-						}
+				if ( in_array( 'short_description', $additional_fields, true ) ) {
+					$product_array['short_description'] = $product->get_short_description();
+				}
 
-						if ( $product->is_type( 'variable' ) ) {
-							$variations      = $product->get_available_variations();
-							$child_atributes = array();
-							foreach ( $variations as $v ) {
-								$collectinfo   = '';
-								$variation_obj = new WC_Product_variation( $v['variation_id'] );
-
-								if ( ! in_array( $field, $exempted_fields ) ) {
-									$atribute = array_walk( explode( ',', $variation_obj->get_attribute( $field ) ), array( $this, 'trim_whitespace_in_attribute' ) );
-								} else {
-									$atribute = $variation_obj->get_attribute( $field );
-								}
-
-								if ( is_array( $atribute ) ) {
-									$collectinfo = $atribute[0];
-								} else {
-									$collectinfo = $atribute;
-								}
-
-								if ( '' === $collectinfo && isset( $variation_obj->get_data()[ $field ] ) ) {
-									$collectinfo = $variation_obj->get_data()[ $field ];
-								}
-
-								$child_atributes[] = $collectinfo;
-							}
-
-							$product_array[ 'child_' . $this->clerk_friendly_attributes( $field ) . 's' ] = $child_atributes;
-						}
-
-						if ( $product->is_type( 'grouped' ) ) {
-							$child_product_ids = $product->get_children();
-							$child_atributes   = array();
-							foreach ( $child_product_ids as $child_id ) {
-								$collectinfo  = '';
-								$childproduct = wc_get_product( $child_id );
-
-								if ( ! in_array( $field, $exempted_fields ) ) {
-									$atribute = array_walk( explode( ',', $childproduct->get_attribute( $field ) ), array( $this, 'trim_whitespace_in_attribute' ) );
-								} else {
-									$atribute = $childproduct->get_attribute( $field );
-								}
-
-								if ( is_array( $atribute ) ) {
-									$collectinfo = $atribute[0];
-								} else {
-									$collectinfo = $atribute;
-								}
-
-								if ( '' === $collectinfo && isset( $childproduct->$field ) ) {
-									$collectinfo = $childproduct->$field;
-								}
-
-								$child_atributes[] = $collectinfo;
-							}
-
-							$product_array[ 'child_' . str_replace( '-', '_', $this->clerk_friendly_attributes( $field ) ) . 's' ] = $child_atributes;
-						}
-					} elseif ( get_post_meta( $product->get_id(), $field, true ) ) {
-
-						$product_array[ $this->clerk_friendly_attributes( $field ) ] = get_post_meta( $product->get_id(), $field, true );
-
-						if ( $product->is_type( 'variable' ) ) {
-							$variations      = $product->get_available_variations();
-							$child_atributes = array();
-
-							foreach ( $variations as $v ) {
-								$collectinfo   = '';
-								$variation_obj = new WC_Product_variation( $v['variation_id'] );
-
-								$atribute = get_post_meta( $variation_obj->get_id(), $field, true );
-
-								if ( is_array( $atribute ) ) {
-									$collectinfo = $atribute[0];
-								} else {
-									$collectinfo = $atribute;
-								}
-
-								if ( '' === $collectinfo && isset( $variation_obj->get_data()[ $field ] ) ) {
-									$collectinfo = $variation_obj->get_data()[ $field ];
-								}
-
-								$child_atributes[] = $collectinfo;
-
-							}
-
-							$product_array[ 'child_' . str_replace( '-', '_', $this->clerk_friendly_attributes( $field ) ) . 's' ] = $child_atributes;
-						}
-
-						if ( $product->is_type( 'grouped' ) ) {
-							$child_product_ids = $product->get_children();
-							$child_atributes   = array();
-
-							foreach ( $child_product_ids as $child_id ) {
-								$collectinfo  = '';
-								$childproduct = wc_get_product( $child_id );
-								$atribute     = get_post_meta( $childproduct->get_id(), $field, true );
-
-								if ( is_array( $atribute ) ) {
-									$collectinfo = $atribute[0];
-								} else {
-									$collectinfo = $atribute;
-								}
-
-								if ( '' === $collectinfo && isset( $childproduct->$field ) ) {
-									$collectinfo = $childproduct->$field;
-								}
-
-								$child_atributes[] = $collectinfo;
-
-							}
-
-							$product_array[ 'child_' . str_replace( '-', '_', $this->clerk_friendly_attributes( $field ) ) . 's' ] = $child_atributes;
-						}
-					} elseif ( wp_get_post_terms( $product->get_id(), strtolower( $field ), array( 'fields' => 'names' ) ) ) {
-
-						$attributefield = wp_get_post_terms( $product->get_id(), strtolower( $field ), array( 'fields' => 'names' ) );
-
-						if ( is_object( $attributefield ) ) {
-							$attributefield = (array) $attributefield;
-						}
-
-						if ( ! array_key_exists( 'errors', $attributefield ) ) {
-
-							if ( is_array( $attributefield ) ) {
-								$attributefield = array_values( $attributefield );
-							}
-
-							$product_array[ strtolower( $this->clerk_friendly_attributes( $field ) ) ] = $attributefield;
-
-							if ( $product->is_type( 'variable' ) ) {
-								$variations      = $product->get_available_variations();
-								$child_atributes = array();
-
-								foreach ( $variations as $v ) {
-									$collectinfo   = '';
-									$variation_obj = new WC_Product_variation( $v['variation_id'] );
-
-									$attributefield = wp_get_post_terms( $variation_obj->get_id(), strtolower( $field ), array( 'fields' => 'names' ) );
-
-									if ( is_object( $attributefield ) ) {
-										$attributefield = (array) $attributefield;
-									}
-
-									if ( ! array_key_exists( 'errors', $attributefield ) ) {
-
-										if ( is_object( $attributefield ) ) {
-											$attributefield = (array) $attributefield;
-										}
-
-										$atribute = $attributefield;
-
-										if ( is_array( $atribute ) && count( $atribute ) > 0 ) {
-											$collectinfo = $atribute[0];
-										} else {
-											$collectinfo = $atribute;
-										}
-
-										if ( '' === $collectinfo && isset( $variation_obj->get_data()[ $field ] ) ) {
-											$collectinfo = $variation_obj->get_data()[ $field ];
-										}
-
-										if ( $collectinfo ) {
-											$child_atributes[] = $collectinfo;
-										}
-									}
-								}
-								if ( ! empty( $child_atributes ) ) {
-									$product_array[ 'child_' . strtolower( str_replace( '-', '_', $this->clerk_friendly_attributes( $field ) ) ) . 's' ] = $child_atributes;
-								}
-							}
-
-							if ( $product->is_type( 'grouped' ) ) {
-								$child_product_ids = $product->get_children();
-								$child_atributes   = array();
-								foreach ( $child_product_ids as $child_id ) {
-									$collectinfo    = '';
-									$childproduct   = wc_get_product( $child_id );
-									$attributefield = wp_get_post_terms( $childproduct->get_id(), strtolower( $field ), array( 'fields' => 'names' ) );
-									$atribute       = $attributefield;
-
-									if ( is_array( $atribute ) && count( $atribute ) > 0 ) {
-										$collectinfo = $atribute[0];
-									} else {
-										$collectinfo = $atribute;
-									}
-
-									if ( '' === $collectinfo && isset( $childproduct->$field ) ) {
-										$collectinfo = $childproduct->$field;
-									}
-									if ( $collectinfo ) {
-										$child_atributes[] = $collectinfo;
-									}
-								}
-								if ( ! empty( $child_atributes ) ) {
-									$product_array[ 'child_' . strtolower( str_replace( '-', '_', $this->clerk_friendly_attributes( $field ) ) ) . 's' ] = $child_atributes;
-								}
+				if ( in_array( 'all_images', $additional_fields, true ) ) {
+					$product_array['all_images'] = array();
+					foreach ( get_intermediate_image_sizes() as $key => $image_size ) {
+						$image_path = wp_get_attachment_image_src( $product->get_image_id(), $image_size );
+						if ( ! is_wp_error( $image_path ) && is_array( $image_path ) && ! empty( $image_path ) ) {
+							$image_path = $image_path[0];
+							if ( ! in_array( $product_array['all_images'], $image_path, true ) ) {
+								array_push( $product_array['all_images'], $image_path );
 							}
 						}
 					}
 				}
+
+				if ( in_array( 'gallery_images', $additional_fields, true ) ) {
+					$product_array['gallery_images'] = array();
+					$product_image_ids               = $product->get_gallery_image_ids();
+					if ( ! empty( $product_image_ids ) ) {
+						foreach ( $product_image_ids as $product_img_id ) {
+							$image_path = wp_get_attachment_url( $product_img_id );
+							if ( ! is_wp_error( $image_path ) && $image_path ) {
+								array_push( $product_array['gallery_images'], $image_path );
+							}
+						}
+					}
+				}
+
+				$product_array = $this->query_custom_fields( $product, $this->get_additional_fields(), $product_array );
 
 				$product_array = apply_filters( 'clerk_product_array', $product_array, $product );
 
@@ -712,6 +656,150 @@ class Clerk_Rest_Api extends WP_REST_Server {
 		}
 	}
 
+	/**
+	 * Get Custom Fields for Product
+	 *
+	 * @param WC_Product $product Product Object.
+	 * @param array      $fields Fields Array.
+	 * @param array      $product_data Product Data Array.
+	 */
+	public function query_custom_fields( $product, $fields, $product_data ) {
+		$product_type = $product->get_type();
+		$fields       = array_values( array_filter( array_diff( $fields, array_keys( $product_data ) ) ) );
+
+		foreach ( $fields as $field ) {
+			$attribute_value = $this->resolve_attribute_product( $product, $field );
+			if ( isset( $attribute_value ) ) {
+				$product_data[ $this->clerk_friendly_attributes( $field ) ] = $this->format_attribute( $attribute_value, $field );
+			}
+		}
+
+		if ( 'variable' === $product_type ) {
+			$variations = $product->get_available_variations();
+			foreach ( $variations as $variation ) {
+				$variant = new WC_Product_variation( $variation['variation_id'] );
+				foreach ( $fields as $field ) {
+					$attribute_value = $this->format_attribute( $this->resolve_attribute_product( $variant, $field ), $field );
+					if ( ! isset( $attribute_value ) || empty( $attribute_value ) ) {
+						if ( ! array_key_exists( $field, $variation ) ) {
+							continue;
+						} else {
+							$attribute_value = $this->format_attribute( $variation[ $field ], $field );
+						}
+					}
+					if ( ! isset( $product_data[ 'child_' . $this->clerk_friendly_attributes( $field ) . 's' ] ) ) {
+						$product_data[ 'child_' . $this->clerk_friendly_attributes( $field ) . 's' ]   = array();
+						$product_data[ 'child_' . $this->clerk_friendly_attributes( $field ) . 's' ][] = $attribute_value;
+					} else {
+						$product_data[ 'child_' . $this->clerk_friendly_attributes( $field ) . 's' ][] = $attribute_value;
+					}
+				}
+			}
+		}
+		if ( 'grouped' === $product_type ) {
+			$child_product_ids = $product->get_children();
+			foreach ( $child_product_ids as $child_id ) {
+				$child = wc_get_product( $child_id );
+				foreach ( $fields as $field ) {
+					$attribute_value = $this->format_attribute( $this->resolve_attribute_product( $child, $field ), $field );
+					if ( ! isset( $attribute_value ) || empty( $attribute_value ) ) {
+						continue;
+					}
+					if ( ! isset( $product_data[ 'child_' . $this->clerk_friendly_attributes( $field ) . 's' ] ) ) {
+						$product_data[ 'child_' . $this->clerk_friendly_attributes( $field ) . 's' ]   = array();
+						$product_data[ 'child_' . $this->clerk_friendly_attributes( $field ) . 's' ][] = $attribute_value;
+					} else {
+						$product_data[ 'child_' . $this->clerk_friendly_attributes( $field ) . 's' ][] = $attribute_value;
+					}
+				}
+			}
+		}
+		return $product_data;
+	}
+
+
+	/**
+	 * Format Attribute Value
+	 *
+	 * @param mixed  $attribute_value Product Attribute Value.
+	 * @param string $field Field Slug.
+	 */
+	public function format_attribute( $attribute_value, $field ) {
+		if ( is_object( $attribute_value ) ) {
+			$attribute_value = (array) $attribute_value;
+		}
+		if ( is_array( $attribute_value ) && count( $attribute_value ) === 1 ) {
+			$attribute_value = $attribute_value[0];
+		}
+		if ( is_string( $attribute_value ) && ! in_array( $field, $this->get_additional_fields_raw(), true ) ) {
+			$attribute_value = array_map( array( $this, 'trim_whitespace_in_attribute' ), explode( ',', $attribute_value ) );
+		}
+		if ( is_array( $attribute_value ) && count( $attribute_value ) === 1 ) {
+			$attribute_value = $attribute_value[0];
+		}
+		return $attribute_value;
+	}
+
+	/**
+	 * Get Product Unit Measure Data
+	 *
+	 * @param WC_Product|WC_Product_variation $product Product Object.
+	 * @param array                           $product_data Product Data.
+	 *
+	 * @return array $product_data Product Data.
+	 */
+	public function resolve_unit_measure( $product, $product_data ) {
+		try {
+
+			$unit_price_data = get_post_meta( $product->get_id(), '_wc_price_calculator', true );
+			$unit_type       = null;
+			if ( ! empty( $unit_price_data ) ) {
+				if ( array_key_exists( 'calculator_type', $unit_price_data ) ) {
+					$unit_type = $unit_price_data['calculator_type'];
+				}
+				if ( $unit_type && array_key_exists( $unit_type, $unit_price_data ) ) {
+					$product_data['unit']                  = $unit_price_data[ $unit_type ]['pricing']['unit'];
+					$product_data['unit_label']            = $unit_price_data[ $unit_type ]['pricing']['label'];
+					$product_data['unit_type']             = $unit_type;
+					$product_data['unit_type_description'] = $unit_price_data[ $unit_type ][ $unit_type ]['label'];
+					$product_data['unit_enabled']          = ( 'yes' === $unit_price_data[ $unit_type ]['pricing']['enabled'] ) ? true : false;
+				}
+			}
+		} catch ( Exception $e ) {
+				$this->logger->error( 'ERROR resolve_unit_measure', array( 'error' => $e->getMessage() ) );
+		}
+		return $product_data;
+	}
+
+	/**
+	 * Get Attribute Value with Valid Method
+	 *
+	 * @param WC_Product|WC_Product_variation $product Product Object.
+	 * @param string                          $field Field Slug.
+	 *
+	 * @return mixed Attribute Value.
+	 */
+	public function resolve_attribute_product( $product, $field ) {
+
+		if ( $product->get_attribute( $field ) ) {
+			return $product->get_attribute( $field );
+		}
+		if ( isset( $product->$field ) ) {
+			return $product->$field;
+		}
+		if ( get_post_meta( $product->get_id(), $field, true ) ) {
+			return get_post_meta( $product->get_id(), $field, true );
+		}
+		if ( function_exists( 'get_field' ) && null !== get_field( $field, $product->get_id() ) ) {
+			return get_field( $field, $product->get_id() );
+		}
+		if ( ! is_wp_error( wp_get_post_terms( $product->get_id(), strtolower( $field ), array( 'fields' => 'names' ) ) ) ) {
+			return wp_get_post_terms( $product->get_id(), strtolower( $field ), array( 'fields' => 'names' ) );
+		}
+		if ( isset( $product->get_data()[ $field ] ) ) {
+			return $product->get_data()[ $field ];
+		}
+	}
 
 	/**
 	 * Check URL for Danish Language Characters and handle-ize
@@ -723,6 +811,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 		$attribute = str_replace( 'æ', 'ae', $attribute );
 		$attribute = str_replace( 'ø', 'oe', $attribute );
 		$attribute = str_replace( 'å', 'aa', $attribute );
+		$attribute = str_replace( '-', '_', $attribute );
 		return rawurlencode( $attribute );
 	}
 
@@ -1182,17 +1271,19 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 			foreach ( $users as $user ) {
 
+				$_customer_class = new WP_User( $user->ID );
+
 				$_customer          = array();
 				$_customer['name']  = $user->data->display_name;
 				$_customer['id']    = $user->data->ID;
 				$_customer['email'] = $user->data->user_email;
+				$_customer['roles'] = $_customer_class->roles;
+
+				$user_meta = get_user_meta( $user->ID );
 
 				foreach ( $customer_additional_fields as $customer_additional_field ) {
-
-					if ( isset( $user->data->{ $customer_additional_field} ) ) {
-
-						$_customer[ $customer_additional_field ] = $user->data->{ $customer_additional_field};
-
+					if ( isset( $user_meta[ $customer_additional_field ] ) ) {
+						$_customer[ $customer_additional_field ] = $user_meta[ $customer_additional_field ][0];
 					}
 				}
 
@@ -1423,9 +1514,9 @@ class Clerk_Rest_Api extends WP_REST_Server {
 			$fields = explode( ',', $additional_fields );
 
 			foreach ( $fields as $key => $field ) {
-
-				$fields[ $key ] = str_replace( ' ', '_', $field );
-
+				if ( ! empty( $field ) ) {
+					$fields[ $key ] = str_replace( ' ', '_', $field );
+				}
 			}
 
 			if ( ! is_array( $fields ) ) {
@@ -1475,6 +1566,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 	/**
 	 * Trim whitespace from product attributes
 	 *
+	 * @param string|void $attribute_value Attribute Value.
 	 * @return string|void
 	 */
 	private function trim_whitespace_in_attribute( $attribute_value = null ) {
@@ -1524,15 +1616,25 @@ class Clerk_Rest_Api extends WP_REST_Server {
 			$orderby = $request->get_param( 'orderby' ) ? $request->get_param( 'orderby' ) : 'date';
 			$order   = $request->get_param( 'order' ) ? $request->get_param( 'order' ) : 'DESC';
 
+			$taxonomies  = array( 'product_cat' );
+			$plugin_taxa = array( 'product_brand', 'pwb-brand' );
+
+			foreach ( $plugin_taxa as $taxonomy ) {
+				if ( taxonomy_exists( $taxonomy ) ) {
+					$taxonomies[] = $taxonomy;
+				}
+			}
+
 			$args = array(
 				'number'     => $limit,
 				'orderby'    => $orderby,
 				'order'      => $order,
 				'offset'     => $offset,
 				'hide_empty' => true,
+				'taxonomy'   => $taxonomies,
 			);
 
-			$product_categories = get_terms( 'product_cat', $args );
+			$product_categories = get_terms( $args );
 
 			$categories = array();
 

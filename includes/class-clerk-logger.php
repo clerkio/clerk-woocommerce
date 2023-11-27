@@ -3,7 +3,7 @@
  * Plugin Name: Clerk
  * Plugin URI: https://clerk.io/
  * Description: Clerk.io Turns More Browsers Into Buyers
- * Version: 4.1.0
+ * Version: 4.1.2
  * Author: Clerk.io
  * Author URI: https://clerk.io
  *
@@ -63,13 +63,17 @@ class Clerk_Logger {
 	 */
 	public function __construct() {
 
-		$this->options  = get_option( 'clerk_options' );
+		include_once __DIR__ . '/clerk-multi-lang-helpers.php';
+		if ( clerk_is_wpml_enabled() ) {
+			do_action( 'wpml_multilingual_options', 'clerk_options' );
+		}
 		$this->platform = 'WordPress';
 		if ( ! empty( $this->options ) ) {
 			$this->key = $this->options['public_key'];
 		}
-		$this->date = new DateTime();
-		$this->time = $this->date->getTimestamp();
+		$this->date    = new DateTime();
+		$this->time    = $this->date->getTimestamp();
+		$this->options = get_option( 'clerk_options' );
 	}
 
 	/**
@@ -93,13 +97,13 @@ class Clerk_Logger {
 
 		}
 
-		if ( filter_input_array( INPUT_GET, FILTER_SANITIZE_STRING ) ) {
+		if ( filter_input_array( INPUT_GET ) ) {
 
-			$metadata['params'] = filter_input_array( INPUT_GET, FILTER_SANITIZE_STRING );
+			$metadata['params'] = filter_input_array( INPUT_GET );
 
-		} elseif ( filter_input_array( INPUT_POST, FILTER_SANITIZE_STRING ) ) {
+		} elseif ( filter_input_array( INPUT_POST ) ) {
 
-			$metadata['params'] = filter_input_array( INPUT_POST, FILTER_SANITIZE_STRING );
+			$metadata['params'] = filter_input_array( INPUT_POST );
 
 		}
 
@@ -127,7 +131,7 @@ class Clerk_Logger {
 					$args = array(
 						'body'    => $data_string,
 						'method'  => 'POST',
-						'headers' => array( 'User-Agent' => 'ClerkExtensionBot WooCommerce/v' . get_bloginfo( 'version' ) . ' Clerk/v4.1.0 PHP/v' . phpversion() ),
+						'headers' => array( 'User-Agent' => 'ClerkExtensionBot WooCommerce/v' . get_bloginfo( 'version' ) . ' Clerk/v4.1.2 PHP/v' . phpversion() ),
 					);
 
 					wp_remote_request( $_endpoint, $args );
@@ -157,13 +161,13 @@ class Clerk_Logger {
 			$metadata['uri'] = get_site_url() . $request_uri;
 		}
 
-		if ( filter_input_array( INPUT_GET, FILTER_SANITIZE_STRING ) ) {
+		if ( filter_input_array( INPUT_GET ) ) {
 
-			$metadata['params'] = filter_input_array( INPUT_GET, FILTER_SANITIZE_STRING );
+			$metadata['params'] = filter_input_array( INPUT_GET );
 
-		} elseif ( filter_input_array( INPUT_POST, FILTER_SANITIZE_STRING ) ) {
+		} elseif ( filter_input_array( INPUT_POST ) ) {
 
-			$metadata['params'] = filter_input_array( INPUT_POST, FILTER_SANITIZE_STRING );
+			$metadata['params'] = filter_input_array( INPUT_POST );
 
 		}
 
@@ -190,7 +194,7 @@ class Clerk_Logger {
 				$args = array(
 					'body'    => $data_string,
 					'method'  => 'POST',
-					'headers' => array( 'User-Agent' => 'ClerkExtensionBot WooCommerce/v' . get_bloginfo( 'version' ) . ' Clerk/v4.1.0 PHP/v' . phpversion() ),
+					'headers' => array( 'User-Agent' => 'ClerkExtensionBot WooCommerce/v' . get_bloginfo( 'version' ) . ' Clerk/v4.1.2 PHP/v' . phpversion() ),
 				);
 
 				wp_remote_request( $_endpoint, $args );
@@ -220,13 +224,13 @@ class Clerk_Logger {
 
 		}
 
-		if ( filter_input_array( INPUT_GET, FILTER_SANITIZE_STRING ) ) {
+		if ( filter_input_array( INPUT_GET ) ) {
 
-			$metadata['params'] = filter_input_array( INPUT_GET, FILTER_SANITIZE_STRING );
+			$metadata['params'] = filter_input_array( INPUT_GET );
 
-		} elseif ( filter_input_array( INPUT_POST, FILTER_SANITIZE_STRING ) ) {
+		} elseif ( filter_input_array( INPUT_POST ) ) {
 
-			$metadata['params'] = filter_input_array( INPUT_POST, FILTER_SANITIZE_STRING );
+			$metadata['params'] = filter_input_array( INPUT_POST );
 
 		}
 
@@ -255,7 +259,7 @@ class Clerk_Logger {
 					$args = array(
 						'body'    => $data_string,
 						'method'  => 'POST',
-						'headers' => array( 'User-Agent' => 'ClerkExtensionBot WooCommerce/v' . get_bloginfo( 'version' ) . ' Clerk/v4.1.0 PHP/v' . phpversion() ),
+						'headers' => array( 'User-Agent' => 'ClerkExtensionBot WooCommerce/v' . get_bloginfo( 'version' ) . ' Clerk/v4.1.2 PHP/v' . phpversion() ),
 					);
 
 					wp_remote_request( $_endpoint, $args );

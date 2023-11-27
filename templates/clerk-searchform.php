@@ -3,7 +3,7 @@
  * Plugin Name: Clerk
  * Plugin URI: https://clerk.io/
  * Description: Clerk.io Turns More Browsers Into Buyers
- * Version: 4.1.0
+ * Version: 4.1.2
  * Author: Clerk.io
  * Author URI: https://clerk.io
  *
@@ -16,6 +16,11 @@
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
+}
+
+require_once dirname( dirname( __FILE__ ) ) . '/includes/clerk-multi-lang-helpers.php';
+if ( clerk_is_wpml_enabled() ) {
+	do_action( 'wpml_multilingual_options', 'clerk_options' );
 }
 
 $options   = get_option( 'clerk_options' );
