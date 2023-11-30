@@ -91,11 +91,11 @@ class Clerk_Admin_Settings {
 
 		$wpml_enabled = clerk_is_wpml_enabled();
 		if ( $wpml_enabled ) {
-      $site_info = clerk_wpml_get_active_scope();
-      $site_url = $site_info['url'];
-    } else {
-      $site_url = get_site_url();
-    }
+			$site_info = clerk_wpml_get_active_scope();
+			$site_url  = $site_info['url'];
+		} else {
+			$site_url = get_site_url();
+		}
 
 		$options = get_option( 'clerk_options' );
 

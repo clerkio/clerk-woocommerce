@@ -175,7 +175,6 @@ class Clerk_Powerstep {
 						$params['variation_id'] = $variant_id;
 					}
 
-
 					if ( is_numeric( $product_qty ) ) {
 						$params['quantity'] = $product_qty;
 					}
