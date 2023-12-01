@@ -514,10 +514,10 @@ class Clerk_Rest_Api extends WP_REST_Server {
 								$price_excl_tax      += wc_get_price_excluding_tax( $item, array( 'price' => $item->get_price() ) );
 								$list_price_excl_tax += wc_get_price_excluding_tax( $item, array( 'price' => $item->get_regular_price() ) );
 							} else {
-								$price               += $item->get_price();
-								$list_price          += $item->get_regular_price();
-								$price_excl_tax      += $item->get_price();
-								$list_price_excl_tax += $item->get_regular_price();
+								$price               += (float) $item->get_price();
+								$list_price          += (float) $item->get_regular_price();
+								$price_excl_tax      += (float) $item->get_price();
+								$list_price_excl_tax += (float) $item->get_regular_price();
 							}
 						}
 					}
