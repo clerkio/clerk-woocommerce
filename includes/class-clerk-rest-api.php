@@ -1348,7 +1348,8 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 			$body = json_decode( $request->get_body(), true );
 			if ( $body ) {
-				if ( is_array( $body ) ) {
+        if ( is_array( $body ) ) {
+          $private_key = array_key_exists( 'private_key', $body ) ? $body['private_key'] : '';
 					$public_key = array_key_exists( 'key', $body ) ? $body['key'] : '';
 				}
 			} else {
@@ -1356,7 +1357,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 				return false;
 			}
 
-			if ( $this->timing_safe_equals( $options['public_key'], $public_key ) && $this->validate_jwt( $token ) ) {
+			if ( $this->timing_safe_equals( $options['public_key'], $public_key ) && $this->timing_safe_equals( $options['private_key'], $private_key ) ) {
 				return true;
 			}
 
