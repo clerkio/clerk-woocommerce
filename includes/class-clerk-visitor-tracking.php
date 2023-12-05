@@ -234,7 +234,7 @@ class Clerk_Visitor_Tracking {
 				}
 				?>
 				<script id='clerk_additional_header_scripts'>
-				<?php html_entity_decode( esc_attr( $script_js ), ENT_QUOTES ); ?>
+				<?php echo html_entity_decode( esc_attr( $script_js ), ENT_QUOTES ); ?>
 				</script>
 				<?php
 			}
