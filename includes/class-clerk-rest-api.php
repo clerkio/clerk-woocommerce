@@ -1343,6 +1343,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 			}
 
 			$public_key = '';
+      $private_key = '';
 
 			$token = $this->get_header_token( $request );
 
