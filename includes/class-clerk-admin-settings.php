@@ -178,8 +178,8 @@ class Clerk_Admin_Settings {
 				'value'       => $site_url,
 			)
 		);
-    
-    // Add toggle to use legacy Authentication
+
+		// Add toggle to use legacy Authentication.
 		add_settings_field(
 			'legacy_auth_enabled',
 			__( 'Legacy Authentication', 'clerk' ),

@@ -1344,8 +1344,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 			$options = get_option( 'clerk_options' );
 
-      $use_legacy_auth = array_key_exists('legacy_auth_enabled', $options);
-
+			$use_legacy_auth = array_key_exists( 'legacy_auth_enabled', $options );
 
 			$request_method_string = $request->get_method();
 
@@ -1354,15 +1353,15 @@ class Clerk_Rest_Api extends WP_REST_Server {
 				return false;
 			}
 
-			$public_key = '';
-      $private_key = '';
+			$public_key  = '';
+			$private_key = '';
 
 			$token = $this->get_header_token( $request );
 
 			$body = json_decode( $request->get_body(), true );
 			if ( $body ) {
 				if ( is_array( $body ) ) {
-					$public_key = array_key_exists( 'key', $body ) ? $body['key'] : '';
+					$public_key  = array_key_exists( 'key', $body ) ? $body['key'] : '';
 					$private_key = array_key_exists( 'private_key', $body ) ? $body['private_key'] : '';
 				}
 			} else {
@@ -1370,16 +1369,15 @@ class Clerk_Rest_Api extends WP_REST_Server {
 				return false;
 			}
 
-      if(!$use_legacy_auth){
-		  	if ( $this->timing_safe_equals( $options['public_key'], $public_key ) && $this->validate_jwt( $token ) ) {
-	  			return true;
-  			}
-      } else {
-		  	if ( $this->timing_safe_equals( $options['public_key'], $public_key ) && $this->timing_safe_equals( $options['private_key'], $private_key ) ) {
-	  			return true;
-  			}
-      }
-
+			if ( ! $use_legacy_auth ) {
+				if ( $this->timing_safe_equals( $options['public_key'], $public_key ) && $this->validate_jwt( $token ) ) {
+					return true;
+				}
+			} else {
+				if ( $this->timing_safe_equals( $options['public_key'], $public_key ) && $this->timing_safe_equals( $options['private_key'], $private_key ) ) {
+					return true;
+				}
+			}
 
 			$this->logger->warn( 'Failed to validate API Keys', array( 'response' => false ) );
 
@@ -1437,7 +1435,8 @@ class Clerk_Rest_Api extends WP_REST_Server {
 	 * Get Token from Request Header
 	 *
 	 * @param WP_REST_Request|void|null $request Request.
-	 * @return string
+	 * @return strings
+	 * @throws Exception Request Exception.
 	 */
 	private function get_header_token( $request ) {
 		try {

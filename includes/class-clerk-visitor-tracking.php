@@ -191,17 +191,16 @@ class Clerk_Visitor_Tracking {
 
 			$currency_symbol = get_woocommerce_currency_symbol();
 
-
-      $site_slug = strtolower(get_bloginfo( 'name' ));
-      $site_slug = preg_replace("/[^a-z]/", "", $site_slug);
-      $clerk_js_custom_domain = "://custom.clerk.io/" . $site_slug . ".js";
+			$site_slug              = strtolower( get_bloginfo( 'name' ) );
+			$site_slug              = preg_replace( '/[^a-z]/', '', $site_slug );
+			$clerk_js_custom_domain = '://custom.clerk.io/' . $site_slug . '.js';
 
 			?>
 			<!-- Start of Clerk.io E-commerce Personalisation tool - www.clerk.io -->
 			<script>
 				(function(w,d){
 					var e=d.createElement('script');e.type='text/javascript';e.async=true;
-          e.src=(d.location.protocol=='https:'?'https':'http')+'<?php echo esc_attr($clerk_js_custom_domain); ?>';
+		  e.src=(d.location.protocol=='https:'?'https':'http')+'<?php echo esc_attr( $clerk_js_custom_domain ); ?>';
 					var s=d.getElementsByTagName('script')[0];s.parentNode.insertBefore(e,s);
 					w.__clerk_q=w.__clerk_q||[];w.Clerk=w.Clerk||function(){w.__clerk_q.push(arguments)};
 				})(window,document);
