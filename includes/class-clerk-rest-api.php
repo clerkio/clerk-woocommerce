@@ -1344,7 +1344,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 			$options = get_option( 'clerk_options' );
 
-      $use_legacy_auth = array_key_exists('legacy_auth_enabled', $options)
+      $use_legacy_auth = array_key_exists('legacy_auth_enabled', $options);
 
 
 			$request_method_string = $request->get_method();
