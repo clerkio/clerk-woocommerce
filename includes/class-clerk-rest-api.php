@@ -1273,11 +1273,20 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 				$_customer_class = new WP_User( $user->ID );
 
+				$customer_roles = $_customer_class->roles;
+				if ( is_array( $customer_roles ) ) {
+					$customer_roles = array_values( $customer_roles );
+				}
+
+				if ( ! $customer_roles ) {
+					$customer_roles = array();
+				}
+
 				$_customer          = array();
 				$_customer['name']  = $user->data->display_name;
 				$_customer['id']    = $user->data->ID;
 				$_customer['email'] = $user->data->user_email;
-				$_customer['roles'] = $_customer_class->roles;
+				$_customer['roles'] = $customer_roles;
 
 				$user_meta = get_user_meta( $user->ID );
 
@@ -1335,6 +1344,9 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 			$options = get_option( 'clerk_options' );
 
+      $use_legacy_auth = array_key_exists('legacy_auth_enabled', $options)
+
+
 			$request_method_string = $request->get_method();
 
 			if ( 'POST' !== $request_method_string ) {
@@ -1343,6 +1355,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 			}
 
 			$public_key = '';
+      $private_key = '';
 
 			$token = $this->get_header_token( $request );
 
@@ -1350,15 +1363,23 @@ class Clerk_Rest_Api extends WP_REST_Server {
 			if ( $body ) {
 				if ( is_array( $body ) ) {
 					$public_key = array_key_exists( 'key', $body ) ? $body['key'] : '';
+					$private_key = array_key_exists( 'private_key', $body ) ? $body['private_key'] : '';
 				}
 			} else {
 				$this->logger->warn( 'Failed to validate API Keys', array( 'response' => false ) );
 				return false;
 			}
 
-			if ( $this->timing_safe_equals( $options['public_key'], $public_key ) && $this->validate_jwt( $token ) ) {
-				return true;
-			}
+      if(!$use_legacy_auth){
+		  	if ( $this->timing_safe_equals( $options['public_key'], $public_key ) && $this->validate_jwt( $token ) ) {
+	  			return true;
+  			}
+      } else {
+		  	if ( $this->timing_safe_equals( $options['public_key'], $public_key ) && $this->timing_safe_equals( $options['private_key'], $private_key ) ) {
+	  			return true;
+  			}
+      }
+
 
 			$this->logger->warn( 'Failed to validate API Keys', array( 'response' => false ) );
 
@@ -1374,7 +1395,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 	/**
 	 * Validate token from request.
 	 *
-	 * @param string|null $request Request.
+	 * @param string|null $token_string Request.
 	 * @return boolean
 	 */
 	private function validate_jwt( $token_string = null ) {
@@ -1399,7 +1420,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 		try {
 			$rsp_body = json_decode( $rsp_array['body'], true );
 
-			if ( isset( $rsp_body['status'] ) && $rsp_body['status'] == 'ok' ) {
+			if ( isset( $rsp_body['status'] ) && 'ok' === $rsp_body['status'] ) {
 				return true;
 			}
 

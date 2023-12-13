@@ -178,6 +178,19 @@ class Clerk_Admin_Settings {
 				'value'       => $site_url,
 			)
 		);
+    
+    // Add toggle to use legacy Authentication
+		add_settings_field(
+			'legacy_auth_enabled',
+			__( 'Legacy Authentication', 'clerk' ),
+			array( $this, 'add_checkbox_field' ),
+			'clerk',
+			'clerk_section_general',
+			array(
+				'label_for' => 'legacy_auth_enabled',
+				'checked'   => 0,
+			)
+		);
 
 		// Add Customer sync section.
 		add_settings_section(
