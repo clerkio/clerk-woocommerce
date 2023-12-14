@@ -17,17 +17,25 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
+if ( ! isset($product) ){
+    exit; // Exit if no product.
+}
+if(! is_a($product , 'WC_Product')){
+    exit; // Exit if product isn't correct object.
+}
 
-require_once dirname( dirname( __FILE__ ) ) . '/includes/clerk-multi-lang-helpers.php';
+require_once dirname(__FILE__, 2) . '/includes/clerk-multi-lang-helpers.php';
 if ( clerk_is_wpml_enabled() ) {
 	do_action( 'wpml_multilingual_options', 'clerk_options' );
 }
 
+
+$product_name = $product->get_name();
+$product_categories = $product->get_category_ids();
 $cart_url     = wc_get_cart_url();
 $checkout_url = wc_get_checkout_url();
 $options      = get_option( 'clerk_options' );
 
-$product_name     = (string) $product->get_name();
 $title_message    = esc_html__( ' added to cart!', 'clerk' );
 $title_html       = "<span class='clerk_powerstep_product_name'>$product_name</span>$title_message";
 $back_button_text = esc_html__( 'Back', 'clerk' );
@@ -88,7 +96,7 @@ if ( isset( $options['powerstep_custom_text_enabled'] ) ) {
 			?>
 					data-template="@<?php echo esc_attr( $template ); ?>"
 					data-products="[<?php echo esc_attr( $product->get_id() ); ?>]"
-					data-category="<?php echo esc_attr( reset( $product->get_category_ids() ) ); ?>"
+					data-category="<?php echo esc_attr( reset( $product_categories ) ); ?>"
 			></span>
 			<?php
 			if ( $index > 0 ) {
@@ -105,10 +113,10 @@ if ( isset( $options['powerstep_custom_text_enabled'] ) ) {
 			right: 8px;
 			top: 3px;
 			cursor: pointer;
-			font-family: Arial;
+            font-family: Arial, sans-serif;
 			font-size: 32px;
 			line-height: 1;
-			color: gray;
+			color: rgb(128, 128, 128);
 		}
 		.clerk-popup {
 			position: fixed;
@@ -121,7 +129,7 @@ if ( isset( $options['powerstep_custom_text_enabled'] ) ) {
 			background-color: white;
 			border: 1px solid #eee;
 			border-radius: 5px;
-			box-shadow: 0px 8px 40px 0px rgba(0,0,60,0.15);
+			box-shadow: 0 8px 40px 0 rgba(0,0,60,0.15);
 		}
 		.clerk_powerstep_headline {
 			margin: 14px 0px 14px 0px;
@@ -165,7 +173,7 @@ if ( isset( $options['powerstep_custom_text_enabled'] ) ) {
 		}
 		@-webkit-keyframes popin{
 			from{
-				top:translate(-50%,-150%);
+				transform:translate(-50%,-150%);
 				opacity:0
 			}
 			to{
@@ -195,15 +203,14 @@ if ( isset( $options['powerstep_custom_text_enabled'] ) ) {
 		.clerk-popup{
 			width:clamp(var(--clerk-popup-width),60%,100ch) !important;
 			top:50% !important;
-			left:50% !important;
+			left:50% !important;ß
 			transform:translate(-50%,-50%);
 			margin:0 !important;
 			border:none !important;
 			border-radius:5px !important;
 			max-height:calc(85vh);
 			overflow-y:scroll;
-			overflow-y:overlay;
-			-ms-overflow-style:none;
+            -ms-overflow-style:none;
 			scrollbar-width:none;
 			animation:popin .5s ease-in-out
 		}

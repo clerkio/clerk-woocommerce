@@ -200,7 +200,7 @@ class Clerk_Visitor_Tracking {
 			<script>
 				(function(w,d){
 					var e=d.createElement('script');e.type='text/javascript';e.async=true;
-		  e.src=(d.location.protocol=='https:'?'https':'http')+'<?php echo esc_attr( $clerk_js_custom_domain ); ?>';
+			e.src=(d.location.protocol=='https:'?'https':'http')+'<?php echo esc_attr( $clerk_js_custom_domain ); ?>';
 					var s=d.getElementsByTagName('script')[0];s.parentNode.insertBefore(e,s);
 					w.__clerk_q=w.__clerk_q||[];w.Clerk=w.Clerk||function(){w.__clerk_q.push(arguments)};
 				})(window,document);

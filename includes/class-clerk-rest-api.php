@@ -1373,10 +1373,8 @@ class Clerk_Rest_Api extends WP_REST_Server {
 				if ( $this->timing_safe_equals( $options['public_key'], $public_key ) && $this->validate_jwt( $token ) ) {
 					return true;
 				}
-			} else {
-				if ( $this->timing_safe_equals( $options['public_key'], $public_key ) && $this->timing_safe_equals( $options['private_key'], $private_key ) ) {
+			} elseif ( $this->timing_safe_equals( $options['public_key'], $public_key ) && $this->timing_safe_equals( $options['private_key'], $private_key ) ) {
 					return true;
-				}
 			}
 
 			$this->logger->warn( 'Failed to validate API Keys', array( 'response' => false ) );
@@ -1424,7 +1422,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 			return false;
 
-		} catch ( \Exception $e ) {
+		} catch (Exception $e ) {
 
 			$this->logger->error( 'validate_jwt ERROR', array( 'error' => $e->getMessage() ) );
 

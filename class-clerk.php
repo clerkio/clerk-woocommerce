@@ -43,7 +43,8 @@ if ( ! class_exists( 'Clerk' ) ) {
 		/**
 		 * Include front end controllers
 		 */
-		private function includes() {
+		private function includes(): void
+        {
 			// Backend.
 			include_once __DIR__ . '/includes/class-clerk-admin-settings.php';
 			include_once __DIR__ . '/includes/class-clerk-product-sync.php';
@@ -68,7 +69,8 @@ if ( ! class_exists( 'Clerk' ) ) {
 		/**
 		 * Set up hooks
 		 */
-		private function init_hooks() {
+		private function init_hooks(): void
+        {
 			// Register widgets.
 			add_action(
 				'widgets_init',

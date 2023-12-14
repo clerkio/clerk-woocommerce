@@ -22,7 +22,7 @@ class ClerkPowerstep {
 		document.addEventListener( 'DOMContentLoaded', this.handle_powerstep.bind( this ) );
 		if (document.readyState !== 'loading') {
 			this.handle_powerstep();
-			return;
+
 		}
 	}
 

@@ -2,3 +2,6 @@ composer.lock
 vendor/
 .idea
 packages.txt
+/.php-cs-fixer.cache
+/composer.json
+/qodana.yaml
