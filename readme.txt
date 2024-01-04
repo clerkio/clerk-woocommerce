@@ -30,6 +30,10 @@ Once signed up, simply login to your my.clerk.io backend, which will guide you t
 
 
 == Changelog ==
+= 4.1.6 - 2024-01-04
+* Added toggle for using legacy Authentication
+* Made clerk.js path dynamic for each store
+
 = 4.1.5 - 2023-12-08
 * Fix custom scripts print statement
 
