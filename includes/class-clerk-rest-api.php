@@ -38,12 +38,15 @@ class Clerk_Rest_Api extends WP_REST_Server {
 	 * @var Clerk_Logger
 	 */
 	protected $logger;
-    /**
-     * @var string|null
-     */
-    protected $lang_iso;
 
-    /**
+	/**
+	 * Optional language iso param
+	 *
+	 * @var string|null
+	 */
+	protected $lang_iso;
+
+	/**
 	 * Clerk_Rest_Api constructor.
 	 */
 	public function __construct() {
@@ -207,45 +210,45 @@ class Clerk_Rest_Api extends WP_REST_Server {
 	 * @param object      $request Request.
 	 *
 	 * @return bool|void
-     */
+	 */
 	public function rest_pre_serve_request( $served, $result, $request ) {
 
 		try {
 
 			// Determine if this is a clerk request.
 			$attributes = $request->get_attributes();
-            if ( ! $attributes ) {
-                return false;
-            }
-            if ( is_array( $attributes['callback'] ) && $attributes['callback'][0] instanceof $this ) {
-                // Embed links inside the request.
-                if ( $request->get_param( '_embed' ) ) {
-                    $result = $this->response_to_data( $result, esc_url_raw( wp_unslash( $request->get_param( '_embed' ) ) ) );
-                } else {
-                    return false;
-                }
+			if ( ! $attributes ) {
+				return false;
+			}
+			if ( is_array( $attributes['callback'] ) && $attributes['callback'][0] instanceof $this ) {
+				// Embed links inside the request.
+				if ( $request->get_param( '_embed' ) ) {
+					$result = $this->response_to_data( $result, esc_url_raw( wp_unslash( $request->get_param( '_embed' ) ) ) );
+				} else {
+					return false;
+				}
 
-                if ( $request->get_param( 'debug' ) && true === $request->get_param( 'debug' ) ) {
-                    $result = wp_json_encode( $result, JSON_PRETTY_PRINT );
-                } else {
-                    $result = wp_json_encode( $result );
-                }
+				if ( $request->get_param( 'debug' ) && true === $request->get_param( 'debug' ) ) {
+					$result = wp_json_encode( $result, JSON_PRETTY_PRINT );
+				} else {
+					$result = wp_json_encode( $result );
+				}
 
-                $json_error_message = $this->get_json_last_error();
-                if ( $json_error_message ) {
-                    $json_error_obj = new WP_Error(
-                        'rest_encode_error',
-                        $json_error_message,
-                        array( 'status' => 500 )
-                    );
-                    $result         = $this->error_to_response( $json_error_obj );
-                    $result         = wp_json_encode( $result->data[0] );
-                }
+				$json_error_message = $this->get_json_last_error();
+				if ( $json_error_message ) {
+					$json_error_obj = new WP_Error(
+						'rest_encode_error',
+						$json_error_message,
+						array( 'status' => 500 )
+					);
+					$result         = $this->error_to_response( $json_error_obj );
+					$result         = wp_json_encode( $result->data[0] );
+				}
 
-                echo wp_json_encode( json_decode( $result ) );
+				echo wp_json_encode( json_decode( $result ) );
 
-                return true;
-            }
+				return true;
+			}
 
 			return false;
 
@@ -256,7 +259,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 		}
 	}
 
-    /**
+	/**
 	 * Handle product endpoint
 	 *
 	 * @param WP_REST_Request $request Request.
@@ -797,12 +800,12 @@ class Clerk_Rest_Api extends WP_REST_Server {
 		}
 	}
 
-    /**
-     * Check URL for Danish Language Characters and handle-ize
-     *
-     * @param mixed $attribute Attribute.
-     * @return string
-     */
+	/**
+	 * Check URL for Danish Language Characters and handle-ize
+	 *
+	 * @param mixed $attribute Attribute.
+	 * @return string
+	 */
 	public function clerk_friendly_attributes( $attribute ) {
 		$attribute = strtolower( $attribute );
 		$attribute = str_replace( 'æ', 'ae', $attribute );
@@ -1256,7 +1259,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 			$final_customer_array = array();
 
-			if ( isset($options['customer_sync_customer_fields']) && $options['customer_sync_customer_fields'] ) {
+			if ( isset( $options['customer_sync_customer_fields'] ) && $options['customer_sync_customer_fields'] ) {
 
 				$customer_additional_fields = explode( ',', str_replace( ' ', '', $options['customer_sync_customer_fields'] ) );
 
@@ -1308,12 +1311,12 @@ class Clerk_Rest_Api extends WP_REST_Server {
 		}
 	}
 
-    /**
-     * Validate page content
-     *
-     * @param array $page Page.
-     * @return bool
-     */
+	/**
+	 * Validate page content
+	 *
+	 * @param array $page Page.
+	 * @return bool
+	 */
 	public function validate_page( $page ) {
 
 		$required_fields = array( 'title', 'text', 'type', 'id' );
@@ -1330,16 +1333,18 @@ class Clerk_Rest_Api extends WP_REST_Server {
 	}
 
 
-    /**
-     * @param $query
-     * @return void
-     */
-    protected function force_language_context($query=null){
-        if ( clerk_is_wpml_enabled() && $this->lang_iso && !is_admin()) {
-            do_action('wpml_switch_language', $this->lang_iso);
-            do_action( 'wpml_multilingual_options', 'clerk_options' );
-        }
-    }
+	/**
+	 * Force context from lang param.
+	 *
+	 * @param mixed|array $query Query.
+	 * @return void
+	 */
+	protected function force_language_context( $query = null ) {
+		if ( clerk_is_wpml_enabled() && $this->lang_iso && ! is_admin() ) {
+			do_action( 'wpml_switch_language', $this->lang_iso );
+			do_action( 'wpml_multilingual_options', 'clerk_options' );
+		}
+	}
 
 	/**
 	 * Validate request
@@ -1352,9 +1357,9 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 		try {
 
-            $this->lang_iso = $request->get_param('lang');
-            $this->force_language_context(NULL);
-            add_action('pre_get_posts', [$this, 'force_language_context']);
+			$this->lang_iso = $request->get_param( 'lang' );
+			$this->force_language_context( null );
+			add_action( 'pre_get_posts', array( $this, 'force_language_context' ) );
 
 			$options = get_option( 'clerk_options' );
 
@@ -1671,7 +1676,6 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 			$product_categories = get_terms( $args );
 
-
 			foreach ( $product_categories as $product_category ) {
 				$category = array(
 					'id'   => $product_category->term_id,
@@ -1741,7 +1745,6 @@ class Clerk_Rest_Api extends WP_REST_Server {
 					),
 				)
 			);
-
 
 			foreach ( $orders as $order ) {
 
