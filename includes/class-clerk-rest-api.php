@@ -1330,7 +1330,11 @@ class Clerk_Rest_Api extends WP_REST_Server {
 	}
 
 
-    protected function force_language_context($query){
+    /**
+     * @param $query
+     * @return void
+     */
+    protected function force_language_context($query=null){
         if ( clerk_is_wpml_enabled() && $this->lang_iso && !is_admin()) {
             do_action('wpml_switch_language', $this->lang_iso);
             do_action( 'wpml_multilingual_options', 'clerk_options' );
@@ -1349,6 +1353,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 		try {
 
             $this->lang_iso = $request->get_param('lang');
+            $this->force_language_context(NULL);
             add_action('pre_get_posts', [$this, 'force_language_context']);
 
 			$options = get_option( 'clerk_options' );
