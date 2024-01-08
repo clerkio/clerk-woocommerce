@@ -274,8 +274,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 				return $this->get_unathorized_response();
 			}
 
-		    $options = get_option( 'clerk_options' );
-
+			$options = get_option( 'clerk_options' );
 
 			$limit   = $request->get_param( 'limit' ) ? $request->get_param( 'limit' ) : -1;
 			$page    = ( $request->get_param( 'page' ) !== null ) ? $request->get_param( 'page' ) : 0;
