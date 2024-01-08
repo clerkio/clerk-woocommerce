@@ -267,13 +267,15 @@ class Clerk_Rest_Api extends WP_REST_Server {
 	 * @return array|WP_REST_Response
 	 */
 	public function product_endpoint_callback( WP_REST_Request $request ) {
-		$options = get_option( 'clerk_options' );
 
 		try {
 
 			if ( ! $this->validate_request( $request ) ) {
 				return $this->get_unathorized_response();
 			}
+
+		    $options = get_option( 'clerk_options' );
+
 
 			$limit   = $request->get_param( 'limit' ) ? $request->get_param( 'limit' ) : -1;
 			$page    = ( $request->get_param( 'page' ) !== null ) ? $request->get_param( 'page' ) : 0;
@@ -1508,7 +1510,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 	}
 
 	/**
-	 * Get unathorized response
+	 * Get unauthorized response
 	 *
 	 * @return WP_REST_Response
 	 */
