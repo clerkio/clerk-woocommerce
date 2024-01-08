@@ -54,7 +54,7 @@ class Clerk_Api {
 	/**
 	 * Post Received Token for Verification
 	 *
-	 * @param array|void $data
+	 * @param array|void $data Data.
 	 */
 	public function verify_token( $data = null ) {
 
