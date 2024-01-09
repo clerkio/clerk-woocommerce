@@ -1340,7 +1340,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 	 * @param mixed|array $query Query.
 	 * @return void
 	 */
-	protected function force_language_context( $query = null ) {
+	public function force_language_context( $query = null ) {
 		if ( clerk_is_wpml_enabled() && $this->lang_iso && ! is_admin() ) {
 			do_action( 'wpml_switch_language', $this->lang_iso );
 			do_action( 'wpml_multilingual_options', 'clerk_options' );
