@@ -31,6 +31,8 @@ if ( ! function_exists( 'clerk_is_wpml_enabled' ) ) {
 if ( ! function_exists( 'clerk_get_lang_iso_status' ) ) {
 	/**
 	 * Get Language and Status
+	 *
+	 * @return array
 	 */
 	function clerk_get_lang_iso_status() {
 		$lang_status = array();
@@ -147,5 +149,4 @@ if ( ! function_exists( 'clerk_wpml_get_product_lang' ) ) {
 		return apply_filters( 'wpml_post_language_details', null, $product_id );
 	}
 }
-
 

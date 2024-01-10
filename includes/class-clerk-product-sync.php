@@ -265,10 +265,13 @@ class Clerk_Product_Sync {
 
 		try {
 
+			$language_code = null;
+
 			if ( clerk_wpml_all_scope_is_active() && clerk_wpml_get_product_lang( $product->get_id() ) ) {
-				$lang_info = clerk_wpml_get_product_lang( $product->get_id() );
+				$lang_info     = clerk_wpml_get_product_lang( $product->get_id() );
+				$language_code = $lang_info['language_code'];
 				// Get Clerk Settings for Scope of Product.
-				$options = get_option( 'clerk_options_' . $lang_info['language_code'] );
+				$options = get_option( 'clerk_options_' . $language_code );
 			} else {
 				$options = get_option( 'clerk_options' );
 			}
@@ -561,6 +564,10 @@ class Clerk_Product_Sync {
 			$product_array['backorders']          = $product->get_backorders();
 			$product_array['stock_status']        = $product->get_stock_status();
 			$product_array['tags']                = $product_tags;
+
+			if ( $language_code ) {
+				$product_array['language_code'] = $language_code;
+			}
 
 			if ( ! empty( $product_tax_rates ) ) {
 				foreach ( $product_tax_rates as $tax_rate ) {

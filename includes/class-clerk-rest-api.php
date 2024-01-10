@@ -593,6 +593,11 @@ class Clerk_Rest_Api extends WP_REST_Server {
 				$product_array['stock_status']        = $product->get_stock_status();
 				$product_array['tags']                = $product_tags;
 
+				if ( clerk_wpml_all_scope_is_active() && clerk_wpml_get_product_lang( $product->get_id() ) ) {
+					$lang_info                      = clerk_wpml_get_product_lang( $product->get_id() );
+					$product_array['language_code'] = $lang_info['language_code'];
+				}
+
 				if ( ! empty( $product_tax_rates ) ) {
 					foreach ( $product_tax_rates as $tax_rate ) {
 						if ( $tax_rate['tax_rate_class'] === $product->get_tax_class() ) {
@@ -616,7 +621,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 						if ( ! is_wp_error( $image_path ) && is_array( $image_path ) && ! empty( $image_path ) ) {
 							$image_path = $image_path[0];
 							if ( ! in_array( $product_array['all_images'], $image_path, true ) ) {
-								array_push( $product_array['all_images'], $image_path );
+								$product_array['all_images'][] = $image_path;
 							}
 						}
 					}
@@ -629,7 +634,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 						foreach ( $product_image_ids as $product_img_id ) {
 							$image_path = wp_get_attachment_url( $product_img_id );
 							if ( ! is_wp_error( $image_path ) && $image_path ) {
-								array_push( $product_array['gallery_images'], $image_path );
+								$product_array['gallery_images'][] = $image_path;
 							}
 						}
 					}
