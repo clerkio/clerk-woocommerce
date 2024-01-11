@@ -143,7 +143,7 @@ if ( ! function_exists( 'clerk_wpml_get_product_lang' ) ) {
 	 * @return array | void
 	 */
 	function clerk_wpml_get_product_lang( $product_id ) {
-		if ( ! clerk_is_wpml_enabled() || ! has_action( 'wpml_post_language_details' ) ) {
+		if ( ! clerk_is_wpml_enabled() ) {
 			return;
 		}
 		return apply_filters( 'wpml_post_language_details', null, $product_id );

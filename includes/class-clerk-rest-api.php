@@ -593,8 +593,8 @@ class Clerk_Rest_Api extends WP_REST_Server {
 				$product_array['stock_status']        = $product->get_stock_status();
 				$product_array['tags']                = $product_tags;
 
-				if ( clerk_wpml_get_product_lang( $product->get_id() ) ) {
-					$lang_info                      = clerk_wpml_get_product_lang( $product->get_id() );
+				$lang_info = apply_filters( 'wpml_post_language_details', null, $product->get_id() );
+				if ( is_array( $lang_info ) && array_key_exists( 'language_code', $lang_info ) ) {
 					$product_array['language_code'] = $lang_info['language_code'];
 				}
 
