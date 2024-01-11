@@ -265,12 +265,13 @@ class Clerk_Product_Sync {
 
 		try {
 
+			$lang_info     = clerk_wpml_get_product_lang( $product->get_id() );
 			$language_code = null;
-
-			if ( clerk_wpml_all_scope_is_active() && clerk_wpml_get_product_lang( $product->get_id() ) ) {
-				$lang_info     = clerk_wpml_get_product_lang( $product->get_id() );
+			if ( is_array( $lang_info ) && array_key_exists( 'language_code', $lang_info ) ) {
 				$language_code = $lang_info['language_code'];
-				// Get Clerk Settings for Scope of Product.
+			}
+
+			if ( clerk_wpml_all_scope_is_active() && $language_code ) {
 				$options = get_option( 'clerk_options_' . $language_code );
 			} else {
 				$options = get_option( 'clerk_options' );
