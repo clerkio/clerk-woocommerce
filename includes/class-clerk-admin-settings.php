@@ -44,10 +44,8 @@ class Clerk_Admin_Settings {
 		require_once __DIR__ . '/class-clerk-logger.php';
 		require_once __DIR__ . '/clerk-multi-lang-helpers.php';
 		if ( clerk_is_wpml_enabled() ) {
-
-            $params = filter_input_array( INPUT_GET );
-            if(is_array($params) && array_key_exists('lang', $params)){
-                $lang = $params['lang'];
+            if(array_key_exists('lang', $_GET)){
+                $lang = $_GET['lang'];
                 do_action( 'wpml_switch_language', $lang);
             }
 
