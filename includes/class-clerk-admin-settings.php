@@ -2125,7 +2125,7 @@ class Clerk_Admin_Settings {
 		settings_errors( 'wporg_messages' );
 
 		$language_info = wp_json_encode( clerk_wpml_get_active_scope() );
-
+        $is_wpml_setup = apply_filters('wpml_setting', false, 'setup_complete');
 		?>
 		<div class="wrap">
 			<div id="clerkFloatingSaveBtn" onclick="clerk_submit_admin_form();"><?php echo esc_html( __( 'Save Settings', 'clerk' ) ); ?></div>
@@ -2133,8 +2133,10 @@ class Clerk_Admin_Settings {
 				<img id="clerkLogoHeader" src="<?php echo esc_html( plugin_dir_url( CLERK_PLUGIN_FILE ) . 'assets/img/clerk.png' ); ?>">
 				<span><?php echo esc_html( get_admin_page_title() ); ?></span>
 			</h1>
-	<form id="clerkAdminForm" action="options.php" method="post">
+
+	    <form id="clerkAdminForm" action="options.php" method="post">
 		<div id="multi-lang-data"><?php echo esc_html( $language_info ); ?></div>
+        <div id="testing"><?php print_r($is_wpml_setup); ?></div>
 		<?php
 		// output security fields for the registered setting "wporg".
 		settings_fields( 'clerk' );
