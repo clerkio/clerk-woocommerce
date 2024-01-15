@@ -181,18 +181,6 @@ function getAlternateSettingsJSON() {
     return hiddenLanguageDataRaw ? JSON.parse(hiddenLanguageDataRaw) : false;
 }
 
-const multiLangData = getAlternateSettingsJSON()
-if (multiLangData) {
-    const clerkForms = document.querySelectorAll('#clerkAdminForm .form-table');
-    for (const formWrapper in clerkForms) {
-        const inputEls = formWrapper.querySelectorAll('input, select, textarea');
-        for (const element in inputEls) {
-            const newElements = getAlternateSettingsValuesHTML(element, multiLangData);
-            formWrapper.append(...newElements);
-        }
-    }
-}
-
 function getAlternateSettingsValuesHTML(element, data) {
     const langs = data.languages;
     const id = element.id;
@@ -232,3 +220,18 @@ function getAlternateSettingsValuesHTML(element, data) {
     return newElements;
 
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    const multiLangData = getAlternateSettingsJSON()
+    if (multiLangData) {
+        const clerkForms = document.querySelectorAll('#clerkAdminForm .form-table');
+        for (const formWrapper in clerkForms) {
+            const inputEls = formWrapper.querySelectorAll('input, select, textarea');
+            for (const element in inputEls) {
+                const newElements = getAlternateSettingsValuesHTML(element, multiLangData);
+                console.log(newElements)
+                formWrapper.append(...newElements);
+            }
+        }
+    }
+})
