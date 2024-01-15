@@ -222,7 +222,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const inputEls = formWrapper.querySelectorAll('input, select, textarea');
             for (const element of inputEls) {
                 const newElements = getAlternateSettingsValuesHTML(element, multiLangData);
-                console.log(newElements);
                 formWrapper.append(...newElements);
             }
         }

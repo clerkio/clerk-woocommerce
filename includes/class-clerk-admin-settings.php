@@ -737,6 +737,18 @@ class Clerk_Admin_Settings
         );
 
         add_settings_field(
+            'powerstep_enabled',
+            __('Enabled', 'clerk'),
+            array($this, 'add_checkbox_field'),
+            'clerk',
+            'clerk_section_powerstep',
+            array(
+                'label_for' => 'powerstep_enabled',
+                'checked' => 0,
+            )
+        );
+
+        add_settings_field(
             'powerstep_type',
             __('Powerstep Type', 'clerk'),
             array($this, 'add_powerstep_type_dropdown'),
@@ -1076,7 +1088,7 @@ class Clerk_Admin_Settings
             'clerk_section_additional_scripts',
             array(
                 'label_for' => 'clerk_additional_scripts_content',
-                'description' => 'Scripts will be added to the to the site header.',
+                'description' => 'Scripts will be added to the site header.',
                 'value' => '',
             )
         );
