@@ -1185,6 +1185,11 @@ class Clerk_Admin_Settings
     public function add_wpml_info()
     {
         $wpml_info = clerk_wpml_get_active_scope();
+
+        if( clerk_is_pll_enabled() ) {
+            $wpml_info['native_name'] = clerk_pll_current_language('name');
+            $wpml_info['language_code'] = clerk_pll_current_language('slug');
+        }
         ?>
         <span>
 			<p>

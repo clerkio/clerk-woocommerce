@@ -39,9 +39,16 @@ function clerk_is_pll_enabled()
     return false;
 }
 
-function clerk_pll_current_language(){
+/**
+ * @param $return_type
+ * @return false
+ */
+function clerk_pll_current_language($return_type=null){
+    if(!$return_type){
+        $return_type = 'slug';
+    }
     if (function_exists('pll_current_language')){
-        return pll_current_language();
+        return pll_current_language($return_type);
     }
     return false;
 }
