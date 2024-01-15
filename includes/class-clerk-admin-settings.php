@@ -89,6 +89,8 @@ class Clerk_Admin_Settings {
 		// register a new setting.
 		register_setting( 'clerk', 'clerk_options' );
 
+
+
 		$wpml_enabled = clerk_is_wpml_enabled();
 		if ( $wpml_enabled ) {
 			$site_info = clerk_wpml_get_active_scope();
@@ -2126,6 +2128,11 @@ class Clerk_Admin_Settings {
 
 		$language_info = wp_json_encode( clerk_wpml_get_active_scope() );
         $is_wpml_setup = apply_filters('wpml_setting', false, 'setup_complete');
+
+        $pll = array();
+        if ( clerk_is_pll_enabled() ) {
+            $pll = clerk_is_pll_enabled();
+        }
 		?>
 		<div class="wrap">
 			<div id="clerkFloatingSaveBtn" onclick="clerk_submit_admin_form();"><?php echo esc_html( __( 'Save Settings', 'clerk' ) ); ?></div>
@@ -2136,7 +2143,7 @@ class Clerk_Admin_Settings {
 
 	    <form id="clerkAdminForm" action="options.php" method="post">
 		<div id="multi-lang-data"><?php echo esc_html( $language_info ); ?></div>
-        <div id="testing"><?php print_r($is_wpml_setup); ?></div>
+        <div id="testing"><?php print_r($pll); ?></div>
 		<?php
 		// output security fields for the registered setting "wporg".
 		settings_fields( 'clerk' );

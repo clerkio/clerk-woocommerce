@@ -23,8 +23,27 @@ function clerk_is_wpml_enabled()
     if (has_action('wpml_setting', false) && has_action('wpml_loaded', false)) {
         return apply_filters('wpml_setting', false, 'setup_complete');
     }
+
     return false;
 
+}
+
+/**
+ * @return bool
+ */
+function clerk_is_pll_enabled()
+{
+    if (function_exists('pll_languages_list')){
+        return true;
+    }
+    return false;
+}
+
+function clerk_pll_current_language(){
+    if (function_exists('pll_current_language')){
+        return pll_current_language();
+    }
+    return false;
 }
 
 
