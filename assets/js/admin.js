@@ -196,9 +196,7 @@ function getAlternateSettingsValuesHTML(element, data) {
         const newElement = element.cloneNode(true);
         newElement.className = 'clerk_hidden';
         newElement.setAttribute('name', `clerk_options_${lang}[${id}]`)
-        const newValue = (id in options) ? options[id] : null;
-        console.log(options)
-        console.log(options[id])
+        const newValue = options[id];
         if (element.tag === 'INPUT' && element.type === 'checkbox') {
             if(newValue){
                 newElement.setAttribute('checked', 'checked');
