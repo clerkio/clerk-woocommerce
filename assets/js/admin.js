@@ -225,9 +225,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const multiLangData = getAlternateSettingsJSON()
     if (multiLangData) {
         const clerkForms = document.querySelectorAll('#clerkAdminForm .form-table');
-        for (const formWrapper in clerkForms) {
+        for (const formWrapper of clerkForms) {
             const inputEls = formWrapper.querySelectorAll('input, select, textarea');
-            for (const element in inputEls) {
+            for (const element of inputEls) {
                 const newElements = getAlternateSettingsValuesHTML(element, multiLangData);
                 console.log(newElements)
                 formWrapper.append(...newElements);
