@@ -2244,7 +2244,7 @@ class Clerk_Admin_Settings
 
             <form id="clerkAdminForm" action="options.php" method="post">
                 <div id="multi-lang-data"><?php echo esc_html($language_info); ?></div>
-                <div id="hidden-lang-data clerk_hidden"  data-is-pll="<?php echo $is_pll ?>"><?php echo esc_html($lang_info_json); ?></div>
+                <div id="hidden-lang-data" class="clerk_hidden" data-is-pll="<?php echo $is_pll ?>"><?php echo esc_html($lang_info_json); ?></div>
                 <?php
                 // output security fields for the registered setting "wporg".
                 settings_fields('clerk');
