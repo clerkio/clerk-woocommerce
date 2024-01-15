@@ -2127,12 +2127,8 @@ class Clerk_Admin_Settings {
 		settings_errors( 'wporg_messages' );
 
 		$language_info = wp_json_encode( clerk_wpml_get_active_scope() );
-        $is_wpml_setup = apply_filters('wpml_setting', false, 'setup_complete');
 
-        $pll = array();
-        if ( clerk_is_pll_enabled() ) {
-            $pll = clerk_is_pll_enabled();
-        }
+        $pll = clerk_pll_languages_list();
 		?>
 		<div class="wrap">
 			<div id="clerkFloatingSaveBtn" onclick="clerk_submit_admin_form();"><?php echo esc_html( __( 'Save Settings', 'clerk' ) ); ?></div>

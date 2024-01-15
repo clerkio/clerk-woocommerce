@@ -46,6 +46,14 @@ function clerk_pll_current_language(){
     return false;
 }
 
+function clerk_pll_languages_list()
+{
+    if ( clerk_is_pll_enabled() ) {
+        return pll_languages_list();
+    }
+    return false;
+}
+
 
 /**
  * Check if all scope WPML all languages admin scope is active
