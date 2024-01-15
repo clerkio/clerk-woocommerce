@@ -197,6 +197,8 @@ function getAlternateSettingsValuesHTML(element, data) {
         newElement.className = 'clerk_hidden';
         newElement.setAttribute('name', `clerk_options_${lang}[${id}]`)
         const newValue = (id in options) ? options[id] : null;
+        console.log(options)
+        console.log(options[id])
         if (element.tag === 'INPUT' && element.type === 'checkbox') {
             if(newValue){
                 newElement.setAttribute('checked', 'checked');
@@ -229,7 +231,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const inputEls = formWrapper.querySelectorAll('input, select, textarea');
             for (const element of inputEls) {
                 const newElements = getAlternateSettingsValuesHTML(element, multiLangData);
-                console.log(newElements)
                 formWrapper.append(...newElements);
             }
         }
