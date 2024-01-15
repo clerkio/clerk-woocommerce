@@ -70,9 +70,12 @@ function clerk_update_options($options, $lang = null){
 }
 
 function clerk_get_options( $lang_iso = null )
-
 {
-    return get_option( clerk_get_option_key( $lang_iso ) );
+    $options = get_option( clerk_get_option_key( $lang_iso ) );
+    if(!is_array($options)){
+        $options = array();
+    }
+    return $options;
 }
 
 
