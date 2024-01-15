@@ -198,7 +198,7 @@ function getAlternateSettingsValuesHTML(element, data) {
         newElement.removeAttribute('id');
         newElement.setAttribute('name', `clerk_options_${lang}[${id}]`)
         const newValue = options[id];
-        console.log('Element Tag:', newElement.tag)
+        console.log('Element Tag:', newElement.tagName)
         console.log('Element Type:', newElement.type)
         if (newElement.tag === 'INPUT' && newElement.type === 'checkbox') {
             newElement.checked = !!newValue;
