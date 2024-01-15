@@ -196,3 +196,7 @@
 .toplevel_page_clerk h1 {
 	font-family: Arial, sans-serif;
 }
+
+.toplevel_page_clerk .clerk_hidden {
+	display: none !important;
+}
