@@ -198,15 +198,13 @@ function getAlternateSettingsValuesHTML(element, data) {
         newElement.removeAttribute('id');
         newElement.setAttribute('name', `clerk_options_${lang}[${id}]`)
         const newValue = options[id];
-        console.log('Element Tag:', newElement.tagName)
-        console.log('Element Type:', newElement.type)
-        if (newElement.tag === 'INPUT' && newElement.type === 'checkbox') {
+        if (newElement.tagName === 'INPUT' && newElement.type === 'checkbox') {
             newElement.checked = !!newValue;
         }
-        if (newElement.tag === 'INPUT' && newElement.type === 'text' || newElement.tag === 'TEXTAREA') {
+        if (newElement.tagName === 'INPUT' && newElement.type === 'text' || newElement.tagName === 'TEXTAREA') {
             newElement.value = newValue || '';
         }
-        if (newElement.tag === 'SELECT') {
+        if (newElement.tagName === 'SELECT') {
             if(newValue){
                 newElement.innerHTML = `<option value="${newValue}" selected></option>`;
             }
