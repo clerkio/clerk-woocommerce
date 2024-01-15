@@ -195,23 +195,24 @@ function getAlternateSettingsValuesHTML(element, data) {
         }
         const newElement = element.cloneNode(true);
         newElement.className = 'clerk_hidden';
+        newElement.removeAttribute('id');
         newElement.setAttribute('name', `clerk_options_${lang}[${id}]`)
         const newValue = options[id];
-        if (element.tag === 'INPUT' && element.type === 'checkbox') {
+        if (newElement.tag === 'INPUT' && newElement.type === 'checkbox') {
             if(newValue){
                 newElement.setAttribute('checked', 'checked');
             } else {
                 newElement.removeAttribute('checked');
             }
         }
-        if (element.tag === 'INPUT' && element.type === 'text' || element.tag === 'TEXTAREA') {
+        if (newElement.tag === 'INPUT' && newElement.type === 'text' || newElement.tag === 'TEXTAREA') {
             if(newValue){
                 newElement.setAttribute('value', newValue)
             } else {
                 newElement.setAttribute('value', '')
             }
         }
-        if (element.tag === 'SELECT') {
+        if (newElement.tag === 'SELECT') {
             if(newValue){
                 newElement.innerHTML = `<option value="${newValue}" selected></option>`;
             }
