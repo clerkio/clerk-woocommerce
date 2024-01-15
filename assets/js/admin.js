@@ -217,7 +217,7 @@ function getAlternateSettingsValuesHTML(element, data) {
                 newElement.innerHTML = `<option value="${newValue}" selected></option>`;
             }
         }
-        console.log(newElement)
+        console.log(newElement, typeof newElement)
         newElements.push(newElement);
     }
     return newElements;
