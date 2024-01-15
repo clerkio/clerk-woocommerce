@@ -218,6 +218,7 @@ function getAlternateSettingsValuesHTML(element, data) {
             }
         }
         console.log(newElement, typeof newElement)
+        newElement.value = "SALAD";
         newElements.push(newElement);
     }
     return newElements;
