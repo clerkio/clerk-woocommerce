@@ -190,7 +190,7 @@ function getAlternateSettingsValuesHTML(element, data) {
 
     for (const lang of langs) {
         let options = data[lang];
-        if(typeof options !== 'object' || (typeof options === 'object' && !Array.isArray(options) && options !== null)) {
+        if(typeof options !== 'object' || (typeof options === 'object' && Array.isArray(options)) || (typeof options === 'object' && options === null)) {
             options = {};
         }
         const newElement = element.cloneNode(true);
