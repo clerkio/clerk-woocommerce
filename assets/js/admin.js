@@ -226,4 +226,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     }
+
+    // Fix Whitespace in additional scripts field.
+    const additionalScriptsTextarea = document.querySelector('#clerk_additional_scripts_content');
+    if(additionalScriptsTextarea){
+        additionalScriptsTextarea.value = additionalScriptsTextarea.value.trim();
+    }
 })
