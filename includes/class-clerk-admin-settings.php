@@ -2197,9 +2197,6 @@ class Clerk_Admin_Settings
         settings_errors('wporg_messages');
 
         $language_info = wp_json_encode(clerk_wpml_get_active_scope());
-
-        $pll = clerk_pll_languages_list();
-        $cl = pll_current_language();
         ?>
         <div class="wrap">
             <div id="clerkFloatingSaveBtn"
@@ -2212,8 +2209,6 @@ class Clerk_Admin_Settings
 
             <form id="clerkAdminForm" action="options.php" method="post">
                 <div id="multi-lang-data"><?php echo esc_html($language_info); ?></div>
-                <div id="testing"><?php print_r($pll); ?></div>
-                <div id="testing2"><?php print_r($cl); ?></div>
                 <?php
                 // output security fields for the registered setting "wporg".
                 settings_fields('clerk');
