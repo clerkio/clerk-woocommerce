@@ -1248,7 +1248,8 @@ class Clerk_Admin_Settings
 
         $dynamic_attr_success = true;
 
-        $options = get_option('clerk_options');
+        $options = clerk_get_options();
+        $clerk_options_key = clerk_get_option_key();
 
         if (!empty($options['public_key'])) {
             $public_key = $options['public_key'];
@@ -1485,7 +1486,7 @@ class Clerk_Admin_Settings
 
         ?>
         <input
-                name="clerk_options[<?php echo esc_attr($args['label_for']); ?>]"
+                name="<?php echo esc_attr($clerk_options_key); ?>[<?php echo esc_attr($args['label_for']); ?>]"
                 id="faceted_navigation"
                 type="hidden"/>
         </div>
@@ -1509,14 +1510,15 @@ class Clerk_Admin_Settings
         }
 
         // Get settings value.
-        $options = get_option('clerk_options');
+        $options = clerk_get_options();
+        $clerk_options_key = clerk_get_option_key();
         $label_for = (isset($options[$args['label_for']])) ? $options[$args['label_for']] : 0;
         ?>
         <input
                 type="checkbox"
                 style="display:none;"
                 id="<?php echo esc_attr($args['label_for']); ?>"
-                name="clerk_options[<?php echo esc_attr($args['label_for']); ?>]"
+                name="<?php echo esc_attr($clerk_options_key); ?>[<?php echo esc_attr($args['label_for']); ?>]"
                 value="1" <?php checked('1', $label_for); ?>>
         <?php
     }
@@ -1528,7 +1530,9 @@ class Clerk_Admin_Settings
      */
     public function add_pages_type_dropdown($args)
     {
-        $options = get_option('clerk_options');
+        $options = clerk_get_options();
+        $clerk_options_key = clerk_get_option_key();
+
         $post_type_args = array('public' => true);
         $post_types = get_post_types($post_type_args);
         $types = array('All');
@@ -1537,7 +1541,7 @@ class Clerk_Admin_Settings
         }
         ?>
         <select id="<?php echo esc_attr($args['label_for']); ?>"
-                name="clerk_options[<?php echo esc_attr($args['label_for']); ?>]">
+                name="<?php echo esc_attr($clerk_options_key); ?>[<?php echo esc_attr($args['label_for']); ?>]">
             <?php foreach ($types as $type) : ?>
                 <option value="<?php echo esc_attr($type); ?>"
                     <?php
@@ -1564,11 +1568,13 @@ class Clerk_Admin_Settings
     {
 
         $positions = array('Left', 'Center', 'Right', 'Below', 'Off');
-        $options = get_option('clerk_options');
+
+        $options = clerk_get_options();
+        $clerk_options_key = clerk_get_option_key();
 
         ?>
         <select id="<?php echo esc_attr($args['label_for']); ?>"
-                name="clerk_options[<?php echo esc_attr($args['label_for']); ?>]">
+                name="<?php echo esc_attr($clerk_options_key); ?>[<?php echo esc_attr($args['label_for']); ?>]">
             <?php foreach ($positions as $position) : ?>
                 <option value="<?php echo esc_attr($position); ?>"
                     <?php
@@ -1595,11 +1601,12 @@ class Clerk_Admin_Settings
     {
 
         $numbers = array('1', '2', '3', '4', '5', '6', '7', '8', '9', '10');
-        $options = get_option('clerk_options');
+        $options = clerk_get_options();
+        $clerk_options_key = clerk_get_option_key();
 
         ?>
         <select id="<?php echo esc_attr($args['label_for']); ?>"
-                name="clerk_options[<?php echo esc_attr($args['label_for']); ?>]">
+                name="<?php echo esc_attr($clerk_options_key); ?>[<?php echo esc_attr($args['label_for']); ?>]">
             <?php foreach ($numbers as $number) : ?>
                 <option value="<?php echo esc_attr($number); ?>"
                     <?php
@@ -1734,11 +1741,12 @@ class Clerk_Admin_Settings
 
         }
 
-        $options = get_option('clerk_options');
+        $options = clerk_get_options();
+        $clerk_options_key = clerk_get_option_key();
 
         ?>
         <select id="<?php echo esc_attr($args['label_for']); ?>"
-                name="clerk_options[<?php echo esc_attr($args['label_for']); ?>]">
+                name="<?php echo esc_attr($clerk_options_key); ?>[<?php echo esc_attr($args['label_for']); ?>]">
             <?php foreach ($langs as $lang) : ?>
                 <option value="<?php echo esc_attr($lang['Value']); ?>"
                     <?php
@@ -1757,7 +1765,7 @@ class Clerk_Admin_Settings
     public function add_debug_message()
     {
 
-        $options = get_option('clerk_options');
+        $options = clerk_get_options();
 
         if ('Error + Warn + Debug Mode' === $options['log_level']) {
             ?>
@@ -1894,7 +1902,8 @@ class Clerk_Admin_Settings
     public function add_text_field($args)
     {
         // Get settings value.
-        $options = get_option('clerk_options');
+        $options = clerk_get_options();
+        $clerk_options_key = clerk_get_option_key();
 
         if (isset($options[$args['label_for']])) {
 
@@ -1913,7 +1922,7 @@ class Clerk_Admin_Settings
         <input
                 type="text"
                 id="<?php echo esc_attr($args['label_for']); ?>"
-                name="clerk_options[<?php echo esc_attr($args['label_for']); ?>]"
+                name="<?php echo esc_attr($clerk_options_key); ?>[<?php echo esc_attr($args['label_for']); ?>]"
                 value="<?php echo esc_html($value); ?>"
             <?php
             if (isset($args['readonly'])) :
@@ -1945,7 +1954,9 @@ class Clerk_Admin_Settings
         }
 
         // Get settings value.
-        $options = get_option('clerk_options');
+        $options = clerk_get_options();
+
+        $clerk_options_key = clerk_get_option_key();
         if (isset($options[$args['label_for']])) {
 
             $value = $options[$args['label_for']];
@@ -1960,7 +1971,7 @@ class Clerk_Admin_Settings
         <input
                 type="checkbox"
                 id="<?php echo esc_attr($args['label_for']); ?>"
-                name="clerk_options[<?php echo esc_attr($args['label_for']); ?>]"
+                name="<?php echo esc_attr($clerk_options_key); ?>[<?php echo esc_attr($args['label_for']); ?>]"
                 value="1" <?php checked('1', $value); ?>>
         <?php
         if (isset($args['description'])) {
@@ -1976,8 +1987,9 @@ class Clerk_Admin_Settings
     public function add_text_area($args)
     {
         // Get settings value.
-        $options = get_option('clerk_options');
+        $options = clerk_get_options();
 
+        $clerk_options_key = clerk_get_option_key();
         if (isset($options[$args['label_for']])) {
 
             $value = $options[$args['label_for']];
@@ -1994,7 +2006,7 @@ class Clerk_Admin_Settings
                 id="<?php echo esc_attr($args['label_for']); ?>"
                 rows="5"
                 cols="50"
-                name="clerk_options[<?php echo esc_attr($args['label_for']); ?>]"
+                name="<?php echo esc_attr($clerk_options_key); ?>[<?php echo esc_attr($args['label_for']); ?>]"
                 value="<?php echo esc_attr($value); ?>"><?php echo esc_attr($value); ?>
 		</textarea>
         <?php
@@ -2015,7 +2027,7 @@ class Clerk_Admin_Settings
     public function add_page_dropdown($args)
     {
         // Get settings value.
-        $options = (array)get_option('clerk_options');
+        $options = clerk_get_options();
         $label_for = is_string($args['label_for']) || is_array($args['label_for']) ? $args['label_for'] : array();
         $selection = array_key_exists($label_for, $options) ? $options[$label_for] : '';
         $selection = empty($selection) ? '' : $selection;
@@ -2035,11 +2047,13 @@ class Clerk_Admin_Settings
     public function add_image_size_dropdown($args)
     {
         // Get settings value.
-        $options = get_option('clerk_options');
+        $options = clerk_get_options();
         $sizes = get_intermediate_image_sizes();
+
+        $clerk_options_key = clerk_get_option_key();
         ?>
         <select id="<?php echo esc_attr($args['label_for']); ?>"
-                name="clerk_options[<?php echo esc_attr($args['label_for']); ?>]">
+                name="<?php echo esc_attr($clerk_options_key); ?>[<?php echo esc_attr($args['label_for']); ?>]">
             <?php foreach ($sizes as $k => $size) : ?>
                 <option value="<?php echo esc_attr($size); ?>"
                     <?php
@@ -2059,10 +2073,12 @@ class Clerk_Admin_Settings
     public function add_powerstep_type_dropdown($args)
     {
         // Get settings value.
-        $options = get_option('clerk_options');
+        $options = clerk_get_options();
+
+        $clerk_options_key = clerk_get_option_key();
         ?>
         <select id="<?php echo esc_attr($args['label_for']); ?>"
-                name="clerk_options[<?php echo esc_attr($args['label_for']); ?>]">
+                name="<?php echo esc_attr($clerk_options_key); ?>[<?php echo esc_attr($args['label_for']); ?>]">
             <?php foreach (array(Clerk_Powerstep::TYPE_PAGE, Clerk_Powerstep::TYPE_POPUP) as $type) : ?>
                 <option value="<?php echo esc_attr($type); ?>"
                     <?php
@@ -2082,12 +2098,13 @@ class Clerk_Admin_Settings
     public function add_log_level_dropdown($args)
     {
         // Get settings value.
-        $options = get_option('clerk_options');
-        wp_parse_args(get_option('clerk_options'), array($args['label_for'] => $args['default']));
+        $options = clerk_get_options();
+        $clerk_options_key = clerk_get_option_key();
+        wp_parse_args($options, array($args['label_for'] => $args['default']));
 
         ?>
         <select id="<?php echo esc_attr($args['label_for']); ?>"
-                name="clerk_options[<?php echo esc_attr($args['label_for']); ?>]">
+                name="<?php echo esc_attr($clerk_options_key); ?>[<?php echo esc_attr($args['label_for']); ?>]">
             <?php foreach (array('Error + Warn', 'Only Error', 'Error + Warn + Debug Mode') as $level) : ?>
                 <option value="<?php echo esc_attr($level); ?>"
                     <?php
@@ -2110,11 +2127,13 @@ class Clerk_Admin_Settings
         echo('<div id="clerk-dialog" class="hidden" style="max-width:800px">' .
             '</div>');
         // Get settings value.
-        $options = get_option('clerk_options');
-        wp_parse_args(get_option('clerk_options'), array($args['label_for'] => $args['default']));
+        $options = clerk_get_options();
+        $clerk_options_key = clerk_get_option_key();
+
+        wp_parse_args( $options, array($args['label_for'] => $args['default']));
         ?>
         <select id="<?php echo esc_attr($args['label_for']); ?>"
-                name="clerk_options[<?php echo esc_attr($args['label_for']); ?>]">
+                name="<?php echo esc_attr($clerk_options_key); ?>[<?php echo esc_attr($args['label_for']); ?>]">
             <?php foreach (array('my.clerk.io') as $to) : ?>
                 <option value="<?php echo esc_attr($to); ?>"
                     <?php

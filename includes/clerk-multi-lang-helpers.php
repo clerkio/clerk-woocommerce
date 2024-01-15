@@ -63,11 +63,17 @@ function clerk_pll_languages_list()
 
 function clerk_get_options()
 {
+    return get_option( clerk_get_option_key() );
+}
+
+
+function clerk_get_option_key()
+{
     $current_lang = clerk_pll_current_language();
-    if($current_lang) {
-        return get_option( 'clerk_options' . $current_lang );
+    if($current_lang){
+        return 'clerk_options_' . $current_lang;
     }
-    return get_option( 'clerk_options' );
+    return 'clerk_options';
 }
 
 
