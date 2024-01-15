@@ -87,8 +87,14 @@ class Clerk_Admin_Settings {
 	public function settings_init() {
 
 		// register a new setting.
-		register_setting( 'clerk', 'clerk_options' );
-
+        $pll_languages = clerk_pll_languages_list();
+        if($pll_languages){
+            foreach ($pll_languages as $lang){
+                register_setting( 'clerk', 'clerk_options_' . $lang );
+            }
+        } else {
+		    register_setting( 'clerk', 'clerk_options' );
+        }
 
 
 		$wpml_enabled = clerk_is_wpml_enabled();
