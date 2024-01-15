@@ -23,7 +23,7 @@ if ( clerk_is_wpml_enabled() ) {
 	do_action( 'wpml_multilingual_options', 'clerk_options' );
 }
 
-$options = get_option( 'clerk_options' );
+$options = clerk_get_options();
 
 if ( isset( $options['product_enabled'] ) && $options['product_enabled'] ) :
 	$contents      = explode( ',', $options['product_content'] );

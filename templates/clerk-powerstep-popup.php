@@ -25,9 +25,9 @@ if ( clerk_is_wpml_enabled() ) {
 
 $cart_url     = wc_get_cart_url();
 $checkout_url = wc_get_checkout_url();
-$options      = get_option( 'clerk_options' );
+$options      = clerk_get_options();
 
-$product_name     = (string) $product->get_name();
+$product_name     = $product->get_name();
 $title_message    = esc_html__( ' added to cart!', 'clerk' );
 $title_html       = "<span class='clerk_powerstep_product_name'>$product_name</span>$title_message";
 $back_button_text = esc_html__( 'Back', 'clerk' );

@@ -73,7 +73,7 @@ class Clerk_Logger {
 		}
 		$this->date    = new DateTime();
 		$this->time    = $this->date->getTimestamp();
-		$this->options = get_option( 'clerk_options' );
+		$this->options = clerk_get_options();
 	}
 
 	/**

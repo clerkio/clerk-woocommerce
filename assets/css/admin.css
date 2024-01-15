@@ -67,7 +67,7 @@
 .toplevel_page_clerk #wpcontent h1 {
 	max-width: fit-content;
 	font-weight: 900;
-	font-family: roboto;
+	font-family: roboto, sans-serif;
 	padding: 1rem 1.5rem 1rem 2.5rem;
 	transform: translateX(-1.5rem);
 	background-color: #004576;
@@ -118,8 +118,8 @@
 
 .toplevel_page_clerk #wpbody input[type="text"]{
 	width: 100%;
-	width: -moz-available;          /* WebKit-based browsers will ignore this. */
-	width: -webkit-fill-available;  /* Mozilla-based browsers will ignore this. */
+	width: -moz-available;
+	width: -webkit-fill-available;
 	width: fill-available;
 	max-width: clamp(300px, 50%, 100%);
 }
@@ -177,10 +177,7 @@
 }
 
 .toplevel_page_clerk .faceted_enabled {
-	margin-bottom: 0px !important;
-	margin-left: 5px !important;
-	margin-right: 0px !important;
-	margin-top: 0px !important;
+	margin: 0 0 0 5px !important;
 }
 
 .toplevel_page_clerk .facets_content_title_wrapper > div {
@@ -194,4 +191,12 @@
 
 .toplevel_page_clerk #multi-lang-data {
   display: none !important;
+}
+
+.toplevel_page_clerk h1 {
+	font-family: Arial, sans-serif;
+}
+
+.toplevel_page_clerk .clerk_hidden {
+	display: none !important;
 }

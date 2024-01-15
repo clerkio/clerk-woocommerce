@@ -50,7 +50,7 @@ class Clerk_Basket {
 	 */
 	private function init_hooks() {
 
-		$options = get_option( 'clerk_options' );
+		$options = clerk_get_options();
 
 		if ( ! isset( $options['collect_baskets'] ) ) {
 			return;
@@ -69,7 +69,7 @@ class Clerk_Basket {
 
 		try {
 
-			$options = get_option( 'clerk_options' );
+			$options = clerk_get_options();
 
 			global $current_user;
 			global $woocommerce;

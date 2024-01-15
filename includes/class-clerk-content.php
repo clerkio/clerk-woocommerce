@@ -52,7 +52,7 @@ class Clerk_Content {
 
 			$category = get_queried_object();
 
-			$options = get_option( 'clerk_options' );
+			$options = clerk_get_options();
 
 			if ( isset( $options['category_enabled'] ) && $options['category_enabled'] && property_exists( $category, 'term_id' ) ) :
 
@@ -104,7 +104,7 @@ class Clerk_Content {
 			global $woocommerce;
 			$items = $woocommerce->cart->get_cart();
 
-			$options  = get_option( 'clerk_options' );
+			$options  = clerk_get_options();
 			$products = array();
 
 			foreach ( $items as $item => $values ) {
@@ -166,7 +166,7 @@ class Clerk_Content {
 
 			if ( 'single-product/related.php' === $template_name ) {
 
-				$options = get_option( 'clerk_options' );
+				$options = clerk_get_options();
 
 				if ( isset( $options['product_enabled'] ) && $options['product_enabled'] ) :
 					return clerk_locate_template( 'clerk-related-products.php' );

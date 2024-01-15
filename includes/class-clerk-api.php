@@ -64,7 +64,7 @@ class Clerk_Api {
 
 		try {
 
-			$options    = get_option( 'clerk_options' );
+			$options    = clerk_get_options();
 			$public_key = $options['public_key'];
 
 			$endpoint = 'token/verify';
@@ -92,7 +92,7 @@ class Clerk_Api {
 
 		try {
 
-			$options = get_option( 'clerk_options' );
+			$options = clerk_get_options();
 
 			$params = array(
 				'key'         => $options['public_key'],
@@ -119,7 +119,7 @@ class Clerk_Api {
 
 		try {
 
-			$options = get_option( 'clerk_options' );
+			$options = clerk_get_options();
 
 			$params = array(
 				'key'         => $options['public_key'],
@@ -153,7 +153,7 @@ class Clerk_Api {
 				return $contents;
 			}
 
-			$options = get_option( 'clerk_options' );
+			$options = clerk_get_options();
 
 			$params = array(
 				'key'         => $options['public_key'],

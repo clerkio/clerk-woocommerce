@@ -59,7 +59,7 @@ class Clerk_Exit_Intent {
 
 		try {
 
-			$options = get_option( 'clerk_options' );
+			$options = clerk_get_options();
 
 			if ( isset( $options['exit_intent_enabled'] ) && $options['exit_intent_enabled'] ) {
 

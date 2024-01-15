@@ -74,11 +74,7 @@ class Clerk_Sales_Tracking {
 			}
 
 			foreach ( $items as $item_id => $item ) {
-				// Option: Including or excluding Taxes.
-				$inc_tax = true;
-				// Option: Round at item level (or not).
-				$round           = false; // Not rounded at item level ("true"  for rounding at item level).
-				$item_line_total = $order->get_line_total( $item, $inc_tax, $round ); // Get line total - discounted.
+				$item_line_total = $order->get_line_total( $item, true, false); // Get line total - discounted.
 				$item_quantity   = $item->get_quantity();
 				$product_id      = $item['product_id']; // $item->get_product_id(); this gets the variant ID.
 				$products[]      = array(
