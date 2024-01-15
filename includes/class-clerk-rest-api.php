@@ -274,7 +274,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 				return $this->get_unathorized_response();
 			}
 
-			$options = get_option( 'clerk_options' );
+			$options = clerk_get_options();
 
 			$limit   = $request->get_param( 'limit' ) ? $request->get_param( 'limit' ) : -1;
 			$page    = ( $request->get_param( 'page' ) !== null ) ? $request->get_param( 'page' ) : 0;
@@ -827,7 +827,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 	 * @param WP_REST_Request $request Request.
 	 */
 	public function page_endpoint_callback( WP_REST_Request $request ) {
-		$options = get_option( 'clerk_options' );
+		$options = clerk_get_options();
 
 		try {
 
@@ -924,7 +924,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 	 * @param WP_REST_Request $request Request.
 	 */
 	public function getconfig_endpoint_callback( WP_REST_Request $request ) {
-		$options = get_option( 'clerk_options' );
+		$options = clerk_get_options();
 
 		try {
 
@@ -1033,7 +1033,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 	 */
 	public function setconfig_endpoint_callback( WP_REST_Request $request ) {
 
-		$options = get_option( 'clerk_options' ); // Array of all values of settings.
+		$options = clerk_get_options();
 
 		try {
 
@@ -1043,9 +1043,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 			$body = $request->get_body(); // JSON blob string without public_key & private_key.
 
-			$body_array   = array();
 			$settings     = array();
-			$update_array = array();
 
 			// Array with all Clerk setttings (68) attributes without public_key & private_key.
 			$settings_arguments = array(
@@ -1153,7 +1151,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 					$update_array['private_key'] = $options['private_key'];
 
 					// Update the database with the all new and old Clerk settings inclusive public_key & private_key.
-					update_option( 'clerk_options', $update_array );
+                    clerk_update_options($update_array, $this->lang_iso);
 
 					$this->logger->log( 'Clerk options', array( '' => '' ) );
 
@@ -1181,7 +1179,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 	 */
 	public function rotatekey_endpoint_callback( WP_REST_Request $request ) {
 
-		$options = get_option( 'clerk_options' ); // Array of all values of settings.
+		$options = clerk_get_options();
 
 		try {
 
@@ -1214,7 +1212,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 					$update_array['private_key'] = $clerk_private_key;
 
 					// Update the database with the all new and old Clerk settings inclusive public_key & private_key.
-					update_option( 'clerk_options', $update_array );
+                    clerk_update_options($update_array, $this->lang_iso);
 
 					$this->logger->log( 'Clerk rotatekey', array( '' => '' ) );
 
@@ -1241,7 +1239,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 	 * @param WP_REST_Request $request Request.
 	 */
 	public function customer_endpoint_callback( WP_REST_Request $request ) {
-		$options = get_option( 'clerk_options' );
+		$options = clerk_get_options();
 
 		try {
 
@@ -1367,7 +1365,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 			$this->force_language_context( null );
 			add_action( 'pre_get_posts', array( $this, 'force_language_context' ) );
 
-			$options = get_option( 'clerk_options' );
+			$options = clerk_get_options();
 
 			$use_legacy_auth = array_key_exists( 'legacy_auth_enabled', $options );
 
@@ -1427,7 +1425,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 			return false;
 		}
 
-		$options = get_option( 'clerk_options' );
+		$options = clerk_get_options();
 
 		$query_params = array(
 			'token' => $token_string,
@@ -1552,7 +1550,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 		try {
 
-			$options = get_option( 'clerk_options' );
+			$options = clerk_get_options();
 
 			$additional_fields = $options['additional_fields'];
 
@@ -1586,7 +1584,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 		try {
 
-			$options = get_option( 'clerk_options' );
+			$options = clerk_get_options();
 
 			if ( ! is_array( $options ) ) {
 				return array();
@@ -1618,7 +1616,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 		try {
 
-			$options = get_option( 'clerk_options' );
+			$options = clerk_get_options();
 
 			if ( ! is_array( $options ) ) {
 				return;
@@ -1728,7 +1726,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 				return $this->get_unathorized_response();
 			}
 
-			$options = (array) get_option( 'clerk_options' );
+			$options = clerk_get_options();
 
 			if ( isset( $options['disable_order_synchronization'] ) && $options['disable_order_synchronization'] ) {
 				return array();

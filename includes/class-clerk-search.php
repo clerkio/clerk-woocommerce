@@ -86,9 +86,9 @@ class Clerk_Search {
 		$facets_titles     = '{';
 		$attributes        = array();
 
-		$options = get_option( 'clerk_options' );
+		$options = clerk_get_options();
 
-		if ( null !== $options['faceted_navigation_enabled'] && $options['faceted_navigation_enabled'] ) {
+		if ($options['faceted_navigation_enabled']) {
 
 			$facets_design             = isset( $options['faceted_navigation_design'] ) ? $options['faceted_navigation_design'] : false;
 			$search_include_categories = isset( $options['search_include_categories'] ) ? $options['search_include_categories'] : false;
@@ -152,7 +152,7 @@ class Clerk_Search {
 
 		try {
 
-			$options = get_option( 'clerk_options' );
+			$options = clerk_get_options();
 			?>
 			<span
 			id="clerk-search"

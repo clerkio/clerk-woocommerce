@@ -23,7 +23,7 @@ if ( clerk_is_wpml_enabled() ) {
 	do_action( 'wpml_multilingual_options', 'clerk_options' );
 }
 
-$options   = get_option( 'clerk_options' );
+$options   = clerk_get_options();
 $unique_id = esc_attr( uniqid( 'clerk-search-form-' ) );
 ?>
 	<form

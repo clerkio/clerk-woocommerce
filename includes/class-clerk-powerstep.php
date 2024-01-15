@@ -51,10 +51,10 @@ class Clerk_Powerstep {
 	 * Init hooks
 	 */
 	private function init_hooks() {
-		$options = get_option( 'clerk_options' );
+		$options = clerk_get_options();
 
 		// if powerstep disabled, there's no need to init hooks.
-		if ( ! isset( $options['powerstep_enabled'] ) || ( isset( $options['powerstep_enabled'] ) && ! $options['powerstep_enabled'] ) ) {
+		if ( ! isset( $options['powerstep_enabled'] ) || ! $options['powerstep_enabled']) {
 			return false;
 		}
 
@@ -92,7 +92,7 @@ class Clerk_Powerstep {
 				return $url;
 			}
 
-			$options = get_option( 'clerk_options' );
+			$options = clerk_get_options();
 
 			if ( ! $options['powerstep_enabled'] || self::TYPE_PAGE !== $options['powerstep_type'] ) {
 				return $url;
@@ -151,7 +151,7 @@ class Clerk_Powerstep {
 			} else {
 				return $url;
 			}
-			$options = get_option( 'clerk_options' );
+			$options = clerk_get_options();
 
 			$product_id = absint( $add_to_cart_param );
 
@@ -237,7 +237,7 @@ class Clerk_Powerstep {
 
 		try {
 
-			$options = get_option( 'clerk_options' );
+			$options = clerk_get_options();
 
 			if ( ! $options['powerstep_enabled'] ) {
 				return;
@@ -267,7 +267,7 @@ class Clerk_Powerstep {
 
 		try {
 
-			$options = get_option( 'clerk_options' );
+			$options = clerk_get_options();
 
 			if ( ! $options['powerstep_enabled'] ) {
 				return;

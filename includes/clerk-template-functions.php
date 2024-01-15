@@ -125,10 +125,10 @@ if ( ! function_exists( 'get_powerstep_templates' ) ) {
 	/**
 	 * Return powerstep popup clerk content strings
 	 *
-	 * @return string
+	 * @return array
 	 */
 	function get_powerstep_templates() {
-		$options = get_option( 'clerk_options' );
+		$options = clerk_get_options();
 
 		if ( ! $options['powerstep_templates'] ) {
 			return array();
@@ -142,8 +142,6 @@ if ( ! function_exists( 'get_powerstep_templates' ) ) {
 
 		}
 
-		$templates = array_map( 'trim', $templates );
-
-		return $templates;
+        return array_map( 'trim', $templates );
 	}
 }

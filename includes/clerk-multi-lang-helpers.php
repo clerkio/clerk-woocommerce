@@ -61,17 +61,28 @@ function clerk_pll_languages_list()
     return false;
 }
 
-function clerk_get_options()
+function clerk_update_options($options, $lang = null){
+    if($lang){
+        update_option( 'clerk_options_' . $lang, $options );
+    } else {
+        update_option( 'clerk_options', $options );
+    }
+}
+
+function clerk_get_options( $lang_iso = null )
+
 {
-    return get_option( clerk_get_option_key() );
+    return get_option( clerk_get_option_key( $lang_iso ) );
 }
 
 
-function clerk_get_option_key()
+function clerk_get_option_key( $lang_iso = null )
 {
     $current_lang = clerk_pll_current_language();
-    if($current_lang){
+    if($current_lang && ! $lang_iso){
         return 'clerk_options_' . $current_lang;
+    } elseif ($lang_iso) {
+        return 'clerk_options_' . $lang_iso;
     }
     return 'clerk_options';
 }

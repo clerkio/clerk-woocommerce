@@ -40,6 +40,12 @@ class Clerk_Product_Sync {
 	 */
 	protected $logger;
 
+
+    /**
+     * @var string
+     */
+    protected $lang_iso;
+
 	/**
 	 * Clerk_Product_Sync constructor.
 	 */
@@ -126,12 +132,21 @@ class Clerk_Product_Sync {
 		}
 
 		if ( clerk_wpml_all_scope_is_active() && clerk_wpml_get_product_lang( $product_id ) ) {
-			$lang_info = clerk_wpml_get_product_lang( $product_id );
-			// Get Clerk Settings for Scope of Product.
-			$options = get_option( 'clerk_options_' . $lang_info['language_code'] );
-		} else {
-			$options = get_option( 'clerk_options' );
+            $lang_info = clerk_wpml_get_product_lang($product_id);
+            // Get Clerk Settings for Scope of Product.
+            $this->lang_iso = $lang_info['language_code'];
+            $options = get_option('clerk_options_' . $lang_info['language_code']);
+        } elseif (clerk_is_pll_enabled() && clerk_pll_languages_list()) {
+            $lang_info = apply_filters( 'wpml_post_language_details', null, $product_id );
+            if ( is_array( $lang_info ) && array_key_exists( 'language_code', $lang_info ) ) {
+                $this->lang_iso = $lang_info['language_code'];
+                $options = get_option('clerk_options_' . $lang_info['language_code']);
+            }
 		}
+
+        if (! isset($options)){
+			$options = get_option( 'clerk_options' );
+        }
 
 		if ( ! is_array( $options ) || ! isset( $options ) ) {
 			return;
@@ -231,13 +246,23 @@ class Clerk_Product_Sync {
 				return;
 			}
 
-			if ( clerk_wpml_all_scope_is_active() && clerk_wpml_get_product_lang( $product_id ) ) {
-				$lang_info = clerk_wpml_get_product_lang( $product_id );
-				// Get Clerk Settings for Scope of Product.
-				$options = get_option( 'clerk_options_' . $lang_info['language_code'] );
-			} else {
-				$options = get_option( 'clerk_options' );
-			}
+            if ( clerk_wpml_all_scope_is_active() && clerk_wpml_get_product_lang( $product_id ) ) {
+                $lang_info = clerk_wpml_get_product_lang($product_id);
+                // Get Clerk Settings for Scope of Product.
+                $this->lang_iso = $lang_info['language_code'];
+                $options = get_option('clerk_options_' . $lang_info['language_code']);
+            } elseif (clerk_is_pll_enabled() && clerk_pll_languages_list()) {
+                $lang_info = apply_filters( 'wpml_post_language_details', null, $product_id );
+                if ( is_array( $lang_info ) && array_key_exists( 'language_code', $lang_info ) ) {
+                    $this->lang_iso = $lang_info['language_code'];
+                    $options = get_option('clerk_options_' . $lang_info['language_code']);
+                }
+            }
+
+            if (! isset($options)){
+                $options = get_option( 'clerk_options' );
+            }
+
 
 			if ( ! is_array( $options ) || ! isset( $options['realtime_updates'] ) ) {
 				return;
@@ -265,17 +290,22 @@ class Clerk_Product_Sync {
 
 		try {
 
-			$lang_info     = clerk_wpml_get_product_lang( $product->get_id() );
-			$language_code = null;
-			if ( is_array( $lang_info ) && array_key_exists( 'language_code', $lang_info ) ) {
-				$language_code = $lang_info['language_code'];
-			}
+            if ( clerk_wpml_all_scope_is_active() && clerk_wpml_get_product_lang( $product->get_id() ) ) {
+                $lang_info = clerk_wpml_get_product_lang($product->get_id());
+                // Get Clerk Settings for Scope of Product.
+                $this->lang_iso = $lang_info['language_code'];
+                $options = get_option('clerk_options_' . $lang_info['language_code']);
+            } elseif (clerk_is_pll_enabled() && clerk_pll_languages_list()) {
+                $lang_info = apply_filters( 'wpml_post_language_details', null, $product->get_id() );
+                if ( is_array( $lang_info ) && array_key_exists( 'language_code', $lang_info ) ) {
+                    $this->lang_iso = $lang_info['language_code'];
+                    $options = get_option('clerk_options_' . $lang_info['language_code']);
+                }
+            }
 
-			if ( clerk_wpml_all_scope_is_active() && $language_code ) {
-				$options = get_option( 'clerk_options_' . $language_code );
-			} else {
-				$options = get_option( 'clerk_options' );
-			}
+            if (! isset($options)){
+                $options = get_option( 'clerk_options' );
+            }
 
 			if ( ! is_array( $options ) ) {
 				return;
@@ -566,8 +596,10 @@ class Clerk_Product_Sync {
 			$product_array['stock_status']        = $product->get_stock_status();
 			$product_array['tags']                = $product_tags;
 
-			if ( $language_code ) {
-				$product_array['language_code'] = $language_code;
+
+            $lang_info = apply_filters( 'wpml_post_language_details', null, $product->get_id() );
+            if ( is_array( $lang_info ) && array_key_exists( 'language_code', $lang_info ) ) {
+				$product_array['language_code'] = $lang_info['language_code'];
 			}
 
 			if ( ! empty( $product_tax_rates ) ) {
@@ -587,7 +619,7 @@ class Clerk_Product_Sync {
 
 			$product_array = $this->resolve_unit_measure( $product, $product_array );
 
-			$additional_fields = $this->get_additional_fields();
+			$additional_fields = $this->get_additional_fields( $options );
 
 			if ( in_array( 'short_description', $additional_fields, true ) ) {
 				$product_array['short_description'] = $product->get_short_description();
@@ -600,7 +632,7 @@ class Clerk_Product_Sync {
 					if ( ! is_wp_error( $image_path ) && is_array( $image_path ) && ! empty( $image_path ) ) {
 						$image_path = $image_path[0];
 						if ( ! in_array( $product_array['all_images'], $image_path, true ) ) {
-							array_push( $product_array['all_images'], $image_path );
+							$product_array['all_images'][] = $image_path;
 						}
 					}
 				}
@@ -613,13 +645,13 @@ class Clerk_Product_Sync {
 					foreach ( $product_image_ids as $product_img_id ) {
 						$image_path = wp_get_attachment_url( $product_img_id );
 						if ( ! is_wp_error( $image_path ) && $image_path ) {
-							array_push( $product_array['gallery_images'], $image_path );
+							$product_array['gallery_images'][] = $image_path;
 						}
 					}
 				}
 			}
 
-			$product_array = $this->query_custom_fields( $product, $additional_fields, $product_array );
+			$product_array = $this->query_custom_fields( $product, $additional_fields, $product_array, $options );
 
 			$product_array = apply_filters( 'clerk_product_sync_array', $product_array, $product );
 
@@ -638,14 +670,14 @@ class Clerk_Product_Sync {
 	 * @param array      $fields Fields Array.
 	 * @param array      $product_data Product Data Array.
 	 */
-	private function query_custom_fields( $product, $fields, $product_data ) {
+	private function query_custom_fields( $product, $fields, $product_data, $options ) {
 		$product_type = $product->get_type();
 		$fields       = array_values( array_filter( array_diff( $fields, array_keys( $product_data ) ) ) );
 
 		foreach ( $fields as $field ) {
 			$attribute_value = $this->resolve_attribute_product( $product, $field );
 			if ( isset( $attribute_value ) ) {
-				$product_data[ $this->clerk_friendly_attributes( $field ) ] = $this->format_attribute( $attribute_value, $field );
+				$product_data[ $this->clerk_friendly_attributes( $field ) ] = $this->format_attribute( $attribute_value, $field, $options );
 			}
 		}
 
@@ -654,12 +686,12 @@ class Clerk_Product_Sync {
 			foreach ( $variations as $variation ) {
 				$variant = new WC_Product_variation( $variation['variation_id'] );
 				foreach ( $fields as $field ) {
-					$attribute_value = $this->format_attribute( $this->resolve_attribute_product( $variant, $field ), $field );
-					if ( ! isset( $attribute_value ) || empty( $attribute_value ) ) {
+					$attribute_value = $this->format_attribute( $this->resolve_attribute_product( $variant, $field ), $field, $options );
+					if (empty( $attribute_value )) {
 						if ( ! array_key_exists( $field, $variation ) ) {
 							continue;
 						} else {
-							$attribute_value = $this->format_attribute( $variation[ $field ], $field );
+							$attribute_value = $this->format_attribute( $variation[ $field ], $field, $options );
 						}
 					}
 					if ( ! isset( $product_data[ 'child_' . $this->clerk_friendly_attributes( $field ) . 's' ] ) ) {
@@ -676,8 +708,8 @@ class Clerk_Product_Sync {
 			foreach ( $child_product_ids as $child_id ) {
 				$child = wc_get_product( $child_id );
 				foreach ( $fields as $field ) {
-					$attribute_value = $this->format_attribute( $this->resolve_attribute_product( $child, $field ), $field );
-					if ( ! isset( $attribute_value ) || empty( $attribute_value ) ) {
+					$attribute_value = $this->format_attribute( $this->resolve_attribute_product( $child, $field ), $field, $options );
+					if (empty( $attribute_value )) {
 						continue;
 					}
 					if ( ! isset( $product_data[ 'child_' . $this->clerk_friendly_attributes( $field ) . 's' ] ) ) {
@@ -698,14 +730,14 @@ class Clerk_Product_Sync {
 	 * @param mixed  $attribute_value Product Attribute Value.
 	 * @param string $field Field Slug.
 	 */
-	private function format_attribute( $attribute_value, $field ) {
+	private function format_attribute( $attribute_value, $field, $options ) {
 		if ( is_object( $attribute_value ) ) {
 			$attribute_value = (array) $attribute_value;
 		}
 		if ( is_array( $attribute_value ) && count( $attribute_value ) === 1 ) {
 			$attribute_value = $attribute_value[0];
 		}
-		if ( is_string( $attribute_value ) && ! in_array( $field, $this->get_additional_fields_raw(), true ) ) {
+		if ( is_string( $attribute_value ) && ! in_array( $field, $this->get_additional_fields_raw( $options ), true ) ) {
 			$attribute_value = array_map( array( $this, 'trim_whitespace_in_attribute' ), explode( ',', $attribute_value ) );
 		}
 		if ( is_array( $attribute_value ) && count( $attribute_value ) === 1 ) {
@@ -793,10 +825,8 @@ class Clerk_Product_Sync {
 	 *
 	 * @return array | void
 	 */
-	private function get_additional_fields() {
+	private function get_additional_fields( $options ) {
 		try {
-
-			$options = get_option( 'clerk_options' );
 
 			if ( ! is_array( $options ) ) {
 				return array();
@@ -804,9 +834,7 @@ class Clerk_Product_Sync {
 
 			$additional_fields = $options['additional_fields'];
 
-			$fields = explode( ',', $additional_fields );
-
-			return $fields;
+            return explode( ',', $additional_fields );
 		} catch ( Exception $e ) {
 
 			$this->logger->error( 'ERROR get_additional_fields', array( 'error' => $e->getMessage() ) );
@@ -818,10 +846,8 @@ class Clerk_Product_Sync {
 	 *
 	 * @return array | void
 	 */
-	private function get_additional_fields_raw() {
+	private function get_additional_fields_raw( $options ) {
 		try {
-
-			$options = get_option( 'clerk_options' );
 
 			if ( ! is_array( $options ) ) {
 				return array();
@@ -851,10 +877,14 @@ class Clerk_Product_Sync {
 
 		try {
 
-			$options = get_option( 'clerk_options' );
+            if(isset($this->lang_iso)){
+			    $options = get_option( 'clerk_options_' . $this->lang_iso );
+            } else {
+                $options = get_option( 'clerk_options' );
+            }
 
 			if ( ! is_array( $options ) ) {
-				return '';
+				return;
 			}
 
 			if ( ! is_string( $attribute_value ) ) {

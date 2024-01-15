@@ -53,7 +53,7 @@ class Clerk_Visitor_Tracking {
 		add_action( 'wp_ajax_get_cart', array( $this, 'get_cart' ) );
 		add_action( 'init', array( $this, 'clerk_add_custom_shortcodes' ) );
 
-		$options = get_option( 'clerk_options' );
+		$options = clerk_get_options();
 
 		if ( isset( $options['collect_emails'] ) ) {
 			add_action( 'woocommerce_review_order_before_submit', array( $this, 'clerk_woocommerce_review_order_before_submit' ), 99 );
@@ -128,7 +128,7 @@ class Clerk_Visitor_Tracking {
 
 		try {
 
-			$options = get_option( 'clerk_options' );
+			$options = clerk_get_options();
 
 			// Add a filter so we can disable clerk programmatically or check if public key is set.
 			$clerk_enabled      = apply_filters( 'clerk_enabled', true );
@@ -455,7 +455,7 @@ class Clerk_Visitor_Tracking {
 
 		try {
 			$signup_msg  = '';
-			$options     = get_option( 'clerk_options' );
+			$options     = clerk_get_options();
 			$show_signup = false;
 			if ( array_key_exists( 'collect_emails_signup_message', $options ) && array_key_exists( 'collect_emails', $options ) ) {
 				if ( strlen( $options['collect_emails_signup_message'] ) > 0 ) {
