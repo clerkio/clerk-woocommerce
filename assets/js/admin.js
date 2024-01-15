@@ -189,7 +189,10 @@ function getAlternateSettingsValuesHTML(element, data) {
     newElements = [];
 
     for (const lang in langs) {
-        const options = data[lang];
+        let options = data[lang];
+        if(typeof options !== 'object' || (typeof options === 'object' && !Array.isArray(options) && options !== null)) {
+            options = {};
+        }
         const newElement = element.cloneNode(true);
         newElement.className = 'clerk_hidden';
         newElement.setAttribute('name', `clerk_options_${lang}[${id}]`)
@@ -208,7 +211,6 @@ function getAlternateSettingsValuesHTML(element, data) {
                 newElement.setAttribute('value', '')
             }
         }
-
         if (element.tag === 'SELECT') {
             if(newValue){
                 newElement.innerHTML = `<option value="${newValue}" selected></option>`;
@@ -216,9 +218,7 @@ function getAlternateSettingsValuesHTML(element, data) {
         }
         newElements.push(newElement);
     }
-
     return newElements;
-
 }
 
 document.addEventListener('DOMContentLoaded', function() {
