@@ -188,7 +188,7 @@ function getAlternateSettingsValuesHTML(element, data) {
     let newElements;
     newElements = [];
 
-    for (const lang in langs) {
+    for (const lang of langs) {
         let options = data[lang];
         if(typeof options !== 'object' || (typeof options === 'object' && !Array.isArray(options) && options !== null)) {
             options = {};
