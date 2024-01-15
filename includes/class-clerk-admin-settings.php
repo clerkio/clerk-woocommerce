@@ -1174,8 +1174,8 @@ class Clerk_Admin_Settings
 
         ?>
         <span>
-				<p>v. <?php echo esc_textarea($this->version); ?></p>
-			</span>
+			<p>v. <?php echo esc_textarea($this->version); ?></p>
+		</span>
         <?php
     }
 
@@ -1225,7 +1225,7 @@ class Clerk_Admin_Settings
      */
     public function is_valid_json($string)
     {
-        return is_string($string) && is_array(json_decode($string, true)) && (json_last_error() === JSON_ERROR_NONE) ? true : false;
+        return is_string($string) && is_array(json_decode($string, true)) && (json_last_error() === JSON_ERROR_NONE);
     }
 
     /**
@@ -2199,18 +2199,35 @@ class Clerk_Admin_Settings
         settings_errors('wporg_messages');
 
         $language_info = wp_json_encode(clerk_wpml_get_active_scope());
+        $is_pll = clerk_is_pll_enabled();
+        $lang_info_json = '';
+
+        if( $is_pll ){
+            $langs = clerk_pll_languages_list();
+            $cl = clerk_pll_current_language();
+            $lang_settings = [];
+            foreach ($langs as $lang){
+                if($lang === $cl){
+                    continue;
+                }
+                $lang_options = clerk_get_options( $lang );
+                $lang_settings[$lang] = $lang_options;
+            }
+            $lang_info_json = wp_json_encode($lang_settings);
+        }
         ?>
         <div class="wrap">
             <div id="clerkFloatingSaveBtn"
                  onclick="clerk_submit_admin_form();"><?php echo esc_html(__('Save Settings', 'clerk')); ?></div>
-            <h1 style="font-family: Arial;">
+            <h1>
                 <img id="clerkLogoHeader"
-                     src="<?php echo esc_html(plugin_dir_url(CLERK_PLUGIN_FILE) . 'assets/img/clerk.png'); ?>">
+                     src="<?php echo esc_html(plugin_dir_url(CLERK_PLUGIN_FILE) . 'assets/img/clerk.png'); ?>" alt="Clerk Logo">
                 <span><?php echo esc_html(get_admin_page_title()); ?></span>
             </h1>
 
             <form id="clerkAdminForm" action="options.php" method="post">
                 <div id="multi-lang-data"><?php echo esc_html($language_info); ?></div>
+                <div id="hidden-lang-data"  data-is-pll="<?php echo $is_pll?>"><?php echo $lang_info_json; ?></div>
                 <?php
                 // output security fields for the registered setting "wporg".
                 settings_fields('clerk');
