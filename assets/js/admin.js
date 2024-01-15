@@ -199,26 +199,16 @@ function getAlternateSettingsValuesHTML(element, data) {
         newElement.setAttribute('name', `clerk_options_${lang}[${id}]`)
         const newValue = options[id];
         if (newElement.tag === 'INPUT' && newElement.type === 'checkbox') {
-            if(newValue){
-                newElement.checked = true;
-            } else {
-                newElement.checked = false;
-            }
+            newElement.checked = !!newValue;
         }
         if (newElement.tag === 'INPUT' && newElement.type === 'text' || newElement.tag === 'TEXTAREA') {
-            if(newValue){
-                newElement.value = newValue;
-            } else {
-                newElement.value = ''
-            }
+            newElement.value = newValue || '';
         }
         if (newElement.tag === 'SELECT') {
             if(newValue){
                 newElement.innerHTML = `<option value="${newValue}" selected></option>`;
             }
         }
-        console.log(newElement, typeof newElement)
-        newElement.value = "SALAD";
         newElements.push(newElement);
     }
     return newElements;
