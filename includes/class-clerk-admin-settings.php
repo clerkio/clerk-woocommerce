@@ -2206,6 +2206,7 @@ class Clerk_Admin_Settings
             $langs = clerk_pll_languages_list();
             $cl = clerk_pll_current_language();
             $lang_settings = [];
+            $lang_settings['languages'] = $langs;
             foreach ($langs as $lang){
                 if($lang === $cl){
                     continue;
@@ -2227,7 +2228,7 @@ class Clerk_Admin_Settings
 
             <form id="clerkAdminForm" action="options.php" method="post">
                 <div id="multi-lang-data"><?php echo esc_html($language_info); ?></div>
-                <div id="hidden-lang-data"  data-is-pll="<?php echo $is_pll?>"><?php echo $lang_info_json; ?></div>
+                <div id="hidden-lang-data"  data-is-pll="<?php echo (bool)$is_pll?>"><?php echo $lang_info_json; ?></div>
                 <?php
                 // output security fields for the registered setting "wporg".
                 settings_fields('clerk');

@@ -174,3 +174,10 @@ if (admin_form) {
 		document.querySelector( '#powerstep_custom_text_cart' ).setAttribute( 'disabled', true );
 	}
 }
+
+const hiddenLanguageDataRaw = document.querySelector('#hidden-lang-data').textContent;
+const mld = hiddenLanguageDataRaw ? JSON.parse(hiddenLanguageDataRaw) : false;
+
+if(mld){
+	const clerkForms = document.querySelectorAll('#clerkAdminForm .form-table');
+}
