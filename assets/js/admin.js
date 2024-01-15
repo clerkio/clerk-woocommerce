@@ -193,7 +193,7 @@ function getAlternateSettingsValuesHTML(element, data) {
         if(typeof options !== 'object' || (typeof options === 'object' && Array.isArray(options)) || (typeof options === 'object' && options === null)) {
             options = {};
         }
-        const newElement = element.cloneNode(true);
+        let newElement = element.cloneNode(true);
         newElement.className = 'clerk_hidden';
         newElement.removeAttribute('id');
         newElement.setAttribute('name', `clerk_options_${lang}[${id}]`)
