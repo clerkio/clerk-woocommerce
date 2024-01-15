@@ -200,16 +200,16 @@ function getAlternateSettingsValuesHTML(element, data) {
         const newValue = options[id];
         if (newElement.tag === 'INPUT' && newElement.type === 'checkbox') {
             if(newValue){
-                newElement.setAttribute('checked', 'checked');
+                newElement.checked = true;
             } else {
-                newElement.removeAttribute('checked');
+                newElement.checked = false;
             }
         }
         if (newElement.tag === 'INPUT' && newElement.type === 'text' || newElement.tag === 'TEXTAREA') {
             if(newValue){
-                newElement.setAttribute('value', newValue)
+                newElement.value = newValue;
             } else {
-                newElement.setAttribute('value', '')
+                newElement.value = ''
             }
         }
         if (newElement.tag === 'SELECT') {
