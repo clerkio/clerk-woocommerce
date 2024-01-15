@@ -2042,13 +2042,14 @@ class Clerk_Admin_Settings
     {
         // Get settings value.
         $options = clerk_get_options();
+        $clerk_options_key = clerk_get_option_key();
         $label_for = is_string($args['label_for']) || is_array($args['label_for']) ? $args['label_for'] : array();
         $selection = array_key_exists($label_for, $options) ? $options[$label_for] : '';
         $selection = empty($selection) ? '' : $selection;
         wp_dropdown_pages(
             array(
                 'selected' => esc_attr($selection),
-                'name' => sprintf('clerk_options[%s]', esc_attr($label_for)),
+                'name' => sprintf($clerk_options_key . '[%s]', esc_attr($label_for)),
             )
         );
     }
