@@ -98,6 +98,8 @@ class Clerk_Admin_Settings {
 
 
 		$wpml_enabled = clerk_is_wpml_enabled();
+        $pll_enabled = clerk_is_pll_enabled();
+
 		if ( $wpml_enabled ) {
 			$site_info = clerk_wpml_get_active_scope();
 			$site_url  = $site_info['url'];
@@ -105,7 +107,7 @@ class Clerk_Admin_Settings {
 			$site_url = get_site_url();
 		}
 
-		$options = get_option( 'clerk_options' );
+        $options = clerk_get_options();
 
 		// Add general section.
 		add_settings_section(
@@ -126,7 +128,7 @@ class Clerk_Admin_Settings {
 			)
 		);
 
-		if ( $wpml_enabled ) {
+		if ( $wpml_enabled || $pll_enabled ) {
 			add_settings_field(
 				'multi_lang_info',
 				__( 'Multi Language Scope', 'clerk' ),
@@ -724,17 +726,9 @@ class Clerk_Admin_Settings {
 			__( 'Powerstep Settings', 'clerk' ),
 			null,
 			'clerk',
-			'clerk_section_livesearch',
-			array(
-				'label_for' => 'livesearch_enabled',
-				'checked'   => 0,
-			)
 		);
 
 		add_settings_field(
-			'livesearch_include_suggestions',
-			__( 'Include Suggestions', 'clerk' ),
-			array( $this, 'add_checkbox_field' ),
 			'powerstep_type',
 			__( 'Powerstep Type', 'clerk' ),
 			array( $this, 'add_powerstep_type_dropdown' ),

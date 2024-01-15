@@ -54,6 +54,15 @@ function clerk_pll_languages_list()
     return false;
 }
 
+function clerk_get_options()
+{
+    $current_lang = clerk_pll_current_language();
+    if($current_lang) {
+        return get_option( 'clerk_options' . $current_lang );
+    }
+    return get_option( 'clerk_options' );
+}
+
 
 /**
  * Check if all scope WPML all languages admin scope is active
