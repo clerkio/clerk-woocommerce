@@ -205,7 +205,7 @@ function getAlternateSettingsValuesHTML(element, data) {
         if (newElement.tagName === 'INPUT' && newElement.type === 'text' || newElement.tagName === 'TEXTAREA') {
             newElement.value = newValue || '';
         }
-        if (newElement.tagName === 'INPUT' && newElement.type === 'hidden' && newElement.classList.includes('faceted_navigation_holder')) {
+        if (newElement.tagName === 'INPUT' && newElement.type === 'hidden' && newElement.classList.contains('faceted_navigation_holder')) {
             if(newValue){
                 newElement.value = newValue;
             }
