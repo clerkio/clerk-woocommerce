@@ -19,7 +19,6 @@
  * Form Submission Shortcut Admin
  */
 
-document.addEventListener('DOMContentLoaded', function() {
     const clerk_submit_admin_form = () => {
         document.querySelector('#submit').click();
     }
@@ -271,7 +270,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     }
-})
 
 
 
