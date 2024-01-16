@@ -178,7 +178,8 @@ class Clerk_Product_Sync {
                 }
 
                 $this->api->add_posts([$page_draft]);
-            } else {
+            }
+            if ( 'publish' !== $post_status ){
                 $this->api->delete_posts([$post->ID]);
             }
 
