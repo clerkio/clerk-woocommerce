@@ -142,9 +142,9 @@ class Clerk_Api {
     /**
      * Add product to Clerk
      *
-     * @param array $post_params Page Info.
+     * @param array $posts_params Page Info.
      */
-    public function add_post( $post_params ) {
+    public function add_posts( $posts_params ) {
 
         try {
 
@@ -153,7 +153,7 @@ class Clerk_Api {
             $params = array(
                 'key'         => $options['public_key'],
                 'private_key' => $options['private_key'],
-                'pages'    => array( $post_params ),
+                'pages'    => $posts_params,
             );
 
             $this->post( 'pages', $params );

@@ -237,4 +237,37 @@ document.addEventListener('DOMContentLoaded', function() {
     if(additionalScriptsTextarea){
         additionalScriptsTextarea.value = additionalScriptsTextarea.value.trim();
     }
+
+    const rtuPagesEnabled = document.querySelector('#realtime_updates_pages')
+    if(rtuPagesEnabled){
+        if(rtuPagesEnabled.checked){
+            showPushAllPages();
+        }
+    }
 })
+
+function showPushAllPages() {
+    const publicKey = document.querySelector('#public_key')?.value;
+    const privateKey = document.querySelector('#private_key')?.value;
+    const site = document.querySelector('#import_url')?.value;
+    if(!publicKey || !privateKey || !site){
+        return;
+    }
+    const el = document.createElement('div');
+    el.id = 'sync-pages-action';
+    el.onclick = async function (){
+        await pushAllPages(publicKey, privateKey, site);
+    }
+    el.textContent = 'Sync Pages';
+    el.className = 'force-sync';
+}
+
+async function pushAllPages(publicKey, privateKey, site) {
+    const url = new URL(site);
+    url.pathname += '/wp-json/clerk/page-rtu';
+    url.searchParams.append('public_key', publicKey);
+    url.searchParams.append('private_key', privateKey);
+    const rsp = await fetch(url);
+
+    // TODO: Implement call to clerk-rest-api pages for collection, pass each collection to
+}

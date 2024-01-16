@@ -177,7 +177,7 @@ class Clerk_Product_Sync {
                     }
                 }
 
-                $this->api->add_post($page_draft);
+                $this->api->add_posts([$page_draft]);
             }
 
         } catch (Exception $e) {
