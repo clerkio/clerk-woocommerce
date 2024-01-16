@@ -201,6 +201,6 @@
 	display: none !important;
 }
 
-.toplevel_page_clerk .facets_position {
+.toplevel_page_clerk #wpbody .facets_position {
 	max-width: 2rem;
 }
