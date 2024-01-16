@@ -106,7 +106,7 @@
 
 .toplevel_page_clerk #wpbody form {
 	background-color: #eee;
-	padding: 0rem 1rem 1rem 1rem;
+	padding: 0 1rem 1rem 1rem;
 	border: 1px solid #1d2327;
 	border-radius: 5px;
 	margin-top: 1rem;
@@ -199,4 +199,22 @@
 
 .toplevel_page_clerk .clerk_hidden {
 	display: none !important;
+}
+
+.toplevel_page_clerk #wpbody .facets_position {
+	max-width: 2rem !important;
+}
+
+.toplevel_page_clerk #wpbody .force-sync {
+	display: flex;
+	border-radius: 0.25rem;
+	border-color: #1d2327;
+	border-width: 1px;
+	border-style: solid;
+	background-color: #1d2327;
+	color: #eeeeee;
+	cursor: pointer;
+	float: right;
+	padding: 0.25rem;
+	transition: all 0.2s ease-in-out;
 }
