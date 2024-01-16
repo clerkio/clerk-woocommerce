@@ -1943,14 +1943,10 @@ class Clerk_Admin_Settings
                 ?>
                 readonly<?php endif; ?>>
         <?php
-        if (isset($args['description'])) :
-            ?>
-            <p
-                    class="description"
-                    id="<?php echo esc_html($args['label_for']); ?>-description"><?php echo esc_html($args['description']); ?>
-            </p>
-        <?php
-        endif;
+        if (isset($args['description'])){
+            echo '<p class="description" id="' . esc_attr($args['label_for']) . '-description">' . esc_attr($args['description']) . '</p>';
+        }
+
     }
 
     /**
@@ -2021,14 +2017,11 @@ class Clerk_Admin_Settings
                 rows="5"
                 cols="50"
                 name="<?php echo esc_attr($clerk_options_key); ?>[<?php echo esc_attr($args['label_for']); ?>]"
-                value="<?php echo esc_attr($value); ?>"><?php echo esc_attr($value); ?>
-		</textarea>
+                value="<?php echo esc_attr($value); ?>"><?php echo esc_attr(trim($value)); ?></textarea>
         <?php
-        if (isset($args['description'])) :
-            ?>
-            <p class="description" id="<?php echo esc_attr($args['label_for']); ?>-description"><?php echo esc_attr($args['description']); ?></p>
-        <?php
-        endif;
+        if (isset($args['description'])){
+            echo '<p class="description" id="' . esc_attr($args['label_for']) . '-description">' . esc_attr($args['description']) . '</p>';
+        }
     }
 
     /**
