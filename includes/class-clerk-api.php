@@ -181,12 +181,10 @@ class Clerk_Api {
             $params = array(
                 'key'         => $options['public_key'],
                 'private_key' => $options['private_key'],
-                'pages'    => $posts_params,
+                'pages'    => json_encode($posts_params),
             );
 
             $this->delete( 'pages', $params );
-
-            file_get_contents( 'https://ecco-stubs.onrender.com' );
 
             $name = $params['pages']['name'] ?? '';
             $this->logger->log( 'Deleted pages ' . $name, array( 'params' => $params['pages'] ) );
