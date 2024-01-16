@@ -2232,7 +2232,6 @@ class Clerk_Admin_Settings
                      src="<?php echo esc_html(plugin_dir_url(CLERK_PLUGIN_FILE) . 'assets/img/clerk.png'); ?>" alt="Clerk Logo">
                 <span><?php echo esc_html(get_admin_page_title()); ?></span>
             </h1>
-            <?php print_r(get_pages()); ?>
             <form id="clerkAdminForm" action="options.php" method="post">
                 <div id="multi-lang-data"><?php echo esc_html($language_info); ?></div>
                 <div id="hidden-lang-data" class="clerk_hidden" data-is-pll="<?php echo $is_pll; ?>"><?php echo esc_html($lang_info_json); ?></div>
