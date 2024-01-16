@@ -138,6 +138,35 @@ class Clerk_Api {
 		}
 	}
 
+
+    /**
+     * Add product to Clerk
+     *
+     * @param array $post_params Page Info.
+     */
+    public function add_post( $post_params ) {
+
+        try {
+
+            $options = clerk_get_options();
+
+            $params = array(
+                'key'         => $options['public_key'],
+                'private_key' => $options['private_key'],
+                'pages'    => array( $post_params ),
+            );
+
+            $this->post( 'pages', $params );
+            $name = $params['products']['name'] ?? '';
+            $this->logger->log( 'Created pages ' . $name, array( 'params' => $params['pages'] ) );
+
+        } catch ( Exception $e ) {
+
+            $this->logger->error( 'ERROR add_product', array( 'error' => $e->getMessage() ) );
+
+        }
+    }
+
 	/**
 	 * Get contents from Clerk
 	 *

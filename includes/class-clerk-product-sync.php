@@ -114,12 +114,46 @@ class Clerk_Product_Sync {
 				if ( is_a( $product, 'WC_Product' ) ) {
 					$this->save_product( $post_id );
 				}
+
+                $post = get_post( $post_id );
+                if ( is_a( $post, 'WP_Post' ) && ($post->post_type === 'page' || $post->post_type === 'post')){
+                    $this->save_blog_post( $post );
+                }
 			}
 		} catch ( Exception $e ) {
 
 			$this->logger->error( 'ERROR pre_save_post', array( 'error' => $e->getMessage() ) );
 		}
 	}
+
+
+    public function save_blog_post( $post ) {
+        try {
+            $post_status = get_post_status( $post );
+
+            if ( ! empty( $post->post_content ) && 'publish' === $post_status ) {
+
+                $url = get_permalink($post->ID);
+                $url = empty($url) ? $post->guid : $url;
+
+                $page_draft = array(
+                    'id' => $post->ID,
+                    'type' => $post_status,
+                    'url' => $url,
+                    'title' => $post->post_title,
+                    'text' => gettype($post->post_content) === 'string' ? wp_strip_all_tags($post->post_content) : '',
+                    'image' => get_the_post_thumbnail_url($post->ID),
+                );
+
+                $this->api->add_post($page_draft);
+            }
+
+        } catch (Exception $e) {
+
+            $this->logger->error( 'ERROR save_blog_post', array( 'error' => $e->getMessage() ) );
+        }
+    }
+
 	/**
 	 * Update Product
 	 *
