@@ -183,6 +183,7 @@
             if (!publicKey || !privateKey || !site) {
                 return;
             }
+            console.log('PASSED IF')
             const el = document.createElement('div');
             el.id = 'sync-pages-action';
             el.onclick = async function () {
