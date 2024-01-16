@@ -2245,6 +2245,9 @@ class Clerk_Admin_Settings
                 $lang_options = clerk_get_options( $lang );
                 $lang_settings[$lang] = $lang_options;
                 $lang_settings['languages'][] = $lang;
+                if(!isset($lang_settings[$lang]['import_url']) || $lang_settings[$lang]['import_url'] === ''){
+                    $lang_settings[$lang]['import_url'] = get_site_url() . '?lang=' . $lang;
+                }
             }
             $lang_info_json = wp_json_encode($lang_settings);
         }
