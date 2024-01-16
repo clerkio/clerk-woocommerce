@@ -204,3 +204,13 @@
 .toplevel_page_clerk #wpbody .facets_position {
 	max-width: 2rem !important;
 }
+
+.toplevel_page_clerk #wpbody .force-sync {
+	display: flex;
+	border-radius: 0.25rem;
+	border-color: #333;
+	border-width: 1px;
+	border-style: solid;
+	background-color: #333;
+	float: right;
+}
