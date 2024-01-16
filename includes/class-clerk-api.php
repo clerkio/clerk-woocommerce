@@ -284,10 +284,11 @@ class Clerk_Api {
         try {
             $request_args = array(
                 'method'  => 'DELETE',  // Specify the request method as DELETE
-                'timeout' => 60,        // Set the timeout in seconds
+                'timeout' => 45,        // Set the timeout in seconds
+                'body'    => $params,   // Optional parameters for the request
             );
-            $url = $this->baseurl . $endpoint . '?' . http_build_query( $params );
 
+            $url = $this->baseurl . $endpoint;
             return wp_remote_request($url, $request_args);
 
         } catch ( Exception $e ) {
