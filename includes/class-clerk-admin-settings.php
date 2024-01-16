@@ -111,6 +111,8 @@ class Clerk_Admin_Settings
         if ($wpml_enabled) {
             $site_info = clerk_wpml_get_active_scope();
             $site_url = $site_info['url'];
+        } elseif ($pll_enabled && false !== clerk_pll_current_language()) {
+            $site_url = get_site_url() . '?lang=' . clerk_pll_current_language();
         } else {
             $site_url = get_site_url();
         }
