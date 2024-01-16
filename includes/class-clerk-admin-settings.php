@@ -212,126 +212,158 @@ class Clerk_Admin_Settings
             )
         );
 
-        // Add Customer sync section.
+
+
+
+        // PRODUCT SYNC
         add_settings_section(
-            'clerk_section_customer_sync',
-            __('Customer Sync', 'clerk'),
+            'clerk_section_datasync_products',
+            __('Data Sync: Products', 'clerk'),
             null,
             'clerk'
         );
-
-        add_settings_field(
-            'customer_sync_enabled',
-            __('Enabled', 'clerk'),
-            array($this, 'add_checkbox_field'),
-            'clerk',
-            'clerk_section_customer_sync',
-            array(
-                'label_for' => 'customer_sync_enabled',
-                'checked' => 0,
-            )
-        );
-
-        add_settings_field(
-            'customer_sync_customer_fields',
-            __('Extra Customer Fields', 'clerk'),
-            array($this, 'add_text_field'),
-            'clerk',
-            'clerk_section_customer_sync',
-            array(
-                'label_for' => 'customer_sync_customer_fields',
-                'description' => 'A comma separated list of additional fields for customer to sync',
-            )
-        );
-
-        // Add data sync section.
-        add_settings_section(
-            'clerk_section_datasync',
-            __('Data Sync', 'clerk'),
-            null,
-            'clerk'
-        );
-
         add_settings_field(
             'realtime_updates',
             __('Use Real-time Updates', 'clerk'),
             array($this, 'add_checkbox_field'),
             'clerk',
-            'clerk_section_datasync',
+            'clerk_section_datasync_products',
             array(
                 'label_for' => 'realtime_updates',
                 'checked' => 0,
                 'description' => 'Products'
             )
         );
+        add_settings_field(
+            'data_sync_image_size',
+            __('Image Size', 'clerk'),
+            array($this, 'add_image_size_dropdown'),
+            'clerk',
+            'clerk_section_datasync_products',
+            array(
+                'label_for' => 'data_sync_image_size',
+            )
+        );
+        add_settings_field(
+            'outofstock_products',
+            __('Include Out Of Stock Products', 'clerk'),
+            array($this, 'add_checkbox_field'),
+            'clerk',
+            'clerk_section_datasync_products',
+            array(
+                'label_for' => 'outofstock_products',
+                'checked' => 0,
+            )
+        );
+        add_settings_field(
+            'additional_fields',
+            __('Additional Fields', 'clerk'),
+            array($this, 'add_text_field'),
+            'clerk',
+            'clerk_section_datasync_products',
+            array(
+                'label_for' => 'additional_fields',
+                'description' => 'A comma separated list of additional fields to sync',
+            )
+        );
+        add_settings_field(
+            'additional_fields_trim',
+            __('Strip/Trim Split Attributes', 'clerk'),
+            array($this, 'add_checkbox_field'),
+            'clerk',
+            'clerk_section_datasync_products',
+            array(
+                'label_for' => 'additional_fields_trim',
+                'checked' => 0,
+                'description' => 'Check for Trim, uncheck for Strip',
+            )
+        );
+        add_settings_field(
+            'additional_fields_raw',
+            __('Additional Fields Raw', 'clerk'),
+            array($this, 'add_text_field'),
+            'clerk',
+            'clerk_section_datasync_products',
+            array(
+                'label_for' => 'additional_fields_raw',
+                'description' => 'Attributes to exempt from sanitation and type casting',
+            )
+        );
 
+//        CATEGORY SYNC
+//        add_settings_section(
+//            'clerk_section_datasync_categories',
+//            __('Data Sync: Categories', 'clerk'),
+//            null,
+//            'clerk'
+//        );
+
+        // PAGE SYNC
+        add_settings_section(
+            'clerk_section_datasync_pages',
+            __('Data Sync: Pages', 'clerk'),
+            null,
+            'clerk'
+        );
         add_settings_field(
             'include_pages',
             __('Include Pages', 'clerk'),
             array($this, 'add_checkbox_field'),
             'clerk',
-            'clerk_section_datasync',
+            'clerk_section_datasync_pages',
             array(
                 'label_for' => 'include_pages',
                 'checked' => 1,
             )
         );
-
         add_settings_field(
             'realtime_updates_pages',
             __('Use Real-time Updates', 'clerk'),
             array($this, 'add_checkbox_field'),
             'clerk',
-            'clerk_section_datasync',
+            'clerk_section_datasync_pages',
             array(
                 'label_for' => 'realtime_updates_pages',
                 'checked' => 0,
                 'description' => 'Pages'
             )
         );
-
         add_settings_field(
             'page_additional_fields',
             __('Page Additional Fields', 'clerk'),
             array($this, 'add_text_field'),
             'clerk',
-            'clerk_section_datasync',
+            'clerk_section_datasync_pages',
             array(
                 'label_for' => 'page_additional_fields',
                 'description' => 'A comma separated list of additional fields for pages to sync',
             )
         );
-
         add_settings_field(
             'page_additional_types',
             __('Page Additional Types', 'clerk'),
             array($this, 'add_text_field'),
             'clerk',
-            'clerk_section_datasync',
+            'clerk_section_datasync_pages',
             array(
                 'label_for' => 'page_additional_types',
                 'description' => 'A comma separated list of additional page types to sync',
             )
         );
 
-        add_settings_field(
-            'outofstock_products',
-            __('Include Out Of Stock Products', 'clerk'),
-            array($this, 'add_checkbox_field'),
-            'clerk',
-            'clerk_section_datasync',
-            array(
-                'label_for' => 'outofstock_products',
-                'checked' => 0,
-            )
+        // CUSTOMER SYNC
+        add_settings_section(
+            'clerk_section_datasync_customers',
+            __('Data Sync: Customers', 'clerk'),
+            null,
+            'clerk'
         );
-
         add_settings_field(
             'collect_emails',
             __('Collect Emails', 'clerk'),
             array($this, 'add_checkbox_field'),
             'clerk',
-            'clerk_section_datasync',
+            'clerk_section_datasync_customers',
             array(
                 'label_for' => 'collect_emails',
                 'checked' => 1,
@@ -342,7 +374,7 @@ class Clerk_Admin_Settings
             __('Collect Emails Signup Message', 'clerk'),
             array($this, 'add_text_field'),
             'clerk',
-            'clerk_section_datasync',
+            'clerk_section_datasync_customers',
             array(
                 'label_for' => 'collect_emails_signup_message',
                 'description' => 'Message for confirming email signup from Checkout Page',
@@ -353,71 +385,54 @@ class Clerk_Admin_Settings
             __('Collect Baskets', 'clerk'),
             array($this, 'add_checkbox_field'),
             'clerk',
-            'clerk_section_datasync',
+            'clerk_section_datasync_customers',
             array(
                 'label_for' => 'collect_baskets',
                 'checked' => 1,
             )
         );
-
         add_settings_field(
-            'additional_fields',
-            __('Additional Fields', 'clerk'),
-            array($this, 'add_text_field'),
-            'clerk',
-            'clerk_section_datasync',
-            array(
-                'label_for' => 'additional_fields',
-                'description' => 'A comma separated list of additional fields to sync',
-            )
-        );
-
-        add_settings_field(
-            'additional_fields_trim',
-            __('Strip/Trim Split Attributes', 'clerk'),
+            'customer_sync_enabled',
+            __('Enabled', 'clerk'),
             array($this, 'add_checkbox_field'),
             'clerk',
-            'clerk_section_datasync',
+            'clerk_section_datasync_customers',
             array(
-                'label_for' => 'additional_fields_trim',
+                'label_for' => 'customer_sync_enabled',
                 'checked' => 0,
-                'description' => 'Check for Trim, uncheck for Strip',
             )
         );
-
         add_settings_field(
-            'additional_fields_raw',
-            __('Additional Fields Raw', 'clerk'),
+            'customer_sync_customer_fields',
+            __('Extra Customer Fields', 'clerk'),
             array($this, 'add_text_field'),
             'clerk',
-            'clerk_section_datasync',
+            'clerk_section_datasync_customers',
             array(
-                'label_for' => 'additional_fields_raw',
-                'description' => 'Attributes to exempt from sanitation and type casting',
+                'label_for' => 'customer_sync_customer_fields',
+                'description' => 'A comma separated list of additional fields for customer to sync',
             )
         );
 
+        // ORDER SYNC
+        add_settings_section(
+            'clerk_section_datasync_orders',
+            __('Data Sync: Orders', 'clerk'),
+            null,
+            'clerk'
+        );
         add_settings_field(
             'disable_order_synchronization',
             __('Disable Order Synchronization', 'clerk'),
             array($this, 'add_checkbox_field'),
             'clerk',
-            'clerk_section_datasync',
+            'clerk_section_datasync_orders',
             array(
                 'label_for' => 'disable_order_synchronization',
                 'checked' => 0,
             )
         );
-        add_settings_field(
-            'data_sync_image_size',
-            __('Image Size', 'clerk'),
-            array($this, 'add_image_size_dropdown'),
-            'clerk',
-            'clerk_section_datasync',
-            array(
-                'label_for' => 'data_sync_image_size',
-            )
-        );
+
 
         // Add livesearch section.
         add_settings_section(
