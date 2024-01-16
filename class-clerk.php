@@ -46,7 +46,7 @@ if ( ! class_exists( 'Clerk' ) ) {
 		private function includes() {
 			// Backend.
 			include_once __DIR__ . '/includes/class-clerk-admin-settings.php';
-			include_once __DIR__ . '/includes/class-clerk-product-sync.php';
+			include_once __DIR__ . '/includes/class-clerk-realtime-updates.php';
 			include_once __DIR__ . '/includes/class-clerk-rest-api.php';
 			include_once __DIR__ . '/includes/clerk-legacy-helpers.php';
 			include_once __DIR__ . '/includes/class-clerk-logger.php';

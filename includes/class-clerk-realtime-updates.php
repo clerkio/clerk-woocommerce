@@ -75,7 +75,7 @@ class Clerk_Product_Sync {
 
 		add_action( 'woocommerce_new_product', array( $this, 'save_product' ), 100, 3 );
 		// This hook will run before the price is updated if there is a module modifying the price via a hook.
-		// save_post with a high enough prio defer score.
+		// save_post with a high enough priority defer score.
 		add_action( 'save_post', array( $this, 'pre_save_post' ), 1000, 3 );
 		add_action( 'woocommerce_product_import_inserted_product_object', array( $this, 'pre_save_product' ), 10, 3 );
 		add_action( 'before_delete_post', array( $this, 'remove_product' ) );
@@ -113,11 +113,12 @@ class Clerk_Product_Sync {
 				$product = wc_get_product( $post_id );
 				if ( is_a( $product, 'WC_Product' ) ) {
 					$this->save_product( $post_id );
+                    return;
 				}
 
-                $post = get_post( $post_id );
-                if ( is_a( $post, 'WP_Post' ) && ($post->post_type === 'page' || $post->post_type === 'post')){
-                    $this->save_blog_post( $post );
+                $post_object = get_post( $post_id );
+                if ( is_a( $post_object, 'WP_Post' ) ) {
+                    $this->save_blog_post( $post_object );
                 }
 			}
 		} catch ( Exception $e ) {
@@ -129,6 +130,30 @@ class Clerk_Product_Sync {
 
     public function save_blog_post( $post ) {
         try {
+
+            $options = $this->clerk_get_contextual_options( $post->ID );
+
+            if ( ! is_array( $options ) || ! isset( $options ) ) {
+                return;
+            }
+
+            if ( ! array_key_exists( 'realtime_updates_pages', $options ) ) {
+                return;
+            }
+
+            $post_types = array( 'post', 'page' );
+            if ( isset( $options['page_additional_types'] ) ) {
+                $additional_types      = preg_replace( '/\s+/', '', $options['page_additional_types'] );
+                $additional_types_list = explode( ',', $additional_types );
+                $post_types            = array_values( array_unique( array_merge( $post_types, $additional_types_list ) ) );
+            }
+
+            if ( ! in_array($post->post_type, $post_types) ){
+                return;
+            }
+
+            $page_additional_fields = explode( ',', $options['page_additional_fields'] );
+
             $post_status = get_post_status( $post );
 
             if ( ! empty( $post->post_content ) && 'publish' === $post_status ) {
@@ -144,6 +169,13 @@ class Clerk_Product_Sync {
                     'text' => gettype($post->post_content) === 'string' ? wp_strip_all_tags($post->post_content) : '',
                     'image' => get_the_post_thumbnail_url($post->ID),
                 );
+
+                foreach ( $page_additional_fields as $page_additional_field ) {
+                    $page_additional_field = str_replace( ' ', '', $page_additional_field );
+                    if ( ! empty( $page_additional_field ) ) {
+                        $page_draft[ $page_additional_field ] = $post->{ $page_additional_field };
+                    }
+                }
 
                 $this->api->add_post($page_draft);
             }
@@ -165,22 +197,7 @@ class Clerk_Product_Sync {
 			return;
 		}
 
-		if ( clerk_wpml_all_scope_is_active() && clerk_wpml_get_product_lang( $product_id ) ) {
-            $lang_info = clerk_wpml_get_product_lang($product_id);
-            // Get Clerk Settings for Scope of Product.
-            $this->lang_iso = $lang_info['language_code'];
-            $options = get_option('clerk_options_' . $lang_info['language_code']);
-        } elseif (clerk_is_pll_enabled() && clerk_pll_languages_list()) {
-            $lang_info = apply_filters( 'wpml_post_language_details', null, $product_id );
-            if ( is_array( $lang_info ) && array_key_exists( 'language_code', $lang_info ) ) {
-                $this->lang_iso = $lang_info['language_code'];
-                $options = get_option('clerk_options_' . $lang_info['language_code']);
-            }
-		}
-
-        if (! isset($options)){
-			$options = get_option( 'clerk_options' );
-        }
+        $options = $this->clerk_get_contextual_options($product_id);
 
 		if ( ! is_array( $options ) || ! isset( $options ) ) {
 			return;
@@ -280,23 +297,7 @@ class Clerk_Product_Sync {
 				return;
 			}
 
-            if ( clerk_wpml_all_scope_is_active() && clerk_wpml_get_product_lang( $product_id ) ) {
-                $lang_info = clerk_wpml_get_product_lang($product_id);
-                // Get Clerk Settings for Scope of Product.
-                $this->lang_iso = $lang_info['language_code'];
-                $options = get_option('clerk_options_' . $lang_info['language_code']);
-            } elseif (clerk_is_pll_enabled() && clerk_pll_languages_list()) {
-                $lang_info = apply_filters( 'wpml_post_language_details', null, $product_id );
-                if ( is_array( $lang_info ) && array_key_exists( 'language_code', $lang_info ) ) {
-                    $this->lang_iso = $lang_info['language_code'];
-                    $options = get_option('clerk_options_' . $lang_info['language_code']);
-                }
-            }
-
-            if (! isset($options)){
-                $options = get_option( 'clerk_options' );
-            }
-
+            $options = $this->clerk_get_contextual_options($product_id);
 
 			if ( ! is_array( $options ) || ! isset( $options['realtime_updates'] ) ) {
 				return;
@@ -324,22 +325,7 @@ class Clerk_Product_Sync {
 
 		try {
 
-            if ( clerk_wpml_all_scope_is_active() && clerk_wpml_get_product_lang( $product->get_id() ) ) {
-                $lang_info = clerk_wpml_get_product_lang($product->get_id());
-                // Get Clerk Settings for Scope of Product.
-                $this->lang_iso = $lang_info['language_code'];
-                $options = get_option('clerk_options_' . $lang_info['language_code']);
-            } elseif (clerk_is_pll_enabled() && clerk_pll_languages_list()) {
-                $lang_info = apply_filters( 'wpml_post_language_details', null, $product->get_id() );
-                if ( is_array( $lang_info ) && array_key_exists( 'language_code', $lang_info ) ) {
-                    $this->lang_iso = $lang_info['language_code'];
-                    $options = get_option('clerk_options_' . $lang_info['language_code']);
-                }
-            }
-
-            if (! isset($options)){
-                $options = get_option( 'clerk_options' );
-            }
+            $options = $this->clerk_get_contextual_options($product->get_id());
 
 			if ( ! is_array( $options ) ) {
 				return;
@@ -936,6 +922,28 @@ class Clerk_Product_Sync {
 
 		}
 	}
+
+    private function clerk_get_contextual_options($entity_id){
+
+        if ( clerk_wpml_all_scope_is_active() && clerk_wpml_get_product_lang( $entity_id ) ) {
+            $lang_info = clerk_wpml_get_product_lang($entity_id);
+            $this->lang_iso = $lang_info['language_code'];
+            $options = get_option('clerk_options_' . $this->lang_iso);
+        } elseif (clerk_is_pll_enabled() && clerk_pll_languages_list()) {
+            $lang_info = apply_filters( 'wpml_post_language_details', null, $entity_id);
+            if ( is_array( $lang_info ) && array_key_exists( 'language_code', $lang_info ) ) {
+                $this->lang_iso = $lang_info['language_code'];
+                $options = get_option('clerk_options_' . $this->lang_iso);
+            }
+        }
+
+        if (! isset($options)){
+            $options = get_option( 'clerk_options' );
+        }
+
+        return $options;
+    }
+
 }
 
 $clerk_product_sync = new Clerk_Product_Sync();

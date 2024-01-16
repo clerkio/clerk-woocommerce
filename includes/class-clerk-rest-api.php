@@ -842,8 +842,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 			$limit  = $request->get_param( 'limit' ) ? $request->get_param( 'limit' ) : 100;
 			$offset = ( $request->get_param( 'page' ) !== null ) ? ( $request->get_param( 'page' ) * $limit ) : 0;
 
-			$post_types            = array( 'post', 'page' );
-			$additional_types_list = array();
+			$post_types = array( 'post', 'page' );
 
 			if ( isset( $options['page_additional_types'] ) ) {
 				$additional_types      = preg_replace( '/\s+/', '', $options['page_additional_types'] );

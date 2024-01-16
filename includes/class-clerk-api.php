@@ -157,7 +157,7 @@ class Clerk_Api {
             );
 
             $this->post( 'pages', $params );
-            $name = $params['products']['name'] ?? '';
+            $name = $params['pages']['name'] ?? '';
             $this->logger->log( 'Created pages ' . $name, array( 'params' => $params['pages'] ) );
 
         } catch ( Exception $e ) {

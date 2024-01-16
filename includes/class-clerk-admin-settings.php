@@ -254,7 +254,7 @@ class Clerk_Admin_Settings
 
         add_settings_field(
             'realtime_updates',
-            __('Use Real-time Updates', 'clerk'),
+            __('Use Real-time Updates: Products', 'clerk'),
             array($this, 'add_checkbox_field'),
             'clerk',
             'clerk_section_datasync',
@@ -273,6 +273,18 @@ class Clerk_Admin_Settings
             array(
                 'label_for' => 'include_pages',
                 'checked' => 1,
+            )
+        );
+
+        add_settings_field(
+            'realtime_updates_pages',
+            __('Use Real-time Updates: Pages', 'clerk'),
+            array($this, 'add_checkbox_field'),
+            'clerk',
+            'clerk_section_datasync',
+            array(
+                'label_for' => 'realtime_updates_pages',
+                'checked' => 0,
             )
         );
 
