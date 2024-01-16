@@ -216,4 +216,5 @@
 	cursor: pointer;
 	float: right;
 	padding: 0.25rem;
+	transition: all 0.2s ease-in-out;
 }

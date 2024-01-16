@@ -187,6 +187,8 @@
             const el = document.createElement('div');
             el.id = 'sync-pages-action';
             el.onclick = async function () {
+                el.style.backgroundColor = '#ff5c28'
+                el.style.color = '#1d2327'
                 await pushAllPages(publicKey, privateKey, site);
             }
             el.textContent = 'Sync Pages';
@@ -200,7 +202,13 @@
             url.searchParams.append('public_key', publicKey);
             url.searchParams.append('private_key', privateKey);
             const rsp = await fetch(url);
-            console.log(await rsp.json())
+            const rsp_json = await rsp.json()
+            if('page_count' in rsp_json){
+                const btn = document.querySelector('#sync-pages-action')
+                if(btn){
+                    btn.removeAttribute('style');
+                }
+            }
         }
 
         function getAlternateSettingsJSON() {
