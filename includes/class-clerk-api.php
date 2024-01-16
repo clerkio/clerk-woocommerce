@@ -167,6 +167,34 @@ class Clerk_Api {
         }
     }
 
+    /**
+     * Delete page from Clerk
+     *
+     * @param array $posts_params Page Info.
+     */
+    public function delete_posts( $posts_params ) {
+
+        try {
+
+            $options = clerk_get_options();
+
+            $params = array(
+                'key'         => $options['public_key'],
+                'private_key' => $options['private_key'],
+                'pages'    => $posts_params,
+            );
+
+            $this->delete( 'pages', $params );
+            $name = $params['pages']['name'] ?? '';
+            $this->logger->log( 'Deleted pages ' . $name, array( 'params' => $params['pages'] ) );
+
+        } catch ( Exception $e ) {
+
+            $this->logger->error( 'ERROR delete_pages', array( 'error' => $e->getMessage() ) );
+
+        }
+    }
+
 	/**
 	 * Get contents from Clerk
 	 *
@@ -243,6 +271,30 @@ class Clerk_Api {
 
 		}
 	}
+
+    /**
+     * Custom function to send a DELETE request.
+     *
+     * @param string $endpoint The API endpoint URL.
+     * @param array  $params   Optional parameters for the request.
+     *
+     * @return array|WP_Error The response from the server or WP_Error on failure.
+     */
+    function delete($endpoint, $params = array()) {
+        try {
+            $request_args = array(
+                'method'  => 'DELETE',  // Specify the request method as DELETE
+                'timeout' => 60,        // Set the timeout in seconds
+            );
+            $url = $this->baseurl . $endpoint . '?' . http_build_query( $params );
+
+            return wp_remote_request($url, $request_args);
+
+        } catch ( Exception $e ) {
+            $this->logger->error( 'DELETE request failed', array( 'error' => $e->getMessage() ) );
+        }
+    }
+
 
 	/**
 	 * Perform a POST request
