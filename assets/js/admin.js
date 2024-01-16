@@ -30,7 +30,7 @@ if (admin_form) {
         }
     );
     const lang_data_container = admin_form.querySelector('#multi-lang-data')
-    if (lang_data_container && 1 !== lang_data_container.dataset?.isPll) {
+    if (lang_data_container && '1' !== lang_data_container.dataset?.isPll) {
         const lang_data = JSON.parse(lang_data_container.textContent);
         if (lang_data) {
             admin_form.querySelector('#import_url').value = lang_data['url']
