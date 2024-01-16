@@ -1380,15 +1380,7 @@ class Clerk_Admin_Settings
             $attributes_for_compare = array();
             $new_dynamic_attributes = array();
 
-            if (!empty($options['faceted_navigation'])) {
-
-                $saved_attributes = json_decode($options['faceted_navigation']);
-
-            } else {
-
-                $saved_attributes = array();
-
-            }
+            $saved_attributes = !empty($options['faceted_navigation']) ? json_decode($options['faceted_navigation']) : array();
 
             if (count($saved_attributes) > 0) {
 

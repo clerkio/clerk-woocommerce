@@ -26,6 +26,7 @@ if (admin_form) {
     admin_form.addEventListener(
         'submit',
         (e) => {
+            e.preventDefault();
             collect_attributes();
         }
     );
