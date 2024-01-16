@@ -77,6 +77,10 @@ class Clerk_Product_Sync {
 		// This hook will run before the price is updated if there is a module modifying the price via a hook.
 		// save_post with a high enough priority defer score.
 		add_action( 'save_post', array( $this, 'pre_save_post' ), 1000, 3 );
+
+        add_action( 'before_delete_post', array( $this, 'pre_delete_post' ), 100, 3 );
+        add_action( 'wp_trash_post', array( $this, 'pre_delete_post' ), 100, 3 );
+
 		add_action( 'woocommerce_product_import_inserted_product_object', array( $this, 'pre_save_product' ), 10, 3 );
 		add_action( 'before_delete_post', array( $this, 'remove_product' ) );
 	}
@@ -127,6 +131,22 @@ class Clerk_Product_Sync {
 		}
 	}
 
+    /**
+     * Update Product from Import
+     *
+     * @param int|void     $post_id Product Id.
+     * @param WP_Post|void $post Post Object.
+     * @param bool|void    $update Whether an existing post is being updated.
+     */
+    public function pre_delete_post( $post_id = null, $post = null, $update = null ) {
+        try {
+            if ( $post_id ) {
+                $this->api->delete_posts([$post_id]);
+            }
+        } catch ( Exception $e ) {
+            $this->logger->error( 'ERROR pre_delete_post', array( 'error' => $e->getMessage() ) );
+        }
+    }
 
     public function save_blog_post( $post ) {
         try {
