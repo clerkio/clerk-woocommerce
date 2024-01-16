@@ -138,7 +138,7 @@ class Clerk_Admin_Settings
             )
         );
 
-        if ($wpml_enabled || ($pll_enabled && false !== clerk_pll_current_language() ) ) {
+        if ($wpml_enabled || $pll_enabled) {
             add_settings_field(
                 'multi_lang_info',
                 __('Multi Language Scope', 'clerk'),
@@ -2225,7 +2225,7 @@ class Clerk_Admin_Settings
             }
             $lang_info_json = wp_json_encode($lang_settings);
         }
-        $site_url_test = get_site_url() . '?lang=' . clerk_pll_current_language();
+
         ?>
         <div class="wrap">
             <div id="clerkFloatingSaveBtn"
@@ -2236,7 +2236,6 @@ class Clerk_Admin_Settings
                 <span><?php echo esc_html(get_admin_page_title()); ?></span>
             </h1>
 
-            <?php print_r( $site_url_test ); ?>
             <form id="clerkAdminForm" action="options.php" method="post">
                 <div id="multi-lang-data"><?php echo esc_html($language_info); ?></div>
                 <div id="hidden-lang-data" class="clerk_hidden" data-is-pll="<?php echo $is_pll; ?>"><?php echo esc_html($lang_info_json); ?></div>
