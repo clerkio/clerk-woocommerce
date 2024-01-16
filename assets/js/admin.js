@@ -190,6 +190,7 @@
             }
             el.textContent = 'Sync Pages';
             el.className = 'force-sync';
+            document.querySelector('#realtime_updates_pages').parentNode.append(el)
         }
 
         async function pushAllPages(publicKey, privateKey, site) {
