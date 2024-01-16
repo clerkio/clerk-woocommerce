@@ -136,7 +136,7 @@ class Clerk_Admin_Settings
             )
         );
 
-        if ($wpml_enabled || $pll_enabled) {
+        if ($wpml_enabled || ($pll_enabled && false !== clerk_pll_current_language() ) ) {
             add_settings_field(
                 'multi_lang_info',
                 __('Multi Language Scope', 'clerk'),
@@ -1670,7 +1670,7 @@ class Clerk_Admin_Settings
         if (clerk_is_wpml_enabled() && !clerk_wpml_all_scope_is_active()) {
             $scope_info = clerk_wpml_get_active_scope();
             $locale = $scope_info['default_locale'];
-        } elseif (clerk_is_pll_enabled()) {
+        } elseif (clerk_is_pll_enabled() && false !== clerk_pll_current_language()) {
             $locale = clerk_pll_current_language('locale');
         } else {
             $locale = get_locale();
