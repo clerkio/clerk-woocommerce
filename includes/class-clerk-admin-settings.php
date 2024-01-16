@@ -1494,6 +1494,7 @@ class Clerk_Admin_Settings
         <input
                 name="<?php echo esc_attr($clerk_options_key); ?>[<?php echo esc_attr($args['label_for']); ?>]"
                 id="faceted_navigation"
+                class="clerk_hidden faceted_navigation_holder"
                 type="hidden"/>
         </div>
         </div>

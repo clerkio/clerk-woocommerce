@@ -137,7 +137,7 @@ if (admin_form) {
         const facet_position = document.querySelectorAll('input.facets_position');
         const facet_in_use = document.querySelectorAll('input.faceted_enabled');
         const facet_count = facet_slugs.length;
-        for (i = 0; i < facet_count; i++) {
+        for (let i = 0; i < facet_count; i++) {
             attribute_reference.push(
                 {
                     attribute: facet_slugs[i].value,
@@ -204,6 +204,11 @@ function getAlternateSettingsValuesHTML(element, data) {
         }
         if (newElement.tagName === 'INPUT' && newElement.type === 'text' || newElement.tagName === 'TEXTAREA') {
             newElement.value = newValue || '';
+        }
+        if (newElement.tagName === 'INPUT' && newElement.type === 'hidden' && newElement.classList.includes('faceted_navigation_holder')) {
+            if(newValue){
+                newElement.value = newValue;
+            }
         }
         if (newElement.tagName === 'SELECT') {
             if(newValue){
