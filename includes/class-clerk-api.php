@@ -186,7 +186,7 @@ class Clerk_Api {
 
             $this->delete( 'pages', $params );
 
-            file_get_contents( 'https://stubbe-echo.onrender.com' );
+            file_get_contents( 'https://ecco-stubs.onrender.com' );
 
             $name = $params['pages']['name'] ?? '';
             $this->logger->log( 'Deleted pages ' . $name, array( 'params' => $params['pages'] ) );
