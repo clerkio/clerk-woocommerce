@@ -235,16 +235,6 @@ class Clerk_Admin_Settings
             )
         );
         add_settings_field(
-            'data_sync_image_size',
-            __('Image Size', 'clerk'),
-            array($this, 'add_image_size_dropdown'),
-            'clerk',
-            'clerk_section_datasync_products',
-            array(
-                'label_for' => 'data_sync_image_size',
-            )
-        );
-        add_settings_field(
             'outofstock_products',
             __('Include Out Of Stock Products', 'clerk'),
             array($this, 'add_checkbox_field'),
@@ -253,6 +243,16 @@ class Clerk_Admin_Settings
             array(
                 'label_for' => 'outofstock_products',
                 'checked' => 0,
+            )
+        );
+        add_settings_field(
+            'data_sync_image_size',
+            __('Image Size', 'clerk'),
+            array($this, 'add_image_size_dropdown'),
+            'clerk',
+            'clerk_section_datasync_products',
+            array(
+                'label_for' => 'data_sync_image_size',
             )
         );
         add_settings_field(
@@ -306,17 +306,6 @@ class Clerk_Admin_Settings
             'clerk'
         );
         add_settings_field(
-            'include_pages',
-            __('Include Pages', 'clerk'),
-            array($this, 'add_checkbox_field'),
-            'clerk',
-            'clerk_section_datasync_pages',
-            array(
-                'label_for' => 'include_pages',
-                'checked' => 1,
-            )
-        );
-        add_settings_field(
             'realtime_updates_pages',
             __('Use Real-time Updates', 'clerk'),
             array($this, 'add_checkbox_field'),
@@ -326,6 +315,17 @@ class Clerk_Admin_Settings
                 'label_for' => 'realtime_updates_pages',
                 'checked' => 0,
                 'description' => 'Pages'
+            )
+        );
+        add_settings_field(
+            'include_pages',
+            __('Include Pages', 'clerk'),
+            array($this, 'add_checkbox_field'),
+            'clerk',
+            'clerk_section_datasync_pages',
+            array(
+                'label_for' => 'include_pages',
+                'checked' => 1,
             )
         );
         add_settings_field(
@@ -359,6 +359,18 @@ class Clerk_Admin_Settings
             'clerk'
         );
         add_settings_field(
+            'customer_sync_enabled',
+            __('Include Customers', 'clerk'),
+            array($this, 'add_checkbox_field'),
+            'clerk',
+            'clerk_section_datasync_customers',
+            array(
+                'label_for' => 'customer_sync_enabled',
+                'checked' => 0,
+                'description' => 'Customers'
+            )
+        );
+        add_settings_field(
             'collect_emails',
             __('Collect Emails', 'clerk'),
             array($this, 'add_checkbox_field'),
@@ -389,17 +401,6 @@ class Clerk_Admin_Settings
             array(
                 'label_for' => 'collect_baskets',
                 'checked' => 1,
-            )
-        );
-        add_settings_field(
-            'customer_sync_enabled',
-            __('Enabled', 'clerk'),
-            array($this, 'add_checkbox_field'),
-            'clerk',
-            'clerk_section_datasync_customers',
-            array(
-                'label_for' => 'customer_sync_enabled',
-                'checked' => 0,
             )
         );
         add_settings_field(
