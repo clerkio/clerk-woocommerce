@@ -906,7 +906,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 						}
 					}
 
-					$page_count                += 1;
+					++$page_count;
 					$post_query_args['offset'] += 25;
 					$posts_array[]              = $page_draft;
 				}
@@ -1456,6 +1456,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 	 * Validate request
 	 *
 	 * @param WP_REST_Request|void|null $request Request.
+	 * @param bool                      $force_legacy_auth Legacy auth flag.
 	 *
 	 * @return bool
 	 */
@@ -1569,7 +1570,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 	 * Get Token from Request Header
 	 *
 	 * @param WP_REST_Request|void|null $request Request.
-	 * @return strings
+	 * @return string
 	 * @throws Exception Request Exception.
 	 */
 	private function get_header_token( $request ) {
@@ -1578,7 +1579,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 			$token       = '';
 			$auth_header = $request->get_header( 'X-Clerk-Authorization' );
 
-			if ( null !== $auth_header && is_string( $auth_header ) ) {
+			if ( is_string( $auth_header ) ) {
 				$prefix = explode( ' ', $auth_header )[0];
 				if ( 'Bearer' !== $prefix ) {
 					throw new Exception( 'Invalid token prefix' );

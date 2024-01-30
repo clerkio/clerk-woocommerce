@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * Clerk Module Core Class
  */
-class Clerk_Product_Sync {
+class Clerk_Realtime_Updates {
 
 
 	/**
@@ -42,6 +42,8 @@ class Clerk_Product_Sync {
 
 
 	/**
+	 * Language iso code string.
+	 *
 	 * @var string
 	 */
 	protected $lang_iso;
@@ -148,6 +150,12 @@ class Clerk_Product_Sync {
 		}
 	}
 
+	/**
+	 * Update Post from import.
+	 *
+	 * @param WP_Post $post Post object.
+	 * @return void
+	 */
 	public function save_blog_post( $post ) {
 		try {
 
@@ -168,7 +176,7 @@ class Clerk_Product_Sync {
 				$post_types            = array_values( array_unique( array_merge( $post_types, $additional_types_list ) ) );
 			}
 
-			if ( ! in_array( $post->post_type, $post_types ) ) {
+			if ( ! in_array( $post->post_type, $post_types, true ) ) {
 				return;
 			}
 
@@ -710,6 +718,8 @@ class Clerk_Product_Sync {
 	 * @param WC_Product $product Product Object.
 	 * @param array      $fields Fields Array.
 	 * @param array      $product_data Product Data Array.
+	 * @param array      $options Module options.
+	 * @return array
 	 */
 	private function query_custom_fields( $product, $fields, $product_data, $options ) {
 		$product_type = $product->get_type();
@@ -770,6 +780,8 @@ class Clerk_Product_Sync {
 	 *
 	 * @param mixed  $attribute_value Product Attribute Value.
 	 * @param string $field Field Slug.
+	 * @param array  $options Module options.
+	 * @return array|mixed
 	 */
 	private function format_attribute( $attribute_value, $field, $options ) {
 		if ( is_object( $attribute_value ) ) {
@@ -864,6 +876,7 @@ class Clerk_Product_Sync {
 	/**
 	 * Get additional fields for product export
 	 *
+	 * @param array $options Module options.
 	 * @return array | void
 	 */
 	private function get_additional_fields( $options ) {
@@ -885,6 +898,7 @@ class Clerk_Product_Sync {
 	/**
 	 * Get additional fields for product export
 	 *
+	 * @param array $options Module options.
 	 * @return array | void
 	 */
 	private function get_additional_fields_raw( $options ) {
@@ -944,6 +958,12 @@ class Clerk_Product_Sync {
 		}
 	}
 
+	/**
+	 * Get correct options for context.
+	 *
+	 * @param int|string $entity_id Entity id.
+	 * @return false|mixed|null
+	 */
 	private function clerk_get_contextual_options( $entity_id ) {
 
 		if ( clerk_wpml_all_scope_is_active() && clerk_wpml_get_product_lang( $entity_id ) ) {
@@ -967,4 +987,4 @@ class Clerk_Product_Sync {
 
 }
 
-$clerk_product_sync = new Clerk_Product_Sync();
+$clerk_product_sync = new Clerk_Realtime_Updates();

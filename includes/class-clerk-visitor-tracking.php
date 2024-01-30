@@ -199,9 +199,9 @@ class Clerk_Visitor_Tracking {
 			<!-- Start of Clerk.io E-commerce Personalisation tool - www.clerk.io -->
 			<script>
 				(function(w,d){
-					var e=d.createElement('script');e.type='text/javascript';e.async=true;
-		  e.src=(d.location.protocol=='https:'?'https':'http')+'<?php echo esc_attr( $clerk_js_custom_domain ); ?>';
-					var s=d.getElementsByTagName('script')[0];s.parentNode.insertBefore(e,s);
+					const e = d.createElement('script');e.type='text/javascript';e.async=true;
+					e.src=(d.location.protocol==='https:'?'https':'http')+'<?php echo esc_attr( $clerk_js_custom_domain ); ?>';
+					const s = d.getElementsByTagName('script')[0];s.parentNode.insertBefore(e,s);
 					w.__clerk_q=w.__clerk_q||[];w.Clerk=w.Clerk||function(){w.__clerk_q.push(arguments)};
 				})(window,document);
 
@@ -231,11 +231,7 @@ class Clerk_Visitor_Tracking {
 			<?php
 
 			if ( isset( $options['clerk_additional_scripts_enabled'] ) ) {
-				if ( isset( $options['clerk_additional_scripts_content'] ) ) {
-					$script_js = $options['clerk_additional_scripts_content'];
-				} else {
-					$script_js = '';
-				}
+				$script_js = $options['clerk_additional_scripts_content'] ?? '';
 				?>
 				<script id='clerk_additional_header_scripts'>
 				<?php echo html_entity_decode( esc_attr( $script_js ), ENT_QUOTES ); ?>

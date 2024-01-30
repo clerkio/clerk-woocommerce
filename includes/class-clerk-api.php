@@ -181,7 +181,7 @@ class Clerk_Api {
 			$params = array(
 				'key'         => $options['public_key'],
 				'private_key' => $options['private_key'],
-				'pages'       => json_encode( $posts_params ),
+				'pages'       => wp_json_encode( $posts_params ),
 			);
 
 			$this->delete( 'pages', $params );
@@ -281,11 +281,11 @@ class Clerk_Api {
 	 *
 	 * @return array|WP_Error The response from the server or WP_Error on failure.
 	 */
-	function delete( $endpoint, $params = array() ) {
+	private function delete( $endpoint, $params = array() ) {
 		try {
 			$request_args = array(
-				'method'  => 'DELETE',  // Specify the request method as DELETE
-				'timeout' => 45,        // Set the timeout in seconds
+				'method'  => 'DELETE',  // Specify the request method as DELETE.
+				'timeout' => 45,        // Set the timeout in seconds.
 			);
 
 			$url = $this->baseurl . $endpoint . '?' . http_build_query( $params );

@@ -16,6 +16,8 @@
 
 /**
  * Check whether WPML is installed and loaded
+ *
+ * @return false|mixed|null
  */
 function clerk_is_wpml_enabled() {
 	if ( has_action( 'wpml_setting', false ) && has_action( 'wpml_loaded', false ) ) {
@@ -27,6 +29,8 @@ function clerk_is_wpml_enabled() {
 }
 
 /**
+ * Check if PolyLang is enabled.
+ *
  * @return bool
  */
 function clerk_is_pll_enabled() {
@@ -37,7 +41,9 @@ function clerk_is_pll_enabled() {
 }
 
 /**
- * @param $return_type
+ * Get PolyLang current language.
+ *
+ * @param string|null $return_type The format for the return.
  * @return false
  */
 function clerk_pll_current_language( $return_type = null ) {
@@ -50,6 +56,11 @@ function clerk_pll_current_language( $return_type = null ) {
 	return false;
 }
 
+/**
+ * Get all languages PolyLang.
+ *
+ * @return false
+ */
 function clerk_pll_languages_list() {
 	if ( clerk_is_pll_enabled() ) {
 		return pll_languages_list();
@@ -57,6 +68,13 @@ function clerk_pll_languages_list() {
 	return false;
 }
 
+/**
+ * Update clerk options with conditional lang suffix.
+ *
+ * @param array       $options Module options.
+ * @param string|null $lang Language Code.
+ * @return void
+ */
 function clerk_update_options( $options, $lang = null ) {
 	if ( $lang ) {
 		update_option( 'clerk_options_' . $lang, $options );
@@ -65,6 +83,12 @@ function clerk_update_options( $options, $lang = null ) {
 	}
 }
 
+/**
+ * Get clerk options for a given language.
+ *
+ * @param string|null $lang_iso Language ISO.
+ * @return array|false|mixed|null
+ */
 function clerk_get_options( $lang_iso = null ) {
 	$options = get_option( clerk_get_option_key( $lang_iso ) );
 	if ( ! is_array( $options ) ) {
@@ -74,8 +98,14 @@ function clerk_get_options( $lang_iso = null ) {
 }
 
 
+/**
+ * Get clerk module settings key.
+ *
+ * @param string|void $lang_iso Language ISO.
+ * @return string
+ */
 function clerk_get_option_key( $lang_iso = null ) {
-	 $current_lang = clerk_pll_current_language();
+	$current_lang = clerk_pll_current_language();
 	if ( $current_lang && ! $lang_iso ) {
 		return 'clerk_options_' . $current_lang;
 	} elseif ( $lang_iso ) {
@@ -105,6 +135,8 @@ function clerk_wpml_all_scope_is_active() {
 
 /**
  * Get WPML Active Languages
+ *
+ * @return array|mixed|null
  */
 function clerk_wpml_get_languages() {
 	if ( ! has_action( 'wpml_active_languages', false ) ) {
@@ -117,6 +149,8 @@ function clerk_wpml_get_languages() {
 
 /**
  * Get WPML Active Language
+ *
+ * @return int[]|mixed
  */
 function clerk_wpml_get_active_scope() {
 	$locale   = get_locale();
@@ -153,7 +187,7 @@ function clerk_wpml_get_active_scope() {
  * Get Equivalent product_id from other language
  *
  * @param int    $product_id Product id.
- * @param string $lang_code Language 2 letter code.
+ * @param string $lang_code Language 2-letter code.
  *
  * @return int | void
  */

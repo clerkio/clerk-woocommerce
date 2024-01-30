@@ -206,7 +206,7 @@ class Clerk_Admin_Settings {
 			)
 		);
 
-		// PRODUCT SYNC
+		// PRODUCT SYNC.
 		add_settings_section(
 			'clerk_section_datasync_products',
 			__( 'Data Sync: Products', 'clerk' ),
@@ -281,15 +281,7 @@ class Clerk_Admin_Settings {
 			)
 		);
 
-		// CATEGORY SYNC
-		// add_settings_section(
-		// 'clerk_section_datasync_categories',
-		// __('Data Sync: Categories', 'clerk'),
-		// null,
-		// 'clerk'
-		// );
-
-		// PAGE SYNC
+		// PAGE SYNC.
 		add_settings_section(
 			'clerk_section_datasync_pages',
 			__( 'Data Sync: Pages', 'clerk' ),
@@ -342,7 +334,7 @@ class Clerk_Admin_Settings {
 			)
 		);
 
-		// CUSTOMER SYNC
+		// CUSTOMER SYNC.
 		add_settings_section(
 			'clerk_section_datasync_customers',
 			__( 'Data Sync: Customers', 'clerk' ),
@@ -406,7 +398,7 @@ class Clerk_Admin_Settings {
 			)
 		);
 
-		// ORDER SYNC
+		// ORDER SYNC.
 		add_settings_section(
 			'clerk_section_datasync_orders',
 			__( 'Data Sync: Orders', 'clerk' ),
@@ -755,7 +747,7 @@ class Clerk_Admin_Settings {
 			'clerk_section_powerstep',
 			__( 'Powerstep Settings', 'clerk' ),
 			null,
-			'clerk',
+			'clerk'
 		);
 
 		add_settings_field(
@@ -2211,7 +2203,7 @@ class Clerk_Admin_Settings {
 				$lang_options                 = clerk_get_options( $lang );
 				$lang_settings[ $lang ]       = $lang_options;
 				$lang_settings['languages'][] = $lang;
-				if ( ! isset( $lang_settings[ $lang ]['import_url'] ) || $lang_settings[ $lang ]['import_url'] === '' ) {
+				if ( ! isset( $lang_settings[ $lang ]['import_url'] ) || '' === $lang_settings[ $lang ]['import_url'] ) {
 					$lang_settings[ $lang ]['import_url'] = get_site_url() . '?lang=' . $lang;
 				}
 			}
@@ -2220,16 +2212,14 @@ class Clerk_Admin_Settings {
 
 		?>
 		<div class="wrap">
-			<div id="clerkFloatingSaveBtn"
-				 onclick="clerk_submit_admin_form();"><?php echo esc_html( __( 'Save Settings', 'clerk' ) ); ?></div>
+			<div id="clerkFloatingSaveBtn" onclick="clerk_submit_admin_form();"><?php echo esc_html( __( 'Save Settings', 'clerk' ) ); ?></div>
 			<h1>
-				<img id="clerkLogoHeader"
-					 src="<?php echo esc_html( plugin_dir_url( CLERK_PLUGIN_FILE ) . 'assets/img/clerk.png' ); ?>" alt="Clerk Logo">
+				<img id="clerkLogoHeader" src="<?php echo esc_html( plugin_dir_url( CLERK_PLUGIN_FILE ) . 'assets/img/clerk.png' ); ?>" alt="Clerk Logo">
 				<span><?php echo esc_html( get_admin_page_title() ); ?></span>
 			</h1>
 
 			<form id="clerkAdminForm" action="options.php" method="post">
-				<div id="multi-lang-data" class="clerk_hidden" data-is-pll="<?php echo $is_pll; ?>"><?php echo esc_html( $language_info ); ?></div>
+				<div id="multi-lang-data" class="clerk_hidden" data-is-pll="<?php echo esc_attr( $is_pll ); ?>"><?php echo esc_html( $language_info ); ?></div>
 				<div id="hidden-lang-data" class="clerk_hidden" ><?php echo esc_html( $lang_info_json ); ?></div>
 				<?php
 				// output security fields for the registered setting "wporg".
