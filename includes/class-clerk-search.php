@@ -101,11 +101,8 @@ class Clerk_Search {
 			$count       = 0;
 
 			foreach ( $_attributes as $key => $_attribute ) {
-
 				if ( $_attribute->checked ) {
-
-					array_push( $attributes, $_attribute );
-
+					$attributes[] = $_attribute;
 				}
 			}
 

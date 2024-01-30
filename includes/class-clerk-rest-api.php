@@ -1101,6 +1101,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 			);
 
 			$settings = array();
+			$options  = clerk_get_options();
 
 			foreach ( $options as $key => $value ) {
 

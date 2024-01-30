@@ -27,12 +27,13 @@ $cart_url     = wc_get_cart_url();
 $checkout_url = wc_get_checkout_url();
 $options      = clerk_get_options();
 
-$product_name     = $product->get_name();
-$title_message    = esc_html__( ' added to cart!', 'clerk' );
-$title_html       = "<span class='clerk_powerstep_product_name'>$product_name</span>$title_message";
-$back_button_text = esc_html__( 'Back', 'clerk' );
-$cart_button_text = esc_html__( 'Go to cart', 'clerk' );
-if ( isset( $options['powerstep_custom_text_enabled'] ) ) {
+
+if ( isset( $options['powerstep_custom_text_enabled'] ) && isset( $product ) ) {
+	$product_name     = $product->get_name();
+	$title_message    = esc_html__( ' added to cart!', 'clerk' );
+	$title_html       = "<span class='clerk_powerstep_product_name'>$product_name</span>$title_message";
+	$back_button_text = esc_html__( 'Back', 'clerk' );
+	$cart_button_text = esc_html__( 'Go to cart', 'clerk' );
 	if ( isset( $options['powerstep_custom_text_title'] ) ) {
 		if ( str_contains( $options['powerstep_custom_text_title'], 'PRODUCT_NAME' ) ) {
 			$translated_array = explode( 'PRODUCT_NAME', $options['powerstep_custom_text_title'] );
@@ -68,10 +69,11 @@ if ( isset( $options['powerstep_custom_text_enabled'] ) ) {
 </div>
 <div class="powerstep-templates">
 	<?php
-	$index         = 0;
-	$class_string  = 'clerk_powerstep_';
-	$filter_string = '';
-	$unique_filter = ( isset( $options['powerstep_excl_duplicates'] ) && $options['powerstep_excl_duplicates'] ) ? true : false;
+	$index              = 0;
+	$class_string       = 'clerk_powerstep_';
+	$filter_string      = '';
+	$unique_filter      = ( isset( $options['powerstep_excl_duplicates'] ) && $options['powerstep_excl_duplicates'] ) ? true : false;
+	$product_categories = $product->get_category_ids();
 	foreach ( get_powerstep_templates() as $template ) :
 		?>
 		<span class="clerk
@@ -88,7 +90,7 @@ if ( isset( $options['powerstep_custom_text_enabled'] ) ) {
 		?>
 			data-template="@<?php echo esc_attr( $template ); ?>"
 			data-products="[<?php echo esc_attr( $product->get_id() ); ?>]"
-			data-category="<?php echo esc_attr( reset( $product->get_category_ids() ) ); ?>"
+			data-category="<?php echo esc_attr( reset( $product_categories ) ); ?>"
 		></span>
 		<?php
 		if ( $index > 0 ) {
