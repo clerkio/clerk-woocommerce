@@ -6,7 +6,7 @@ License URI: https://opensource.org/licenses/MIT
 Tested up to: 6.1.1
 WC requires at least: 4.4.0
 WC tested up to: 7.1.0
-Stable Tag: 4.1.6
+Stable Tag: 4.1.7
 
 == Description ==
 Clerk.io is a software that helps your customers buy more from your webshop, through 4 amazing feature:
@@ -30,6 +30,13 @@ Once signed up, simply login to your my.clerk.io backend, which will guide you t
 
 
 == Changelog ==
+= 4.1.7 - 2024-01-30
+* Added RTU for pages.
+* Added instant sync option for RTU pages.
+* Restructured settings fields in admin.
+* Added scope prefixed settings for polylang users.
+* Added ability to force sync to give data in language context via lang param.
+
 = 4.1.6 - 2024-01-04
 * Added toggle for using legacy Authentication
 * Made clerk.js path dynamic for each store
