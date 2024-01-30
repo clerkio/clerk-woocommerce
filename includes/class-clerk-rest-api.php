@@ -53,6 +53,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 		$this->init_hooks();
 		include_once __DIR__ . '/class-clerk-logger.php';
 		include_once __DIR__ . '/clerk-multi-lang-helpers.php';
+		include_once __DIR__ . '/class-clerk-api.php';
 		if ( clerk_is_wpml_enabled() ) {
 			do_action( 'wpml_multilingual_options', 'clerk_options' );
 		}

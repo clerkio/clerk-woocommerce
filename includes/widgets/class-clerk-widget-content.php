@@ -32,6 +32,8 @@ class Clerk_Widget_Content extends WP_Widget {
 	 * Clerk_Widget_Content constructor.
 	 */
 	public function __construct() {
+
+		include_once __DIR__ . '/includes/class-clerk-api.php';
 		$widget_ops = array(
 			'classname'                   => 'clerk widget_content',
 			'description'                 => __( 'Clerk content widget', 'clerk' ),
