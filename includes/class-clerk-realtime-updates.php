@@ -525,6 +525,9 @@ class Clerk_Realtime_Updates {
 						$child_ids           = $product->get_children();
 						foreach ( $child_ids as $key => $value ) {
 							$child                 = wc_get_product( $value );
+							if ( empty( $child ) ) {
+								continue;
+							}
 							$tmp_children_prices[] = $child->get_regular_price();
 						}
 						if ( ! empty( $tmp_children_prices ) ) {
