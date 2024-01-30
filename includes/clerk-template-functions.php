@@ -142,6 +142,6 @@ if ( ! function_exists( 'get_powerstep_templates' ) ) {
 
 		}
 
-        return array_map( 'trim', $templates );
+		return array_map( 'trim', $templates );
 	}
 }

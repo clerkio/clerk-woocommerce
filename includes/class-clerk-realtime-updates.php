@@ -41,10 +41,10 @@ class Clerk_Product_Sync {
 	protected $logger;
 
 
-    /**
-     * @var string
-     */
-    protected $lang_iso;
+	/**
+	 * @var string
+	 */
+	protected $lang_iso;
 
 	/**
 	 * Clerk_Product_Sync constructor.
@@ -78,8 +78,8 @@ class Clerk_Product_Sync {
 		// save_post with a high enough priority defer score.
 		add_action( 'save_post', array( $this, 'pre_save_post' ), 1000, 3 );
 
-        add_action( 'before_delete_post', array( $this, 'pre_delete_post' ), 100, 3 );
-        add_action( 'wp_trash_post', array( $this, 'pre_delete_post' ), 100, 3 );
+		add_action( 'before_delete_post', array( $this, 'pre_delete_post' ), 100, 3 );
+		add_action( 'wp_trash_post', array( $this, 'pre_delete_post' ), 100, 3 );
 
 		add_action( 'woocommerce_product_import_inserted_product_object', array( $this, 'pre_save_product' ), 10, 3 );
 		add_action( 'before_delete_post', array( $this, 'remove_product' ) );
@@ -117,13 +117,13 @@ class Clerk_Product_Sync {
 				$product = wc_get_product( $post_id );
 				if ( is_a( $product, 'WC_Product' ) ) {
 					$this->save_product( $post_id );
-                    return;
+					return;
 				}
 
-                $post_object = get_post( $post_id );
-                if ( is_a( $post_object, 'WP_Post' ) ) {
-                    $this->save_blog_post( $post_object );
-                }
+				$post_object = get_post( $post_id );
+				if ( is_a( $post_object, 'WP_Post' ) ) {
+					$this->save_blog_post( $post_object );
+				}
 			}
 		} catch ( Exception $e ) {
 
@@ -131,83 +131,82 @@ class Clerk_Product_Sync {
 		}
 	}
 
-    /**
-     * Update Product from Import
-     *
-     * @param int|void     $post_id Product Id.
-     * @param WP_Post|void $post Post Object.
-     * @param bool|void    $update Whether an existing post is being updated.
-     */
-    public function pre_delete_post( $post_id = null, $post = null, $update = null ) {
-        try {
-            if ( $post_id ) {
-                $this->api->delete_posts([$post_id]);
-            }
-        } catch ( Exception $e ) {
-            $this->logger->error( 'ERROR pre_delete_post', array( 'error' => $e->getMessage() ) );
-        }
-    }
+	/**
+	 * Update Product from Import
+	 *
+	 * @param int|void     $post_id Product Id.
+	 * @param WP_Post|void $post Post Object.
+	 * @param bool|void    $update Whether an existing post is being updated.
+	 */
+	public function pre_delete_post( $post_id = null, $post = null, $update = null ) {
+		try {
+			if ( $post_id ) {
+				$this->api->delete_posts( array( $post_id ) );
+			}
+		} catch ( Exception $e ) {
+			$this->logger->error( 'ERROR pre_delete_post', array( 'error' => $e->getMessage() ) );
+		}
+	}
 
-    public function save_blog_post( $post ) {
-        try {
+	public function save_blog_post( $post ) {
+		try {
 
-            $options = $this->clerk_get_contextual_options( $post->ID );
+			$options = $this->clerk_get_contextual_options( $post->ID );
 
-            if ( ! is_array( $options ) || ! isset( $options ) ) {
-                return;
-            }
+			if ( ! is_array( $options ) || ! isset( $options ) ) {
+				return;
+			}
 
-            if ( ! array_key_exists( 'realtime_updates_pages', $options ) ) {
-                return;
-            }
+			if ( ! array_key_exists( 'realtime_updates_pages', $options ) ) {
+				return;
+			}
 
-            $post_types = array( 'post', 'page' );
-            if ( isset( $options['page_additional_types'] ) ) {
-                $additional_types      = preg_replace( '/\s+/', '', $options['page_additional_types'] );
-                $additional_types_list = explode( ',', $additional_types );
-                $post_types            = array_values( array_unique( array_merge( $post_types, $additional_types_list ) ) );
-            }
+			$post_types = array( 'post', 'page' );
+			if ( isset( $options['page_additional_types'] ) ) {
+				$additional_types      = preg_replace( '/\s+/', '', $options['page_additional_types'] );
+				$additional_types_list = explode( ',', $additional_types );
+				$post_types            = array_values( array_unique( array_merge( $post_types, $additional_types_list ) ) );
+			}
 
-            if ( ! in_array($post->post_type, $post_types) ){
-                return;
-            }
+			if ( ! in_array( $post->post_type, $post_types ) ) {
+				return;
+			}
 
-            $page_additional_fields = explode( ',', $options['page_additional_fields'] );
+			$page_additional_fields = explode( ',', $options['page_additional_fields'] );
 
-            $post_status = get_post_status( $post );
+			$post_status = get_post_status( $post );
 
-            if ( ! empty( $post->post_content ) && 'publish' === $post_status ) {
+			if ( ! empty( $post->post_content ) && 'publish' === $post_status ) {
 
-                $url = get_permalink($post->ID);
-                $url = empty($url) ? $post->guid : $url;
+				$url = get_permalink( $post->ID );
+				$url = empty( $url ) ? $post->guid : $url;
 
-                $page_draft = array(
-                    'id' => $post->ID,
-                    'type' => $post_status,
-                    'url' => $url,
-                    'title' => $post->post_title,
-                    'text' => gettype($post->post_content) === 'string' ? wp_strip_all_tags($post->post_content) : '',
-                    'image' => get_the_post_thumbnail_url($post->ID),
-                );
+				$page_draft = array(
+					'id'    => $post->ID,
+					'type'  => $post_status,
+					'url'   => $url,
+					'title' => $post->post_title,
+					'text'  => gettype( $post->post_content ) === 'string' ? wp_strip_all_tags( $post->post_content ) : '',
+					'image' => get_the_post_thumbnail_url( $post->ID ),
+				);
 
-                foreach ( $page_additional_fields as $page_additional_field ) {
-                    $page_additional_field = str_replace( ' ', '', $page_additional_field );
-                    if ( ! empty( $page_additional_field ) ) {
-                        $page_draft[ $page_additional_field ] = $post->{ $page_additional_field };
-                    }
-                }
+				foreach ( $page_additional_fields as $page_additional_field ) {
+					$page_additional_field = str_replace( ' ', '', $page_additional_field );
+					if ( ! empty( $page_additional_field ) ) {
+						$page_draft[ $page_additional_field ] = $post->{ $page_additional_field };
+					}
+				}
 
-                $this->api->add_posts([$page_draft]);
-            }
-            if ( 'publish' !== $post_status ){
-                $this->api->delete_posts([$post->ID]);
-            }
+				$this->api->add_posts( array( $page_draft ) );
+			}
+			if ( 'publish' !== $post_status ) {
+				$this->api->delete_posts( array( $post->ID ) );
+			}
+		} catch ( Exception $e ) {
 
-        } catch (Exception $e) {
-
-            $this->logger->error( 'ERROR save_blog_post', array( 'error' => $e->getMessage() ) );
-        }
-    }
+			$this->logger->error( 'ERROR save_blog_post', array( 'error' => $e->getMessage() ) );
+		}
+	}
 
 	/**
 	 * Update Product
@@ -220,7 +219,7 @@ class Clerk_Product_Sync {
 			return;
 		}
 
-        $options = $this->clerk_get_contextual_options($product_id);
+		$options = $this->clerk_get_contextual_options( $product_id );
 
 		if ( ! is_array( $options ) || ! isset( $options ) ) {
 			return;
@@ -320,7 +319,7 @@ class Clerk_Product_Sync {
 				return;
 			}
 
-            $options = $this->clerk_get_contextual_options($product_id);
+			$options = $this->clerk_get_contextual_options( $product_id );
 
 			if ( ! is_array( $options ) || ! isset( $options['realtime_updates'] ) ) {
 				return;
@@ -348,7 +347,7 @@ class Clerk_Product_Sync {
 
 		try {
 
-            $options = $this->clerk_get_contextual_options($product->get_id());
+			$options = $this->clerk_get_contextual_options( $product->get_id() );
 
 			if ( ! is_array( $options ) ) {
 				return;
@@ -639,9 +638,8 @@ class Clerk_Product_Sync {
 			$product_array['stock_status']        = $product->get_stock_status();
 			$product_array['tags']                = $product_tags;
 
-
-            $lang_info = apply_filters( 'wpml_post_language_details', null, $product->get_id() );
-            if ( is_array( $lang_info ) && array_key_exists( 'language_code', $lang_info ) ) {
+			$lang_info = apply_filters( 'wpml_post_language_details', null, $product->get_id() );
+			if ( is_array( $lang_info ) && array_key_exists( 'language_code', $lang_info ) ) {
 				$product_array['language_code'] = $lang_info['language_code'];
 			}
 
@@ -730,7 +728,7 @@ class Clerk_Product_Sync {
 				$variant = new WC_Product_variation( $variation['variation_id'] );
 				foreach ( $fields as $field ) {
 					$attribute_value = $this->format_attribute( $this->resolve_attribute_product( $variant, $field ), $field, $options );
-					if (empty( $attribute_value )) {
+					if ( empty( $attribute_value ) ) {
 						if ( ! array_key_exists( $field, $variation ) ) {
 							continue;
 						} else {
@@ -752,7 +750,7 @@ class Clerk_Product_Sync {
 				$child = wc_get_product( $child_id );
 				foreach ( $fields as $field ) {
 					$attribute_value = $this->format_attribute( $this->resolve_attribute_product( $child, $field ), $field, $options );
-					if (empty( $attribute_value )) {
+					if ( empty( $attribute_value ) ) {
 						continue;
 					}
 					if ( ! isset( $product_data[ 'child_' . $this->clerk_friendly_attributes( $field ) . 's' ] ) ) {
@@ -877,7 +875,7 @@ class Clerk_Product_Sync {
 
 			$additional_fields = $options['additional_fields'];
 
-            return explode( ',', $additional_fields );
+			return explode( ',', $additional_fields );
 		} catch ( Exception $e ) {
 
 			$this->logger->error( 'ERROR get_additional_fields', array( 'error' => $e->getMessage() ) );
@@ -920,11 +918,11 @@ class Clerk_Product_Sync {
 
 		try {
 
-            if(isset($this->lang_iso)){
-			    $options = get_option( 'clerk_options_' . $this->lang_iso );
-            } else {
-                $options = get_option( 'clerk_options' );
-            }
+			if ( isset( $this->lang_iso ) ) {
+				$options = get_option( 'clerk_options_' . $this->lang_iso );
+			} else {
+				$options = get_option( 'clerk_options' );
+			}
 
 			if ( ! is_array( $options ) ) {
 				return;
@@ -946,26 +944,26 @@ class Clerk_Product_Sync {
 		}
 	}
 
-    private function clerk_get_contextual_options($entity_id){
+	private function clerk_get_contextual_options( $entity_id ) {
 
-        if ( clerk_wpml_all_scope_is_active() && clerk_wpml_get_product_lang( $entity_id ) ) {
-            $lang_info = clerk_wpml_get_product_lang($entity_id);
-            $this->lang_iso = $lang_info['language_code'];
-            $options = get_option('clerk_options_' . $this->lang_iso);
-        } elseif (clerk_is_pll_enabled() && clerk_pll_languages_list()) {
-            $lang_info = apply_filters( 'wpml_post_language_details', null, $entity_id);
-            if ( is_array( $lang_info ) && array_key_exists( 'language_code', $lang_info ) ) {
-                $this->lang_iso = $lang_info['language_code'];
-                $options = get_option('clerk_options_' . $this->lang_iso);
-            }
-        }
+		if ( clerk_wpml_all_scope_is_active() && clerk_wpml_get_product_lang( $entity_id ) ) {
+			$lang_info      = clerk_wpml_get_product_lang( $entity_id );
+			$this->lang_iso = $lang_info['language_code'];
+			$options        = get_option( 'clerk_options_' . $this->lang_iso );
+		} elseif ( clerk_is_pll_enabled() && clerk_pll_languages_list() ) {
+			$lang_info = apply_filters( 'wpml_post_language_details', null, $entity_id );
+			if ( is_array( $lang_info ) && array_key_exists( 'language_code', $lang_info ) ) {
+				$this->lang_iso = $lang_info['language_code'];
+				$options        = get_option( 'clerk_options_' . $this->lang_iso );
+			}
+		}
 
-        if (! isset($options)){
-            $options = get_option( 'clerk_options' );
-        }
+		if ( ! isset( $options ) ) {
+			$options = get_option( 'clerk_options' );
+		}
 
-        return $options;
-    }
+		return $options;
+	}
 
 }
 

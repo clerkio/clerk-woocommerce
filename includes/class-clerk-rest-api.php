@@ -124,16 +124,16 @@ class Clerk_Rest_Api extends WP_REST_Server {
 			)
 		);
 
-        // Page RTU endpoint.
-        register_rest_route(
-            'clerk',
-            '/page-rtu',
-            array(
-                'methods'             => array( 'GET', 'POST' ),
-                'callback'            => array( $this, 'pagertu_endpoint_callback' ),
-                'permission_callback' => '__return_true',
-            )
-        );
+		// Page RTU endpoint.
+		register_rest_route(
+			'clerk',
+			'/page-rtu',
+			array(
+				'methods'             => array( 'GET', 'POST' ),
+				'callback'            => array( $this, 'pagertu_endpoint_callback' ),
+				'permission_callback' => '__return_true',
+			)
+		);
 
 		// Category endpoint.
 		register_rest_route(
@@ -832,100 +832,99 @@ class Clerk_Rest_Api extends WP_REST_Server {
 		return rawurlencode( $attribute );
 	}
 
-    /**
-     * Call function for Post/Page content for real time updates.
-     *
-     * @param WP_REST_Request $request Request.
-     */
-    public function pagertu_endpoint_callback( WP_REST_Request $request ) {
+	/**
+	 * Call function for Post/Page content for real time updates.
+	 *
+	 * @param WP_REST_Request $request Request.
+	 */
+	public function pagertu_endpoint_callback( WP_REST_Request $request ) {
 
-        try {
+		try {
 
-            if ( ! $this->validate_request( $request, true ) ) {
-                return $this->get_unathorized_response();
-            }
+			if ( ! $this->validate_request( $request, true ) ) {
+				return $this->get_unathorized_response();
+			}
 
-            $options = clerk_get_options();
+			$options = clerk_get_options();
 
-            if ( ! isset( $options['realtime_updates_pages'] ) ) {
-                return array();
-            }
+			if ( ! isset( $options['realtime_updates_pages'] ) ) {
+				return array();
+			}
 
-            $pages_done = false;
+			$pages_done = false;
 
-            $post_types = array( 'post', 'page' );
-            $page_additional_fields = explode( ',', $options['page_additional_fields'] );
+			$post_types             = array( 'post', 'page' );
+			$page_additional_fields = explode( ',', $options['page_additional_fields'] );
 
-            if ( isset( $options['page_additional_types'] ) ) {
-                $additional_types      = preg_replace( '/\s+/', '', $options['page_additional_types'] );
-                $additional_types_list = explode( ',', $additional_types );
-                $post_types            = array_values( array_unique( array_merge( $post_types, $additional_types_list ) ) );
-            }
+			if ( isset( $options['page_additional_types'] ) ) {
+				$additional_types      = preg_replace( '/\s+/', '', $options['page_additional_types'] );
+				$additional_types_list = explode( ',', $additional_types );
+				$post_types            = array_values( array_unique( array_merge( $post_types, $additional_types_list ) ) );
+			}
 
-            $post_query_args = array(
-                'post_status' => 'publish',
-                'numberposts' => 25,
-                'post_type'   => $post_types,
-                'offset'      => 0
-            );
+			$post_query_args = array(
+				'post_status' => 'publish',
+				'numberposts' => 25,
+				'post_type'   => $post_types,
+				'offset'      => 0,
+			);
 
-            $page_count = 0;
+			$page_count = 0;
 
-            while( ! $pages_done ) {
-                $pages = get_posts( $post_query_args );
-                $posts_array = [];
-                if(empty($pages)){
-                    $pages_done = true;
-                }
-                foreach ( $pages as $page ) {
-                    if ( empty($page->post_content) ) {
-                        continue;
-                    }
-                    $url = get_permalink( $page->ID ) ?? $page->guid;
-                    if ( empty( $url ) ) {
-                        continue;
-                    }
+			while ( ! $pages_done ) {
+				$pages       = get_posts( $post_query_args );
+				$posts_array = array();
+				if ( empty( $pages ) ) {
+					$pages_done = true;
+				}
+				foreach ( $pages as $page ) {
+					if ( empty( $page->post_content ) ) {
+						continue;
+					}
+					$url = get_permalink( $page->ID ) ?? $page->guid;
+					if ( empty( $url ) ) {
+						continue;
+					}
 
-                    $page_draft = array(
-                        'id'    => $page->ID,
-                        'type'  => $page->post_type,
-                        'url'   => $url,
-                        'title' => $page->post_title,
-                        'text'  => gettype( $page->post_content ) === 'string' ? wp_strip_all_tags( $page->post_content ) : '',
-                        'image' => get_the_post_thumbnail_url( $page->ID ),
-                    );
+					$page_draft = array(
+						'id'    => $page->ID,
+						'type'  => $page->post_type,
+						'url'   => $url,
+						'title' => $page->post_title,
+						'text'  => gettype( $page->post_content ) === 'string' ? wp_strip_all_tags( $page->post_content ) : '',
+						'image' => get_the_post_thumbnail_url( $page->ID ),
+					);
 
-                    if ( ! $this->validate_page( $page_draft ) ) {
-                        continue;
-                    }
+					if ( ! $this->validate_page( $page_draft ) ) {
+						continue;
+					}
 
+					foreach ( $page_additional_fields as $page_additional_field ) {
+						$page_additional_field = str_replace( ' ', '', $page_additional_field );
+						if ( ! empty( $page_additional_field ) ) {
+							$page_draft[ $page_additional_field ] = $page->{ $page_additional_field };
+						}
+					}
 
-                    foreach ( $page_additional_fields as $page_additional_field ) {
-                        $page_additional_field = str_replace( ' ', '', $page_additional_field );
-                        if ( ! empty( $page_additional_field ) ) {
-                            $page_draft[ $page_additional_field ] = $page->{ $page_additional_field };
-                        }
-                    }
+					$page_count                += 1;
+					$post_query_args['offset'] += 25;
+					$posts_array[]              = $page_draft;
+				}
 
-                    $page_count += 1;
-                    $post_query_args['offset'] += 25;
-                    $posts_array[] = $page_draft;
-                }
+				$this->api->add_posts( $posts_array );
+			}
 
-                $this->api->add_posts( $posts_array );
-            }
+			$this->logger->log( 'Successfully synced ' . $page_count . ' pages', array( 'error' => 'None' ) );
+			header( 'User-Agent: ClerkExtensionBot WooCommerce/v' . get_bloginfo( 'version' ) . ' Clerk/v' . get_file_data( CLERK_PLUGIN_FILE, array( 'version' ), 'plugin' )[0] . ' PHP/v' . phpversion() );
 
-            $this->logger->log( 'Successfully synced '. $page_count .' pages', array( 'error' => 'None' ) );
-            header( 'User-Agent: ClerkExtensionBot WooCommerce/v' . get_bloginfo( 'version' ) . ' Clerk/v' . get_file_data( CLERK_PLUGIN_FILE, array( 'version' ), 'plugin' )[0] . ' PHP/v' . phpversion() );
+			return array(
+				'page_count' => $page_count,
+			);
 
-            return [
-                'page_count' => $page_count
-            ];
-
-        } catch ( Exception $e ) {
-            $this->logger->error( 'ERROR pagertu_endpoint_callback', array( 'error' => $e->getMessage() ) );
-        }
-    }
+		} catch ( Exception $e ) {
+			$this->logger->error( 'ERROR pagertu_endpoint_callback', array( 'error' => $e->getMessage() ) );
+		}
+	}
 
 	/**
 	 * Call function for Post/Page content
@@ -940,11 +939,11 @@ class Clerk_Rest_Api extends WP_REST_Server {
 				return $this->get_unathorized_response();
 			}
 
-            $options = clerk_get_options();
+			$options = clerk_get_options();
 
-            if ( ! isset( $options['include_pages'] ) ) {
-                return array();
-            }
+			if ( ! isset( $options['include_pages'] ) ) {
+				return array();
+			}
 
 			$limit  = $request->get_param( 'limit' ) ? $request->get_param( 'limit' ) : 100;
 			$offset = ( $request->get_param( 'page' ) !== null ) ? ( $request->get_param( 'page' ) * $limit ) : 0;
@@ -1138,17 +1137,16 @@ class Clerk_Rest_Api extends WP_REST_Server {
 	 */
 	public function setconfig_endpoint_callback( WP_REST_Request $request ) {
 
-
 		try {
 
 			if ( ! $this->validate_request( $request ) ) {
 				return $this->get_unathorized_response();
 			}
 
-            $options = clerk_get_options();
-			$body = $request->get_body(); // JSON blob string without public_key & private_key.
+			$options = clerk_get_options();
+			$body    = $request->get_body(); // JSON blob string without public_key & private_key.
 
-			$settings     = array();
+			$settings = array();
 
 			// Array with all Clerk setttings (68) attributes without public_key & private_key.
 			$settings_arguments = array(
@@ -1256,7 +1254,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 					$update_array['private_key'] = $options['private_key'];
 
 					// Update the database with the all new and old Clerk settings inclusive public_key & private_key.
-                    clerk_update_options($update_array, $this->lang_iso);
+					clerk_update_options( $update_array, $this->lang_iso );
 
 					$this->logger->log( 'Clerk options', array( '' => '' ) );
 
@@ -1284,14 +1282,13 @@ class Clerk_Rest_Api extends WP_REST_Server {
 	 */
 	public function rotatekey_endpoint_callback( WP_REST_Request $request ) {
 
-
 		try {
 
 			if ( ! $this->validate_request( $request ) ) {
 				return $this->get_unathorized_response();
 			}
 
-            $options = clerk_get_options();
+			$options = clerk_get_options();
 
 			$body = $request->get_body(); // JSON blob string without public_key & private_key.
 
@@ -1318,7 +1315,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 					$update_array['private_key'] = $clerk_private_key;
 
 					// Update the database with the all new and old Clerk settings inclusive public_key & private_key.
-                    clerk_update_options($update_array, $this->lang_iso);
+					clerk_update_options( $update_array, $this->lang_iso );
 
 					$this->logger->log( 'Clerk rotatekey', array( '' => '' ) );
 
@@ -1351,12 +1348,12 @@ class Clerk_Rest_Api extends WP_REST_Server {
 			if ( ! $this->validate_request( $request ) ) {
 				return $this->get_unathorized_response();
 			}
-            $options = clerk_get_options();
-            $continue = array_key_exists( 'customer_sync_enabled', $options );
+			$options  = clerk_get_options();
+			$continue = array_key_exists( 'customer_sync_enabled', $options );
 
-            if ( ! $continue ) {
-                return array();
-            }
+			if ( ! $continue ) {
+				return array();
+			}
 
 			$subscriber_query = new WP_User_Query( array( 'role' => 'Subscriber' ) );
 			$customer_query   = new WP_User_Query( array( 'role' => 'Customer' ) );
@@ -1472,14 +1469,14 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 			$options = clerk_get_options();
 
-            if( $force_legacy_auth && isset($options['public_key']) && isset($options['private_key'])) {
-                $pub_param = $request->get_param( 'public_key' );
-                $priv_param = $request->get_param( 'private_key' );
-                if($this->timing_safe_equals($options['public_key'], $pub_param) && $this->timing_safe_equals($options['private_key'], $priv_param)){
-                    return true;
-                }
-                return false;
-            }
+			if ( $force_legacy_auth && isset( $options['public_key'] ) && isset( $options['private_key'] ) ) {
+				$pub_param  = $request->get_param( 'public_key' );
+				$priv_param = $request->get_param( 'private_key' );
+				if ( $this->timing_safe_equals( $options['public_key'], $pub_param ) && $this->timing_safe_equals( $options['private_key'], $priv_param ) ) {
+					return true;
+				}
+				return false;
+			}
 
 			$use_legacy_auth = array_key_exists( 'legacy_auth_enabled', $options );
 
