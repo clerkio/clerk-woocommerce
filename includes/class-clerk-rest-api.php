@@ -654,6 +654,8 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 				$product_array = $this->query_custom_fields( $product, $this->get_additional_fields(), $product_array );
 
+        $product_array['meta_dump'] = (array) get_post_meta($product->get_id());
+
 				$product_array = apply_filters( 'clerk_product_array', $product_array, $product );
 
 				if ( ! empty( $product_array ) ) {
