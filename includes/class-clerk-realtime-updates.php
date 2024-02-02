@@ -527,7 +527,13 @@ class Clerk_Realtime_Updates {
 							$child = wc_get_product( $value );
 							if ( empty( $child ) ) {
 								continue;
-							}
+              }
+              if ( ! is_object( $child ) ) {
+                continue;
+              }
+              if ( ! method_exists( $child, 'get_regular_price' ) ) {
+                continue;
+              }
 							$tmp_children_prices[] = $child->get_regular_price();
 						}
 						if ( ! empty( $tmp_children_prices ) ) {

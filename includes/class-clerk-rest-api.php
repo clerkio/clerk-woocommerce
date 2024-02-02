@@ -492,6 +492,15 @@ class Clerk_Rest_Api extends WP_REST_Server {
 							$child_ids           = $product->get_children();
 							foreach ( $child_ids as $key => $value ) {
 								$child                 = wc_get_product( $value );
+                if ( empty( $child ) ) {
+                  continue;
+                }
+                if ( ! is_object( $child ) ) {
+                  continue;
+                }
+                if ( ! method_exists( $child, 'get_regular_price' ) ) {
+                  continue;
+                }
 								$tmp_children_prices[] = $child->get_regular_price();
 							}
 							if ( ! empty( $tmp_children_prices ) ) {
@@ -717,6 +726,9 @@ class Clerk_Rest_Api extends WP_REST_Server {
 			$child_product_ids = $product->get_children();
 			foreach ( $child_product_ids as $child_id ) {
 				$child = wc_get_product( $child_id );
+        if( empty( $child ) || ! is_object( $child ) ){
+          continue;
+        }
 				foreach ( $fields as $field ) {
 					$attribute_value = $this->format_attribute( $this->resolve_attribute_product( $child, $field ), $field );
 					if ( ! isset( $attribute_value ) || empty( $attribute_value ) ) {
