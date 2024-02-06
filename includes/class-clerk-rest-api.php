@@ -501,7 +501,11 @@ class Clerk_Rest_Api extends WP_REST_Server {
 								if ( ! method_exists( $child, 'get_regular_price' ) ) {
 									continue;
 								}
-								$tmp_children_prices[] = $child->get_regular_price();
+								$reg_price = $child->get_regular_price();
+								if ( ! is_numeric( $reg_price ) ) {
+									continue;
+								}
+								$tmp_children_prices[] = $reg_price;
 							}
 							if ( ! empty( $tmp_children_prices ) ) {
 								$raw_regular_price = min( $tmp_children_prices );
