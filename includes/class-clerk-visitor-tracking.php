@@ -245,6 +245,7 @@ class Clerk_Visitor_Tracking {
 				<span
 						class="clerk"
 						data-template="@<?php echo esc_attr( strtolower( str_replace( ' ', '-', $options['livesearch_template'] ) ) ); ?>"
+            data-limit="8"
 						<?php
 						if ( isset( $options['livesearch_suggestions'] ) && isset( $options['livesearch_include_suggestions'] ) ) :
 							?>

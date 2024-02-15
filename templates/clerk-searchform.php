@@ -54,6 +54,7 @@ if ( isset( $options['livesearch_enabled'] ) && $options['livesearch_enabled'] )
 	?>
 	<span
 			class="clerk"
+      data-limit="8"
 			data-template="@<?php echo esc_attr( strtolower( str_replace( ' ', '-', $options['livesearch_template'] ) ) ); ?>"
 			data-instant-search-suggestions="<?php echo esc_attr( $options['livesearch_suggestions'] ); ?>"
 			data-instant-search-categories="<?php echo esc_attr( $options['livesearch_categories'] ); ?>"
