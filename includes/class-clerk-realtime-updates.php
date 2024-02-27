@@ -96,7 +96,7 @@ class Clerk_Realtime_Updates {
 	public function pre_save_product( $product = null, $data = null ) {
 		try {
 			if ( $product ) {
-				if ( is_a( $product, 'WC_Product' ) ) {
+				if ( is_a( $product, 'WC_Product' ) && ! is_a( $product, 'WC_Product_Variation' ) ) {
 					$product_id = $product->get_id();
 					$this->save_product( $product_id );
 				}
@@ -117,7 +117,7 @@ class Clerk_Realtime_Updates {
 		try {
 			if ( $post_id ) {
 				$product = wc_get_product( $post_id );
-				if ( is_a( $product, 'WC_Product' ) ) {
+				if ( is_a( $product, 'WC_Product' ) && ! is_a( $product, 'WC_Product_Variation' ) ) {
 					$this->save_product( $post_id );
 					return;
 				}
