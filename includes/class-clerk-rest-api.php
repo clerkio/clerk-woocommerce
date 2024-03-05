@@ -1791,7 +1791,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 			$order   = $request->get_param( 'order' ) ? $request->get_param( 'order' ) : 'DESC';
 
 			$taxonomies  = array( 'product_cat' );
-			$plugin_taxa = array( 'product_brand', 'pwb-brand' );
+			$plugin_taxa = array( 'product_brand', 'pwb-brand', 'berocket_brand' );
 
 			foreach ( $plugin_taxa as $taxonomy ) {
 				if ( taxonomy_exists( $taxonomy ) ) {
@@ -1815,6 +1815,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 					'id'   => $product_category->term_id,
 					'name' => $product_category->name,
 					'url'  => get_term_link( $product_category ),
+					'type' => $product_category->taxonomy,
 				);
 
 				if ( $product_category->parent > 0 ) {
