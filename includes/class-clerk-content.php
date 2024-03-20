@@ -34,6 +34,7 @@ class Clerk_Content {
 	public function __construct() {
 		add_action( 'woocommerce_archive_description', array( $this, 'clerk_woocommerce_archive_description' ), 99 );
 		add_action( 'woocommerce_after_cart', array( $this, 'clerk_woocommerce_after_cart_table' ), 99 );
+    add_action( 'woocommerce_after_single_product', array( $this, 'clerk_woocommerce_after_single_product' ), 99 );
 		add_filter( 'wc_get_template', array( $this, 'clerk_wc_get_template' ), 99, 2 );
 		include_once __DIR__ . '/class-clerk-logger.php';
 		include_once __DIR__ . '/clerk-multi-lang-helpers.php';
