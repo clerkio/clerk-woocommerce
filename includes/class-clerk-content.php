@@ -197,7 +197,6 @@ class Clerk_Content {
 				if ( isset( $options['product_enabled'] ) && $options['product_enabled'] ) {
 					return clerk_locate_template( 'clerk-related-products.php' );
         }
-			}
 		} catch ( Exception $e ) {
 
 			$this->logger->error( 'ERROR clerk_woocommerce_after_single_product', array( 'error' => $e->getMessage() ) );
