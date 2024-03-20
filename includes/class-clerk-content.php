@@ -181,6 +181,30 @@ class Clerk_Content {
 
 		}
 	}
+
+	/**
+	 * Rewrite related products template if enabled
+	 *
+	 * @param mixed  $located Template found.
+	 * @param string $template_name Template name.
+	 *
+	 * @return string
+	 */
+	public function clerk_woocommerce_after_single_product() {
+
+		try {
+				$options = clerk_get_options();
+				if ( isset( $options['product_enabled'] ) && $options['product_enabled'] ) {
+					return clerk_locate_template( 'clerk-related-products.php' );
+        }
+			}
+		} catch ( Exception $e ) {
+
+			$this->logger->error( 'ERROR clerk_woocommerce_after_single_product', array( 'error' => $e->getMessage() ) );
+
+		}
+	}
+
 }
 
 new Clerk_Content();
