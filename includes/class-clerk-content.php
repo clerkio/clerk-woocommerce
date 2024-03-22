@@ -34,7 +34,7 @@ class Clerk_Content {
 	public function __construct() {
 		add_action( 'woocommerce_archive_description', array( $this, 'clerk_woocommerce_archive_description' ), 99 );
 		add_action( 'woocommerce_after_cart', array( $this, 'clerk_woocommerce_after_cart_table' ), 99 );
-    add_action( 'woocommerce_after_single_product', array( $this, 'clerk_woocommerce_after_single_product' ), 99 );
+		add_action( 'woocommerce_after_single_product', array( $this, 'clerk_woocommerce_after_single_product' ), 99 );
 		add_filter( 'wc_get_template', array( $this, 'clerk_wc_get_template' ), 99, 2 );
 		include_once __DIR__ . '/class-clerk-logger.php';
 		include_once __DIR__ . '/clerk-multi-lang-helpers.php';
@@ -194,39 +194,39 @@ class Clerk_Content {
 	public function clerk_woocommerce_after_single_product() {
 
 		try {
-      $options = clerk_get_options();
+			$options = clerk_get_options();
 
-      if ( isset( $options['product_enabled'] ) && $options['product_enabled'] && $options['product_injection_after'] ) {
-        $contents      = explode( ',', $options['product_content'] );
-        $index         = 0;
-        $class_string  = 'clerk_';
-        $filter_string = '';
-        $unique_filter = ( isset( $options['product_excl_duplicates'] ) && $options['product_excl_duplicates'] ) ? true : false;
-        foreach ( $contents as $content ) {
-          ?>
-          <span class="clerk
-          <?php
-          if ( $unique_filter ) {
-            echo esc_attr( $class_string . (string) $index );
-          }
-          ?>
-          "
-          <?php
-          if ( $index > 0 && $unique_filter ) {
-            echo 'data-exclude-from="' . esc_attr( $filter_string ) . '"';
-          }
-          ?>
-            data-template="@<?php echo esc_attr( str_replace( ' ', '', $content ) ); ?>"
-            data-products="[<?php echo get_the_ID(); ?>]"></span>
-          <?php
-          if ( $index > 0 ) {
-            $filter_string .= ', ';
-          }
-          $filter_string .= '.' . $class_string . (string) $index;
-          ++$index;
-        }
-      }
-    } catch ( Exception $e ) {
+			if ( isset( $options['product_enabled'] ) && $options['product_enabled'] && $options['product_injection_after'] ) {
+				$contents      = explode( ',', $options['product_content'] );
+				$index         = 0;
+				$class_string  = 'clerk_';
+				$filter_string = '';
+				$unique_filter = ( isset( $options['product_excl_duplicates'] ) && $options['product_excl_duplicates'] ) ? true : false;
+				foreach ( $contents as $content ) {
+					?>
+		  <span class="clerk
+					<?php
+					if ( $unique_filter ) {
+						  echo esc_attr( $class_string . (string) $index );
+					}
+					?>
+		  "
+					<?php
+					if ( $index > 0 && $unique_filter ) {
+						  echo 'data-exclude-from="' . esc_attr( $filter_string ) . '"';
+					}
+					?>
+			data-template="@<?php echo esc_attr( str_replace( ' ', '', $content ) ); ?>"
+			data-products="[<?php echo get_the_ID(); ?>]"></span>
+					<?php
+					if ( $index > 0 ) {
+						  $filter_string .= ', ';
+					}
+					$filter_string .= '.' . $class_string . (string) $index;
+					++$index;
+				}
+			}
+		} catch ( Exception $e ) {
 
 			$this->logger->error( 'ERROR clerk_woocommerce_after_single_product', array( 'error' => $e->getMessage() ) );
 
