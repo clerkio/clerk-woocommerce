@@ -1004,7 +1004,7 @@ class Clerk_Admin_Settings {
 		);
 		add_settings_field(
 			'product_injection_after',
-			__( 'Filter Duplicates', 'clerk' ),
+			__( 'Defer Injection', 'clerk' ),
 			array( $this, 'add_checkbox_field' ),
 			'clerk',
 			'clerk_section_product',
