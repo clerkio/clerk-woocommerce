@@ -1002,7 +1002,18 @@ class Clerk_Admin_Settings {
 				'description' => 'Exclude duplicate products',
 			)
 		);
-
+		add_settings_field(
+			'product_injection_after',
+			__( 'Filter Duplicates', 'clerk' ),
+			array( $this, 'add_checkbox_field' ),
+			'clerk',
+			'clerk_section_product',
+			array(
+				'label_for'   => 'product_injection_after',
+				'checked'     => 0,
+				'description' => 'Inject recommendations after page contents',
+			)
+		);
 		add_settings_field(
 			'clerk_product_shortcode',
 			__( 'Product ID Shortcode', 'clerk' ),

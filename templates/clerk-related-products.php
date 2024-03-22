@@ -25,7 +25,7 @@ if ( clerk_is_wpml_enabled() ) {
 
 $options = clerk_get_options();
 
-if ( isset( $options['product_enabled'] ) && $options['product_enabled'] ) :
+if ( isset( $options['product_enabled'] ) && $options['product_enabled'] && ! $options['product_injection_after'] ) :
 	$contents      = explode( ',', $options['product_content'] );
 	$index         = 0;
 	$class_string  = 'clerk_';
