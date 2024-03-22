@@ -185,11 +185,6 @@ class Clerk_Content {
 
 	/**
 	 * Rewrite related products template if enabled
-	 *
-	 * @param mixed  $located Template found.
-	 * @param string $template_name Template name.
-	 *
-	 * @return string
 	 */
 	public function clerk_woocommerce_after_single_product() {
 
@@ -204,13 +199,12 @@ class Clerk_Content {
 				$unique_filter = ( isset( $options['product_excl_duplicates'] ) && $options['product_excl_duplicates'] ) ? true : false;
 				foreach ( $contents as $content ) {
 					?>
-		  <span class="clerk
+			    <span class="clerk
 					<?php
 					if ( $unique_filter ) {
 						  echo esc_attr( $class_string . (string) $index );
 					}
-					?>
-		  "
+					?>"
 					<?php
 					if ( $index > 0 && $unique_filter ) {
 						  echo 'data-exclude-from="' . esc_attr( $filter_string ) . '"';
