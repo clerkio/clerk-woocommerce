@@ -6,7 +6,7 @@ License URI: https://opensource.org/licenses/MIT
 Tested up to: 6.1.1
 WC requires at least: 4.4.0
 WC tested up to: 7.1.0
-Stable Tag: 4.1.7
+Stable Tag: 4.1.8
 
 == Description ==
 Clerk.io is a software that helps your customers buy more from your webshop, through 4 amazing feature:
@@ -30,6 +30,12 @@ Once signed up, simply login to your my.clerk.io backend, which will guide you t
 
 
 == Changelog ==
+= 4.1.8 - 2024-04-15
+* Added guards for grouped products without get_regular_price method in product sync.
+* Remove RTU trigger from variants being modified.
+* Added new hooks position for product page recommendations.
+* Added beRocket as source for brands.
+
 = 4.1.7 - 2024-01-30
 * Added RTU for pages.
 * Added instant sync option for RTU pages.
