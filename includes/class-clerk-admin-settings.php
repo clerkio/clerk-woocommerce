@@ -1312,15 +1312,19 @@ class Clerk_Admin_Settings {
 					$products = (array) $products;
 				}
 
+				$_endpoint = 'https://api.clerk.io/v2/product/attributes';
+
 				if ( is_array( $products ) && array_key_exists( 'products', $products ) ) {
 
 					foreach ( $products['products'] as $product ) {
 
 						if ( $check ) {
 
-							$id = $product->get_id();
+							if ( ! method_exists( $product, 'get_id' ) ) {
+								continue;
+							}
 
-							$_endpoint = 'https://api.clerk.io/v2/product/attributes';
+							$id = $product->get_id();
 
 							$data_string = wp_json_encode(
 								array(
