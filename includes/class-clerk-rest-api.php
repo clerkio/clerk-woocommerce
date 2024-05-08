@@ -717,7 +717,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 							$attribute_value = $this->format_attribute( $variation[ $field ], $field );
 						}
 					}
-                    $product_data = $this->flatten_attribute($product_data, $field, $attribute_value);
+					$product_data = $this->flatten_attribute( $product_data, $field, $attribute_value );
 				}
 			}
 		}
@@ -733,32 +733,32 @@ class Clerk_Rest_Api extends WP_REST_Server {
 					if ( ! isset( $attribute_value ) || empty( $attribute_value ) ) {
 						continue;
 					}
-                    $product_data = $this->flatten_attribute($product_data, $field, $attribute_value);
+					$product_data = $this->flatten_attribute( $product_data, $field, $attribute_value );
 				}
 			}
 		}
 		return $product_data;
 	}
 
-    /**
-     * @param array $product_data Product object data.
-     * @param string $field Product attribute slug.
-     * @param mixed $attribute_value Product attribute value.
-     * @return array
-     */
-    public function flatten_attribute($product_data, $field, $attribute_value ) {
-    $child_key = 'child_' . $this->clerk_friendly_attributes( $field ) . 's';
-    if ( ! isset( $product_data[ $child_key ] ) ) {
-      $product_data[ $child_key ] = [];
-    }
-    if( is_array( $attribute_value ) ){
-      $attribute_value = array_values( $attribute_value );
-      $product_data[ $child_key ] = array_merge($product_data[ $child_key ], $attribute_value );
-    } else {
-      $product_data[ $child_key ][] = $attribute_value;
-    }
-    return $product_data;
-  }
+	/**
+	 * @param array  $product_data Product object data.
+	 * @param string $field Product attribute slug.
+	 * @param mixed  $attribute_value Product attribute value.
+	 * @return array
+	 */
+	public function flatten_attribute( $product_data, $field, $attribute_value ) {
+		$child_key = 'child_' . $this->clerk_friendly_attributes( $field ) . 's';
+		if ( ! isset( $product_data[ $child_key ] ) ) {
+			$product_data[ $child_key ] = array();
+		}
+		if ( is_array( $attribute_value ) ) {
+			$attribute_value            = array_values( $attribute_value );
+			$product_data[ $child_key ] = array_merge( $product_data[ $child_key ], $attribute_value );
+		} else {
+			$product_data[ $child_key ][] = $attribute_value;
+		}
+		return $product_data;
+	}
 
 	/**
 	 * Format Attribute Value
