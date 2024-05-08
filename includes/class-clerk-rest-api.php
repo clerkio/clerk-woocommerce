@@ -741,6 +741,8 @@ class Clerk_Rest_Api extends WP_REST_Server {
 	}
 
 	/**
+   * Flatten attribute if arrey before appending
+   *
 	 * @param array  $product_data Product object data.
 	 * @param string $field Product attribute slug.
 	 * @param mixed  $attribute_value Product attribute value.

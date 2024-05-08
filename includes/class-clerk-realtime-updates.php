@@ -779,6 +779,8 @@ class Clerk_Realtime_Updates {
 	}
 
 	/**
+   * Flatten attribute if arrey before appending
+   *
 	 * @param array  $product_data Product object data.
 	 * @param string $field Product attribute slug.
 	 * @param mixed  $attribute_value Product attribute value.
