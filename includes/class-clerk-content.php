@@ -191,7 +191,7 @@ class Clerk_Content {
 		try {
 			$options = clerk_get_options();
 
-			if ( isset( $options['product_enabled'] ) && $options['product_enabled'] && $options['product_injection_after'] ) {
+			if ( isset( $options['product_enabled'] ) && $options['product_enabled'] && isset( $options['product_injection_after'] ) && $options['product_injection_after'] ) {
 				$contents      = explode( ',', $options['product_content'] );
 				$index         = 0;
 				$class_string  = 'clerk_';
