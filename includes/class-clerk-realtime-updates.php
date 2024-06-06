@@ -116,10 +116,12 @@ class Clerk_Realtime_Updates {
 	public function pre_save_post( $post_id = null, $post = null, $update = null ) {
 		try {
 			if ( $post_id ) {
-				$product = wc_get_product( $post_id );
-				if ( is_a( $product, 'WC_Product' ) && ! is_a( $product, 'WC_Product_Variation' ) ) {
-					$this->save_product( $post_id );
-					return;
+				if ( function_exists( 'wc_get_product' ) ) {
+					$product = wc_get_product( $post_id );
+					if ( is_a( $product, 'WC_Product' ) && ! is_a( $product, 'WC_Product_Variation' ) ) {
+						  $this->save_product( $post_id );
+						  return;
+					}
 				}
 
 				$post_object = get_post( $post_id );
@@ -224,6 +226,10 @@ class Clerk_Realtime_Updates {
 	public function save_product( $product_id = null ) {
 
 		if ( ! is_int( $product_id ) ) {
+			return;
+		}
+
+		if ( ! function_exists( 'wc_get_product' ) ) {
 			return;
 		}
 
