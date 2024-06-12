@@ -418,7 +418,7 @@ class Clerk_Realtime_Updates {
 				}
 			}
 
-			if (method_exists($product, 'get_review_count') ){
+			if (method_exists($product, 'get_avg_rating') ){
 				$product_average_rating = $product->get_average_rating();
 				if(isset($product_average_rating)){
 					$product_array['average_rating'] = $product_average_rating;
