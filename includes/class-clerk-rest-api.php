@@ -346,7 +346,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 			foreach ( $products->products as $product ) {
 
-				$taxonomies     = array( 'product_cat', 'product_brand', 'pwb-brand' );
+				$taxonomies     = array( 'product_cat', 'product_brand', 'pwb-brand', 'yith_product_brand' );
 				$categories     = array();
 				$category_names = array();
 				foreach ( $taxonomies as $taxonomy ) {
@@ -1802,7 +1802,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 			$order   = $request->get_param( 'order' ) ? $request->get_param( 'order' ) : 'DESC';
 
 			$taxonomies  = array( 'product_cat' );
-			$plugin_taxa = array( 'product_brand', 'pwb-brand', 'berocket_brand' );
+			$plugin_taxa = array( 'product_brand', 'pwb-brand', 'berocket_brand', 'yith_product_brand' );
 
 			foreach ( $plugin_taxa as $taxonomy ) {
 				if ( taxonomy_exists( $taxonomy ) ) {

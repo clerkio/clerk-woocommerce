@@ -387,7 +387,7 @@ class Clerk_Realtime_Updates {
 				}
 			}
 
-			$taxonomies     = array( 'product_cat', 'product_brand', 'pwb-brand' );
+			$taxonomies     = array( 'product_cat', 'product_brand', 'pwb-brand', 'yith_product_brand' );
 			$categories     = array();
 			$category_names = array();
 			foreach ( $taxonomies as $taxonomy ) {
