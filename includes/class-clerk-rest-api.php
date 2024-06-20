@@ -322,6 +322,14 @@ class Clerk_Rest_Api extends WP_REST_Server {
 				);
 			}
 
+      $products = new WP_Query(
+        array(
+          'post_type' => 'product',
+          'posts_per_page' => -1,
+          'post_status' => 'publish'
+        )
+      );
+
 			$final_products_array = array();
 
 			$image_size_setting = isset( $options['data_sync_image_size'] ) ? $options['data_sync_image_size'] : 'medium';
