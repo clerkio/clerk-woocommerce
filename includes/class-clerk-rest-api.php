@@ -366,6 +366,27 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 				$on_sale = $product->is_on_sale();
 
+				if (method_exists($product, 'get_review_count') ){
+					$product_review_count = $product->get_review_count();
+					if(isset($product_review_count)){
+						$product_array['review_count'] = $product_review_count;
+					}
+				}
+
+				if (method_exists($product, 'get_rating_count') ){
+					$product_rating_count = $product->get_rating_count();
+					if(isset($product_rating_count)){
+						$product_array['rating_count'] = $product_rating_count;
+					}
+				}
+
+				if (method_exists($product, 'get_average_rating') ){
+					$product_avg_rating = $product->get_average_rating();
+					if(isset($product_avg_rating)){
+						$product_array['avg_rating'] = $product_avg_rating;
+					}
+				}
+
 				if ( $product->is_type( 'variable' ) ) {
 					/**
 					 * Variable product sync fields
