@@ -526,9 +526,13 @@ class Clerk_Realtime_Updates {
 				$list_price_excl_tax = wc_get_price_excluding_tax( $product, array( 'price' => $product->get_regular_price() ) );
 
 				if ( $product->is_type( 'grouped' ) ) {
-					if ( $price === $list_price ) {
-						$tmp_children_prices = array();
-						$child_ids           = $product->get_children();
+					if ( $price === $list_price || $price === 0 ) {
+
+						$tmp_children_prices         = array();
+						$tmp_children_regular_prices = array();
+
+						$child_ids = $product->get_children();
+
 						foreach ( $child_ids as $key => $value ) {
 							$child = wc_get_product( $value );
 							if ( empty( $child ) ) {
@@ -537,20 +541,33 @@ class Clerk_Realtime_Updates {
 							if ( ! is_object( $child ) ) {
 								continue;
 							}
-							if ( ! method_exists( $child, 'get_regular_price' ) ) {
+							if ( ! method_exists( $child, 'get_regular_price' ) || ! method_exists( $child, 'get_price' ) ) {
 								continue;
 							}
-							$reg_price = $child->get_regular_price();
-							if ( ! is_numeric( $reg_price ) ) {
-								continue;
+
+							$normal_price = $child->get_price();
+							$reg_price    = $child->get_regular_price();
+
+							if ( is_numeric( $reg_price ) ) {
+								$tmp_children_regular_prices[] = (float) $reg_price;
 							}
-							$tmp_children_prices[] = $reg_price;
+
+							if ( is_numeric( $normal_price ) ) {
+								$tmp_children_prices[] = (float) $normal_price;
+							}
 						}
-						if ( ! empty( $tmp_children_prices ) ) {
-							$raw_regular_price = min( $tmp_children_prices );
+						if ( ! empty( $tmp_children_regular_prices ) ) {
+							$raw_regular_price = array_sum( $tmp_children_regular_prices );
 							if ( is_numeric( $raw_regular_price ) ) {
 								$list_price_excl_tax = wc_get_price_excluding_tax( $product, array( 'price' => $raw_regular_price ) );
 								$list_price          = wc_get_price_including_tax( $product, array( 'price' => $raw_regular_price ) );
+							}
+						}
+						if ( ! empty( $tmp_children_prices ) ) {
+							$raw_price = array_sum( $tmp_children_prices );
+							if ( is_numeric( $raw_price ) ) {
+								$price_excl_tax = wc_get_price_excluding_tax( $product, array( 'price' => $raw_price ) );
+								$price          = wc_get_price_including_tax( $product, array( 'price' => $raw_price ) );
 							}
 						}
 					}
@@ -664,6 +681,10 @@ class Clerk_Realtime_Updates {
 			$product_array['backorders']          = $product->get_backorders();
 			$product_array['stock_status']        = $product->get_stock_status();
 			$product_array['tags']                = $product_tags;
+
+			if ( method_exists( $product, 'get_price_html' ) ) {
+				$product_array['price_html'] = $product->get_price_html();
+			}
 
 			$lang_info = apply_filters( 'wpml_post_language_details', null, $product->get_id() );
 			if ( is_array( $lang_info ) && array_key_exists( 'language_code', $lang_info ) ) {
