@@ -520,7 +520,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 					$stock_quantity = $product->get_stock_quantity();
 				}
 
-				if ( $product->is_type( 'bundle' ) ) {
+				if ( $product->is_type( 'bundle' ) || $product->is_type( 'woosb' ) ) {
 					$price               = $product->get_min_raw_price() ? wc_get_price_including_tax( $product, array( 'price' => $product->get_min_raw_price() ) ) : null;
 					$list_price          = $product->get_min_raw_regular_price() ? wc_get_price_including_tax( $product, array( 'price' => $product->get_min_raw_regular_price() ) ) : null;
 					$price_excl_tax      = $product->get_min_raw_price() ? wc_get_price_excluding_tax( $product, array( 'price' => $product->get_min_raw_price() ) ) : null;
