@@ -227,19 +227,19 @@ class Clerk_Visitor_Tracking {
 					?>
 				});
 
-                <?php
-                if ($options['collect_emails'] && function_exists('wp_get_current_user')) {
-                    $user = wp_get_current_user();
-                    $user_email = $user->user_email;
-                    ?>
-                        if(typeof window.Clerk == 'function') {
-                            Clerk('call', 'log/email', {
-                                email: "<?php echo esc_html( $user_email );  ?>"
-                            });
-                        }
-                    <?php
-                }
-                ?>
+				<?php
+				if ( $options['collect_emails'] && function_exists( 'wp_get_current_user' ) ) {
+					$user       = wp_get_current_user();
+					$user_email = $user->user_email;
+					?>
+						if(typeof window.Clerk == 'function') {
+							Clerk('call', 'log/email', {
+								email: "<?php echo esc_html( $user_email ); ?>"
+							});
+						}
+					<?php
+				}
+				?>
 
 			</script>
 			<!-- End of Clerk.io E-commerce Personalisation tool - www.clerk.io -->
