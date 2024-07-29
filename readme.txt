@@ -32,6 +32,7 @@ Once signed up, simply login to your my.clerk.io backend, which will guide you t
 == Changelog ==
 = 4.1.9 - 2024-07-29
 * Added price_html field to product data.
+* Added average_rating, rating_count and review_count to product data.
 * Added guard to check that wc_products() is defined, to cover people installing plugin before woocommerce itself on their wordpress.
 * Log email from active login, even if not typed into input field, if collect_emails enabled.
 * Flatten child products custom attributes into single array.
