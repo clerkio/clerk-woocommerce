@@ -686,6 +686,18 @@ class Clerk_Realtime_Updates {
 				$product_array['price_html'] = $product->get_price_html();
 			}
 
+			if ( method_exists( $product, 'get_average_rating' ) ) {
+				$product_array['product_rating'] = $product->get_average_rating();
+			}
+
+			if ( method_exists( $product, 'get_rating_count' ) ) {
+				$product_array['product_rating_count'] = $product->get_rating_count();
+			}
+
+			if ( method_exists( $product, 'get_review_count' ) ) {
+				$product_array['product_review_count'] = $product->get_review_count();
+			}
+
 			$lang_info = apply_filters( 'wpml_post_language_details', null, $product->get_id() );
 			if ( is_array( $lang_info ) && array_key_exists( 'language_code', $lang_info ) ) {
 				$product_array['language_code'] = $lang_info['language_code'];
