@@ -6,7 +6,7 @@ License URI: https://opensource.org/licenses/MIT
 Tested up to: 6.5.2
 WC requires at least: 4.4.0
 WC tested up to: 7.1.0
-Stable Tag: 4.1.8
+Stable Tag: 4.1.9
 
 == Description ==
 Clerk.io is a software that helps your customers buy more from your webshop, through 4 amazing feature:
@@ -30,6 +30,13 @@ Once signed up, simply login to your my.clerk.io backend, which will guide you t
 
 
 == Changelog ==
+= 4.1.9 - 2024-07-29
+* Added price_html field to product data.
+* Added guard to check that wc_products() is defined, to cover people installing plugin before woocommerce itself on their wordpress.
+* Log email from active login, even if not typed into input field, if collect_emails enabled.
+* Flatten child products custom attributes into single array.
+
+
 = 4.1.8 - 2024-04-15
 * Added guards for grouped products without get_regular_price method in product sync.
 * Remove RTU trigger from variants being modified.
