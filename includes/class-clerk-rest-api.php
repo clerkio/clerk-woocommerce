@@ -3,7 +3,7 @@
  * Plugin Name: Clerk
  * Plugin URI: https://clerk.io/
  * Description: Clerk.io Turns More Browsers Into Buyers
- * Version: 4.1.8
+ * Version: 4.1.9
  * Author: Clerk.io
  * Author URI: https://clerk.io
  *
@@ -637,6 +637,18 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 				if ( method_exists( $product, 'get_price_html' ) ) {
 					$product_array['price_html'] = $product->get_price_html();
+				}
+
+				if ( method_exists( $product, 'get_average_rating' ) ) {
+					$product_array['product_rating'] = $product->get_average_rating();
+				}
+
+				if ( method_exists( $product, 'get_rating_count' ) ) {
+					$product_array['product_rating_count'] = $product->get_rating_count();
+				}
+
+				if ( method_exists( $product, 'get_review_count' ) ) {
+					$product_array['product_review_count'] = $product->get_review_count();
 				}
 
 				$lang_info = apply_filters( 'wpml_post_language_details', null, $product->get_id() );
