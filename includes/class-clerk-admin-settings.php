@@ -712,7 +712,7 @@ class Clerk_Admin_Settings {
 		// Facets in URL
 		add_settings_field(
 			'facets_in_url',
-			__( 'Enabled', 'clerk' ),
+			__( 'SALAD', 'clerk' ),
 			array( $this, 'add_checkbox_field' ),
 			'clerk',
 			'clerk_faceted_navigation',
