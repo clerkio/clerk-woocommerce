@@ -114,6 +114,13 @@ class Clerk_Admin_Settings {
 		$options = clerk_get_options();
 
 		// Add general section.
+		add_settings_section{
+			'clerk_testing_info',
+			__('Testing', 'clerk'),
+			null,
+			'clerk'
+		};
+
 		add_settings_section(
 			'clerk_section_general',
 			__( 'General', 'clerk' ),
