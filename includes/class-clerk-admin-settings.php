@@ -113,13 +113,6 @@ class Clerk_Admin_Settings {
 
 		$options = clerk_get_options();
 
-		add_settings_section(
-			'clerk_section_general',
-			__( 'Header menu', 'clerk' ),
-			null,
-			'clerk'
-		);
-
 		// Add general section.
 		add_settings_section(
 			'clerk_section_general',
@@ -1222,8 +1215,6 @@ class Clerk_Admin_Settings {
 			)
 		);
 	}
-
-	/* Testing Header Menu */
 
 	/**
 	 * Add Clerk Plugin Version
