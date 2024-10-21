@@ -113,6 +113,13 @@ class Clerk_Admin_Settings {
 
 		$options = clerk_get_options();
 
+		add_settings_section(
+			'clerk_section_general',
+			__( 'Header menu', 'clerk' ),
+			'eg_header_manu_function',
+			'clerk'
+		);
+
 		// Add general section.
 		add_settings_section(
 			'clerk_section_general',
@@ -1217,6 +1224,18 @@ class Clerk_Admin_Settings {
 	}
 
 	/* Testing Header Menu */
+	public function eg_header_manu_function(){
+		?>
+			<ul>
+				<li>General</li>
+				<li>Data Sync: Products</li>
+				<li>Data Sync: Pages</li>
+				<li>Data Sync: Customers</li>
+				<li>Data Sync: Orders</li>
+			</ul>
+		<?php
+	}
+
 
 	/**
 	 * Add Clerk Plugin Version
