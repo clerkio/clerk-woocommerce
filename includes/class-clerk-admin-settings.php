@@ -1218,26 +1218,6 @@ class Clerk_Admin_Settings {
 
 	/* Testing Header Menu */
 
-	public function get_all_settings_section_titles( $page ) {
-		global $wp_settings_sections;
-	
-		if ( ! isset( $wp_settings_sections[ $page ] ) ) {
-			return [];
-		}
-	
-		$section_titles = [];
-	
-		foreach ( $wp_settings_sections[ $page ] as $section_id => $section ) {
-			if ( isset( $section['title'] ) ) {
-				$section_titles[] = $section['title'];
-			}
-		}
-	
-		return $section_titles;
-	}
-
-	$sections = get_all_settings_section_titles( 'clerk' );
-	
 	/**
 	 * Add Clerk Plugin Version
 	 */
@@ -2272,9 +2252,6 @@ class Clerk_Admin_Settings {
 				<div id="multi-lang-data" class="clerk_hidden" data-is-pll="<?php echo esc_attr( $is_pll ); ?>"><?php echo esc_html( $language_info ); ?></div>
 				<div id="hidden-lang-data" class="clerk_hidden" ><?php echo esc_html( $lang_info_json ); ?></div>
 				<?php
-				 foreach ( $sections as $title ) {
-					 echo '<h2>' . esc_html( $title ) . '</h2>';
-				 }
 				// output security fields for the registered setting "wporg".
 				settings_fields( 'clerk' );
 				// output setting sections and their fields.
