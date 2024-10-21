@@ -122,7 +122,6 @@
 	width: -webkit-fill-available;
 	width: fill-available;
 	max-width: clamp(300px, 50%, 100%);
-	border: 2px solid;
 }
 
 .toplevel_page_clerk #wpbody h2 {
