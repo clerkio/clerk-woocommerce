@@ -116,7 +116,7 @@ class Clerk_Admin_Settings {
 		add_settings_section(
 			'clerk_section_general',
 			__( 'Header menu', 'clerk' ),
-			'eg_header_manu_function',
+			array( $this, 'eg_header_manu_function' ),
 			'clerk'
 		);
 
