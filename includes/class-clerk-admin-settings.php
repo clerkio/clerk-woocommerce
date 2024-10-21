@@ -709,6 +709,19 @@ class Clerk_Admin_Settings {
 			)
 		);
 
+		// Facets in URL
+		add_settings_field(
+			'facets_in_url',
+			__( 'Enabled', 'clerk' ),
+			array( $this, 'add_checkbox_field' ),
+			'clerk',
+			'clerk_faceted_navigation',
+			array(
+				'label_for' => 'facets_in_url',
+				'checked'   => 0,
+			)
+		);
+
 		add_settings_field(
 			'faceted_navigation_custom',
 			__( 'Add Custom Attribute', 'clerk' ),
