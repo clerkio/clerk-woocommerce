@@ -91,6 +91,7 @@ class Clerk_Search {
 		if ( $options['faceted_navigation_enabled'] ) {
 
 			$facets_design             = isset( $options['faceted_navigation_design'] ) ? $options['faceted_navigation_design'] : false;
+			$facets_url                = isset( $options['facets_in_url'] ) ? $options['facets_in_url'] : false;
 			$search_include_categories = isset( $options['search_include_categories'] ) ? $options['search_include_categories'] : false;
 			$search_categories         = isset( $options['search_categories'] ) ? $options['search_categories'] : false;
 			$search_include_pages      = isset( $options['search_include_pages'] ) ? $options['search_include_pages'] : false;
@@ -165,6 +166,9 @@ class Clerk_Search {
 			}
 			if ( isset( $search_include_categories ) && $search_include_categories ) {
 				echo "data-search-categories='" . esc_attr( $search_categories ) . "'";
+			}
+			if ( isset( $facets_url ) && $facets_url ) {
+				echo "data-facets-in-url='true'";
 			}
 			if ( isset( $search_include_pages ) && $search_include_pages ) {
 				echo "data-search-pages='" . esc_attr( $search_pages ) . "'";

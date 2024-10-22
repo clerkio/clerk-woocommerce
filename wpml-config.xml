@@ -45,6 +45,7 @@
       <key name="faceted_navigation_custom"/>
       <key name="faceted_navigation"/>
       <key name="faceted_navigation_design"/>
+      <key name="facets_in_url"/>
       <key name="powerstep_enabled"/>
       <key name="powerstep_type"/>
       <key name="powerstep_page"/>
