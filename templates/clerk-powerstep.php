@@ -27,6 +27,10 @@ $cart_url     = wc_get_cart_url();
 $checkout_url = wc_get_checkout_url();
 $options      = clerk_get_options();
 
+if ( ! isset( $options['powerstep_custom_text_enabled'] ) ) {
+  $back_button_text = esc_html__( 'Back', 'clerk' );
+	$cart_button_text = esc_html__( 'Go to cart', 'clerk' );
+}
 
 if ( isset( $options['powerstep_custom_text_enabled'] ) && isset( $product ) ) {
 	$product_name     = $product->get_name();
