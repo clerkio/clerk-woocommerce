@@ -27,31 +27,24 @@ $cart_url     = wc_get_cart_url();
 $checkout_url = wc_get_checkout_url();
 $options      = clerk_get_options();
 
-if ( ! isset( $options['powerstep_custom_text_enabled'] ) ) {
-  $back_button_text = esc_html__( 'Back', 'clerk' );
-	$cart_button_text = esc_html__( 'Go to cart', 'clerk' );
-}
+$back_button_text = esc_html__( 'Back', 'clerk' );
+$cart_button_text = esc_html__( 'Go to cart', 'clerk' );
+$title_html       = '';
 
 if ( isset( $options['powerstep_custom_text_enabled'] ) && isset( $product ) ) {
-	$product_name     = $product->get_name();
-	$title_message    = esc_html__( ' added to cart!', 'clerk' );
-	$title_html       = "<span class='clerk_powerstep_product_name'>$product_name</span>$title_message";
-	$back_button_text = esc_html__( 'Back', 'clerk' );
-	$cart_button_text = esc_html__( 'Go to cart', 'clerk' );
-	if ( isset( $options['powerstep_custom_text_title'] ) ) {
-		if ( str_contains( $options['powerstep_custom_text_title'], 'PRODUCT_NAME' ) ) {
-			$translated_array = explode( 'PRODUCT_NAME', $options['powerstep_custom_text_title'] );
-			$pre_trans        = $translated_array[0];
-			$post_trans       = $translated_array[1];
-			$title_html       = "<div class='clerk_powerstep_product_name_wrap'>$pre_trans<span class='clerk_powerstep_product_name'>$product_name</span>$post_trans</div>";
-		}
-	}
-	if ( isset( $options['powerstep_custom_text_back'] ) ) {
-		$back_button_text = $options['powerstep_custom_text_back'];
-	}
-	if ( isset( $options['powerstep_custom_text_cart'] ) ) {
-		$cart_button_text = $options['powerstep_custom_text_cart'];
-	}
+  $product_name  = $product->get_name();
+  $title_message = esc_html__( ' added to cart!', 'clerk' );
+  $title_html    = "<span class='clerk_powerstep_product_name'>$product_name</span>$title_message";
+
+  if ( isset( $options['powerstep_custom_text_title'] ) && str_contains( $options['powerstep_custom_text_title'], 'PRODUCT_NAME' ) ) {
+    $translated_array = explode( 'PRODUCT_NAME', $options['powerstep_custom_text_title'] );
+    $pre_trans        = $translated_array[0];
+    $post_trans       = $translated_array[1];
+    $title_html       = "<div class='clerk_powerstep_product_name_wrap'>$pre_trans<span class='clerk_powerstep_product_name'>$product_name</span>$post_trans</div>";
+  }
+
+  $back_button_text = $options['powerstep_custom_text_back'] ?? $back_button_text;
+  $cart_button_text = $options['powerstep_custom_text_cart'] ?? $cart_button_text;
 }
 ?>
 <div class="powerstep-success">
