@@ -1608,7 +1608,7 @@ class Clerk_Rest_Api extends WP_REST_Server {
 
 		$rsp_array = $this->api->verify_token( $query_params );
 
-		if ( ! $rsp_array ) {
+		if ( ! $rsp_array || is_wp_error( $rsp_array ) ) {
 			return false;
 		}
 
