@@ -56,6 +56,7 @@ class Clerk_Realtime_Updates {
 		$this->init_hooks();
 		$this->logger = new Clerk_Logger();
 		$this->api    = new Clerk_Api();
+
 	}
 
 	/**
@@ -85,6 +86,10 @@ class Clerk_Realtime_Updates {
 
 		add_action( 'woocommerce_product_import_inserted_product_object', array( $this, 'pre_save_product' ), 10, 3 );
 		add_action( 'before_delete_post', array( $this, 'remove_product' ) );
+
+		// this hook triggers batch deletion at the end of the request
+		add_action('shutdown', [$this, 'batch_delete_posts']); 
+
 	}
 
 	/**
@@ -123,7 +128,6 @@ class Clerk_Realtime_Updates {
 						  return;
 					}
 				}
-
 				$post_object = get_post( $post_id );
 				if ( is_a( $post_object, 'WP_Post' ) ) {
 					$this->save_blog_post( $post_object );
@@ -142,16 +146,31 @@ class Clerk_Realtime_Updates {
 	 * @param WP_Post|void $post Post Object.
 	 * @param bool|void    $update Whether an existing post is being updated.
 	 */
-	public function pre_delete_post( $post_id = null, $post = null, $update = null ) {
+	
+	private $post_ids = [];
+	public function pre_delete_post($post_id = null, $post = null, $update = null) {
 		try {
-			if ( $post_id ) {
-				$this->api->delete_posts( array( $post_id ) );
+			if ($post_id) {
+				$this->post_ids[] = $post_id;
+				//delete will run before execution ends
 			}
-		} catch ( Exception $e ) {
-			$this->logger->error( 'ERROR pre_delete_post', array( 'error' => $e->getMessage() ) );
+		} catch (Exception $e) {
+			$this->logger->error('ERROR pre_delete_post', ['error' => $e->getMessage()]);
 		}
 	}
-
+	
+	// this batch prevent seperated api call for each post delete
+	public function batch_delete_posts() {
+		if (!empty($this->post_ids)) {
+			try {
+				$this->api->delete_posts($this->post_ids); 
+				$this->post_ids = [];
+			} catch (Exception $e) {
+				$this->logger->error('FAIL to delete...', ['error' => $e->getMessage()]);
+			}
+		}
+	}	
+	
 	/**
 	 * Update Post from import.
 	 *
@@ -160,37 +179,34 @@ class Clerk_Realtime_Updates {
 	 */
 	public function save_blog_post( $post ) {
 		try {
-
 			$options = $this->clerk_get_contextual_options( $post->ID );
-
+	
 			if ( ! is_array( $options ) || ! isset( $options ) ) {
 				return;
 			}
-
+	
 			if ( ! array_key_exists( 'realtime_updates_pages', $options ) ) {
 				return;
 			}
-
+	
 			$post_types = array( 'post', 'page' );
 			if ( isset( $options['page_additional_types'] ) ) {
 				$additional_types      = preg_replace( '/\s+/', '', $options['page_additional_types'] );
 				$additional_types_list = explode( ',', $additional_types );
 				$post_types            = array_values( array_unique( array_merge( $post_types, $additional_types_list ) ) );
 			}
-
+	
 			if ( ! in_array( $post->post_type, $post_types, true ) ) {
 				return;
 			}
-
+	
 			$page_additional_fields = explode( ',', $options['page_additional_fields'] );
-
 			$post_status = get_post_status( $post );
-
+	
 			if ( ! empty( $post->post_content ) && 'publish' === $post_status ) {
-
 				$url = get_permalink( $post->ID );
 				$url = empty( $url ) ? $post->guid : $url;
-
+	
 				$page_draft = array(
 					'id'    => $post->ID,
 					'type'  => $post_status,
@@ -199,21 +215,22 @@ class Clerk_Realtime_Updates {
 					'text'  => gettype( $post->post_content ) === 'string' ? wp_strip_all_tags( $post->post_content ) : '',
 					'image' => get_the_post_thumbnail_url( $post->ID ),
 				);
-
+	
 				foreach ( $page_additional_fields as $page_additional_field ) {
 					$page_additional_field = str_replace( ' ', '', $page_additional_field );
 					if ( ! empty( $page_additional_field ) ) {
 						$page_draft[ $page_additional_field ] = $post->{ $page_additional_field };
 					}
 				}
-
 				$this->api->add_posts( array( $page_draft ) );
 			}
+	
 			if ( 'publish' !== $post_status ) {
-				$this->api->delete_posts( array( $post->ID ) );
+				//ids will get deleted with the batch at the end
+				$this->post_ids[] = $post->ID;
 			}
+	
 		} catch ( Exception $e ) {
-
 			$this->logger->error( 'ERROR save_blog_post', array( 'error' => $e->getMessage() ) );
 		}
 	}
