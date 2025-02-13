@@ -79,7 +79,6 @@ class Clerk_Realtime_Updates {
 		// This hook will run before the price is updated if there is a module modifying the price via a hook.
 		// save_post with a high enough priority defer score.
 		add_action( 'save_post', array( $this, 'pre_save_post' ), 1000, 3 );
-
 		add_action( 'before_delete_post', array( $this, 'pre_delete_post' ), 100, 3 );
 		add_action( 'wp_trash_post', array( $this, 'pre_delete_post' ), 100, 3 );
 
@@ -113,25 +112,33 @@ class Clerk_Realtime_Updates {
 	 * @param WP_Post|void $post Post Object.
 	 * @param bool|void    $update Whether an existing post is being updated.
 	 */
-	public function pre_save_post( $post_id = null, $post = null, $update = null ) {
-		try {
-			if ( $post_id ) {
-				if ( function_exists( 'wc_get_product' ) ) {
-					$product = wc_get_product( $post_id );
-					if ( is_a( $product, 'WC_Product' ) && ! is_a( $product, 'WC_Product_Variation' ) ) {
-						  $this->save_product( $post_id );
-						  return;
-					}
-				}
 
-				$post_object = get_post( $post_id );
-				if ( is_a( $post_object, 'WP_Post' ) ) {
-					$this->save_blog_post( $post_object );
+	public function pre_save_post( $post_id = null, $post = null, $update = null ) {
+
+		try {
+			if (wp_is_post_autosave($post_id) || wp_is_post_revision($post_id) || wp_doing_ajax()) {
+				return;
+			}
+			$post_status = get_post_status( $post_id );
+			if ( $post_status === 'trash' || $post_status === 'auto-draft' ) {
+				return;
+			}
+			if ( empty( $post_id ) || ! is_numeric( $post_id ) ) {
+				return; 
+			}
+			if ( function_exists( 'wc_get_product' ) ) {
+				$product = wc_get_product( $post_id );
+				if ( is_a( $product, 'WC_Product' ) && ! is_a( $product, 'WC_Product_Variation' ) ) {
+					$this->save_product( $post_id );
+					return;
 				}
 			}
+			$post_object = get_post( $post_id );
+			if ( is_a( $post_object, 'WP_Post' ) ) {
+				$this->save_blog_post( $post_object );
+			}
 		} catch ( Exception $e ) {
-
-			$this->logger->error( 'ERROR pre_save_post', array( 'error' => $e->getMessage() ) );
+			error_log( 'ERROR pre_save_post: ' . $e->getMessage() );
 		}
 	}
 
@@ -143,15 +150,28 @@ class Clerk_Realtime_Updates {
 	 * @param bool|void    $update Whether an existing post is being updated.
 	 */
 	public function pre_delete_post( $post_id = null, $post = null, $update = null ) {
+	
 		try {
-			if ( $post_id ) {
+			if ( empty( $post_id ) || ! is_numeric( $post_id ) ) {
+				return; 
+			}
+			$post_type = get_post_type( $post_id );
+			if ( empty( $post_type ) ) {
+				return;
+			}
+			if ( $post_type === 'product_variation' ) {
+				return;
+			}
+			if ( $post_type === 'product' ) {
+				$this->api->remove_product( array( $post_id ) );
+			} else {
 				$this->api->delete_posts( array( $post_id ) );
 			}
 		} catch ( Exception $e ) {
-			$this->logger->error( 'ERROR pre_delete_post', array( 'error' => $e->getMessage() ) );
+			$logger->error('ERROR in pre_delete_post', $log_context + array('error' => $e->getMessage()));
 		}
 	}
-
+	
 	/**
 	 * Update Post from import.
 	 *
@@ -160,37 +180,31 @@ class Clerk_Realtime_Updates {
 	 */
 	public function save_blog_post( $post ) {
 		try {
-
+			if (wp_is_post_autosave($post_id) || wp_is_post_revision($post_id) || wp_doing_ajax()) {
+				return;
+			}
 			$options = $this->clerk_get_contextual_options( $post->ID );
-
 			if ( ! is_array( $options ) || ! isset( $options ) ) {
 				return;
 			}
-
 			if ( ! array_key_exists( 'realtime_updates_pages', $options ) ) {
 				return;
 			}
-
 			$post_types = array( 'post', 'page' );
 			if ( isset( $options['page_additional_types'] ) ) {
 				$additional_types      = preg_replace( '/\s+/', '', $options['page_additional_types'] );
 				$additional_types_list = explode( ',', $additional_types );
 				$post_types            = array_values( array_unique( array_merge( $post_types, $additional_types_list ) ) );
 			}
-
 			if ( ! in_array( $post->post_type, $post_types, true ) ) {
 				return;
 			}
-
 			$page_additional_fields = explode( ',', $options['page_additional_fields'] );
-
 			$post_status = get_post_status( $post );
-
 			if ( ! empty( $post->post_content ) && 'publish' === $post_status ) {
 
 				$url = get_permalink( $post->ID );
 				$url = empty( $url ) ? $post->guid : $url;
-
 				$page_draft = array(
 					'id'    => $post->ID,
 					'type'  => $post_status,
@@ -199,14 +213,12 @@ class Clerk_Realtime_Updates {
 					'text'  => gettype( $post->post_content ) === 'string' ? wp_strip_all_tags( $post->post_content ) : '',
 					'image' => get_the_post_thumbnail_url( $post->ID ),
 				);
-
 				foreach ( $page_additional_fields as $page_additional_field ) {
 					$page_additional_field = str_replace( ' ', '', $page_additional_field );
 					if ( ! empty( $page_additional_field ) ) {
 						$page_draft[ $page_additional_field ] = $post->{ $page_additional_field };
 					}
 				}
-
 				$this->api->add_posts( array( $page_draft ) );
 			}
 			if ( 'publish' !== $post_status ) {
@@ -223,33 +235,31 @@ class Clerk_Realtime_Updates {
 	 *
 	 * @param integer $product_id Product ID.
 	 */
+
 	public function save_product( $product_id = null ) {
 
+		if ( get_post_status( $product_id ) === 'trash' || wp_is_post_revision( $product_id ) ) {
+			return;
+		}
 		if ( ! is_int( $product_id ) ) {
 			return;
 		}
-
 		if ( ! function_exists( 'wc_get_product' ) ) {
 			return;
 		}
-
 		$options = $this->clerk_get_contextual_options( $product_id );
-
 		if ( ! is_array( $options ) || ! isset( $options ) ) {
 			return;
 		}
-
 		if ( ! array_key_exists( 'realtime_updates', $options ) ) {
 			return;
 		}
-
 		try {
 
 			$product = wc_get_product( $product_id );
 			if ( ! is_a( $product, 'WC_Product' ) ) {
 				return;
 			}
-
 			if ( clerk_check_version() ) {
 
 				// Don't send variations when parent is not published.
@@ -265,11 +275,9 @@ class Clerk_Realtime_Updates {
 						return;
 					}
 				}
-
 				if ( $product->get_status() === 'publish' ) {
 					// Send product to Clerk.
 					$this->add_product( $product );
-
 					// check all groups for this product *sigh*.
 					$grouped_products = wc_get_products(
 						array(
@@ -329,27 +337,31 @@ class Clerk_Realtime_Updates {
 	public function remove_product( $product_id ) {
 		try {
 
+			$post_type = get_post_type( $product_id );
+			if ( $post_type === 'product_variation' ) {
+				return;
+			}
 			if ( ! is_int( $product_id ) ) {
 				return;
 			}
-
+	
 			$options = $this->clerk_get_contextual_options( $product_id );
-
 			if ( ! is_array( $options ) || ! isset( $options['realtime_updates'] ) ) {
 				return;
 			}
-
+	
 			if ( 1 !== (int) $options['realtime_updates'] ) {
 				return;
 			}
+	
 			// Remove product from Clerk.
 			$this->api->remove_product( $product_id );
+	
 		} catch ( Exception $e ) {
-
 			$this->logger->error( 'ERROR remove_product', array( 'error' => $e->getMessage() ) );
 		}
 	}
-
+	
 	/**
 	 * Add product in Clerk
 	 *
