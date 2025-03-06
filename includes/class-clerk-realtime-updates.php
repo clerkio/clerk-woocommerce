@@ -180,7 +180,7 @@ class Clerk_Realtime_Updates {
 	 */
 	public function save_blog_post( $post ) {
 		try {
-			if (wp_is_post_autosave($post_id) || wp_is_post_revision($post_id) || wp_doing_ajax()) {
+			if (wp_is_post_autosave($post->ID) || wp_is_post_revision($post->ID) || wp_doing_ajax()) {
 				return;
 			}
 			$options = $this->clerk_get_contextual_options( $post->ID );
