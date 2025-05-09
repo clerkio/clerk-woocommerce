@@ -6,7 +6,7 @@ License URI: https://opensource.org/licenses/MIT
 Tested up to: 6.5.2
 WC requires at least: 4.4.0
 WC tested up to: 7.1.0
-Stable Tag: 4.1.9
+Stable Tag: 4.2.2
 
 == Description ==
 Clerk.io is a software that helps your customers buy more from your webshop, through 4 amazing feature:
@@ -30,6 +30,12 @@ Once signed up, simply login to your my.clerk.io backend, which will guide you t
 
 
 == Changelog ==
+= 4.2.2 - 2025-05-09
+* Fix real time "sync pages" button bug.
+
+= 4.2.1 - 2025-03-26
+* Fix for real time update performance bug.
+
 = 4.1.9 - 2024-07-29
 * Added price_html field to product data.
 * Added average_rating, rating_count and review_count to product data.
