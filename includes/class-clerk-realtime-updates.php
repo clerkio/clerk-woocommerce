@@ -162,13 +162,17 @@ class Clerk_Realtime_Updates {
 			if ( $post_type === 'product_variation' ) {
 				return;
 			}
+			// Skip processing for shop_order post type to improve order deletion performance
+			if ( $post_type === 'shop_order' ) {
+				return;
+			}
 			if ( $post_type === 'product' ) {
 				$this->api->remove_product( array( $post_id ) );
 			} else {
 				$this->api->delete_posts( array( $post_id ) );
 			}
 		} catch ( Exception $e ) {
-			$logger->error('ERROR in pre_delete_post', $log_context + array('error' => $e->getMessage()));
+			$this->logger->error('ERROR in pre_delete_post', array('error' => $e->getMessage()));
 		}
 	}
 	
