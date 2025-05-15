@@ -35,7 +35,9 @@ if ( ! function_exists( 'clerk_get_products' ) ) {
 			$args,
 			array(
 				'status'         => array( 'draft', 'pending', 'private', 'publish' ),
-				'type'           => array_merge( array_keys( wc_get_product_types() ) ),
+				// Check if wc_get_product_types exists, otherwise use default product types
+				// This prevents "Call to undefined function wc_get_product_types()" errors
+				'type'           => function_exists( 'wc_get_product_types' ) ? array_merge( array_keys( wc_get_product_types() ) ) : array( 'simple', 'variable', 'grouped', 'external' ),
 				'parent'         => null,
 				'sku'            => '',
 				'category'       => array(),
