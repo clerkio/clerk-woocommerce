@@ -3,7 +3,7 @@
  * Plugin Name: Clerk
  * Plugin URI: https://clerk.io/
  * Description: Clerk.io Turns More Browsers Into Buyers
- * Version: 4.2.2
+ * Version: 4.1.9
  * Author: Clerk.io
  * Author URI: https://clerk.io
  *
@@ -50,7 +50,7 @@ class Clerk_Admin_Settings {
 		}
 		$this->init_hooks();
 		$this->logger  = new Clerk_Logger();
-		$this->version = '4.2.2';
+		$this->version = '4.1.9';
 	}
 
 	/**
@@ -176,6 +176,18 @@ class Clerk_Admin_Settings {
 			array(
 				'label_for' => 'lang',
 				'default'   => 'auto',
+			)
+		);
+
+		add_settings_field(
+			'tracking_hook_position',
+			__( 'Tracking Script Hook Position', 'clerk' ),
+			array( $this, 'add_tracking_hook_dropdown' ),
+			'clerk',
+			'clerk_section_general',
+			array(
+				'label_for' => 'tracking_hook_position',
+				'default'   => 'wp_footer',
 			)
 		);
 
@@ -1782,6 +1794,52 @@ class Clerk_Admin_Settings {
 				</option>
 			<?php endforeach; ?>
 		</select>
+		<?php
+	}
+
+	/**
+	 * Build Tracking Hook Position Selector
+	 *
+	 * @param array $args Array of params for request.
+	 */
+	public function add_tracking_hook_dropdown( $args ) {
+
+		$hook_positions = array(
+			array(
+				'Label' => 'Header (wp_head)',
+				'Value' => 'wp_head',
+			),
+			array(
+				'Label' => 'Footer (wp_footer) - Default',
+				'Value' => 'wp_footer',
+			),
+			array(
+				'Label' => 'After Body Open (wp_body_open)',
+				'Value' => 'wp_body_open',
+			),
+		);
+
+		$options           = clerk_get_options();
+		$clerk_options_key = clerk_get_option_key();
+
+		// Default to wp_footer if not set.
+		$current_value = isset( $options[ $args['label_for'] ] ) ? $options[ $args['label_for'] ] : 'wp_footer';
+
+		?>
+		<select id="<?php echo esc_attr( $args['label_for'] ); ?>"
+				name="<?php echo esc_attr( $clerk_options_key ); ?>[<?php echo esc_attr( $args['label_for'] ); ?>]">
+			<?php foreach ( $hook_positions as $position ) : ?>
+				<option value="<?php echo esc_attr( $position['Value'] ); ?>"
+					<?php
+					if ( $current_value === $position['Value'] ) :
+						?>
+						selected<?php endif; ?>><?php echo esc_attr( $position['Label'] ); ?>
+				</option>
+			<?php endforeach; ?>
+		</select>
+		<p class="description">
+			<?php esc_html_e( 'Select where the Clerk.js tracking script should be loaded. "Footer" is recommended for best performance.', 'clerk' ); ?>
+		</p>
 		<?php
 	}
 

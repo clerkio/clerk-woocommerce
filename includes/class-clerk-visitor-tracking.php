@@ -3,7 +3,7 @@
  * Plugin Name: Clerk
  * Plugin URI: https://clerk.io/
  * Description: Clerk.io Turns More Browsers Into Buyers
- * Version: 4.2.2
+ * Version: 4.1.9
  * Author: Clerk.io
  * Author URI: https://clerk.io
  *
@@ -48,12 +48,23 @@ class Clerk_Visitor_Tracking {
 	 * Init hooks
 	 */
 	private function init_hooks() {
-		add_action( 'wp_footer', array( $this, 'add_tracking' ) );
+		$options = clerk_get_options();
+
+		// Get the configured hook position, default to wp_footer.
+		$hook_position = isset( $options['tracking_hook_position'] ) ? $options['tracking_hook_position'] : 'wp_footer';
+
+		// Validate hook position to prevent invalid hooks.
+		$valid_hooks = array( 'wp_head', 'wp_footer', 'wp_body_open' );
+		if ( ! in_array( $hook_position, $valid_hooks, true ) ) {
+			$hook_position = 'wp_footer';
+		}
+
+		// Register the tracking script on the selected hook.
+		add_action( $hook_position, array( $this, 'add_tracking' ) );
+
 		add_action( 'wp_ajax_nopriv_get_cart', array( $this, 'get_cart' ) );
 		add_action( 'wp_ajax_get_cart', array( $this, 'get_cart' ) );
 		add_action( 'init', array( $this, 'clerk_add_custom_shortcodes' ) );
-
-		$options = clerk_get_options();
 
 		if ( isset( $options['collect_emails'] ) ) {
 			add_action( 'woocommerce_review_order_before_submit', array( $this, 'clerk_woocommerce_review_order_before_submit' ), 99 );
@@ -225,50 +236,6 @@ class Clerk_Visitor_Tracking {
 						<?php
 					endif;
 					?>
-				});
-
-				<?php
-				$clerk_context_product  = null;
-				$clerk_context_category = null;
-				$clerk_context_page     = null;
-				$clerk_context_page_is_string = 0;
-
-				if ( function_exists( 'is_product' ) && is_product() ) {
-					$clerk_context_product = get_the_ID();
-				}
-				elseif ( function_exists( 'is_product_category' ) && is_product_category() ) {
-					$clerk_context_category = get_queried_object_id();
-				}
-				elseif ( is_singular() && get_the_ID() ) {
-					$clerk_context_page = get_the_ID();
-				}
-				elseif ( is_archive() && get_queried_object_id() ) {
-					$clerk_context_page = get_queried_object_id();
-				}
-				elseif ( is_front_page() || is_home() ) {
-					$clerk_context_page = 'homepage';
-					$clerk_context_page_is_string = 1;
-				}
-				// Fallback - get query type from WordPress
-				else {
-					global $wp_query;
-					// Get the query type dynamically
-					$query_vars = array( 's' => 'search', 'error' => '404', 'pagename' => 'page' );
-					foreach ( $query_vars as $var => $name ) {
-						if ( isset( $wp_query->query[ $var ] ) || ( $var === 'error' && is_404() ) ) {
-							$clerk_context_page = $name;
-							$clerk_context_page_is_string = 1;
-							break;
-						}
-					}
-				}
-				?>
-
-				// Clerk.js Context 
-				Clerk('context', {
-					product: <?php echo $clerk_context_product ? esc_js( $clerk_context_product ) : 'null'; ?>,
-					category: <?php echo $clerk_context_category ? esc_js( $clerk_context_category ) : 'null'; ?>,
-					page: <?php echo $clerk_context_page ? ( $clerk_context_page_is_string ? "'" . esc_js( $clerk_context_page ) . "'" : esc_js( $clerk_context_page ) ) : 'null'; ?>
 				});
 
 				<?php
