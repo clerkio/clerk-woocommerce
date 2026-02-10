@@ -20,13 +20,13 @@ This plugin handles three things:
 
 | Feature | What it does |
 |---------|-------------|
-| **Search** | Replaces WooCommerce's native search with a Clerk.io-powered search page via shortcode `[clerk-search]`. Rewrites all search form actions and input names via jQuery. |
+| **Search** | Replaces WooCommerce's native search with a Clerk.io-powered search page via shortcode `[clerk-search]`. Redirects search forms to use the Clerk search page. |
 | **Live Search** | Type-ahead dropdown on the search field. Configurable selector, categories, suggestions count, dropdown position. |
 | **Recommendations** | Sliders on product, category, cart pages. Replaces WooCommerce's native related products template via `wc_get_template` filter. |
 | **Powerstep** | After add-to-cart, shows a page or popup with recommendations. Intercepts `woocommerce_add_to_cart_redirect`. |
 | **Exit Intent** | Overlay triggered when the visitor moves to leave the page. |
 | **Sales Tracking** | `<span>` on the thank-you page that logs the order to Clerk.io. |
-| **Basket Tracking** | Client-side: intercepts AJAX requests containing `add_to_cart`/`remove_from_cart` and syncs cart to Clerk.io. Server-side: POSTs to `api.clerk.io/v2/log/basket/set` on cart changes. |
+| **Basket Tracking** | Client-side: intercepts AJAX cart requests and syncs cart to Clerk.io. Server-side: syncs cart to Clerk.io on cart changes for logged-in customers. |
 | **Real-Time Sync** | Hooks into `save_post` (priority 1000) and `before_delete_post` to push product/page changes to the Clerk.io API. |
 | **WPML / Polylang** | Full multi-language support with per-language settings stored as `clerk_options_{lang}`. |
 
@@ -49,7 +49,7 @@ Full setup guide: [help.clerk.io/integrations/woocommerce/get-started](https://h
 
 ### Data Feed Endpoints
 
-All under `/wp-json/clerk/`. Authentication uses JWT (`X-Clerk-Authorization: Bearer <token>`) or legacy public/private key. Auth is handled internally — all endpoints use `permission_callback: '__return_true'`.
+All under `/wp-json/clerk/`. Authentication uses JWT (`X-Clerk-Authorization: Bearer <token>`) or legacy public/private key.
 
 | Endpoint | What it returns |
 |----------|----------------|
@@ -62,7 +62,7 @@ All under `/wp-json/clerk/`. Authentication uses JWT (`X-Clerk-Authorization: Be
 
 All paginated endpoints accept `page`, `limit`, `orderby`, `order` parameters.
 
-There are also diagnostic endpoints (`/clerk/getconfig`, `/clerk/setconfig`, `/clerk/rotatekey`).
+There are also diagnostic and configuration management endpoints available for Clerk.io platform integration.
 
 ### Filters for modifying feed data
 
@@ -97,7 +97,7 @@ There are also diagnostic endpoints (`/clerk/getconfig`, `/clerk/setconfig`, `/c
 │   ├── class-clerk-exit-intent.php     ← Exit intent span output
 │   ├── class-clerk-realtime-updates.php ← Real-time product/page sync on save/delete
 │   ├── class-clerk-api.php             ← Clerk.io API client (cURL)
-│   ├── class-clerk-logger.php          ← Logging (sends to api.clerk.io/v2/log/debug)
+│   ├── class-clerk-logger.php          ← Logging
 │   ├── clerk-multi-lang-helpers.php    ← WPML & Polylang helper functions
 │   ├── clerk-legacy-helpers.php        ← WC version compatibility helpers
 │   ├── clerk-template-functions.php    ← Template locator (theme overrides: yourtheme/clerk/)
@@ -127,13 +127,11 @@ If you need to customize the plugin, here are the parts to be careful with.
 
 **WooCommerce related products override.** When product recommendations are enabled, the plugin filters `wc_get_template` and replaces `single-product/related.php` with its own `clerk-related-products.php` template. This completely removes WooCommerce's native related products section. If you need both, you'll need to disable the Clerk product recommendations and add Clerk spans manually.
 
-**Search form rewriting.** When search is enabled, `class-clerk-visitor-tracking.php` injects jQuery that rewrites ALL search forms on the page — changing the `action` URL, renaming the input to `searchterm`, and removing `post_type=product` hidden inputs. This affects every search form, not just the main one.
+**Search form rewriting.** When search is enabled, `class-clerk-visitor-tracking.php` rewrites search forms on the page to point to Clerk's search endpoint. If your theme has multiple search forms, be aware they will all be rewritten.
 
-**`XMLHttpRequest.prototype.open` monkey-patch.** When basket tracking is enabled, the plugin patches `XMLHttpRequest.prototype.open` globally to intercept any AJAX request containing `add_to_cart`, `remove_from_cart`, or `get_refreshed_fragments` in the URL. If you see unexpected AJAX behavior, check if `collect_baskets` is enabled.
+**Basket tracking and AJAX interception.** When basket tracking is enabled, the plugin intercepts AJAX requests related to cart changes (`add_to_cart`, `remove_from_cart`, `get_refreshed_fragments`) to keep Clerk.io in sync with the cart. If you see unexpected AJAX behavior, check if `collect_baskets` is enabled. Server-side basket tracking (`class-clerk-basket.php`) also sends cart data to the Clerk.io API on cart changes for logged-in customers.
 
-**`save_post` hook at priority 1000.** Real-time updates hook into `save_post` at very high priority and fire on ALL post types, not just products. Each save triggers an HTTP request to the Clerk.io API. If you're doing bulk imports, consider temporarily disabling real-time updates.
-
-**Server-side basket tracking.** `class-clerk-basket.php` fires on `template_redirect` and `woocommerce_add_to_cart_redirect`, making an HTTP POST to `api.clerk.io` on every cart change for logged-in customers. This adds latency to add-to-cart actions.
+**Real-time updates via `save_post`.** Real-time sync hooks into `save_post` to push product and page changes to the Clerk.io API. If you're doing bulk imports, consider temporarily disabling real-time updates in the Clerk settings.
 
 **Template overrides.** All templates can be overridden in your theme at `yourtheme/clerk/` (e.g. `yourtheme/clerk/clerk-powerstep.php`). The plugin uses `clerk_locate_template()` which checks the theme directory first.
 
