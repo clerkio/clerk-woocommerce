@@ -1418,50 +1418,52 @@ class Clerk_Rest_Api extends WP_REST_Server {
 				return array();
 			}
 
-			$subscriber_query = new WP_User_Query( array( 'role' => 'Subscriber' ) );
-			$customer_query   = new WP_User_Query( array( 'role' => 'Customer' ) );
+			$limit  = $request->get_param( 'limit' ) ? (int) $request->get_param( 'limit' ) : -1;
+			$page   = ( $request->get_param( 'page' ) !== null ) ? (int) $request->get_param( 'page' ) : 0;
+			$offset = $page * max( $limit, 0 );
 
-			$subscribers = $subscriber_query->get_results();
-			$customers   = $customer_query->get_results();
+			$user_query_args = array(
+				'role__in' => array( 'customer', 'subscriber' ),
+				'orderby'  => 'ID',
+				'order'    => 'ASC',
+			);
 
-			$users = array_merge( $customers, $subscribers );
+			if ( $limit > 0 ) {
+				$user_query_args['number'] = $limit;
+				$user_query_args['offset'] = $offset;
+			}
+
+			$user_query = new WP_User_Query( $user_query_args );
+			$users = $user_query->get_results();
+
+			$customer_additional_fields = array();
+			if ( isset( $options['customer_sync_customer_fields'] ) && $options['customer_sync_customer_fields'] ) {
+				$customer_additional_fields = explode( ',', str_replace( ' ', '', $options['customer_sync_customer_fields'] ) );
+			}
 
 			$final_customer_array = array();
 
-			if ( isset( $options['customer_sync_customer_fields'] ) && $options['customer_sync_customer_fields'] ) {
-
-				$customer_additional_fields = explode( ',', str_replace( ' ', '', $options['customer_sync_customer_fields'] ) );
-
-			} else {
-
-				$customer_additional_fields = array();
-
-			}
-
 			foreach ( $users as $user ) {
 
-				$_customer_class = new WP_User( $user->ID );
-
-				$customer_roles = $_customer_class->roles;
-				if ( is_array( $customer_roles ) ) {
-					$customer_roles = array_values( $customer_roles );
-				}
-
-				if ( ! $customer_roles ) {
+				$customer_roles = $user->roles;
+				if ( ! is_array( $customer_roles ) ) {
 					$customer_roles = array();
 				}
+				$customer_roles = array_values( $customer_roles );
 
-				$_customer          = array();
-				$_customer['name']  = $user->data->display_name;
-				$_customer['id']    = $user->data->ID;
-				$_customer['email'] = $user->data->user_email;
-				$_customer['roles'] = $customer_roles;
+				$_customer = array(
+					'name'  => $user->display_name,
+					'id'    => $user->ID,
+					'email' => $user->user_email,
+					'roles' => $customer_roles,
+				);
 
-				$user_meta = get_user_meta( $user->ID );
-
-				foreach ( $customer_additional_fields as $customer_additional_field ) {
-					if ( isset( $user_meta[ $customer_additional_field ] ) ) {
-						$_customer[ $customer_additional_field ] = $user_meta[ $customer_additional_field ][0];
+				if ( ! empty( $customer_additional_fields ) ) {
+					$user_meta = get_user_meta( $user->ID );
+					foreach ( $customer_additional_fields as $customer_additional_field ) {
+						if ( isset( $user_meta[ $customer_additional_field ] ) ) {
+							$_customer[ $customer_additional_field ] = $user_meta[ $customer_additional_field ][0];
+						}
 					}
 				}
 
