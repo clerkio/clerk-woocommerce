@@ -52,7 +52,7 @@ class Clerk_Basket {
 
 		$options = clerk_get_options();
 
-		if ( ! isset( $options['collect_baskets'] ) ) {
+		if ( empty( $options['collect_baskets'] ) ) {
 			return;
 		}
 
@@ -63,9 +63,10 @@ class Clerk_Basket {
 	/**
 	 * If collect basket is enabled, track baskets for abandoned cart support.
 	 *
-	 * @param string $url Add to cart action url.
+	 * @param string|null $url Add to cart action url.
+	 * @return string|null
 	 */
-	public function update_basket( $url ) {
+	public function update_basket( $url = null ) {
 
 		try {
 
@@ -76,6 +77,16 @@ class Clerk_Basket {
 
 			$items = $woocommerce->cart->get_cart();
 			$email = (string) $current_user->user_email;
+
+			if ( empty( $email ) ) {
+				$billing_email = filter_input( INPUT_POST, 'billing_email', FILTER_SANITIZE_EMAIL );
+				if ( empty( $billing_email ) && function_exists( 'WC' ) && WC()->customer ) {
+					$billing_email = WC()->customer->get_billing_email();
+				}
+				if ( ! empty( $billing_email ) && is_email( $billing_email ) ) {
+					$email = (string) $billing_email;
+				}
+			}
 
 			$add_to_cart_param = false;
 			$add_to_cart_param = ( null !== filter_input( INPUT_POST, 'add-to-cart' ) ) ? filter_input( INPUT_POST, 'add-to-cart' ) : $add_to_cart_param;
@@ -89,16 +100,9 @@ class Clerk_Basket {
 			$product_id_param = ( null !== filter_input( INPUT_POST, 'product_id' ) ) ? filter_input( INPUT_POST, 'product_id' ) : $product_id_param;
 			$product_id_param = ( null !== filter_input( INPUT_GET, 'product_id' ) ) ? filter_input( INPUT_GET, 'product_id' ) : $product_id_param;
 
-			if ( false === $add_to_cart_param || false === $removed_item_param || false === $product_id_param ) {
+			// Only skip when none of the basket-related params are numeric.
+			if ( ! is_numeric( $add_to_cart_param ) && ! is_numeric( $removed_item_param ) && ! is_numeric( $product_id_param ) ) {
 				return $url;
-			}
-
-			if ( empty( $add_to_cart_param ) || ! is_numeric( $add_to_cart_param ) ) {
-				if ( empty( $removed_item_param ) || ! is_numeric( $removed_item_param ) ) {
-					if ( empty( $product_id_param ) || ! is_numeric( $product_id_param ) ) {
-						return $url;
-					}
-				}
 			}
 
 			$_product_ids = array();
@@ -137,6 +141,8 @@ class Clerk_Basket {
 			$this->logger->error( 'ERROR update_basket', array( 'error' => $e->getMessage() ) );
 
 		}
+
+		return $url;
 	}
 }
 
