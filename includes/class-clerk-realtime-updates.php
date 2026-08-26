@@ -49,6 +49,15 @@ class Clerk_Realtime_Updates {
 	protected $lang_iso;
 
 	/**
+	 * Product IDs already synced in this request.
+	 *
+	 * Prevents duplicate Clerk API calls when save_post and stock hooks both fire.
+	 *
+	 * @var array
+	 */
+	protected $synced_product_ids = array();
+
+	/**
 	 * Clerk_Product_Sync constructor.
 	 */
 	public function __construct() {
@@ -84,6 +93,59 @@ class Clerk_Realtime_Updates {
 
 		add_action( 'woocommerce_product_import_inserted_product_object', array( $this, 'pre_save_product' ), 10, 3 );
 		add_action( 'before_delete_post', array( $this, 'remove_product' ) );
+
+		add_action( 'woocommerce_product_set_stock', array( $this, 'save_product_from_stock' ), 10, 3 );
+		add_action( 'woocommerce_product_set_stock_status', array( $this, 'save_product_from_stock' ), 10, 3 );
+		add_action( 'woocommerce_variation_set_stock', array( $this, 'save_product_from_stock' ), 10, 3 );
+		add_action( 'woocommerce_variation_set_stock_status', array( $this, 'save_product_from_stock' ), 10, 3 );
+	}
+
+	/**
+	 * Sync product from WooCommerce stock quantity or stock status events.
+	 *
+	 * Stock-only CRUD/API updates often skip a normal save_post. These hooks pass
+	 * either a WC_Product (set_stock) or (product_id, status, product) (set_stock_status).
+	 * Variations are synced via their parent so variant_stocks stays current.
+	 *
+	 * @param mixed           $product_or_id WC_Product or product ID.
+	 * @param string|null     $stock_status  Stock status when fired from set_stock_status.
+	 * @param WC_Product|null $product       Product object when fired from set_stock_status.
+	 * @return void
+	 */
+	public function save_product_from_stock( $product_or_id = null, $stock_status = null, $product = null ) {
+		try {
+			$wc_product = null;
+
+			if ( is_a( $product, 'WC_Product' ) ) {
+				$wc_product = $product;
+			} elseif ( is_a( $product_or_id, 'WC_Product' ) ) {
+				$wc_product = $product_or_id;
+			} elseif ( is_numeric( $product_or_id ) && function_exists( 'wc_get_product' ) ) {
+				$wc_product = wc_get_product( (int) $product_or_id );
+			}
+
+			if ( ! is_a( $wc_product, 'WC_Product' ) ) {
+				return;
+			}
+
+			$product_id = (int) $wc_product->get_id();
+
+			if ( $wc_product->is_type( 'variation' ) ) {
+				$parent_id = (int) $wc_product->get_parent_id();
+				if ( $parent_id <= 0 ) {
+					return;
+				}
+				$product_id = $parent_id;
+			}
+
+			if ( $product_id <= 0 ) {
+				return;
+			}
+
+			$this->save_product( $product_id );
+		} catch ( Exception $e ) {
+			$this->logger->error( 'ERROR save_product_from_stock', array( 'error' => $e->getMessage() ) );
+		}
 	}
 
 	/**
@@ -248,6 +310,10 @@ class Clerk_Realtime_Updates {
 		if ( ! is_int( $product_id ) ) {
 			return;
 		}
+		if ( isset( $this->synced_product_ids[ $product_id ] ) ) {
+			return;
+		}
+		$this->synced_product_ids[ $product_id ] = true;
 		if ( ! function_exists( 'wc_get_product' ) ) {
 			return;
 		}
