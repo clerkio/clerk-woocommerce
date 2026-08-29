@@ -107,12 +107,7 @@ class Clerk_Powerstep {
 			}
 
 			$page_url = get_page_link( $options['powerstep_page'] );
-			if ( strpos( $page_url, '?' ) === false ) {
-				$page_url = $page_url . '?product_id=' . $product_id;
-			} else {
-				$page_url = $page_url . '&product_id=' . $product_id;
-			}
-			$url = esc_url_raw( $page_url );
+			$url = esc_url_raw( add_query_arg( 'product_id', rawurlencode( $product_id ), $page_url ) );
 
 			return $url;
 
